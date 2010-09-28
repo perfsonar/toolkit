@@ -1,0 +1,1208 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Data::Dumper;
+use Getopt::Long;
+use Config::General;
+use Params::Validate qw(:all);
+
+use FindBin qw($RealBin);
+use lib "$RealBin/../lib";
+
+use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
+
+my ( $status, $res );
+
+my $default_config             = "/opt/perfsonar_ps/toolkit/etc/service_watcher.conf";
+my $default_logger_config      = "/opt/perfsonar_ps/toolkit/etc/service_watcher-logger.conf";
+my $owamp_pid                  = "/var/run/owampd.pid";
+my $owamp_pname                = "owampd";
+my $bwctl_pid                  = "/var/run/bwctld.pid";
+my $bwctl_pname                = "bwctld";
+my $npad_pid                   = "/var/run/npad.pid";
+my $npad_pname                 = "DiagServer.py";
+my $ndt_pid                    = undef;
+my $ndt_pname                  = [ "web100srv", "fakewww" ];
+my $PingER_pid                 = "/var/run/pinger.pid";
+my $PingER_pname            = "daemon.pl";
+my $hLS_pid                    = "/var/run/lookup_service.pid";
+my $hLS_pname               = "daemon.pl";
+my $SNMP_MA_pid                = "/var/run/snmp_ma.pid";
+my $SNMP_MA_pname           = "daemon.pl";
+my $pSB_MA_pid                 = "/var/run/perfsonarbuoy_ma.pid";
+my $pSB_MA_pname            = "daemon.pl";
+my $pSB_bwctl_master_pid    = "/var/lib/perfsonar/perfsonarbuoy_ma/bwctl/bwmaster.pid";
+my $pSB_bwctl_master_pname      = "bwmaster";
+my $pSB_bwctl_collector_pid     = "/var/lib/perfsonar/perfsonarbuoy_ma/bwctl/upload/bwcollector.pid";
+my $pSB_bwctl_collector_pname   = "bwcollector";
+my $pSB_owamp_master_pid        = "/var/lib/perfsonar/perfsonarbuoy_ma/owamp/powmaster.pid";
+my $pSB_owamp_master_pname      = "powmaster";
+my $pSB_owamp_collector_pid     = "/var/lib/perfsonar/perfsonarbuoy_ma/owamp/upload/powcollector.pid";
+my $pSB_owamp_collector_pname   = "powcollector";
+my $ls_registration_daemon_pid = "/var/run/ls_registration_daemon.pid";
+my $ls_registration_daemon_init_script = "ls_registration_daemon";
+#my $ls_registration_daemon_pname = "ls_registration_daemon.pl";
+my $ls_registration_daemon_pname = "daemon.pl";
+my $ls_cache_daemon_pid = "/var/run/ls_cache_daemon.pid";
+my $ls_cache_daemon_init_script = "ls_cache_daemon";
+my $ls_cache_daemon_pname = "daemon.pl";
+my $mysql_pid                  = "/var/run/mysqld/mysqld.pid";
+my $mysql_init_script          = "mysqld";
+my $mysql_pname                = "mysql";
+my $config_daemon_pid          = "/var/run/config_daemon.pid";
+my $config_daemon_init_script  = "config_daemon";
+my $config_daemon_pname        = "config_daemon";
+
+
+my ($LOGGER_CONF, $CONFIG_FILE, $REGULAR_RESTART, $DEBUGFLAG);
+
+$status = GetOptions(
+    'config=s'        => \$CONFIG_FILE,
+    'logger=s'        => \$LOGGER_CONF,
+    'verbose'         => \$DEBUGFLAG,
+    'regular_restart' => \$REGULAR_RESTART,
+);
+
+$CONFIG_FILE = $default_config unless ($CONFIG_FILE);
+$LOGGER_CONF = $default_logger_config unless ($LOGGER_CONF);
+
+unless ($status) {
+	print "$0: [--config=/path/to/service-watcher.conf] [--logger=/path/to/service-watcher_logger.conf] [--regular_restart] [--verbose]\n";
+	exit 1;
+}
+
+my %conf = ();
+if (-f $CONFIG_FILE) {
+	%conf = Config::General->new( $CONFIG_FILE )->getall();
+}
+
+# Now that we've dropped privileges, create the logger. If we do it in reverse
+# order, the daemon won't be able to write to the logger.
+my $logger;
+if ( not $LOGGER_CONF or ! -f $LOGGER_CONF ) {
+    use Log::Log4perl qw(:easy);
+
+    my $output_level = $INFO;
+    if ( $DEBUGFLAG ) {
+        $output_level = $DEBUG;
+    }
+
+    my %logger_opts = (
+        level  => $output_level,
+        layout => '%d (%P) %p> %F{1}:%L %M - %m%n',
+    );
+
+    Log::Log4perl->easy_init( \%logger_opts );
+    $logger = get_logger( "perfSONAR_PS" );
+}
+else {
+    use Log::Log4perl qw(get_logger :levels);
+
+    my $output_level = $INFO;
+    if ( $DEBUGFLAG ) {
+        $output_level = $DEBUG;
+    }
+
+    Log::Log4perl->init( $LOGGER_CONF );
+    $logger = get_logger( "perfSONAR_PS" );
+    $logger->level( $output_level ) if $output_level;
+}
+
+my $owamp = perfSONAR_PS::ServiceWatcher::OWAMP->new();
+$owamp->init( pid_files => $owamp_pid, process_names => $owamp_pname );
+my $bwctl = perfSONAR_PS::ServiceWatcher::BWCTL->new();
+$bwctl->init( pid_files => $bwctl_pid, process_names => $bwctl_pname );
+my $npad = perfSONAR_PS::ServiceWatcher::NPAD->new();
+$npad->init( pid_files => $npad_pid, process_names => $npad_pname );
+my $ndt = perfSONAR_PS::ServiceWatcher::NDT->new();
+$ndt->init( pid_files => $ndt_pid, process_names => $ndt_pname );
+my $pinger = perfSONAR_PS::ServiceWatcher::PingER->new();
+$pinger->init( pid_files => $PingER_pid, process_names => $PingER_pname );
+my $hls = perfSONAR_PS::ServiceWatcher::hLS->new();
+$hls->init( pid_files => $hLS_pid, process_names => $hLS_pname );
+my $snmp_ma = perfSONAR_PS::ServiceWatcher::SNMP_MA->new();
+$snmp_ma->init( pid_files => $SNMP_MA_pid, process_names => $SNMP_MA_pname );
+my $psb_ma = perfSONAR_PS::ServiceWatcher::pSB_MA->new();
+$psb_ma->init( pid_files => $pSB_MA_pid, process_names => $pSB_MA_pname );
+my $psb_bwctl_master = perfSONAR_PS::ServiceWatcher::pSB_bwctl_master->new();
+$psb_bwctl_master->init( pid_files => $pSB_bwctl_master_pid, process_names => $pSB_bwctl_master_pname );
+my $psb_bwctl_collector = perfSONAR_PS::ServiceWatcher::pSB_bwctl_collector->new();
+$psb_bwctl_collector->init( pid_files => $pSB_bwctl_collector_pid, process_names => $pSB_bwctl_collector_pname );
+my $psb_owamp_master = perfSONAR_PS::ServiceWatcher::pSB_owamp_master->new();
+$psb_owamp_master->init( pid_files => $pSB_owamp_master_pid, process_names => $pSB_owamp_master_pname );
+my $psb_owamp_collector = perfSONAR_PS::ServiceWatcher::pSB_owamp_collector->new();
+$psb_owamp_collector->init( pid_files => $pSB_owamp_collector_pid, process_names => $pSB_owamp_collector_pname );
+my $ls_registration_daemon = perfSONAR_PS::ServiceWatcher::LSRegistrationDaemon->new();
+$ls_registration_daemon->init( pid_files => $ls_registration_daemon_pid, init_script => $ls_registration_daemon_init_script, process_names => $ls_registration_daemon_pname );
+my $ls_cache_daemon = perfSONAR_PS::ServiceWatcher::LSCacheDaemon->new();
+$ls_cache_daemon->init( pid_files => $ls_cache_daemon_pid, init_script => $ls_cache_daemon_init_script, process_names => $ls_cache_daemon_pname );
+my $mysql = perfSONAR_PS::ServiceWatcher::MySQL->new();
+$mysql->init( pid_files => $mysql_pid, init_script => $mysql_init_script, process_names => $mysql_pname );
+my $config_daemon = perfSONAR_PS::ServiceWatcher::ConfigDaemon->new();
+$config_daemon->init( pid_files => $config_daemon_pid, init_script => $config_daemon_init_script, process_names => $config_daemon_pname );
+
+# do a 'restart' pass if the "--regular-restart" flag was specified
+if ($REGULAR_RESTART) {
+	foreach my $service ( $hls, $mysql, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
+		my ($status, $res);
+
+		($status, $res) = $service->is_enabled();
+		if ($status != 0) {
+			$logger->error("Failed to check if ".$service->name." is enabled");
+			next;
+		}
+
+		unless ($res) {
+			$logger->debug("Skipping ".$service->name);
+			next;
+		}
+
+		$status = $service->needs_regular_restart();
+		unless ($status) {
+			$logger->debug("Skipping ".$service->name.". doesn't need regular restarts");
+			next;
+		}
+
+		$logger->info("Regular restart for ".$service->name.".");
+
+		# try and kill any remnants the service and restart
+		($status) = $service->kill();
+
+		# Pause some to make sure it's really dead.
+		sleep(5);
+
+		$status = $service->regular_maintenance();
+
+		$status = $service->start();
+	}
+}
+# do a single pass to see if the services are up, and try to start them. Report any that are down.
+foreach my $service ( $hls, $mysql, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
+	my ($status, $res);
+
+	($status, $res) = $service->is_enabled();
+	if ($status != 0) {
+		$logger->error("Failed to check if ".$service->name." is enabled");
+		next;
+	}
+
+	unless ($res) {
+		$logger->debug("Skipping ".$service->name);
+		next;
+	}
+
+	($status, $res) = $service->check_state();
+	if ($status == 0) {
+		$logger->debug($service->name." is up");
+		next;
+	}
+
+	$logger->debug("Service ".$service->name." is down.");
+
+	my $report = "Service ".$service->name." is down.";
+
+	# now we need to try and kill any remnants the service and restart
+	($status) = $service->kill();
+	if ($status != 0) {
+		# a problem occurred, note this for the report
+		$report .= " Errors were reported while trying to kill the service.";
+	}
+
+	# Pause some to make sure it's really dead.
+	sleep(5);
+
+	$status = $service->start();
+	if ($status != 0) {
+		# a problem occurred, note this for the report
+		$report .= " Errors were reported while trying to start the service";
+	}
+
+	handle_reporting({ service => $service->name, status => "Critical", report => $report });
+}
+
+# do a single pass of all the services that are up, and send "OK" messages for all the ones that are running.
+foreach my $service ( $hls, $mysql, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
+	my ($status, $res);
+
+	($status, $res) = $service->is_enabled();
+	if ($status != 0) {
+		# we'll need to note that a problem occured.
+		$logger->error("Failed to check if ".$service->name." is enabled");
+		next;
+	}
+
+	unless ($res) {
+		$logger->debug("Skipping ".$service->name);
+		next;
+	}
+
+	($status, $res) = $service->check_state();
+	if ($status == 0) {
+		$logger->debug($service->name." is up");
+		handle_reporting({ service => $service->name, status => "OK", report => "Service is up" });
+	}
+}
+
+sub handle_reporting {
+    #my $parameters = validateParams(@params,
+    my $parameters = validate(
+        @_,
+        {
+            service    => 1,
+            status     => 1,
+            report     => 1,
+        }
+    );
+	
+    # report for the logs
+    $logger->info("service='".$parameters->{service}."' status='".$parameters->{status}."' report='".$parameters->{report}."'");
+
+    # report nagios alerts
+    if ($conf{"send_nagios"}) {
+	my $nsca_cmd = $conf{"nsca_cmd"};
+	my $nsca_cfg = $conf{"nsca_cfg"};
+	my $nsca_host = $conf{"nsca_host"};
+	my $nsca_port = $conf{"nsca_port"};
+
+	$nsca_cmd = "send_nsca" unless ($nsca_cmd);
+
+	my $cmdline = $nsca_cmd;
+	$cmdline .= " ".$nsca_host;
+	$cmdline .= " -c ".$nsca_cfg if ($nsca_cfg);
+
+	my $nagios_state;
+	if ($parameters->{status} eq "OK") {
+		$nagios_state = 0;
+	}
+	elsif ($parameters->{status} eq "WARNING") {
+		$nagios_state = 1;
+	}
+	elsif ($parameters->{status} eq "CRITICAL") {
+		$nagios_state = 2;
+	}
+	else {
+		$nagios_state = 3;
+	}
+
+	# just use the passed in service directly.
+	my $nagios_service = $parameters->{service};
+
+	# just use the passed in report directly. May need munging (removing \n's, etc).
+	my $nagios_report = $parameters->{report};
+
+	# Grab the hostname. Use the external address if specified, "hostname -f" otherwise.
+	my $hostname;
+	my $external_address = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
+	my $status = $external_address->init();
+	if ($status == 0) {
+		$hostname = $external_address->get_primary_address();
+	}
+
+	unless ($hostname) {
+		$hostname = `hostname -f`;
+		chomp $hostname if ($hostname);
+	}
+
+	unless ($hostname) {
+		$hostname = "Knoppix" 
+	}
+
+	$status = open(NSCA, "|-", $cmdline." > /dev/null");
+	unless ($status) {
+		# log the error
+	}
+	else {
+		print NSCA "$hostname\t$nagios_service\t$nagios_state\t$nagios_report\n";
+		$status = close(NSCA);
+		unless ($status) {
+			# log the 'close' error
+		}
+	}
+    }
+
+    # run the specified script
+    if ($conf{"run_script"}) {
+	my $script  = $conf{"script"};
+	my $service = $parameters->{service};
+	my $status  = $parameters->{status};
+	my $report  = $parameters->{report};
+
+	$logger->debug("Running: ".$script." '".$service."' '".$status."' '".$report."'");
+	system($script, $service, $status, $report);
+	if ($? != 0) {
+		# log the error
+	}
+    }
+}
+
+package perfSONAR_PS::ServiceWatcher::Base;
+
+use Log::Log4perl qw(:easy);
+use perfSONAR_PS::NPToolkit::Config::Services;
+use perfSONAR_PS::NPToolkit::ConfigManager::Utils qw( start_service stop_service );
+
+use fields 'LOGGER', 'PID_FILES', 'PROCESS_NAMES', 'SERVICE_NAME', 'REGULAR_RESTART';
+
+sub new {
+    my ( $package ) = @_;
+
+    my $self = fields::new( $package );
+    $self->{LOGGER} = get_logger( $package );
+    $self->{REGULAR_RESTART} = 0;
+
+    return $self;
+}
+
+sub init {
+    my $self   = shift;
+    my %params = @_;
+
+    if ( $params{pid_files} and ref( $params{pid_files} ) ne "ARRAY" ) {
+        my @tmp = ();
+        push @tmp, $params{pid_files};
+        $params{pid_files} = \@tmp;
+    }
+    $self->{PID_FILES} = $params{pid_files};
+
+    if ( ref( $params{process_names} ) ne "ARRAY" ) {
+        my @tmp = ();
+        push @tmp, $params{process_names};
+        $params{process_names} = \@tmp;
+    }
+    $self->{PROCESS_NAMES} = $params{process_names};
+
+    return 0;
+}
+
+sub needs_regular_restart {
+    my ($self) = @_;
+    # Defaults to 'no' (or undef as it were)
+ 
+    return;
+}
+
+sub is_enabled {
+    my ($self) = @_;
+ 
+    my ($status, $res);
+
+    unless ($self->{SERVICE_NAME}) {
+        return (-1, "No name specified for this service");
+    }
+
+    my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
+    ($status, $res) = $services_conf->init( {} );
+    if ($status != 0) {
+        return (-1, "Failed to initialize services configuration");
+    }
+
+    my $enabled_service_info = $services_conf->lookup_service({ name => $self->{SERVICE_NAME} });
+
+    return (0, $enabled_service_info->{enabled});
+}
+
+sub check_state {
+    my ($self) = @_;
+
+    unless ($self->{PID_FILES}) {
+        foreach my $pname ( @{ $self->{PROCESS_NAMES} } ) {
+            my $results = `pgrep -f $pname`;
+            chomp($results);
+            return (-1, "No process: $pname") unless ($results);
+        }
+    }
+    else {
+        my $i = 0;
+        foreach my $pid_file ( @{ $self->{PID_FILES} } ) {
+            open( PIDFILE, $pid_file ) or return (-1, "Couldn't open $pid_file");
+            my $p_id = <PIDFILE>;
+            close( PIDFILE );
+
+            chomp( $p_id ) if ( defined $p_id );
+            if ( $p_id ) {
+                open( PSVIEW, "ps -p " . $p_id . " | grep " . $self->{PROCESS_NAMES}[$i] . " |" );
+                my @output = <PSVIEW>;
+                close( PSVIEW );
+                if ( $? != 0 ) {
+                    return (-1, "$pid_file has pid $p_id, but $p_id is not currently running");
+                }
+            }
+            else {
+                return (-1, "$pid_file has no pid in it");
+            }
+
+            $i++;
+        }
+    }
+
+    return (0, "");
+}
+
+sub name {
+    my ($self) = @_;
+
+    return $self->{SERVICE_NAME};
+}
+
+sub start {
+    my ($self) = @_;
+
+    unless ($self->{SERVICE_NAME}) {
+	$self->{LOGGER}->error("No name specified for this service");
+	return -1;
+    }
+
+    return start_service( { name => $self->{SERVICE_NAME} } );
+}
+
+sub kill {
+    my ($self) = @_;
+
+    unless ($self->{SERVICE_NAME}) {
+	$self->{LOGGER}->error("No name specified for this service");
+	return -1;
+    }
+
+    return stop_service( { name => $self->{SERVICE_NAME} } );
+}
+
+sub regular_maintenance {
+    my ($self) = @_;
+    # Defaults to doing nothing.
+ 
+    return;
+}
+
+package perfSONAR_PS::ServiceWatcher::pSB_bwctl_master;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "perfsonarbuoy_bwctl";
+    $self->SUPER::init( %conf );
+    return 0;
+}
+
+sub check_state {
+    my ($self) = @_;
+
+    my ($status, $res) = $self->SUPER::check_state();
+    if ($status == 0) {
+	return ($status, $res);
+    }
+
+    my $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
+    ( $status, $res ) = $testing_conf->init( { } );
+    if ( $status != 0) {
+    	# I'm not sure what I should do in this situation...
+	return (0, "");
+    }
+
+    ( $status, $res ) = $testing_conf->get_tests();
+    if ( $status != 0) {
+    	# I'm not sure what I should do in this situation...
+	return (0, "");
+    }
+
+    my $tests = 0;
+    foreach my $test (@$res) {
+            if ( $test->{type} eq "perfsonarbuoy/bwctl" ) {
+                $tests++;
+            }
+    }
+
+    if ($tests == 0) {
+	$logger->debug("pSB/bwctl tests: 0");
+	return (0, "");
+    }
+    else {
+	$logger->debug("pSB/bwctl tests: ".$tests);
+    }
+
+    return (-1, "pSB/owamp tests are available, but pSB/bwctl daemons aren't running");
+}
+
+# Try to stop gracefully, and if not, kill off any remaining processes
+sub kill {
+	my ($self) = @_;
+
+	system("/opt/perfsonar_ps/perfsonarbuoy_ma/bin/bwmaster.pl -k");
+
+	system("pkill -9 -f bwmaster.pl");
+	system("pkill -9 -f \"bwctl \""); # the quotes are so we don't kill bwctld accidently
+	system("pkill -9 -f iperf");
+
+	return (0, "");
+}
+
+package perfSONAR_PS::ServiceWatcher::pSB_bwctl_collector;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "perfsonarbuoy_bwctl";
+    $self->SUPER::init( %conf );
+    return 0;
+}
+
+sub check_state {
+    my ($self) = @_;
+
+    my ($status, $res) = $self->SUPER::check_state();
+    if ($status == 0) {
+	return ($status, $res);
+    }
+
+    my $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
+    ( $status, $res ) = $testing_conf->init( { } );
+    if ( $status != 0) {
+    	# I'm not sure what I should do in this situation...
+	return (0, "");
+    }
+
+    ( $status, $res ) = $testing_conf->get_tests();
+    if ( $status != 0) {
+    	# I'm not sure what I should do in this situation...
+	return (0, "");
+    }
+
+    my $tests = 0;
+    foreach my $test (@$res) {
+            if ( $test->{type} eq "perfsonarbuoy/bwctl" ) {
+                $tests++;
+            }
+    }
+
+    if ($tests == 0) {
+	$logger->debug("pSB/bwctl tests: 0");
+	return (0, "");
+    }
+    else {
+	$logger->debug("pSB/bwctl tests: ".$tests);
+    }
+
+    return (-1, "pSB/owamp tests are available, but pSB/bwctl daemons aren't running");
+}
+
+# Try to stop gracefully, and if not, kill off any remaining processes
+sub kill {
+	my ($self) = @_;
+
+	system("/opt/perfsonar_ps/perfsonarbuoy_ma/bin/bwcollector.pl -k");
+	system("pkill -9 -f bwcollector.pl");
+
+	return (0, "");
+}
+
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 1;
+}
+
+package perfSONAR_PS::ServiceWatcher::pSB_owamp_master;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+use perfSONAR_PS::NPToolkit::Config::RegularTesting;
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "perfsonarbuoy_owamp";
+    $self->SUPER::init( %conf );
+    return 0;
+}
+
+sub check_state {
+    my ($self) = @_;
+
+    my ($status, $res) = $self->SUPER::check_state();
+    if ($status == 0) {
+	return ($status, $res);
+    }
+
+    my $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
+    ( $status, $res ) = $testing_conf->init( { } );
+    if ( $status != 0) {
+    	# I'm not sure what I should do in this situation...
+	return (0, "");
+    }
+
+    ( $status, $res ) = $testing_conf->get_tests();
+    if ( $status != 0) {
+    	# I'm not sure what I should do in this situation...
+	return (0, "");
+    }
+
+    my $tests = 0;
+    foreach my $test (@$res) {
+            if ( $test->{type} eq "owamp" ) {
+                $tests++;
+            }
+    }
+
+    if ($tests == 0) {
+	$logger->debug("pSB/owamp tests: 0");
+	return (0, "");
+    }
+    else {
+	$logger->debug("pSB/owamp tests: ".$tests);
+    }
+
+    return (-1, "pSB/owamp tests are available, but pSB/owamp daemons aren't running");
+}
+
+# Try to stop gracefully, and if not, kill off any remaining processes
+sub kill {
+	my ($self) = @_;
+
+	system("/opt/perfsonar_ps/perfsonarbuoy_ma/bin/powmaster.pl -k");
+	system("pkill -9 -f powmaster.pl");
+	system("pkill -9 -f powstream");
+
+	return (0, "");
+}
+
+package perfSONAR_PS::ServiceWatcher::pSB_owamp_collector;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+use perfSONAR_PS::NPToolkit::Config::RegularTesting;
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "perfsonarbuoy_owamp";
+    $self->SUPER::init( %conf );
+    return 0;
+}
+
+sub check_state {
+    my ($self) = @_;
+
+    my ($status, $res) = $self->SUPER::check_state();
+    if ($status == 0) {
+	return ($status, $res);
+    }
+
+    my $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
+    ( $status, $res ) = $testing_conf->init( { } );
+    if ( $status != 0) {
+    	# I'm not sure what I should do in this situation...
+	return (0, "");
+    }
+
+    ( $status, $res ) = $testing_conf->get_tests();
+    if ( $status != 0) {
+    	# I'm not sure what I should do in this situation...
+	return (0, "");
+    }
+
+    my $tests = 0;
+    foreach my $test (@$res) {
+            if ( $test->{type} eq "owamp" ) {
+                $tests++;
+            }
+    }
+
+    if ($tests == 0) {
+	$logger->debug("pSB/owamp tests: 0");
+	return (0, "");
+    }
+    else {
+	$logger->debug("pSB/owamp tests: ".$tests);
+    }
+
+    return (-1, "pSB/owamp tests are available, but pSB/owamp daemons aren't running");
+}
+
+# Try to stop gracefully, and if not, kill off any remaining processes
+sub kill {
+	my ($self) = @_;
+
+	system("/opt/perfsonar_ps/perfsonarbuoy_ma/bin/powcollector.pl -k");
+	system("pkill -9 -f powcollector.pl");
+
+	return (0, "");
+}
+
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 1;
+}
+
+
+package perfSONAR_PS::ServiceWatcher::BWCTL;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "bwctl";
+
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+# Try to stop gracefully, and if not, kill the bwctld processes
+sub kill {
+	my ($self) = @_;
+
+	my ($status, $res) = $self->SUPER::kill();
+
+	if ($status != 0) {
+		system("pkill -9 -f bwctld");
+	}
+
+	return (0, "");
+}
+
+package perfSONAR_PS::ServiceWatcher::OWAMP;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "owamp";
+
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+# Try to stop gracefully, and if not, kill the owampd processes
+sub kill {
+	my ($self) = @_;
+
+	my ($status, $res) = $self->SUPER::kill();
+
+	if ($status != 0) {
+		system("pkill -9 -f owampd");
+	}
+
+	return (0, "");
+}
+
+
+package perfSONAR_PS::ServiceWatcher::NDT;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "ndt";
+
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+# Try to stop gracefully, and if not, kill the NPAD process
+sub kill {
+	my ($self) = @_;
+
+	my ($status, $res) = $self->SUPER::kill();
+
+	if ($status != 0) {
+		system("pkill -9 -f web100srv");
+		system("pkill -9 -f fakewww");
+	}
+
+	return (0, "");
+}
+
+package perfSONAR_PS::ServiceWatcher::NPAD;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "npad";
+
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+# Try to stop gracefully, and if not, kill the NPAD process
+sub kill {
+	my ($self) = @_;
+
+	my ($status, $res) = $self->SUPER::kill();
+
+	if ($status != 0) {
+		system("pkill -9 -f DiagServer");
+	}
+
+	return (0, "");
+}
+
+package perfSONAR_PS::ServiceWatcher::PingER;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "pinger";
+
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+# Try to stop gracefully, and if not, kill all PingER processes
+sub kill {
+	my ($self) = @_;
+
+	my ($status, $res) = $self->SUPER::kill();
+
+	if ($status != 0) {
+		system("pkill -9 -f PingER");
+	}
+
+	# PingER can leave processes around for a while...
+	sleep(30);
+
+	return (0, "");
+}
+
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 1;
+}
+
+package perfSONAR_PS::ServiceWatcher::hLS;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "hls";
+
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+# Try to stop gracefully, and then, forcibly kill any remaining hLS processes
+sub kill {
+	my ($self) = @_;
+
+	my ($status, $res) = $self->SUPER::kill();
+
+	my $master_pid = `pgrep -f -l hLS | grep -v grep | awk '{ print \$3 }'`;
+	if ($master_pid) {
+		chomp($master_pid);
+		system("pkill -9 -f '$master_pid'");
+	}
+
+	return (0, "");
+}
+
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 1;
+}
+
+package perfSONAR_PS::ServiceWatcher::pSB_MA;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "perfsonarbuoy_ma";
+
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+# Try to stop gracefully, and then, forcibly kill any remaining processes
+sub kill {
+	my ($self) = @_;
+
+	my ($status, $res) = $self->SUPER::kill();
+
+	my $master_pid = `pgrep -f -l pSB | grep -v grep | awk '{ print \$3 }'`;
+	if ($master_pid) {
+		chomp($master_pid);
+		system("pkill -9 -f '$master_pid'");
+	}
+
+	return (0, "");
+}
+
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 1;
+}
+
+package perfSONAR_PS::ServiceWatcher::SNMP_MA;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "snmp_ma";
+
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+# Try to stop gracefully, and then, forcibly kill any remaining processes
+sub kill {
+	my ($self) = @_;
+
+	my ($status, $res) = $self->SUPER::kill();
+
+	my $master_pid = `pgrep -f -l SNMPMA | grep -v grep | awk '{ print \$3 }'`;
+	if ($master_pid) {
+		chomp($master_pid);
+		system("pkill -9 -f '$master_pid'");
+	}
+
+	return (0, "");
+}
+
+sub check_state {
+    my ($self) = @_;
+
+    # Check if the SNMP MA is running
+    my ($status, $res) = $self->SUPER::check_state();
+    if ($status == 0) {
+	return ($status, $res);
+    }
+
+    # Check if the store file exists (i.e. the SNMP MA *was* running at some
+    # point, but no longer is)
+    unless (-f "/var/lib/perfsonar/snmpa_ma/store.xml") {
+    	return (-1, "Store file exists, but the SNMP MA isn't running");
+    }
+
+    return (0, "");
+}
+
+package perfSONAR_PS::ServiceWatcher::LSRegistrationDaemon;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+use fields 'INIT_SCRIPT';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "ls_registration_daemon";
+    $self->{INIT_SCRIPT} = $conf{init_script};
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+sub start {
+	my ($self) = @_;
+
+	system("/sbin/service ".$self->{INIT_SCRIPT}." start");
+	if ($? == 0) {
+		return 0;
+	} else {
+		$self->{LOGGER}->error("LS Registration Daemon failed to start");
+		return -1;
+	}
+}
+
+# kill any process matching the ls registration daemon
+sub kill {
+	my ($self) = @_;
+
+	system("pkill -f LSRegistrationDaemon");
+
+	return 0;
+}
+
+package perfSONAR_PS::ServiceWatcher::MySQL;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+use fields 'INIT_SCRIPT';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "mysql";
+    $self->{INIT_SCRIPT} = $conf{init_script};
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+sub start {
+	my ($self) = @_;
+
+	system("/sbin/service ".$self->{INIT_SCRIPT}." start");
+	if ($? == 0) {
+		return 0;
+	} else {
+		$self->{LOGGER}->error("MySQL failed to start");
+		return -1;
+	}
+}
+
+# mysql is currently always enabled.
+sub is_enabled {
+    my ($self) = @_;
+ 
+    return (0, 1);
+}
+
+# kill any process matching the ls registration daemon
+sub kill {
+	my ($self) = @_;
+
+	system("pkill -f mysqld");
+	sleep(3);
+	system("pkill -9 -f mysqld");
+
+	return (0, "");
+}
+
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 1;
+}
+
+sub regular_maintenance {
+    my ($self) = @_;
+    # We run myisamchk on the tables while we're doing regular maintenance
+
+    system("myisamchk -oe /var/lib/mysql/owamp/*MYI");
+    system("myisamchk -oe /var/lib/mysql/bwctl/*MYI");
+    system("myisamchk -oe /var/lib/mysql/pingerMA/*MYI");
+ 
+    return;
+}
+
+package perfSONAR_PS::ServiceWatcher::LSCacheDaemon;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+use fields 'INIT_SCRIPT';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "ls_cache_daemon";
+    $self->{INIT_SCRIPT} = $conf{init_script};
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+sub start {
+	my ($self) = @_;
+
+	system("/sbin/service ".$self->{INIT_SCRIPT}." start");
+	if ($? == 0) {
+		return 0;
+	} else {
+		$self->{LOGGER}->error("LS cache daemon failed to start");
+		return -1;
+	}
+}
+
+# the ls cache daemon is currently always enabled.
+sub is_enabled {
+    my ($self) = @_;
+ 
+    return (0, 1);
+}
+
+# kill any process matching the ls registration daemon
+sub kill {
+	my ($self) = @_;
+
+	system("pkill -f ls_cache_daemon.pl");
+	sleep(3);
+	system("pkill -9 -f ls_cache_daemon.pl");
+
+	return (0, "");
+}
+
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 0;
+}
+
+package perfSONAR_PS::ServiceWatcher::ConfigDaemon;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+use fields 'INIT_SCRIPT';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "config_daemon";
+    $self->{INIT_SCRIPT} = $conf{init_script};
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+sub start {
+	my ($self) = @_;
+
+	system("/sbin/service ".$self->{INIT_SCRIPT}." start");
+	if ($? == 0) {
+		return 0;
+	} else {
+		$self->{LOGGER}->error("LS cache daemon failed to start");
+		return -1;
+	}
+}
+
+# the config daemon is always enabled.
+sub is_enabled {
+    my ($self) = @_;
+ 
+    return (0, 1);
+}
+
+# kill any process matching the config daemon
+sub kill {
+	my ($self) = @_;
+
+	system("pkill -f config_daemon.pl");
+	sleep(3);
+	system("pkill -9 -f config_daemon.pl");
+
+	return (0, "");
+}
+
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 0;
+}

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+STORE_LOCATION=/mnt/store/NPTools/debug
+MAXIMUM_AGE=20	
+
+find $STORE_LOCATION -mtime +$MAXIMUM_AGE -exec rm -f {} \;

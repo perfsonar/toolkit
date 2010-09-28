@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Copy Local Cacti Users</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Command Line Scripts"
+HREF="scripts.html"><LINK
+REL="PREVIOUS"
+TITLE="Reapply Suggested Names to Graphs"
+HREF="cli_poller_graphs_reapply_names.html"><LINK
+REL="NEXT"
+TITLE="Add a New Device"
+HREF="cli_add_device.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="cli_poller_graphs_reapply_names.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 20. Command Line Scripts</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="cli_add_device.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CLI_COPY_USER"
+>Copy Local Cacti Users</A
+></H1
+><P
+>For use and understanding the
+			limitation of this script, it is of importance to read <A
+HREF="user_management.html"
+>Chapter 9</A
+>.
+			In case you're using local cacti user definitions, you may copy
+			a template user to a new user. Don't use this script for
+			<SPAN
+CLASS="APPLICATION"
+>LDAP</SPAN
+> or Web Basic users.</P
+><P
+>Calling the script with the parameter <KBD
+CLASS="USERINPUT"
+>--help</KBD
+> yields</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q copy_user.php --help
+
+It is highly recommended that you use the web interface to copy users as this script will only copy Local Cacti users.
+
+Syntax:
+ php copy_cacti_user.php &lt;template user&gt; &lt;new user&gt;</PRE
+><P
+>Now let's create a new user <KBD
+CLASS="USERINPUT"
+>Harry Potter</KBD
+> as follows</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q copy_user.php guest "Harry Potter"
+
+It is highly recommended that you use the web interface to copy users as this script will only copy Local Cacti users.
+
+Cacti User Copy Utility
+Template User: guest
+New User: Harry Potter
+
+Copying User...
+User copied...</PRE
+><P
+>Find the results of this program call at <SPAN
+CLASS="GUIMENU"
+>User Management</SPAN
+></P
+><PRE
+CLASS="SCREEN"
+>User Name** 	Full Name 	Enabled 	Realm 	Default Graph Policy 	Last Login
+admin  	        Administrator  	Yes  		Local  	ALLOW  			Sunday, October 07, 2007 14:59:32
+guest 	        Guest Account 	Yes 		Local 	ALLOW 			N/A
+Harry Potter 	Guest Account 	Yes 		Local 	ALLOW 			N/A</PRE
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="cli_poller_graphs_reapply_names.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="cli_add_device.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Reapply Suggested Names to Graphs</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="scripts.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Add a New Device</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

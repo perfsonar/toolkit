@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Creating the Graphs</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="How to Graph Your Network"
+HREF="graph_howto.html"><LINK
+REL="PREVIOUS"
+TITLE="How to Graph Your Network"
+HREF="graph_howto.html"><LINK
+REL="NEXT"
+TITLE="Viewing Graphs"
+HREF="graph_viewing.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="graph_howto.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 7. How to Graph Your Network</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="graph_viewing.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="NEW_GRAPHS"
+>Creating the Graphs</A
+></H1
+><P
+>				Now that you have created some devices, it is time to create graphs for these devices. To
+				do this, select the <SPAN
+CLASS="GUILABEL"
+>New Graphs</SPAN
+> menu option under the <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+				heading. If you're still at the device edit screen, select <SPAN
+CLASS="GUILABEL"
+>Create Graphs for this Host</SPAN
+> to
+				see a screen similar to the image pictured below.
+			</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="IMG_GRAPH_NEW"
+></A
+><P
+><B
+>Figure 7-2. Creating New Graphs</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="images/new_graphs.png"></P
+></DIV
+></DIV
+><P
+>				The dropdown menu that contains each device should be used to select the host that you
+				want to create new graphs for. The basic concept to this page is simple, place a check in each
+				row that you want to create a graph for and click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>.
+			</P
+><P
+>				If you are creating graphs from inside a "Data Query" box, there are a few additional things to
+				keep in mind. First is that you may encounter the situation as pictured above with the "SNMP -
+				Interface Statistics" data query. If this occurs you may want to consult the section on debugging
+				data queries to see why your data query is not returning any results. Also, you may see a "Select
+				a graph type" dropdown box under some data query boxes. Changing the value of this dropdown box
+				affects which type of graph Cacti will make after clicking the <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+> button.
+				Cacti only displays this dropdown box when there is more than one type to choose from, so it may
+				not be displayed in all cases.
+			</P
+><P
+>				Once you have selected the graphs that you want to create, simply click the <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+				button at the bottom of the page. You will be taken to a new page that allows you to specify
+				additional information about the graphs you are about to create. You only see the fields here
+				that are not part of each template, otherwise the value automatically comes from the template.
+				When all of the values on this page look correct, click the <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+> button
+				one last time to actually create your graphs.
+			</P
+><P
+>				If you would like to edit or delete your graphs after they have been created, use the
+				<SPAN
+CLASS="GUILABEL"
+>Graph Management</SPAN
+> item on the menu. Likewise, the <SPAN
+CLASS="GUILABEL"
+>Data Source
+				</SPAN
+> menu item allows you to manage your data sources in Cacti.
+			</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="graph_howto.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="graph_viewing.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>How to Graph Your Network</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="graph_howto.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Viewing Graphs</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

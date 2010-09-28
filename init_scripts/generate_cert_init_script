@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+# pS-Performance Toolkit script that generates the Apache certificate if it
+# doesn't already exist. This is needed to ensure that each LiveCD instance
+# gets a different certificate.
+#
+# chkconfig: 2345 5 20
+# description: pS-Performance Toolkit Apache certification generation script
+#
+
+TLSROOT=/etc/pki/tls
+STATE=SomeState
+CITY=SomeCity
+ORGANIZATION=SomeOrganization
+ORGANIZATIONAL_UNIT=SomeOrganizationalUnit
+USER=root
+FQDN=`hostname -f`
+KEYFILE=$TLSROOT/private/localhost.key
+CERTFILE=$TLSROOT/certs/localhost.crt
+
+function generate_cert() {
+rm -f $KEYFILE
+
+/usr/bin/openssl genrsa > $KEYFILE
+
+pushd $TLSROOT/certs
+cat << EOF | make testcert
+--
+${STATE}
+${CITY}
+${ORGANIZATION}
+${ORGANIZATIONAL_UNIT}
+${FQDN}
+${USER}@${FQDN}
+EOF
+popd
+}
+
+ERROR=0
+ARGV="$@"
+if [ "x$ARGV" = "x" ] ; then 
+    ARGS="help"
+fi
+
+for ARG in $@ $ARGS
+do
+    case $ARG in
+    start)
+        if [ ! -f $KEYFILE -o ! -f $CERTFILE ]; then
+            generate_cert
+	fi
+	;;
+    stop)
+	;;
+    *)
+	echo "usage: $0 (start|stop|help)"
+	cat <<EOF
+
+start      - generates an apache certificate if it doesn't already exist
+stop       - does nothing
+help       - this screen
+
+EOF
+	ERROR=2
+    ;;
+
+    esac
+
+done
+
+exit $ERROR

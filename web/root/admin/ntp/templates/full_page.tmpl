@@ -1,0 +1,44 @@
+[% title = "NTP Configuration Tool" %]
+
+[% INCLUDE header.tmpl %]
+
+<script type="text/javascript">
+function toggle_server(address) {
+	var checkbox = dijit.byId(address+"_toggle");
+	if (!checkbox) {
+		return;
+	}
+
+	handle_cgi_ajax_call(null, null, false, 'toggle_server', [address, checkbox.attr('value')]);
+}
+
+function handle_add_ntp_server() {
+	var address = dijit.byId('add_ntp_server_address').attr('value');
+	var description = dijit.byId('add_ntp_server_description').attr('value');
+
+	handle_cgi_ajax_call(null, "Unable to add ntp server: "+address, true, 'add_server', [address, description]);
+}
+</script>
+
+
+<div id="body" dojoType="dijit.layout.ContentPane">
+[% INCLUDE body.tmpl %]
+</div>
+
+<div id="dialog_add_ntp_server" dojoType="dijit.Dialog" title="Add New NTP Server">
+<table>
+<tr>
+<td>Address</td>
+<td><input dojoType="dijit.form.TextBox" type="text" id="add_ntp_server_address" size="20" /></td>
+</tr>
+<tr>
+<td>Description</td>
+<td><input dojoType="dijit.form.TextBox" type="text" id="add_ntp_server_description" size="20" /></td>
+</tr>
+</table>
+
+<input class="button" type="button" value="OK" onClick="dijit.byId('dialog_add_ntp_server').hide(); handle_add_ntp_server();"/>
+<input class="button" type="button" value="Cancel" onClick="dijit.byId('dialog_add_ntp_server').hide();">
+</div>
+
+[% INCLUDE footer.tmpl %]

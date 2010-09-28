@@ -1,0 +1,206 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+our $VERSION = 3.1;
+
+=head1 NAME
+
+save_config - 
+
+=head1 DESCRIPTION
+
+TBD
+
+=cut
+
+use Data::Dumper;
+use Config::General;
+use File::Find;
+use File::Compare;
+use Params::Validate qw(:all);
+use Archive::Tar;
+
+use FindBin qw($RealBin);
+
+use lib "$RealBin/../lib";
+
+use perfSONAR_PS::NPToolkit::Config::Version;
+use perfSONAR_PS::NPToolkit::BackingStore::Config qw(parse_config);
+use perfSONAR_PS::NPToolkit::BackingStore::Utils  qw(load_original_cd mount_data_store);
+
+my $CONF_FILE = "$RealBin/../etc/backingstore.conf";
+my $CONF_DIRECTORY = "$RealBin/../etc/backingstore.conf.d";
+
+my $data_store_location;
+my $original_cd_location;
+
+my ($status, $res);
+
+($status, $res) = parse_config({ base_config_file => $CONF_FILE, config_directory => $CONF_DIRECTORY });
+if ($status != 0) {
+    print "Problem parsing configuration: $res";
+    exit -1;
+}
+
+my $conf = $res;
+
+
+($status, $res) = load_original_cd();
+if ($status != 0) {
+    print "Problem loading original CD: $res";
+    exit -1;
+}
+
+$original_cd_location = $res->{directory};
+
+($status, $res) = mount_data_store();
+if ($status != 0) {
+    print "Couldn't find data store: $res";
+    exit -1;
+}
+
+$data_store_location = $res->{directory};
+
+unless ($conf->{config}) {
+    print "No files or directories to save";
+    exit -1;
+}
+
+if (ref($conf->{config}) ne "ARRAY") {
+    $conf->{config} = [ $conf->{config} ];
+}
+
+if (ref($conf->{skip}) ne "ARRAY") {
+    $conf->{skip} = [ $conf->{skip} ];
+}
+
+my %files_to_save = ();
+
+# Find the list of all files in the 'config' entries (files or directories)
+# that have changed.
+foreach my $to_save (@{ $conf->{config} }) {
+    if (! -e $to_save) {
+        print "Couldn't find $to_save";
+        next;
+    }
+
+    if (-d $to_save) {
+        find ({ wanted => sub { if (compare_file({ filename => $File::Find::name })) { $files_to_save{$File::Find::name} = 1 } } }, ( $to_save ));
+    }
+    else {
+        $status = compare_file({ filename => $to_save });
+                if ($status) {
+            $files_to_save{$to_save} = 1;
+        }
+    }
+}
+
+# Remove any files that match a 'skip' entry from the list to save
+if ($conf->{skip}) {
+    foreach my $file (keys %files_to_save) {
+        foreach my $skip (@{ $conf->{skip} }) {
+            if ($file =~ /$skip/) {
+                delete ($files_to_save{$file}) if ($file =~ /$skip/);
+                last;
+            }
+        }
+    }
+}
+
+# Create a tarball of the configuration files
+Archive::Tar->create_archive($data_store_location."/NPTools/".$conf->{configuration_tarball}, "COMPRESS_GZIP", keys %files_to_save);
+
+if (open(VERSION, ">", $data_store_location."/NPTools/version")) {
+    my $version_conf = perfSONAR_PS::NPToolkit::Config::Version->new();
+    $version_conf->init();
+
+    my $version = $version_conf->get_version();
+    print VERSION $version;
+    close(VERSION);
+}
+
+exit 0;
+
+sub compare_file {
+    my $parameters = validate( @_, { filename => 1 });
+
+    my $filename      = $parameters->{filename};
+    my $orig_filename = $original_cd_location."/".$filename;
+
+    if (! -e $orig_filename) {
+        return 1;
+    }
+
+    if (-l $filename and ! -l $orig_filename) {
+        return 1;
+    }
+
+    if (-f $filename and ! -f $orig_filename) {
+        return 1;
+    }
+    
+    if (-d $filename and ! -d $orig_filename) {
+        return 1;
+    }
+
+    if (-d $filename) {
+        # ignore this case
+        ;
+    }
+    elsif (-l $filename) {
+        my $old_symlink = readlink($orig_filename);
+        my $new_symlink = readlink($filename);
+
+        return 1 if ($old_symlink ne $new_symlink);
+    }
+    elsif (-f $filename) {
+        my $res = compare($filename, $orig_filename);
+
+        return 1 if ($res != 0);
+    }
+
+    return 0;
+}
+
+__END__
+
+=head1 SEE ALSO
+
+L<Config::General>, L<FindBin>
+
+To join the 'perfSONAR Users' mailing list, please visit:
+
+  https://mail.internet2.edu/wws/info/perfsonar-user
+
+The perfSONAR-PS subversion repository is located at:
+
+  http://anonsvn.internet2.edu/svn/perfSONAR-PS/trunk
+
+Questions and comments can be directed to the author, or the mailing list.
+Bugs, feature requests, and improvements can be directed here:
+
+  http://code.google.com/p/perfsonar-ps/issues/list
+
+=head1 VERSION
+
+$Id$
+
+=head1 AUTHOR
+
+Aaron Brown, aaron@internet2.edu
+
+=head1 LICENSE
+
+You should have received a copy of the Internet2 Intellectual Property Framework
+along with this software.  If not, see
+<http://www.internet2.edu/membership/ip.html>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2004-2010, Internet2 and the University of Delaware
+
+All rights reserved.
+
+=cut

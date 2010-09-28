@@ -1,0 +1,600 @@
+[% title = "Scheduled Tests Configuration Tool" %]
+
+[% INCLUDE header.tmpl %]
+
+<script type="text/javascript">
+function handle_reset_config() {
+	handle_cgi_ajax_call('Reseting configuration...', 'Problem reseting configuration', true, 'reset_config');
+}
+
+function handle_save_config() {
+	handle_cgi_ajax_call('Saving configuration and restarting services...', 'Problem saving configuration or restarting services', true, 'save_config');
+}
+
+function handle_lookup_host(test_id, keyword) {
+	handle_cgi_ajax_call('Looking up hosts from community '+keyword+'...', 'Problem looking up hosts', true, 'lookup_servers', [ test_id, keyword ]);
+}
+
+function show_test(test_id) {
+	handle_cgi_ajax_call(null, 'Problem looking up test', true, 'show_test', [ test_id ]);
+}
+
+function remove_test(test_id) {
+	handle_cgi_ajax_call(null, 'Problem removing test', true, 'delete_test', [ test_id ]);
+}
+
+function add_test_member(test_id, address, port, description) {
+	handle_cgi_ajax_call(null, 'Problem adding host to test', true, 'add_member_to_test', [ test_id, address, port, description ]);
+}
+
+function remove_test_member(test_id, member_id) {
+	handle_cgi_ajax_call(null, 'Problem adding host to test', true, 'remove_member_from_test', [ test_id, member_id ]);
+}
+
+function ps_toggle(obj) {
+	var el = dojo.byId(obj);
+	if ( el.style.display != 'none' ) {
+		el.style.display = 'none';
+	}
+	else {
+		el.style.display = '';
+	}
+}
+
+function ps_show(obj) {
+	var el = dojo.byId(obj);
+	el.style.display = '';
+}
+
+function ps_hide(obj) {
+	var el = dojo.byId(obj);
+	el.style.display = 'none';
+}
+
+function close_dialog(dialog_name) {
+	dijit.byId(dialog_name).destroyRecursive();
+}
+
+function modify_owamp_port_range(min_port, max_port) {
+	handle_cgi_ajax_call(null, 'Problem updating port range', true, 'update_owamp_test_port_range', [min_port, max_port]);
+}
+
+
+function modify_psb_bwctl_test(test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth) {
+	if (test_id) {
+		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_bwctl_throughput_test', [ test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth ]);
+	} else {
+		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_bwctl_throughput_test', [ description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth ]);
+	}
+}
+
+function modify_psb_owamp_test(test_id, description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold) {
+	if (test_id) {
+		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_owamp_test', [ test_id, description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold ]);
+	} else {
+		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_owamp_test', [ description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold ]);
+	}
+}
+
+function modify_pinger_test(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl) {
+	if (test_id != null) {
+		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_pinger_test', [ test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl ]);
+	} else {
+		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_pinger_test', [ description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl ]);
+	}
+}
+
+function minimal_granularity(time) {
+	var granularity;
+
+	if (time % 86400 == 0) {
+		granularity = 86400;
+	} else if (time % 3600 == 0) {
+		granularity = 3600;
+	} else if (time % 60 == 0) {
+		granularity = 60;
+	} else {
+		granularity = 1;
+	}
+
+	return granularity;
+}
+
+function display_owamp_port_configuration_dialog(min_port, max_port) {
+	var title = "Configure OWAMP Tests Port Range";
+
+	var dialog_content = "";
+	dialog_content += "<div id='configure_owamp_tests_port_range_status' style='color:red'></div>";
+	dialog_content += "<table>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Minimum Port</td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}'  id='configure_owamp_tests_port_range_min_range' size='10' value='"+min_port+"' /></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Maximum Port</td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}'  id='configure_owamp_tests_port_range_max_range' size='10' value='"+max_port+"' /></td>";
+	dialog_content += "</tr>";
+	dialog_content += "</table>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_port_save'>Set</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_port_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "owamp_port_configuration_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', 'owamp_port_configuration_dialog'));
+	dojo.connect(dijit.byId('configure_port_cancel'), 'onClick', function() { dijit.byId("owamp_port_configuration_dialog").hide(); });
+	dojo.connect(dijit.byId('configure_port_save'), 'onClick', dojo.hitch(null,
+		function() {
+			var min_port = dijit.byId('configure_owamp_tests_port_range_min_range').attr('value');
+			var max_port = dijit.byId('configure_owamp_tests_port_range_max_range').attr('value');
+			if (min_port > max_port) {
+				dojo.byId('configure_owamp_tests_port_range_status').innerHTML = "Minimum port must be smaller than maximum port";
+			}
+			else {
+				modify_owamp_port_range(min_port, max_port);
+				dijit.byId("owamp_port_configuration_dialog").hide();
+			}
+		})
+	);
+
+	dialog.show();
+
+}
+
+function display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl) {
+	// if we're displaying the 'edit' dialog
+	if (test_id) {
+		return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl);
+	}
+
+	var psb_bwctl_enabled   = parseInt(dojo.byId('psb_bwctl_enabled').value);
+	var psb_owamp_enabled   = parseInt(dojo.byId('psb_owamp_enabled').value);
+	var pinger_enabled      = parseInt(dojo.byId('pinger_enabled').value);
+	var owamp_tests         = parseInt(dojo.byId('owamp_tests').value);
+	var throughput_tests    = parseInt(dojo.byId('throughput_tests').value);
+	var pinger_tests        = parseInt(dojo.byId('pinger_tests').value);
+
+	// if PingER is enabled and there are no throughput tests that will interfere
+	if ((throughput_tests == 0 || !psb_bwctl_enabled) && pinger_enabled) {
+		return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl);
+	}
+
+	var title = "Warning: host isn't configured for ping tests";
+	var dialog_content = "";
+
+	if (throughput_tests > 0 && psb_bwctl_enabled) {
+		dialog_content += "<p>";
+		dialog_content += "<font color='red'>Throughput tests are configured. This will make the PingER test results meaningless</font>";
+		dialog_content += "</p>";
+	}
+
+	if (!pinger_enabled) {
+		dialog_content += "<p>";
+		dialog_content += "<font color='red'>PingER is not enabled. You will need to go to the 'Enabled Services' tool, and enable it before the PingER tests will work</font>";
+		dialog_content += "</p>";
+	}
+
+	dialog_content += "<button dojoType='dijit.form.Button' id='add_test_warning_add_test'>Add Test Anyway</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='add_test_warning_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "add_test_warning_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "add_test_warning_dialog" ));
+	dojo.connect(dijit.byId('add_test_warning_cancel'), 'onClick', function() { dijit.byId('add_test_warning_dialog').hide(); });
+	dojo.connect(dijit.byId('add_test_warning_add_test'), 'onClick', dojo.hitch(null,
+										function(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl) {
+											dijit.byId('add_test_warning_dialog').hide();
+											return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl);
+										},
+										test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl)
+			);
+
+	dialog.show();
+}
+
+function __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl) {
+	var title;
+	var action;
+	if (test_id) {
+		title = "Edit Parameters Of Ping Delay Test";
+		action = "Set";
+	} else {
+		title = "Add New Ping Delay Test";
+		action = "Add";
+	}
+
+	var dialog_id = "add_test_dialog";
+
+	var inter_test_unit = minimal_granularity(test_interval);
+	var display_test_interval = test_interval/inter_test_unit;
+
+	console.log("Granulairty: "+inter_test_unit);
+
+	var dialog_content = "";
+	dialog_content += "<table>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Description</td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must be given a description' id='configure_test_description' size='100' value='"+description+"'></input></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Time Between Tests</td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}'  id='configure_test_test_interval' size='10' value='"+display_test_interval+"' /></td>";
+	dialog_content += "<td>";
+	dialog_content += "<select id='configure_test_test_interval_unit' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='"+inter_test_unit+"'>";
+	dialog_content += "	<option value='1' "; if (inter_test_unit == 1) { dialog_content += "selected='selected'" }; dialog_content += ">Seconds</option>";
+	dialog_content += "	<option value='60' "; if (inter_test_unit == 60) { dialog_content += "selected='selected'" }; dialog_content += ">Minutes</option>";
+	dialog_content += "	<option value='3600' "; if (inter_test_unit == 3600) { dialog_content += "selected='selected'" }; dialog_content += ">Hours</option>";
+	dialog_content += "	<option value='86400' "; if (inter_test_unit == 86400) { dialog_content += "selected='selected'" }; dialog_content += ">Days</option>";
+	dialog_content += "</select>";
+	dialog_content += "</td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Packets Sent Per Test</td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}' id='configure_test_packet_count' size='10' value='"+packet_count+"' /></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Time Between Packets</td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a number greater than or equal to 0.01' constraints='{min:0.01}' id='configure_test_packet_interval' size='10' value='"+packet_interval+"' /></td><td>Seconds</td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Size Of Test Packets</td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a number greater than or equal to 0.01' constraints='{min:100,max:65536}' id='configure_test_packet_size' size='10' value='"+packet_size+"''/></td><td>Bytes</td>";
+	dialog_content += "</tr>";
+	dialog_content += "</table>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_save'>"+action+"</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "add_test_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', 'add_test_dialog'));
+	dojo.connect(dijit.byId('configure_test_cancel'), 'onClick', function() { dijit.byId('add_test_dialog').hide(); });
+	dojo.connect(dijit.byId('configure_test_save'), 'onClick', dojo.hitch(null,
+										function(test_id) {
+											var description = dijit.byId('configure_test_description').attr('value');
+											var packet_size = dijit.byId('configure_test_packet_size').attr('value');
+											var packet_count = dijit.byId('configure_test_packet_count').attr('value');
+											var packet_interval = dijit.byId('configure_test_packet_interval').attr('value');
+											var test_interval = dijit.byId('configure_test_test_interval').attr('value');
+											var test_interval_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
+											var test_offset = 0;
+											var ttl = 255;
+											test_interval *= test_interval_unit;
+											modify_pinger_test(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl);
+											dijit.byId('add_test_dialog').hide();
+										},
+										test_id)
+			);
+
+	dialog.show();
+}
+
+function display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth) {
+	// if we're displaying the 'edit' dialog
+	if (test_id) {
+		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth);
+	}
+
+	var psb_bwctl_enabled   = parseInt(dojo.byId('psb_bwctl_enabled').value);
+	var psb_owamp_enabled   = parseInt(dojo.byId('psb_owamp_enabled').value);
+	var pinger_enabled      = parseInt(dojo.byId('pinger_enabled').value);
+	var owamp_tests         = parseInt(dojo.byId('owamp_tests').value);
+	var throughput_tests    = parseInt(dojo.byId('throughput_tests').value);
+	var pinger_tests        = parseInt(dojo.byId('pinger_tests').value);
+
+	// if pSB throughput tests are enabled and there are no latency tests that this new test will interfere with
+	if ((pinger_tests == 0 || !pinger_enabled) && (owamp_tests == 0 || !psb_owamp_enabled) && psb_bwctl_enabled) {
+		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth);
+	}
+
+	var title = "Warning: host isn't configured for throughput tests";
+	var dialog_content = "";
+
+	if ((pinger_tests > 0 && pinger_enabled) || (owamp_tests > 0 && psb_bwctl_enabled)) {
+		dialog_content += "<p>";
+		dialog_content += "<font color='red'>Latency tests are configured. Adding throughput tests will make the latency test results meaningless</font>";
+		dialog_content += "</p>";
+	}
+
+	if (!psb_bwctl_enabled) {
+		dialog_content += "<p>";
+		dialog_content += "<font color='red'>perfSONAR-BUOY Throughput Tests are not enabled. You will need to go to the 'Enabled Services' tool, and enable it before the throughput tests will work</font>";
+		dialog_content += "</p>";
+	}
+
+	dialog_content += "<button dojoType='dijit.form.Button' id='add_test_warning_add_test'>Add Test Anyway</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='add_test_warning_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "add_test_warning_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "add_test_warning_dialog" ));
+	dojo.connect(dijit.byId('add_test_warning_cancel'), 'onClick', function() { dijit.byId('add_test_warning_dialog').hide(); });
+	dojo.connect(dijit.byId('add_test_warning_add_test'), 'onClick', dojo.hitch(null,
+										function(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth) {
+											dijit.byId('add_test_warning_dialog').hide();
+											return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth);
+										},
+										test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth)
+			);
+
+	dialog.show();
+}
+
+function __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth) {
+	console.log("display_bwctl_throughput_test_dialog()");
+
+	var title;
+	var action;
+	if (test_id) {
+		title = "Edit Parameters Of Throughput Test";
+		action = "Set";
+	} else {
+		title = "Add New Throughput Test";
+		action = "Add";
+	}
+
+	var dialog_id = "add_test_dialog";
+
+	var inter_test_unit = minimal_granularity(test_interval);
+	var display_test_interval = test_interval/inter_test_unit;
+
+	console.log("Granulairty: "+inter_test_unit);
+
+	var dialog_content = "";
+	dialog_content += "<table>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Description</td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must be given a description' id='configure_test_description' size='100' value='"+description+"'></input></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Time Between Tests</td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}'  id='configure_test_test_interval' size='10' value='"+display_test_interval+"' /></td>";
+	dialog_content += "<td>";
+	dialog_content += "<select id='configure_test_test_interval_unit' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='"+inter_test_unit+"'>";
+	dialog_content += "	<option value='1' "; if (inter_test_unit == 1) { dialog_content += "selected='selected'" }; dialog_content += ">Seconds</option>";
+	dialog_content += "	<option value='60' "; if (inter_test_unit == 60) { dialog_content += "selected='selected'" }; dialog_content += ">Minutes</option>";
+	dialog_content += "	<option value='3600' "; if (inter_test_unit == 3600) { dialog_content += "selected='selected'" }; dialog_content += ">Hours</option>";
+	dialog_content += "	<option value='86400' "; if (inter_test_unit == 86400) { dialog_content += "selected='selected'" }; dialog_content += ">Days</option>";
+	dialog_content += "</select>";
+	dialog_content += "</td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Test Duration<span id='configure_test_test_duration_help'><sup>[1]</sup></span></td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.TextBox' id='configure_test_test_duration' size='10' value='"+test_duration+"''/></td><td>Seconds</td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Bandwidth Tester</td>";
+	dialog_content += "<td colspan=2>";
+	dialog_content += "<select id='configure_test_tool' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='"+tool+"'>";
+	dialog_content += "	<option value='iperf' "; if (tool == 'iperf') { dialog_content += "selected='selected'" }; dialog_content += ">Iperf</option>";
+	dialog_content += "	<option value='nuttcp' "; if (tool == 'nuttcp') { dialog_content += "selected='selected'" }; dialog_content += ">nuttcp</option>";
+	dialog_content += "	<option value='iperf' "; if (tool == 'thrulay') { dialog_content += "selected='selected'" }; dialog_content += ">Thrulay</option>";
+	dialog_content += "</select>";
+	dialog_content += "</td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Protocol</td>";
+	dialog_content += "<td>";
+	dialog_content += "<select id='configure_test_protocol' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='"+protocol+"'>";
+	dialog_content += "	<option value='tcp' "; if (protocol == 'tcp') { dialog_content += "selected='selected'" }; dialog_content += ">TCP</option>";
+	dialog_content += "	<option value='udp' "; if (protocol == 'udp') { dialog_content += "selected='selected'" }; dialog_content += ">UDP</option>";
+	dialog_content += "</select>";
+	dialog_content += "</td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr id='configure_test_udp_questions' "; if (protocol != 'udp') { dialog_content += "style='display:none'" }; dialog_content += ">";
+	dialog_content += "<td>UDP Bandwidth</td><td><input type='text' dojoType='dijit.form.TextBox' id='configure_test_udp_bandwidth' size='10' value='"+udp_bandwidth+"' /></td><td>Mbps</td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Use Autotuning</td><td colspan=2><input type='checkbox' dojoType='dijit.form.CheckBox' id='configure_test_autotuning' "; if (window_size == 0) { dialog_content += " checked='checked'"; }; dialog_content+="/></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr id='configure_test_noautotuning_questions' "; if (window_size == 0) { dialog_content += "style='display:none'" }; dialog_content += ">";
+	dialog_content += "<td>Window Size</td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.TextBox' id='configure_test_window_size' size='10' value='"+window_size+"''/></td><td>Megabytes</td>";
+	dialog_content += "</tr>";
+
+	dialog_content += "</table>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_save'>"+action+"</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "add_test_dialog" });
+
+	var duration_tooltip_dialog_content = "";
+	duration_tooltip_dialog_content += "For TCP Tests: ";
+	duration_tooltip_dialog_content += "<br>If the latency to all hosts in this test are less than 50ms, a 10 second test is recommended";
+	duration_tooltip_dialog_content += "<br>If the latency to any host in this test is greater than 50ms, a 20 second test is recommended";
+	duration_tooltip_dialog_content += "<br>If the latency to any host in this test is greater than 100ms, a 30 second test is recommended";
+
+	var duration_tooltip = new dijit.Tooltip({label:duration_tooltip_dialog_content, connectId:["configure_test_test_duration_help"]});
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', 'add_test_dialog'));
+	dojo.connect(dijit.byId('configure_test_autotuning'), 'onChange', function() { ps_toggle('configure_test_noautotuning_questions'); if (this.checked) { dojo.byId('configure_test_window_size').value = ''; } });
+	dojo.connect(dijit.byId('configure_test_protocol'), 'onChange', function() { if (this.value == 'udp') { ps_show('configure_test_udp_questions'); } else { ps_hide('configure_test_udp_questions'); } });
+	dojo.connect(dijit.byId('configure_test_cancel'), 'onClick', function() { dijit.byId('add_test_dialog').hide(); });
+	dojo.connect(dijit.byId('configure_test_save'), 'onClick', dojo.hitch(null,
+										function(test_id) {
+											var description = dijit.byId('configure_test_description').attr('value');
+											var test_duration = dijit.byId('configure_test_test_duration').attr('value');
+											var test_interval = dijit.byId('configure_test_test_interval').attr('value');
+											var test_interval_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
+											var tool = dijit.byId('configure_test_tool').attr('value');
+											var protocol = dijit.byId('configure_test_protocol').attr('value');
+											var window_size = dijit.byId('configure_test_window_size').attr('value');
+											var udp_bandwidth = dijit.byId('configure_test_udp_bandwidth').attr('value');
+											test_interval *= test_interval_unit;
+											modify_psb_bwctl_test(test_id, description, test_duration, test_interval, tool, protocol, window_size, udp_bandwidth);
+											dijit.byId('add_test_dialog').hide();
+										},
+										test_id)
+			);
+	dialog.show();
+}
+
+function display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets) {
+	// if we're displaying the 'edit' dialog
+	if (test_id) {
+		return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets);
+	}
+
+	var psb_bwctl_enabled   = parseInt(dojo.byId('psb_bwctl_enabled').value);
+	var psb_owamp_enabled   = parseInt(dojo.byId('psb_owamp_enabled').value);
+	var pinger_enabled      = parseInt(dojo.byId('pinger_enabled').value);
+	var owamp_tests         = parseInt(dojo.byId('owamp_tests').value);
+	var throughput_tests    = parseInt(dojo.byId('throughput_tests').value);
+	var pinger_tests        = parseInt(dojo.byId('pinger_tests').value);
+
+	// if pSB owamp is enabled and there are no throughput tests that will interfere
+	if ((throughput_tests == 0 || !psb_bwctl_enabled) && psb_owamp_enabled) {
+		return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets);
+	}
+
+	var title = "Warning: host isn't configured for one-way latency tests";
+	var dialog_content = "";
+
+	if (throughput_tests && psb_bwctl_enabled) {
+		dialog_content += "<p>";
+		dialog_content += "<font color='red'>Throughput tests are configured. Throughput tests will make the latency test results meaningless</font>";
+		dialog_content += "</p>";
+	}
+
+	if (!psb_owamp_enabled) {
+		dialog_content += "<p>";
+		dialog_content += "<font color='red'>perfSONAR-BUOY Latency Tests are not enabled. You will need to go to the 'Enabled Services' tool, and enable it before the one-way latency tests will work</font>";
+		dialog_content += "</p>";
+	}
+
+	dialog_content += "<button dojoType='dijit.form.Button' id='add_test_warning_add_test'>Add Test Anyway</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='add_test_warning_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "add_test_warning_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "add_test_warning_dialog" ));
+	dojo.connect(dijit.byId('add_test_warning_cancel'), 'onClick', function() { dijit.byId('add_test_warning_dialog').hide(); });
+	dojo.connect(dijit.byId('add_test_warning_add_test'), 'onClick', dojo.hitch(null,
+										function(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets) {
+											dijit.byId('add_test_warning_dialog').hide();
+											return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets);
+										},
+										test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets)
+			);
+
+	dialog.show();
+}
+
+function __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets) {
+	var title;
+	var action;
+	if (test_id) {
+		title = "Edit Parameters Of One-Way Delay Test";
+		action = "Set";
+	} else {
+		title = "Add New One-Way Delay Test";
+		action = "Add";
+	}
+
+	var dialog_id = "add_test_dialog";
+	var packet_rate = 1.0/packet_interval;
+	var packet_size = parseInt(packet_padding) + 20;
+
+	var dialog_content = "";
+	dialog_content += "<table>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Description</td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must be given a description' id='configure_test_description' size='100' value='"+description+"'></input></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Packet Rate</td>";
+	dialog_content += "<td>";
+	dialog_content += "<select id='configure_test_packet_rate' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='"+packet_rate+"'>";
+	for(var i = 1; i <= 20; i++) {
+		dialog_content += "	<option value='"+i+"' "; if (packet_rate == i) { dialog_content += "selected='selected'" }; dialog_content += ">"+i+"</option>";
+	}
+	if (packet_rate > 20) {
+		dialog_content += "	<option value='"+packet_rate+"' selected='selected'>"+packet_rate+"</option>";
+	}
+	dialog_content += "</select>";
+	dialog_content += "</td>";
+	dialog_content += "<td>Packets Per Second</td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Packet Size</td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='The minimum size packet is 20 bytes (IP header). The maximum is 9000.' constraints='{min:20,max:9000}' id='configure_test_packet_size' size='10' value='"+packet_size+"''/></td><td>Bytes</td>";
+	dialog_content += "</tr>";
+	dialog_content += "</table>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_save'>"+action+"</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "add_test_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', 'add_test_dialog'));
+	dojo.connect(dijit.byId('configure_test_cancel'), 'onClick', function() { dijit.byId('add_test_dialog').hide(); });
+	dojo.connect(dijit.byId('configure_test_save'), 'onClick', dojo.hitch(null,
+										function(test_id) {
+											var packet_rate = dijit.byId('configure_test_packet_rate').attr('value');
+											var packet_size = dijit.byId('configure_test_packet_size').attr('value');
+											var description = dijit.byId('configure_test_description').attr('value');
+											var packet_interval = 1.0/packet_rate;
+											var session_packets = 10800 * packet_rate; // 3 hours
+											var sample_packets = 60 * packet_rate; // 1 minute
+											var bucket_width = 0.0001;
+											var loss_threshold = 10;
+											var packet_padding = packet_size - 20;
+											modify_psb_owamp_test(test_id, description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold);
+											dijit.byId('add_test_dialog').hide();
+										},
+										test_id)
+		);
+
+	dialog.show();
+}
+
+function display_add_new_host_dialog(test_id, test_type) {
+	var dialog_content = "";
+	dialog_content += "<table>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Host</td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' regExpGen='dojox.validate.regexp.host' id='dialog_test_add_host_address'  value=''></input></td>";
+	dialog_content += "</tr>";
+	if (test_type == "pinger") {
+		dialog_content += "<input type='hidden' dojoType='dijit.form.TextBox' id='dialog_test_add_host_port'  value=''></input></td>";
+	} else {
+		var port;
+		if (test_type == "bwctl/throughput") {
+			port = '4823';
+		} else {
+			port = '861';
+		}
+		dialog_content += "<tr>";
+		dialog_content += "<td>Port</td>";
+		dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='The minimum port is 1, and the maxim is 65536.' constraints='{min:1,max:65536}' id='dialog_test_add_host_port' size='10' value='"+port+"''/></td>";
+		dialog_content += "</tr>";
+	}
+
+	dialog_content += "<tr>";
+	dialog_content += "<td>Description</td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.TextBox' id='dialog_test_add_host_description'  value=''></input></td>";
+	dialog_content += "</tr>";
+	dialog_content += "</table>";
+
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_save'>Add</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: "Add Host To Test", content: dialog_content, id: "add_test_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', 'add_test_dialog'));
+	dojo.connect(dijit.byId('configure_test_cancel'), 'onClick', function() { dijit.byId('add_test_dialog').hide(); });
+	dojo.connect(dijit.byId('configure_test_save'), 'onClick', dojo.hitch(null, function(test_id) {
+												var address = dijit.byId('dialog_test_add_host_address').attr('value');
+												var port = dijit.byId('dialog_test_add_host_port').attr('value');
+												var description = dijit.byId('dialog_test_add_host_description').attr('value');
+												handle_cgi_ajax_call(null, 'Problem adding host to test', true, 'add_member_to_test', [ test_id, address, port, description ]);
+												dijit.byId('add_test_dialog').hide();
+											}
+											, test_id));
+	dialog.show();
+
+}
+</script>
+
+<div id="body" dojoType="dijit.layout.ContentPane">
+[% INCLUDE body.tmpl %]
+</div>
+
+[% INCLUDE footer.tmpl %]

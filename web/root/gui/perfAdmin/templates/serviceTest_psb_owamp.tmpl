@@ -1,0 +1,188 @@
+[% IF service.match('.*localhost.*') %]
+	[% title = "One-Way Latency Tests" %]
+[% ELSE %]
+	[% title = "One-Way Latency Tests At ${service}" %]
+[% END %]
+
+[% INCLUDE header.tmpl %]
+
+<div class="mainContainer">
+<div class="rContainer">
+<div class="subTitle1">[% title %]</div>
+
+<div class="rcontainer">
+    <table class="basic_table" width="80%" align="center" cellpadding="1" border="2">
+      <tr>
+       <th style="text-align: center" colspan=6>Active Data Sets</th>
+      </tr>
+      <tr>
+        <th class="subheader" align="center">First Host</th>
+        <th class="subheader" align="center">First Address</th>
+        <th class="subheader" align="center">Second Host</th>
+        <th class="subheader" align="center">Second Address</th>
+        <th class="subheader" align="center">Bi-Directional</th>
+        <th class="subheader" align="center">Graph</th>
+      </tr>
+      [% FOREACH pair IN pairs %]
+      <tr>
+        <td align="center">
+          [%- pair.shost -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- pair.saddress -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- pair.dhost -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- pair.daddress -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- pair.bidir -%]&nbsp;
+        </td>
+        <td align="center">
+          <select value="Graph" id="graph1_[%- pair.count -%]" name="graph1_[%- pair.count -%]" onChange="window.open(options[selectedIndex].value,'graph1_[%- pair.count -%]','width=950,height=500,status=yes,scrollbars=yes,resizable=yes')">
+            <option selected value="./delayGraph.cgi">-- Select --</option>
+            <option value="./delayGraph.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&length=14400">4 Hours</option>
+            <option value="./delayGraph.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&length=43200">12 Hours</option>
+            <option value="./delayGraph.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&length=86400">24 Hours</option>
+          </select>
+        </td>
+      </tr>
+      [% END %]
+    </table>
+
+    <br>
+
+    [% SET table_size = matrixheader.size + 1 %]
+
+    <table class="basic_table" width="80%" align="center" cellpadding="1" border="2">
+      <tr>
+       <th class="top" style="text-align: center" colspan=[% table_size %]>12 Hour Performance Summary (Min/Max Delay [MSec])</td>
+      </tr>
+      <tr>
+        <th class="matrix_top_spacer"><br></th>
+        [% FOREACH header IN matrixheader %]
+        <th class="matrix_top_header" align=center valign=center>[%- header.name -%]</th>
+        [% END %]
+      </tr>
+      [% FOREACH row IN matrix %]
+      <tr>
+        <th class="matrix_left_header" align=center valign=center>[%- row.name -%]</th>
+        [% FOREACH column IN row.matrixcols %]
+        <td class="matrix_cell" align=center valign=center>[%- column.minvalue -%] / [%- column.maxvalue -%]</td>
+        [% END %]    
+      </tr>
+      [% END %]
+    </table>
+
+    <br>
+
+    <table class="basic_table" width="80%" align="center" cellpadding="1" border="2">
+      <tr>
+       <th style="text-align: center" colspan=6>Non-Active Data Sets</th>
+      </tr>
+      <tr>
+        <th class="subheader" align="center">First Host</th>
+        <th class="subheader" align="center">First Address</th>
+        <th class="subheader" align="center">Second Host</th>
+        <th class="subheader" align="center">Second Address</th>
+        <th class="subheader" align="center">Bi-Directional</th>
+        <th class="subheader" align="center">Graph</th>
+      </tr>
+      [% FOREACH histpair IN histpairs %]
+      <tr>
+        <td align="center">
+          [%- histpair.shost -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- histpair.saddress -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- histpair.dhost -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- histpair.daddress -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- histpair.bidir -%]&nbsp;
+        </td>
+        <td align="center">
+          <form method="GET" name="form_[%- histpair.count -%]" target="_blank" action="./delayGraph.cgi">
+            <input type="hidden" name="url" value="[%- histpair.service -%]" />
+            <input type="hidden" name="key" value="[%- histpair.key -%]" />
+            <input type="hidden" name="key2" value="[%- histpair.key2 -%]" />
+            <input type="hidden" name="dst" value="[%- histpair.daddress -%]" />
+            <input type="hidden" name="src" value="[%- histpair.saddress -%]" />
+            <input type="hidden" name="dhost" value="[%- histpair.dhost -%]" />
+            <input type="hidden" name="shost" value="[%- histpair.shost -%]" />
+                                     
+            Start: <select id="smon" name="smon">
+            [% FOREACH mon IN histpair.smon %]
+              [% IF mon.selected %]
+              <option selected value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% ELSE %]
+              <option value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="sday" name="sday">
+            [% FOREACH day IN histpair.sday %]
+              [% IF day.selected %]
+              <option selected value="[%- day.value -%]">[%- day.name -%]</option>
+              [% ELSE %]
+              <option value="[%- day.value -%]">[%- day.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="syear" name="syear">
+            [% FOREACH year IN histpair.syear %]
+              [% IF year.selected %]
+              <option selected value="[%- year.value -%]">[%- year.name -%]</option>
+              [% ELSE %]
+              <option value="[%- year.value -%]">[%- year.name -%]</option>
+              [% END %]
+            [% END %]
+            </select><br>
+            
+            End: &nbsp;<select id="dmon" name="dmon">
+            [% FOREACH mon IN histpair.dmon %]
+              [% IF mon.selected %]
+              <option selected value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% ELSE %]
+              <option value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="dday" name="dday">
+            [% FOREACH day IN histpair.dday %]
+              [% IF day.selected %]
+              <option selected value="[%- day.value -%]">[%- day.name -%]</option>
+              [% ELSE %]
+              <option value="[%- day.value -%]">[%- day.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="dyear" name="dyear">
+            [% FOREACH year IN histpair.dyear %]
+              [% IF year.selected %]
+              <option selected value="[%- year.value -%]">[%- year.name -%]</option>
+              [% ELSE %]
+              <option value="[%- year.value -%]">[%- year.name -%]</option>
+              [% END %]
+            [% END %]
+            </select><br>
+
+            <input type="submit" name="Graph" value="Graph" />
+          </form>
+        </td>
+
+      </tr>
+      [% END %]
+    </table>    
+
+</div>
+</div>
+</div>
+
+[% INCLUDE footer.tmpl %]

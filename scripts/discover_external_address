@@ -1,0 +1,250 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+our $VERSION = 3.1;
+
+=head1 NAME
+
+discover_external_address - Goes through the set of interfaces and tries to guess the ascertain which ones to advertise to the outside.
+
+=head1 DESCRIPTION
+
+It attempts to calculate an "external address". I.e.  the default address to
+advertise. It also calculates default IPv4 and IPv6 addresses. The
+perfSONAR-BUOY configuration and perfSONAR services' configurations are then
+modified to use these addresses.
+
+=cut
+
+use FindBin qw($RealBin);
+
+use lib "$RealBin/../lib";
+
+use Net::CIDR;
+use Data::Validate::IP qw(is_ipv4);
+use Net::IPv6Addr;
+use Getopt::Long;
+use Data::Dumper;
+
+use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
+use perfSONAR_PS::NPToolkit::Config::RegularTesting;
+use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces get_ips get_interface_addresses );
+use perfSONAR_PS::Utils::DNS qw( reverse_dns_multi );
+
+my $default_config        = "/opt/perfsonar_ps/toolkit/etc/discover_external_address.conf";
+my $default_logger_config = "/opt/perfsonar_ps/toolkit/etc/discover_external_address-logger.conf";
+
+my ($LOGGER_CONF, $CONFIG_FILE, $RESTART_SERVICES, $DEBUGFLAG);
+
+my $status = GetOptions(
+                           'config=s'        => \$CONFIG_FILE,
+                           'logger=s'        => \$LOGGER_CONF,
+                           'verbose'         => \$DEBUGFLAG,
+                           'restart_services' => \$RESTART_SERVICES,
+                       );
+
+unless ($status) {
+	print "$0: [--config=/path/to/service-watcher.conf] [--logger=/path/to/service-watcher_logger.conf] [--restart_services] [--verbose]\n";
+	exit 1;
+}
+
+$CONFIG_FILE = $default_config unless ($CONFIG_FILE);
+$LOGGER_CONF = $default_logger_config unless ($LOGGER_CONF);
+
+my %conf = ();
+if (-f $CONFIG_FILE) {
+	%conf = Config::General->new( $CONFIG_FILE )->getall();
+}
+
+# Now that we've dropped privileges, create the logger. If we do it in reverse
+# order, the daemon won't be able to write to the logger.
+my $logger;
+if ( not $LOGGER_CONF or ! -f $LOGGER_CONF ) {
+    use Log::Log4perl qw(:easy);
+
+    my $output_level = $INFO;
+    if ( $DEBUGFLAG ) {
+        $output_level = $DEBUG;
+    }
+
+    my %logger_opts = (
+        level  => $output_level,
+        layout => '%d (%P) %p> %F{1}:%L %M - %m%n',
+    );
+
+    Log::Log4perl->easy_init( \%logger_opts );
+    $logger = get_logger( "perfSONAR_PS" );
+}
+else {
+    use Log::Log4perl qw(get_logger :levels);
+
+    my $output_level = $INFO;
+    if ( $DEBUGFLAG ) {
+        $output_level = $DEBUG;
+    }
+
+    Log::Log4perl->init( $LOGGER_CONF );
+    $logger = get_logger( "perfSONAR_PS" );
+    $logger->level( $output_level ) if $output_level;
+}
+
+my $external_interface;
+my $allow_internal_addresses;
+
+if ($conf{external_interface}) {
+    $external_interface = $conf{external_interface};
+}
+if ($conf{allow_internal_addresses}) {
+    $allow_internal_addresses = $conf{allow_internal_addresses};
+}
+
+my @ips = ();
+
+if ( $external_interface ) {
+    @ips = get_interface_addresses( { interface => $external_interface } );
+}
+else {
+    # If they've not told us which interface to use, it's time to guess.
+    @ips = get_ips();
+}
+
+my $chosen_address;
+my $ipv4_address;
+my $ipv6_address;
+
+my $reverse_dns_mapping = reverse_dns_multi({ addresses => \@ips, timeout => 10 }); # don't wait more than 10 seconds.
+
+# Try to find an address with an ipv4 address with that resolves to something
+unless ( $chosen_address and $ipv4_address ) {
+    foreach my $ip ( @ips ) {
+        my @private_list = ( '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16' );
+
+        next unless (is_ipv4( $ip ));
+        $logger->info("$ip is ipv4");
+	next unless (defined $reverse_dns_mapping->{$ip} and $reverse_dns_mapping->{$ip}->[0]);
+        $logger->info("$ip has a DNS name: ". $reverse_dns_mapping->{$ip}->[0]);
+        next unless ($allow_internal_addresses or not Net::CIDR::cidrlookup( $ip, @private_list ));
+        $logger->info("$ip isn't private or we're okay with private addresses");
+
+    	my $dns_name = $reverse_dns_mapping->{$ip}->[0];
+        $chosen_address = $dns_name unless ( $chosen_address );
+        $ipv4_address   = $dns_name unless ( $ipv4_address );
+        last;
+    }
+}
+
+# Try to find an ipv6 address that resolves to something
+unless ( $chosen_address and $ipv6_address ) {
+    foreach my $ip ( @ips ) {
+        next unless (Net::IPv6Addr::is_ipv6( $ip ));
+        $logger->info("$ip is IPv6");
+	next unless (defined $reverse_dns_mapping->{$ip} and $reverse_dns_mapping->{$ip}->[0]);
+        $logger->info("$ip has a DNS name: ". $reverse_dns_mapping->{$ip}->[0]);
+
+        my $dns_name = $reverse_dns_mapping->{$ip}->[0];
+        $chosen_address = $dns_name unless ( $chosen_address );
+        $ipv6_address   = $dns_name unless ( $ipv6_address );
+        last;
+    }
+}
+
+# Try to find an ipv4 address
+unless ( $chosen_address and $ipv4_address ) {
+    foreach my $ip ( @ips ) {
+        my @private_list = ( '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16' );
+
+        next unless (is_ipv4( $ip ));
+        $logger->info("$ip is IPv4");
+        next unless ($allow_internal_addresses or not Net::CIDR::cidrlookup( $ip, @private_list ));
+        $logger->info("$ip isn't private or we're okay with private addresses");
+
+        $chosen_address = $ip unless ( $chosen_address );
+        $ipv4_address   = $ip unless ( $ipv4_address );
+        last;
+    }
+}
+
+# Try to find an ipv6 address
+unless ( $chosen_address and $ipv6_address ) {
+    foreach my $ip ( @ips ) {
+        next unless (Net::IPv6Addr::is_ipv6( $ip ));
+        $logger->info("$ip is IPv6");
+        $chosen_address = $ip unless ( $chosen_address );
+        $ipv6_address   = $ip unless ( $ipv6_address );
+        last;
+    }
+}
+
+if ($chosen_address) {
+	$logger->info("Selected $chosen_address as the primary address");
+}
+else {
+	$logger->info("No primary address found");
+}
+
+if ($ipv4_address) {
+	$logger->info("Selected $ipv4_address as the primary ipv4 address");
+}
+else {
+	$logger->info("No primary ipv4 address found");
+}
+
+if ($ipv6_address) {
+	$logger->info("Selected $ipv6_address as the primary ipv6 address");
+}
+else {
+	$logger->info("No primary ipv6 address found");
+}
+
+my $external_address_config = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
+if ( $external_address_config->init() == 0 ) {
+    $external_address_config->set_primary_address( { address => $chosen_address } );
+    $external_address_config->set_primary_ipv6( { address => $ipv6_address } );
+    $external_address_config->set_primary_ipv4( { address => $ipv4_address } );
+
+    $external_address_config->save( { restart_services => $RESTART_SERVICES } );
+}
+
+__END__
+
+=head1 SEE ALSO
+
+L<Template>, L<File::Basename>, L<FindBin>,
+L<perfSONAR_PS::NPToolkit::Config::ExternalAddress>
+
+To join the 'perfSONAR Users' mailing list, please visit:
+
+  https://mail.internet2.edu/wws/info/perfsonar-user
+
+The perfSONAR-PS subversion repository is located at:
+
+  http://anonsvn.internet2.edu/svn/perfSONAR-PS/trunk
+
+Questions and comments can be directed to the author, or the mailing list.
+Bugs, feature requests, and improvements can be directed here:
+
+  http://code.google.com/p/perfsonar-ps/issues/list
+
+=head1 VERSION
+
+$Id$
+
+=head1 AUTHOR
+
+Aaron Brown, aaron@internet2.edu
+
+=head1 LICENSE
+
+You should have received a copy of the Internet2 Intellectual Property Framework
+along with this software.  If not, see
+<http://www.internet2.edu/membership/ip.html>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2004-2009, Internet2 and the University of Delaware
+
+All rights reserved.
+
+=cut

@@ -1,0 +1,137 @@
+#!/usr/bin/perl
+#
+# pS-Performance Toolkit script that changes the MOTD to include the toolkit
+# version number as well as the URL to go to configure the toolkit.
+#
+# chkconfig: 2345 99 99
+# description: pS-Performance Toolkit MOTD maintenance script
+#
+
+use strict;
+use warnings;
+
+our $VERSION = 3.1;
+
+=head1 NAME
+
+motd_init_script - Displays a message of the day, and modifies the standard
+/etc/motd to contain it.
+
+=head1 DESCRIPTION
+
+This init script is meant to be called as the last possible init script. The
+script displays a message to the user and modifies the /etc/motd to contain
+that same message. The purpose is to give the user some instructions before
+they login so that they have some idea of what to do. The message it gives
+contains a url to the web gui. It constructs this url using the "external"
+address. The template file for the motd is located in
+"/usr/local/etc/motd.tmpl".
+
+=cut
+
+use Template;
+use File::Basename qw(dirname basename);
+
+use FindBin qw($RealBin);
+use lib "$RealBin/../lib";
+
+use lib "/opt/perfsonar_ps/toolkit/lib";
+
+use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
+use perfSONAR_PS::NPToolkit::Config::Version;
+
+my $motd_template = "/opt/perfsonar_ps/toolkit/templates/config/motd.tmpl";
+
+if ( $ARGV[0] and $ARGV[0] eq "start" ) {
+    stop();
+    start();
+}
+elsif ( $ARGV[0] and $ARGV[0] eq "stop" ) {
+    stop();
+}
+elsif ( $ARGV[0] and $ARGV[0] eq "restart" ) {
+    stop();
+    start();
+}
+else {
+    print "Usage: $0 {start|stop|restart}\n";
+}
+
+exit 0;
+
+sub stop {
+
+    # Makes no sense to stop
+}
+
+sub start {
+    my $external_address;
+    my $version;
+
+    my $version_config = perfSONAR_PS::NPToolkit::Config::Version->new();
+    if ( $version_config->init() == 0 ) {
+        $version = $version_config->get_version();
+    }
+
+    my $external_address_config = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
+    if ( $external_address_config->init() == 0 ) {
+        $external_address = $external_address_config->get_primary_address();
+    }
+
+    my $template_directory = dirname( $motd_template );
+    my $template_name      = basename( $motd_template );
+
+    my $tt = Template->new( INCLUDE_PATH => $template_directory ) or die( "Couldn't initialize template toolkit" );
+
+    my %vars = ( external_address => $external_address, version => $version );
+
+    my $output;
+
+    $tt->process( $template_name, \%vars, \$output ) or die $tt->error();
+
+    open( MOTD, ">/etc/motd" );
+    print MOTD $output;
+    close( MOTD );
+}
+
+__END__
+
+=head1 SEE ALSO
+
+L<Template>, L<File::Basename>, L<FindBin>,
+L<perfSONAR_PS::NPToolkit::Config::ExternalAddress>
+
+To join the 'perfSONAR Users' mailing list, please visit:
+
+  https://mail.internet2.edu/wws/info/perfsonar-user
+
+The perfSONAR-PS subversion repository is located at:
+
+  http://anonsvn.internet2.edu/svn/perfSONAR-PS/trunk
+
+Questions and comments can be directed to the author, or the mailing list.
+Bugs, feature requests, and improvements can be directed here:
+
+  http://code.google.com/p/perfsonar-ps/issues/list
+
+=head1 VERSION
+
+$Id$
+
+=head1 AUTHOR
+
+Aaron Brown, aaron@internet2.edu
+
+=head1 LICENSE
+
+You should have received a copy of the Internet2 Intellectual Property Framework
+along with this software.  If not, see
+<http://www.internet2.edu/membership/ip.html>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2004-2009, Internet2 and the University of Delaware
+
+All rights reserved.
+
+=cut

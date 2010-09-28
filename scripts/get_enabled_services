@@ -1,0 +1,89 @@
+#!/usr/bin/perl
+#
+# get_enabled_services returns the set of services that are enabled
+#
+
+use strict;
+use warnings;
+
+our $VERSION = 3.1;
+
+=head1 NAME
+
+get_enabled_services - Returns the set of services enabled on this host
+
+=head1 DESCRIPTION
+
+This script looks at the configured services, and prints the list of enabled
+services.
+
+=cut
+
+use strict;
+use warnings;
+
+use FindBin qw($RealBin);
+use lib "$RealBin/../lib";
+
+use lib "/opt/perfsonar_ps/toolkit/lib";
+
+use File::Basename;
+
+use perfSONAR_PS::NPToolkit::Config::Services;
+
+my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
+$services_conf->init();
+
+my $services = $services_conf->get_services();
+
+exit 0 unless ( $services );
+
+foreach my $key ( keys %$services ) {
+	my $service = $services->{$key};
+
+	next unless ($service->{enabled});
+
+	print $service->{name}."\n";
+}
+
+__END__
+
+=head1 SEE ALSO
+
+L<File::Basename>, L<FindBin>,
+L<perfSONAR_PS::NPToolkit::Config::Services>
+
+To join the 'perfSONAR Users' mailing list, please visit:
+
+  https://mail.internet2.edu/wws/info/perfsonar-user
+
+The perfSONAR-PS subversion repository is located at:
+
+  http://anonsvn.internet2.edu/svn/perfSONAR-PS/trunk
+
+Questions and comments can be directed to the author, or the mailing list.
+Bugs, feature requests, and improvements can be directed here:
+
+  http://code.google.com/p/perfsonar-ps/issues/list
+
+=head1 VERSION
+
+$Id$
+
+=head1 AUTHOR
+
+Aaron Brown, aaron@internet2.edu
+
+=head1 LICENSE
+
+You should have received a copy of the Internet2 Intellectual Property Framework
+along with this software.  If not, see
+<http://www.internet2.edu/membership/ip.html>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2004-2009, Internet2 and the University of Delaware
+
+All rights reserved.
+
+=cut

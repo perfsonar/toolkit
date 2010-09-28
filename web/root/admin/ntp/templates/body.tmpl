@@ -1,0 +1,51 @@
+<div class="mainContainer">
+<div class="subTitle1">NTP Configuration Tool</div>
+
+<center><font color="red"><div id="web_admin_error">[% error_message %]</div></font></center>
+<center><div id="web_admin_status">[% status_message %]</div></center>
+
+<input type="hidden" id="nptoolkit_is_modified" value="[% is_modified %]" />
+
+[% IF display_download %]
+<ul>
+<li><a target="_blank" href="[% self_url %]?fname=download_ntp_conf&session_id=[% session_id %]">Download ntp.conf file</a>
+</ul>
+[% END %]
+
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_cgi_ajax_call('Saving configuration and restarting services...', 'Problem saving configuration or restarting services', true, 'save_config');">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_cgi_ajax_call('Reseting configuration...', 'Problem reseting configuration', true, 'reset_config');">
+
+<div id="servers">
+<table class="group_table">
+        <tr>
+        <th></th><th>Server</th><th>Description</th><th>Actions</th>
+        </tr>
+        [% FOREACH server_info IN servers %]
+        <tr>
+                <td align="center"><input type="checkbox" dojoType="dijit.form.CheckBox" onClick="toggle_server('[% server_info.address %]')" id="[% server_info.address %]_toggle" [% IF server_info.selected %] checked="checked" [% END %] /></td>
+		<td>
+		[% IF server_info.failed_connect %]
+                <span id="failed_[% server_info.address %]"><font color="red">[% server_info.display_address %]</font></span>
+		<span dojoType="dijit.Tooltip" connectId="failed_[% server_info.address %]" toggle="fade">There was a problem contacting this host</span>
+		[% ELSE %]
+                [% server_info.display_address %]
+		[% END %]
+		</td>
+                <td>[% server_info.description %]</td>
+                <td>
+                    <a href="#" onClick="handle_cgi_ajax_call(null, 'Deleted ntp server: [% server_info.address %]', true, 'delete_server', [ '[% server_info.address %]' ]);">Delete</a>
+                </td>
+        </tr>
+        [% END %]
+</table>
+</div>
+
+<input class="button" type="submit" name="display_add_server_button" id="display_add_server_button" onClick="dijit.byId('dialog_add_ntp_server').show()" value="Add New NTP Server">
+[% IF enable_select_closest %]
+<input class="button" type="submit" name="select_closest" id="select_closest" value="Select Closest Servers" onClick="handle_cgi_ajax_call('Querying servers to find closest...', 'Problem finding closest ntp services', true, 'select_closest', ['5']);">
+[% END %]
+<br>
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_cgi_ajax_call('Saving configuration and restarting services...', 'Problem saving configuration or restarting services', true, 'save_config');">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_cgi_ajax_call('Reseting configuration...', 'Problem reseting configuration', true, 'reset_config');">
+
+</div>

@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Check Basic Data Gathering</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Debugging"
+HREF="debugging.html"><LINK
+REL="PREVIOUS"
+TITLE="Debugging"
+HREF="debugging.html"><LINK
+REL="NEXT"
+TITLE="Check cacti's poller"
+HREF="check_cacti_poller.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="debugging.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 21. Debugging</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="check_cacti_poller.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CHECK_DATA_GATHERING"
+>Check Basic Data Gathering</A
+></H1
+><P
+>For scripts, run them as cactiuser from cli to
+			check basic functionality. E.g. for a perl script
+			named <TT
+CLASS="FILENAME"
+>your-perl-script.pl</TT
+>
+			with parameters "p1 p2" under *nix this would look like:</P
+><PRE
+CLASS="SCREEN"
+>su - cactiuser
+/full/path/to/perl your-perl-script.pl p1 p2
+... (check output)</PRE
+><P
+>For snmp, snmpget the _exact_ OID you're asking for,
+			using same community string and snmp version as defined
+			within cacti. For an OID of <KBD
+CLASS="USERINPUT"
+>.1.3.6.1.4.something</KBD
+>,
+			community string of <KBD
+CLASS="USERINPUT"
+>very-secret</KBD
+>
+			and version 2 for target host <KBD
+CLASS="USERINPUT"
+>target-host</KBD
+>
+			this would look like</P
+><PRE
+CLASS="SCREEN"
+>snmpget -c very-secret -v 2c target-host .1.3.6.1.4.something
+.... (check output)</PRE
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="debugging.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="check_cacti_poller.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Debugging</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="debugging.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Check cacti's poller</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

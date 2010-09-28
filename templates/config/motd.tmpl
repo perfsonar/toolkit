@@ -1,0 +1,11 @@
+[%- UNLESS external_address; SET external_address = "[host address]"; END -%]
+Welcome to the Internet2 pS-Performance Toolkit v[%- IF version ; version ; END %]
+
+To start configuration, run:
+
+sudo /opt/perfsonar_ps/toolkit/scripts/nptoolkit-configure.py
+
+Once you set passwords, you can login to the web interface and finish
+configuration. The web interface should be available at:
+
+https://[% external_address %]/toolkit

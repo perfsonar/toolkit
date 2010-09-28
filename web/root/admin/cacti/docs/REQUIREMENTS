@@ -1,0 +1,13 @@
+
+                            Chapter 1. Requirements
+
+   Cacti requires that the following software is installed on your system.
+
+     * RRDTool 1.0.49 or 1.2.x or greater
+
+     * MySQL 4.1.x or 5.x or greater
+
+     * PHP 4.3.6 or greater, 5.x greater highly recommended for advanced
+       features
+
+     * A Web Server e.g. Apache or IIS

@@ -1,0 +1,345 @@
+[% IF service.match('.*localhost.*') %]
+	[% title = "Throughput Tests" %]
+[% ELSE %]
+	[% title = "Throughput Tests At ${service}" %]
+[% END %]
+
+[% INCLUDE header.tmpl %]
+
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["columnchart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Location');
+        data.addColumn('number', 'In BW ([%- graphprefix -%]bps)');
+        data.addColumn('number', 'Out BW ([%- graphprefix -%]bps)');       
+        data.addRows([%- graphtotal -%]);
+        [% FOREACH row IN graph %]
+        data.setValue([%- row.c -%], 0, '[%- row.location -%]');
+        data.setValue([%- row.c -%], 1, [%- row.in -%]);
+        data.setValue([%- row.c -%], 2, [%- row.out -%]); 
+        [% END %]        
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, {width: ([%- graphtotal -%]*40)+250, height: 250, is3D: false, title: '1 Week Average Bandwidth in [%- graphprefix -%]bps', legendFontSize: 8, titleFontSize: 14, colors: ['#0000ff', '#00cc00'], legend: 'bottom' });
+      }
+    </script>
+
+<div class="mainContainer">
+<div class="rContainer">
+<div class="subTitle1">[% title %]</div>
+
+<div class="rcontainer">
+    <table class="basic_table" width="80%" align="center" cellpadding="1" border="2">
+      <tr>
+      <th colspan=11 style="text-align: center">Active Data Sets</th>
+      </tr>
+      <tr>
+        <th align="center">First Host</th>
+        <th align="center">First Address</th>
+        <th align="center">Second Host</th>
+        <th align="center">Second Address</th>
+        <th align="center">Protocol</th>
+        <th align="center">Duration</th>
+<!--
+        <th align="center">Buffer Length</th>
+-->
+        <th align="center">Window Size</th>
+<!--
+        <th align="center">Interval</th>
+-->
+        <th align="center">Bandwidth Limit</th>        
+        <th align="center">Bi-Directional</th>
+        <th align="center">Line Graph</th>
+<!--        
+        <th align="center">Flash Graph</th>
+-->
+        <th align="center">Scatter Graph</th>
+      </tr>
+      [% FOREACH pair IN pairs %]
+      <tr>
+        <td align="center">
+          [%- pair.shost -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- pair.saddress -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- pair.dhost -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- pair.daddress -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- pair.protocol -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- pair.timeduration -%]&nbsp;
+        </td>
+<!--
+        <td align="center">
+          [%- pair.bufferlength -%]&nbsp;
+        </td>
+-->
+        <td align="center">
+          [%- pair.windowsize -%]&nbsp;
+        </td>
+<!--
+        <td align="center">
+          [%- pair.interval -%]&nbsp;
+        </td>
+-->
+        <td align="center">
+          [%- pair.bandwidthlimit -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- pair.bidir -%]&nbsp;
+        </td>
+        <td align="center">
+          <select value="Graph" id="graph1_[%- pair.count -%]" name="graph1_[%- pair.count -%]" onChange="window.open(options[selectedIndex].value,'graph1_[%- pair.count -%]','width=950,height=500,status=yes,scrollbars=yes,resizable=yes')">
+            <option selected value="./bandwidthGraph.cgi">-- Select --</option>
+            <option value="./bandwidthGraph.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&type=[%- pair.protocol -%]&length=86400">1 Day</option>
+            <option value="./bandwidthGraph.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&type=[%- pair.protocol -%]&length=604800">1 Week</option>
+            <option value="./bandwidthGraph.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&type=[%- pair.protocol -%]&length=2592000">1 Month</option>
+          </select>
+        </td>
+<!--
+        <td align="center">
+          <select value="Graph" id="graph2_[%- pair.count -%]" name="graph2_[%- pair.count -%]" onChange="window.open(options[selectedIndex].value,'graph2_[%- pair.count -%]','width=950,height=550,status=yes,scrollbars=yes,resizable=yes')">
+            <option selected value="./bandwidthGraphFlash.cgi">-- Select --</option>
+            <option value="./bandwidthGraphFlash.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&type=[%- pair.protocol -%]&length=86400">1 Day</option>
+            <option value="./bandwidthGraphFlash.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&type=[%- pair.protocol -%]&length=604800">1 Week</option>
+            <option value="./bandwidthGraphFlash.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&type=[%- pair.protocol -%]&length=2592000">1 Month</option>
+          </select>
+        </td>
+-->
+        <td align="center">
+          <select value="Graph" id="graph3_[%- pair.count -%]" name="graph3_[%- pair.count -%]" onChange="window.open(options[selectedIndex].value,'graph3_[%- pair.count -%]','width=950,height=500,status=yes,scrollbars=yes,resizable=yes')">
+            <option selected value="./bandwidthGraphScatter.cgi">-- Select --</option>
+            <option value="./bandwidthGraphScatter.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&type=[%- pair.protocol -%]&length=86400">1 Day</option>
+            <option value="./bandwidthGraphScatter.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&type=[%- pair.protocol -%]&length=604800">1 Week</option>
+            <option value="./bandwidthGraphScatter.cgi?url=[%- pair.service -%]&key=[%- pair.key -%]&key2=[%- pair.key2 -%]&dst=[%- pair.daddress -%]&src=[%- pair.saddress -%]&dhost=[%- pair.dhost -%]&shost=[%- pair.shost -%]&type=[%- pair.protocol -%]&length=2592000">1 Month</option>
+          </select>
+        </td>
+      </tr>
+      [% END %]
+    </table>
+    
+    <br><br>
+    <center>
+      <div id="chart_div"></div>
+    </center>        
+    <br><br>
+    
+    <table class="basic_table" width="80%" align="center" cellpadding="1" border="2">
+      <tr>
+      <th colspan=11 style="text-align: center">Non-Active Data Sets</th>
+      </tr>
+      <tr>
+        <th align="center">First Host</th>
+        <th align="center">First Address</th>
+        <th align="center">Second Host</th>
+        <th align="center">Second Address</th>
+        <th align="center">Protocol</th>
+        <th align="center">Duration</th>
+<!--
+        <th align="center">Buffer Length</th>
+-->
+        <th align="center">Window Size</th>
+<!--
+        <th align="center">Interval</th>
+-->
+        <th align="center">Bandwidth Limit</th>
+        <th align="center">Bi-Directional</th>
+        <th align="center">Line Graph</th>
+        <th align="center">Scatter Graph</th>
+      </tr>
+      [% FOREACH histpair IN histpairs %]
+      <tr>
+        <td align="center">
+          [%- histpair.shost -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- histpair.saddress -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- histpair.dhost -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- histpair.daddress -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- histpair.protocol -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- histpair.timeduration -%]&nbsp;
+        </td>
+<!--        
+        <td align="center">
+          [%- histpair.bufferlength -%]&nbsp;
+        </td>
+-->
+        <td align="center">
+          [%- histpair.windowsize -%]&nbsp;
+        </td>
+<!--
+        <td align="center">
+          [%- histpair.interval -%]&nbsp;
+        </td>
+-->
+        <td align="center">
+          [%- histpair.bandwidthlimit -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- histpair.bidir -%]&nbsp;
+        </td>
+        <td align="center">
+          <form method="GET" name="form_[%- histpair.count -%]" target="_blank" action="./bandwidthGraph.cgi">
+            <input type="hidden" name="url" value="[%- histpair.service -%]" />
+            <input type="hidden" name="key" value="[%- histpair.key -%]" />
+            <input type="hidden" name="key2" value="[%- histpair.key2 -%]" />
+            <input type="hidden" name="dst" value="[%- histpair.daddress -%]" />
+            <input type="hidden" name="src" value="[%- histpair.saddress -%]" />
+            <input type="hidden" name="dhost" value="[%- histpair.dhost -%]" />
+            <input type="hidden" name="shost" value="[%- histpair.shost -%]" />
+            <input type="hidden" name="type" value="[%- histpair.protocol -%]" />                            
+            
+            Start: <select id="smon" name="smon">
+            [% FOREACH mon IN histpair.smon %]
+              [% IF mon.selected %]
+              <option selected value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% ELSE %]
+              <option value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="sday" name="sday">
+            [% FOREACH day IN histpair.sday %]
+              [% IF day.selected %]
+              <option selected value="[%- day.value -%]">[%- day.name -%]</option>
+              [% ELSE %]
+              <option value="[%- day.value -%]">[%- day.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="syear" name="syear">
+            [% FOREACH year IN histpair.syear %]
+              [% IF year.selected %]
+              <option selected value="[%- year.value -%]">[%- year.name -%]</option>
+              [% ELSE %]
+              <option value="[%- year.value -%]">[%- year.name -%]</option>
+              [% END %]
+            [% END %]
+            </select><br>
+            
+            End: &nbsp;<select id="dmon" name="dmon">
+            [% FOREACH mon IN histpair.dmon %]
+              [% IF mon.selected %]
+              <option selected value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% ELSE %]
+              <option value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="dday" name="dday">
+            [% FOREACH day IN histpair.dday %]
+              [% IF day.selected %]
+              <option selected value="[%- day.value -%]">[%- day.name -%]</option>
+              [% ELSE %]
+              <option value="[%- day.value -%]">[%- day.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="dyear" name="dyear">
+            [% FOREACH year IN histpair.dyear %]
+              [% IF year.selected %]
+              <option selected value="[%- year.value -%]">[%- year.name -%]</option>
+              [% ELSE %]
+              <option value="[%- value -%]">[%- name -%]</option>
+              [% END %]
+            [% END %]
+            </select><br>
+
+            <input type="submit" name="Graph" value="Graph" />
+          </form>
+        </td>
+        <td align="center">
+          <form method="GET" name="forms_[%- histpair.count -%]" target="_blank" action="./bandwidthGraphScatter.cgi">
+            <input type="hidden" name="url" value="[%- histpair.service -%]" />
+            <input type="hidden" name="key" value="[%- histpair.key -%]" />
+            <input type="hidden" name="key2" value="[%- histpair.key2 -%]" />
+            <input type="hidden" name="dst" value="[%- histpair.daddress -%]" />
+            <input type="hidden" name="src" value="[%- histpair.saddress -%]" />
+            <input type="hidden" name="dhost" value="[%- histpair.dhost -%]" />
+            <input type="hidden" name="shost" value="[%- histpair.shost -%]" />
+            <input type="hidden" name="type" value="[%- histpair.protocol -%]" />                            
+            
+            Start: <select id="smon" name="smon">
+            [% FOREACH mon IN histpair.smon %]
+              [% IF mon.selected %]
+              <option selected value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% ELSE %]
+              <option value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="sday" name="sday">
+            [% FOREACH day IN histpair.sday %]
+              [% IF day.selected %]
+              <option selected value="[%- day.value -%]">[%- day.name -%]</option>
+              [% ELSE %]
+              <option value="[%- day.value -%]">[%- day.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="syear" name="syear">
+            [% FOREACH year IN histpair.syear %]
+              [% IF year.selected %]
+              <option selected value="[%- year.value -%]">[%- year.name -%]</option>
+              [% ELSE %]
+              <option value="[%- year.value -%]">[%- year.name -%]</option>
+              [% END %]
+            [% END %]
+            </select><br>
+            
+            End: &nbsp;<select id="dmon" name="dmon">
+            [% FOREACH mon IN histpair.dmon %]
+              [% IF mon.selected %]
+              <option selected value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% ELSE %]
+              <option value="[%- mon.value -%]">[%- mon.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="dday" name="dday">
+            [% FOREACH day IN histpair.dday %]
+              [% IF day.selected %]
+              <option selected value="[%- day.value -%]">[%- day.name -%]</option>
+              [% ELSE %]
+              <option value="[%- day.value -%]">[%- day.name -%]</option>
+              [% END %]
+            [% END %]
+            </select>
+            <select id="dyear" name="dyear">
+            [% FOREACH year IN histpair.dyear %]
+              [% IF year.selected %]
+              <option selected value="[%- year.value -%]">[%- year.name -%]</option>
+              [% ELSE %]
+              <option value="[%- year.value -%]">[%- year.name -%]</option>
+              [% END %]
+            [% END %]
+            </select><br>
+
+            <input type="submit" name="Graph" value="Graph" />
+          </form>
+        </td>
+      </tr>
+      [% END %]
+    </table>   
+
+</div>
+</div>
+</div>
+
+[% INCLUDE footer.tmpl %]

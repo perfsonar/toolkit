@@ -1,0 +1,2 @@
+MAILTO=root
+*/5 * * * * apache /usr/bin/php /opt/perfsonar_ps/toolkit/web/root/admin/cacti/poller.php >/dev/null 2>/var/log/cacti/poller-error.log

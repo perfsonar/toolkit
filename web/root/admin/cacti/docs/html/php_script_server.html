@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>PHP Script Server</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Advanced Topics"
+HREF="advanced_topics.html"><LINK
+REL="PREVIOUS"
+TITLE="Export Templates"
+HREF="template_export.html"><LINK
+REL="NEXT"
+TITLE="Upgrade Steps for the Example HostMib Data Queries"
+HREF="upgrade_using_hostmib_data_queries.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="template_export.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="upgrade_using_hostmib_data_queries.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="PHP_SCRIPT_SERVER"
+></A
+>Chapter 14. PHP Script Server</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="php_script_server.html#USING_SCRIPT_SERVER"
+>Using the Script Server</A
+></DT
+><DT
+><A
+HREF="upgrade_using_hostmib_data_queries.html"
+>Upgrade Steps for the Example HostMib Data Queries</A
+></DT
+><DT
+><A
+HREF="migration_php_scripts_to_script_server.html"
+>Migration of Existing PHP Scripts to Script Server</A
+></DT
+><DT
+><A
+HREF="testing_script_in_script_server.html"
+>Testing Your Script in the Script Server</A
+></DT
+></DL
+></DIV
+><P
+>			The PHP Script Server is a new feature in Cacti 0.8.6.  This new feature allows for the rapid
+			execution of PHP based Data Queries in Cacti.  The Script Server process is launched by the poller
+			during every polling cycle.  It listens for commands from the poller, executes them, and then waits
+			for an quit signal.
+		</P
+><P
+>			The reason that it is so fast is that PHP is started in memory only one time, and for every Data
+			Query called, it's code is interpreted only once.  The resulting Data Query binaries are therefore
+			very efficient.  Using the Script Server process over the traditional POPEN process nets a 20+ fold
+			speed improvement in Cacti.
+		</P
+><P
+>			Since PHP scripts are so powerful, this new feature in Cacti, makes it an excellent choice for
+			collecting non-SNMP and SNMP based data.
+		</P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="USING_SCRIPT_SERVER"
+>Using the Script Server</A
+></H1
+><P
+>				Cacti 0.8.6 contains two sample script server routines.  They are for the collection of HostMib CPU
+				and Disk Partition information.  These two examples are based off the traditional POPEN version of
+				the HostMib functions found in earlier versions of Cacti.
+			</P
+><P
+>				For new installs, the HostMib functions are defaulted to using the PHP Script Server, therefore,
+				you don't need to do anything to use it.
+			</P
+><P
+>				For upgrades, you must make several changes to start using the PHP Script Server for the HostMib
+				CPU and HostMib Partitions Data Queries.  To migrate you must follow the step below.
+			</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="template_export.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="upgrade_using_hostmib_data_queries.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Export Templates</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="advanced_topics.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Upgrade Steps for the Example HostMib Data Queries</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

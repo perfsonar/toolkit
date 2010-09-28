@@ -1,0 +1,199 @@
+[% title = "perfSONAR Global Service and Data View" %]
+
+[% INCLUDE header.tmpl %]
+
+<div class="mainContainer">
+<div class="rContainer">
+<div class="subTitle1">[% title %]</div>
+
+<div class="rcontainer">
+
+    <center><i>Information Last Fetched [% modification_time %]</i></center>
+    <br /><br />
+ 
+    <table class="basic_table">
+      <tr>
+        <th colspan="3">
+          <i>Table of Contents</i>
+        </th>
+      </tr>
+    [% FOREACH anchortypes %]
+      <tr>
+        <td>
+   	&nbsp;
+   	&nbsp;
+   	&nbsp;
+        </td>
+        <td colspan="2">
+          <a href="#[% anchor %]">[% type %]</a>
+        </td>
+      </tr>
+          [% FOREACH anchoritems %]
+            <tr>
+              <td>
+	      	&nbsp;
+		&nbsp;
+		&nbsp;
+              </td>
+              <td>
+	      	&nbsp;
+	      	&nbsp;
+	      	&nbsp;
+              </td>
+              <td>
+                <a href="#[% anchor %]">[% name %]</a>
+              </td>
+            </tr>
+          [% END %]
+    [% END %]
+    </table>
+    <br /><br />
+    
+    <a name="daemons" />
+    [% FOREACH daemons %]
+    <a name="[% type %]" />
+    <table class="basic_table" border="1" cellpadding="1" width="85%">
+
+      [% IF view %]   
+      <tr>         
+        <th align="center" colspan="5">
+          <font size="+1">[% type %] Daemons</font>
+        </th>
+      </tr>
+      [% ELSE %]
+      <tr>         
+        <th align="center" colspan="4">
+          <font size="+1">[% type %] Daemons</font>
+        </th>
+      </tr>
+      [% END %]
+
+      [% IF view %]   
+      <tr>        
+        <td align="center" width="20%">
+          <i><b>Service Name</b></i>
+        </td>
+        <td align="center" width="5%">
+          <i><b>Service Type</b></i>
+        </td>
+        <td align="center" width="30">
+          <i><b>Address</b></i>
+        </td>
+        <td align="center" width="40%">
+          <i><b>Description</b></i>
+        </td>     
+        <td align="center" width="5%">
+          <i><b>Test</b></i>
+        </td> 
+      </tr>
+      [% ELSE %]
+      <tr>        
+        <td align="center" width="20%">
+          <i><b>Service Name</b></i>
+        </td>
+        <td align="center" width="10%">
+          <i><b>Service Type</b></i>
+        </td>
+        <td align="center" width="30">
+          <i><b>Address</b></i>
+        </td>
+        <td align="center" width="40%">
+          <i><b>Description</b></i>
+        </td>     
+      </tr>
+      [% END %]
+
+      [% FOREACH contents %]
+      <tr>
+        [% IF view %]
+        <td align="left">
+          [% name %]
+        </td>
+        <td align="center">
+          [% type %]
+        </td>
+        <td align="left">
+          [% daemon %]
+        </td>
+        <td align="left">
+          [% desc %]
+        </td>       
+        <td align="center">
+          <input class="button" type="submit" value="Test" id="[% count1 %]_[% count2 %]" name="[% count1 %]_[% count2 %]" onClick="window.open('[% daemon %]','testwindow_[% count1 %]_[% count2 %]','width=800,height=600,status=yes,scrollbars=yes,resizable=yes,status=yes,toolbar=yes,location=yes,menubar=yes')" />
+        </td>  
+        [% ELSE %]
+        <td align="left">
+          [% name %]
+        </td>
+        <td align="center">
+          [% type %]
+        </td>
+        <td align="left">
+          [% daemon %]
+        </td>
+        <td align="left">
+          [% desc %]
+        </td>       
+        [% END %]
+      </tr>
+      [% END %]
+    </table>
+    <br><br>
+    [% END %]
+    <br><br><br>  
+    
+    <a name="services" />
+    [% FOREACH services %]
+    <a name="[% type %]" />
+    <table class="basic_table" border="1" cellpadding="1" width="85%">
+      <tr>
+        <th align="center" colspan="5">
+          <font size="+1">[% type %] Services</font>
+        </th>
+      </tr>
+      <tr>
+        <td align="center" width="20%">
+          <i><b>Service Name</b></i>
+        </td>
+        <td align="center" width="5%">
+          <i><b>Service Type</b></i>
+        </td>
+        <td align="center" width="30">
+          <i><b>Address</b></i>
+        </td>
+        <td align="center" width="40%">
+          <i><b>Description</b></i>
+        </td>     
+        <td align="center" width="5%">
+          <i><b>View</b></i>
+        </td>   
+      </tr>
+      [% FOREACH contents %]
+      <tr>
+        <td align="left">
+          [% name %]
+        </td>
+        <td align="center">
+          [% type %]
+        </td>
+        <td align="left">
+          [% service %]
+        </td>
+        <td align="left">
+          [% desc %]
+        </td>       
+        <td align="center">
+
+          <input class="button" type="submit" value="Query" id="[% count1 %]_[% count2 %]" name="[% count1 %]_[% count2 %]" onClick="window.open('./serviceTest.cgi?url=[% service %]&eventType=[% eventtype %]','graphwindow_[% count1 %]_[% count2 %]','width=800,height=600,status=yes,scrollbars=yes,resizable=yes,status=yes,toolbar=yes,location=yes,menubar=yes')" />
+        </td>     
+      </tr>
+      [% END %]
+    </table>
+    <br><br>
+    [% END %]
+
+</div>
+</div>
+</div>
+
+[% INCLUDE footer.tmpl %]

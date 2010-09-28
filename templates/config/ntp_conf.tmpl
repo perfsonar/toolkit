@@ -1,0 +1,13 @@
+# /etc/ntp.conf, configuration for NTP
+
+logfile /var/log/ntpd
+driftfile /var/lib/ntp/ntp.drift
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+# You should have at least 4 NTP servers
+[% FOREACH server_info IN servers %]
+server [% server_info.address %] iburst  [% IF server_info.description %] # [% server_info.description %] [% END %]
+[% END %]

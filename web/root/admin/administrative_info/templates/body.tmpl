@@ -1,0 +1,75 @@
+<div class="mainContainer">
+<div class="subTitle1">Administrative Information Configuration Tool</div>
+
+<center><font color="red"><div id="web_admin_error">[% error_message %]</div></font></center>
+<center><div id="web_admin_status">[% status_message %]</div></center>
+
+<input type="hidden" id="nptoolkit_is_modified" value="[% is_modified %]" />
+<input type="hidden" id="organization_name" value="[% organization_name %]" />
+<input type="hidden" id="host_location" value="[% location %]" />
+<input type="hidden" id="administrator_name" value="[% administrator_name %]" />
+<input type="hidden" id="administrator_email" value="[% administrator_email %]" />
+
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save_config()">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset_config()">
+
+<table class="basic_table">
+        <tr>
+        <th style="width: 200px">Host Information</th><th style="width: 200px; text-align: right"><a href="#" onClick="display_modify_host_information_dialog()">Edit</a></th>
+        </tr>
+        <tr>
+        <td>Organization Name</td><td>[% organization_name %]</td>
+        </tr>
+        <tr>
+        <td>Host Location</td><td>[% location %]</td>
+        </tr>
+        <tr>
+        <td>Administrator Name</td><td>[% administrator_name %]</td>
+        </tr>
+        <tr>
+        <td>Administrator Email</td><td>[% administrator_email %]</td>
+        </tr>
+</table>
+
+[% USE date %]
+
+<table class="basic_table" id="hosts_communities_list">
+        <tr><th style="width: 600px"colspan=2>Communities<span id="communities_help"><sup>[1]</sup></span> This Host Participates In</th></tr>
+        [% FOREACH keyword IN configured_keywords %]
+        <tr><td style="width: 400px">[% keyword %]</td><td style="width: 200px"><a href="#" onClick="delete_keyword('[% keyword %]')">Delete</a>
+        [% END %]
+        <tr><td colspan=2><a href="#" onClick="display_add_keyword_dialog()">Add New Community</a></td></tr>
+	<tr>
+</table>
+
+<table class="basic_table" id="popular_communities_list">
+<tr><th style="width: 600px">Popular Communities [% IF known_keywords_check_time %] As Of [% date.format(known_keywords_check_time, '%Y-%m-%d %H:%M') %] [% END %] (Click To Join)</th></tr>
+[% IF known_keywords_check_time < (date.now - 24*60*60) %]
+<span dojoType="dijit.Tooltip" connectId="keyword_results_out_of_date_msg" toggle="fade">
+This error likely means that the caching program is either not running or is failing.<br>
+Make sure that cron is running and that the host has network connectivity.<br>
+If both are working and it's still failing, email the user list.
+</span>
+<tr><td><div id="keyword_results_out_of_date_msg" style="color:red">The list of popular communities may be out of date. Ensure that the caching program is correctly running.</div></tr></td>
+[% END %]
+
+<tr><td>
+<ul class="tagcloud">
+[% FOREACH keyword_info IN known_keywords %]
+    <li><a class="tag[% keyword_info.class %]" href="#" onClick="add_keyword('[% keyword_info.keyword %]')">[% keyword_info.keyword %]</a></li>
+[% END %]
+</ul>
+</td></tr>
+</table>
+
+<span dojoType="dijit.Tooltip" connectId="communities_help">
+Community identification enables other members of your community to find your
+perfSONAR services. For instance, if your deployment is associated with a
+specific scientific project (e.g. LHC, eVLBI), or has access to a certain
+network (e.g.  Internet2, ESnet), you might select these communities.
+</span>
+
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save_config()">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset_config()">
+
+</div>

@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title>perfAdmin - LS View of <tmpl_var name="INSTANCE"></title>
+  </head>
+  <body>
+    <h1 align="center">Internal LS State for <i><b><tmpl_var name="INSTANCE"></b></i></h1>
+    <br><br>
+
+    <hr align=center width=90% size=4>
+    <br>    
+    <tmpl_loop name=DATA>
+    <table align=center width=85% border=2>
+      <tr>
+        <th align=left>Collection: <i><tmpl_var name="COLLECTION"></i></th>
+      </tr>
+      <tr>
+        <th align=left>Store Type: <i><tmpl_var name="STORE"></i></th>
+      </tr>
+      <tr>
+        <td align=left>
+            <pre><tmpl_var name="METADATA"></pre>
+        </td>
+      </tr>
+      <tr>
+        <td align=left>
+            <pre><tmpl_var name="DATA"></pre>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <hr align=center width=90% size=4>
+    <br>
+    </tmpl_loop>
+    
+  </body>
+</html>
+    

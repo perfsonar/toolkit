@@ -1,0 +1,8 @@
+#!/bin/sh
+
+BINDIR="$( readlink -f -- "$( dirname -- "$0" )" )"
+
+$BINDIR/initialize_cacti_database
+$BINDIR/initialize_perfsonarbuoy_bwctl_database
+$BINDIR/initialize_perfsonarbuoy_owamp_database
+$BINDIR/initialize_pinger_database

@@ -1,0 +1,261 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Debugging</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Reference"
+HREF="reference.html"><LINK
+REL="PREVIOUS"
+TITLE="Add Graph Permissions"
+HREF="cli_add_perms.html"><LINK
+REL="NEXT"
+TITLE="Check Basic Data Gathering"
+HREF="check_data_gathering.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="cli_add_perms.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="check_data_gathering.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="DEBUGGING"
+></A
+>Chapter 21. Debugging</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="debugging.html#CHECK_LOG_FILE"
+>Check Cacti Log File</A
+></DT
+><DT
+><A
+HREF="check_data_gathering.html"
+>Check Basic Data Gathering</A
+></DT
+><DT
+><A
+HREF="check_cacti_poller.html"
+>Check cacti's poller</A
+></DT
+><DT
+><A
+HREF="check_mysql_updating.html"
+>Check MySQL updating</A
+></DT
+><DT
+><A
+HREF="check_rrd_updating.html"
+>Check rrd file updating</A
+></DT
+><DT
+><A
+HREF="check_rrd_owner.html"
+>Check rrd file ownership</A
+></DT
+><DT
+><A
+HREF="check_rrd_numbers.html"
+>Check rrd file numbers</A
+></DT
+><DT
+><A
+HREF="check_rrd_graph.html"
+>Check rrdtool graph statement</A
+></DT
+><DT
+><A
+HREF="debug_miscellaneous.html"
+>Miscellaneous</A
+></DT
+><DT
+><A
+HREF="debug_rpm_installation.html"
+>RPM Installation?</A
+></DT
+><DT
+><A
+HREF="check_zero_values.html"
+>Not NaN, but 0 (zero) values?</A
+></DT
+></DL
+></DIV
+><P
+>Cacti users sometimes complain about NaN's in their graphs.
+		Unfortunately, there are several reasons for this result.
+		The following is a step-by-step procedure recommended for debugging.</P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CHECK_LOG_FILE"
+>Check Cacti Log File</A
+></H1
+><P
+>Please have a look at your cacti log file.
+			Usually, you'll find it at <TT
+CLASS="FILENAME"
+>&lt;path_cacti&gt;/log/cacti.log</TT
+>.
+			Else see <KBD
+CLASS="USERINPUT"
+>Settings</KBD
+>, <KBD
+CLASS="USERINPUT"
+>Paths</KBD
+>.
+			Check for this kind of error:</P
+><PRE
+CLASS="SCREEN"
+>CACTID: Host[...] DS[....] WARNING: SNMP timeout detected [500 ms], ignoring host '........'</PRE
+><P
+>For "reasonable" timeouts, this may be related
+			to a snmpbulkwalk issue. To change this, see
+			<KBD
+CLASS="USERINPUT"
+>Settings</KBD
+>, <KBD
+CLASS="USERINPUT"
+>Poller</KBD
+>
+			and lower the value for
+			<KBD
+CLASS="USERINPUT"
+>The Maximum SNMP OID's Per SNMP Get Request</KBD
+>.
+			Start at a value of 2 and increase it again,
+			if the poller starts working.
+			(1 or less disables snmpbulkwalk)
+			Some agent's don't have the horsepower
+			to deliver that many OID's at a time. Therefore,
+			we can reduce the number for those older/underpowered devices.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="cli_add_perms.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="check_data_gathering.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Add Graph Permissions</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Check Basic Data Gathering</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

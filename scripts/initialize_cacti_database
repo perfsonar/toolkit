@@ -1,0 +1,11 @@
+#!/bin/sh
+
+BINDIR="$( readlink -f -- "$( dirname -- "$0" )" )"
+
+DB_NAME=cacti
+DB_USERNAME=cactiuser
+DB_PASSWORD=12NPT00LK1T
+
+mysql -u root -e "CREATE DATABASE $DB_NAME"
+mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO $DB_USERNAME@localhost IDENTIFIED BY '$DB_PASSWORD'" $DB_NAME
+mysql -u root $DB_NAME < $BINDIR/cacti_toolkit_init.sql

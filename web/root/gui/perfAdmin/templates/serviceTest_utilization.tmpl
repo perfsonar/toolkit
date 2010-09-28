@@ -1,0 +1,75 @@
+[% IF service.match('.*localhost.*') %]
+	[% SET title = "Utilization Statistics" %]
+[% ELSE %]
+	[% SET title = "Utilization Statistics At ${service}" %]
+[% END %]
+
+[% INCLUDE header.tmpl %]
+
+<div class="mainContainer">
+<div class="rContainer">
+<div class="subTitle1">[% title %]</div>
+
+<div class="rcontainer">
+    <table class="basic_table" width="80%" align="center" cellpadding="1" border="2">
+      <tr>
+        <th align="center">Address</th>
+        <th align="center">Host Name</th>
+        <th align="center">If. Index</th>
+        <th align="center">If. Name</th>
+        <th align="center">Description</th>
+        <th align="center">If. Address</th>
+        <th align="center">Capacity</th>
+        <th align="center">Graph</th>
+        <th align="center">Flash Graph</th>
+      </tr>
+      [% FOREACH iface IN interfaces %]
+      <tr>
+        <td align="center">
+          [%- iface.address -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- iface.host -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- iface.ifindex -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- iface.ifname -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- iface.desc -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- iface.ifaddress -%]&nbsp;
+        </td>
+        <td align="center">
+          [%- iface.capacity -%]&nbsp;
+        </td>
+        <td align="center">
+          <select name="graph1_[%- iface.count -%]" id="graph1_[%- iface.count -%]" onChange="window.open(options[selectedIndex].value,'graph1_[%- iface.count -%]','width=950,height=500,status=yes,scrollbars=yes,resizable=yes')">
+            <option selected value="./utilizationGraph.cgi">-- Select --</option>
+            <option value="./utilizationGraph.cgi?key1_type=[%- iface.key1type -%]&key1_1=[%- iface.key11 -%]&key1_2=[%- iface.key12 -%]&key2_type=[%- iface.key2type -%]&key2_1=[%- iface.key21 -%]&key2_2=[%- iface.key22 -%]&url=[%- iface.service -%]&host=[%- iface.host -%]&interface=[%- iface.ifname -%]&length=3600">1 Hour</option>
+            <option value="./utilizationGraph.cgi?key1_type=[%- iface.key1type -%]&key1_1=[%- iface.key11 -%]&key1_2=[%- iface.key12 -%]&key2_type=[%- iface.key2type -%]&key2_1=[%- iface.key21 -%]&key2_2=[%- iface.key22 -%]&url=[%- iface.service -%]&host=[%- iface.host -%]&interface=[%- iface.ifname -%]&length=14400">4 Hours</option>
+            <option value="./utilizationGraph.cgi?key1_type=[%- iface.key1type -%]&key1_1=[%- iface.key11 -%]&key1_2=[%- iface.key12 -%]&key2_type=[%- iface.key2type -%]&key2_1=[%- iface.key21 -%]&key2_2=[%- iface.key22 -%]&url=[%- iface.service -%]&host=[%- iface.host -%]&interface=[%- iface.ifname -%]&length=43200">12 Hours</option>
+            <option value="./utilizationGraph.cgi?key1_type=[%- iface.key1type -%]&key1_1=[%- iface.key11 -%]&key1_2=[%- iface.key12 -%]&key2_type=[%- iface.key2type -%]&key2_1=[%- iface.key21 -%]&key2_2=[%- iface.key22 -%]&url=[%- iface.service -%]&host=[%- iface.host -%]&interface=[%- iface.ifname -%]&length=86400">24 Hours</option>
+          </select>
+        </td>    
+        <td align="center">
+          <select name="graph2_[%- iface.count -%]" id="graph2_[%- iface.count -%]" onChange="window.open(options[selectedIndex].value,'graph2_[%- iface.count -%]','width=950,height=550,status=yes,scrollbars=yes,resizable=yes')">
+            <option selected value="./utilizationGraphFlash.cgi">-- Select --</option>
+            <option value="./utilizationGraphFlash.cgi?key1_type=[%- iface.key1type -%]&key1_1=[%- iface.key11 -%]&key1_2=[%- iface.key12 -%]&key2_type=[%- iface.key2type -%]&key2_1=[%- iface.key21 -%]&key2_2=[%- iface.key22 -%]&url=[%- iface.service -%]&host=[%- iface.host -%]&interface=[%- iface.ifname -%]&length=3600">1 Hour</option>
+            <option value="./utilizationGraphFlash.cgi?key1_type=[%- iface.key1type -%]&key1_1=[%- iface.key11 -%]&key1_2=[%- iface.key12 -%]&key2_type=[%- iface.key2type -%]&key2_1=[%- iface.key21 -%]&key2_2=[%- iface.key22 -%]&url=[%- iface.service -%]&host=[%- iface.host -%]&interface=[%- iface.ifname -%]&length=14400">4 Hours</option>
+            <option value="./utilizationGraphFlash.cgi?key1_type=[%- iface.key1type -%]&key1_1=[%- iface.key11 -%]&key1_2=[%- iface.key12 -%]&key2_type=[%- iface.key2type -%]&key2_1=[%- iface.key21 -%]&key2_2=[%- iface.key22 -%]&url=[%- iface.service -%]&host=[%- iface.host -%]&interface=[%- iface.ifname -%]&length=43200">12 Hours</option>
+            <option value="./utilizationGraphFlash.cgi?key1_type=[%- iface.key1type -%]&key1_1=[%- iface.key11 -%]&key1_2=[%- iface.key12 -%]&key2_type=[%- iface.key2type -%]&key2_1=[%- iface.key21 -%]&key2_2=[%- iface.key22 -%]&url=[%- iface.service -%]&host=[%- iface.host -%]&interface=[%- iface.ifname -%]&length=86400">24 Hours</option>
+          </select>
+        </td>        
+      </tr>
+      [% END %]
+    </table>
+
+</div>
+</div>
+</div>
+
+[% INCLUDE footer.tmpl %]

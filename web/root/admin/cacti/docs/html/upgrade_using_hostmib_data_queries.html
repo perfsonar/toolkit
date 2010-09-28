@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Upgrade Steps for the Example HostMib Data Queries</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PHP Script Server"
+HREF="php_script_server.html"><LINK
+REL="PREVIOUS"
+TITLE="PHP Script Server"
+HREF="php_script_server.html"><LINK
+REL="NEXT"
+TITLE="Migration of Existing PHP Scripts to Script Server"
+HREF="migration_php_scripts_to_script_server.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="php_script_server.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 14. PHP Script Server</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="migration_php_scripts_to_script_server.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="UPGRADE_USING_HOSTMIB_DATA_QUERIES"
+>Upgrade Steps for the Example HostMib Data Queries</A
+></H1
+><P
+>				If you are using the two built in script queries, "SNMP - Get Mounted Partitions" and "SNMP - Get
+				Processor Information", you can migrate to the PHP Script Server using the steps below:
+			</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>						Verify the existence of New Data Input Method - Go to <SPAN
+CLASS="GUILABEL"
+>Data Input Methods</SPAN
+>,
+						verify that you see the "Get Script Server Data (Indexed)" Data Input Method exists and that
+						it is using the "Script Query - Script Server" method.
+					</P
+></LI
+><LI
+><P
+>						Disable the Poller - Goto <SPAN
+CLASS="GUILABEL"
+>Settings</SPAN
+>-&#62;<SPAN
+CLASS="GUILABEL"
+>Poller</SPAN
+> and
+						uncheck the <SPAN
+CLASS="GUILABEL"
+>Poller Enabled</SPAN
+> checkbox.  Press <SPAN
+CLASS="GUILABEL"
+>Save</SPAN
+>.
+					</P
+></LI
+><LI
+><P
+>						Update Your Data Queries - Go to <SPAN
+CLASS="GUILABEL"
+>Data Queries</SPAN
+> and Edit the two Data
+						Queries below. Change both their Data Input Method to "Get Script Server Data (Indexed)"
+						and in the XML path replace "script_query" with "script_server" as shown below:
+					</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>								SNMP - Get Mounted Partitions
+							</P
+><P
+>								<KBD
+CLASS="USERINPUT"
+>&lt;path_cacti&gt;/resource/script_server/host_disk.xml</KBD
+>
+							</P
+></LI
+><LI
+><P
+>								SNMP - Get Processor Information
+							</P
+><P
+>								<KBD
+CLASS="USERINPUT"
+>&lt;path_cacti&gt;/resource/script_server/host_cpu.xml</KBD
+>
+							</P
+></LI
+></OL
+></LI
+><LI
+><P
+>						Update Your Data Templates - Goto <SPAN
+CLASS="GUILABEL"
+>Data Templates</SPAN
+>, locate the following two
+						data templates and change their data input method to "Get Script Server Data (Indexed)".
+					</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>								Host MIB - Hard Drive Space
+							</P
+></LI
+><LI
+><P
+>								Host MIB - CPU Utilization
+							</P
+></LI
+></OL
+></LI
+><LI
+><P
+>						Re Enable the Poller - Go to <SPAN
+CLASS="GUILABEL"
+>Settings</SPAN
+>-&#62;<SPAN
+CLASS="GUILABEL"
+>Poller</SPAN
+>
+						and check the <SPAN
+CLASS="GUILABEL"
+>Poller Enabled</SPAN
+> checkbox.  Press <SPAN
+CLASS="GUILABEL"
+>Save</SPAN
+>.
+					</P
+></LI
+></OL
+><P
+>				Following those steps should complete your migration to the new PHP Script Server for the two
+				example HostMIB Data Queries.
+			</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="php_script_server.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="migration_php_scripts_to_script_server.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>PHP Script Server</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="php_script_server.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Migration of Existing PHP Scripts to Script Server</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

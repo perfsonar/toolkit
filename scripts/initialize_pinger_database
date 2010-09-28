@@ -1,0 +1,11 @@
+#!/bin/sh
+
+BINDIR="$( readlink -f -- "$( dirname -- "$0" )" )"
+
+DB_NAME=pingerMA
+DB_USERNAME=pinger
+DB_PASSWORD=7hckn0p1x
+
+mysql -u root -e "CREATE DATABASE $DB_NAME"
+mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO $DB_USERNAME@localhost IDENTIFIED BY '$DB_PASSWORD'" $DB_NAME
+mysql -u root $DB_NAME < $BINDIR/pinger_toolkit_init.sql

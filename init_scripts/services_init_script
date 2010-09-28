@@ -1,0 +1,134 @@
+#!/usr/bin/perl
+#
+# pS-Performance Toolkit script that adds or removes services from the initial
+# boot based on whether they are enabled or disabled.
+#
+# chkconfig: 2345 5 20
+# description: pS-Performance Toolkit initial services maintenance script
+#
+
+use strict;
+use warnings;
+
+our $VERSION = 3.1;
+
+=head1 NAME
+
+services_init_script - Removes any symlinks in the boot order for disabled
+services.
+
+=head1 DESCRIPTION
+
+This init script is meant to be called early in the boot order. The
+script reads the set of configured services, and removes the symlinks to start
+any disabled service from the boot process. This is necessary with the LiveCD
+approach since the startup symlinks must be re-deleted each time the CD comes
+up.
+
+=cut
+
+use strict;
+use warnings;
+
+use FindBin qw($RealBin);
+use lib "$RealBin/../lib";
+
+use lib "/opt/perfsonar_ps/toolkit/lib";
+
+use File::Basename;
+
+use perfSONAR_PS::NPToolkit::Config::Services;
+
+if ( $ARGV[0] and $ARGV[0] eq "start" ) {
+    start();
+}
+elsif ( $ARGV[0] and $ARGV[0] eq "stop" ) {
+    stop();
+}
+elsif ( $ARGV[0] and $ARGV[0] eq "restart" ) {
+    stop();
+    start();
+}
+else {
+    print "Usage: $0 {start|stop|restart}\n";
+}
+
+exit 0;
+
+sub stop {
+
+    # This could restore anything that's been removed, but since the file
+    # removals won't get saved anyway, there's no point.
+}
+
+sub start {
+    my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
+    $services_conf->init();
+
+    my $services = $services_conf->get_services();
+
+    if ( $services ) {
+        foreach my $key ( keys %$services ) {
+            my $service = $services->{$key};
+
+            my @scripts = ();
+	    if (ref($service->{service_name}) eq "ARRAY") {
+		@scripts = @{ $service->{service_name} };
+	    }
+            else {
+		push @scripts, $service->{service_name};
+	    }
+
+            foreach my $script (@scripts) {
+                if ($service->{enabled}) {
+                    system( "chkconfig --add $script" );
+                }
+                else {
+                    system( "chkconfig --level 2345 $script off" );
+                }
+            }
+        }
+    }
+}
+
+__END__
+
+=head1 SEE ALSO
+
+L<File::Basename>, L<FindBin>,
+L<perfSONAR_PS::NPToolkit::Config::Services>
+
+To join the 'perfSONAR Users' mailing list, please visit:
+
+  https://mail.internet2.edu/wws/info/perfsonar-user
+
+The perfSONAR-PS subversion repository is located at:
+
+  http://anonsvn.internet2.edu/svn/perfSONAR-PS/trunk
+
+Questions and comments can be directed to the author, or the mailing list.
+Bugs, feature requests, and improvements can be directed here:
+
+  http://code.google.com/p/perfsonar-ps/issues/list
+
+=head1 VERSION
+
+$Id$
+
+=head1 AUTHOR
+
+Aaron Brown, aaron@internet2.edu
+
+=head1 LICENSE
+
+You should have received a copy of the Internet2 Intellectual Property Framework
+along with this software.  If not, see
+<http://www.internet2.edu/membership/ip.html>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2004-2009, Internet2 and the University of Delaware
+
+All rights reserved.
+
+=cut

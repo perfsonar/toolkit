@@ -1,0 +1,217 @@
+#!/usr/bin/python
+#
+# This script helps the user quickly enable standard linux tools such as SSH and IPTables
+# It also provides a way for the user to add a custom startup script
+#
+# Author: Dan Bracey -- 6/10/08
+# Revision History:
+# 6/17/08 -- 1.000 -- debracey -- Initial Creation
+
+import os
+import sys
+
+bindir = os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])))
+libdir = os.path.join(bindir, "..", "python_lib")
+
+sys.path.append(libdir)
+
+import Internet2Lib       # Library functions
+import Internet2Consts    # For constants
+import sys                # For stdin
+import os                 # For standard OS commands
+import readline           # Improve the usability of raw_input. Let you use those fancy "arrow" keys
+import pwd                # For checking the existence of a user before setting pw. Could cause nasty infinite loop.
+
+class menuOption:
+    def __init__(self, displayText, executable):
+        self.displayText = displayText
+        self.executable  = executable
+# End menOptions
+
+# Adds a new user to the system
+def add_user():
+    # We don't want to get in the way here, just let the shell handle this
+    done = False
+   
+    ans = raw_input("Enter the user whose account you'd like to add. Just hit enter to exit: ").strip()
+    if not ans:
+        return
+
+    user = ans
+
+    ans = raw_input("Should this user be able to login via SSH? [yes] ").strip().upper()
+    if not ans:
+        ans = "YES"
+
+    print Internet2Consts.BLUE + "\n\nNOTE:"  + Internet2Consts.NORMAL + " you must enable SSH via the web interface before this user can login remotely\n\n"
+
+    can_login = False
+    if ans[0] == "Y":
+        can_login = True
+
+    ans = raw_input("Is this user an administrator? [yes] ").strip().upper()
+    if not ans:
+        ans = "YES"
+
+    is_admin = False
+    if ans[0] == "Y":
+        is_admin = True
+
+    if (can_login):
+        cmd = "/usr/sbin/adduser -m"
+    else:
+        cmd = "/usr/sbin/adduser -M --shell /bin/false"
+
+    if (is_admin):
+        cmd += " -G wheel"
+
+
+    cmd += " " + user
+
+    retVal = os.system(cmd)
+    if (retVal != 0):
+        print Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL
+        return
+
+    password(user)
+
+    return
+# End add_user
+
+# Deletes a user from the system
+def del_user():
+    # We don't want to get in the way here, just let the shell handle this
+    done = False
+   
+    ans = raw_input("Enter the user whose account you'd like to remove. Just hit enter to exit: ").strip()
+    if not ans:
+        return
+
+    user = ans
+
+    delete_home = False
+
+    if os.path.exists(os.path.join("/", "home", user)):
+        ans = raw_input("Would you like to delete "+user+"'s home directory? [yes] ").strip().upper()
+        if ans and ans[0] == "Y":
+            delete_home = True
+
+    cmd = "/usr/sbin/userdel"
+    if delete_home:
+        cmd += " -r"
+    cmd += " "+user
+
+    retVal = os.system(cmd)
+
+    return
+# End del_user
+
+# Sets the password for the account
+def password(user=None):
+    # We don't want to get in the way here, just let the shell handle this
+    done = False
+  
+    if (user == None):
+        ans = raw_input("Enter the user whose password you'd like to change. Just hit enter to exit: ").strip()
+        if not ans:
+            return
+
+        user = ans
+
+        try:
+            user_info = pwd.getpwnam(user)
+        except KeyError:
+            print "User " + Internet2Consts.MAGENTA + user + Internet2Consts.NORMAL + " does not exist."
+            return
+
+    while not done:
+        print "Please specify a password for the " + Internet2Consts.MAGENTA + user + Internet2Consts.NORMAL + " account."
+        retVal = os.system("/usr/bin/passwd " + user)
+   
+        if int(retVal) != 0:
+            print Internet2Consts.YELLOW + "Couldn't set the password to what you specified. Please try again." + Internet2Consts.NORMAL
+        else:
+            done = True
+    # Done setting password
+    print ""
+    done = False
+
+    return
+# End password
+
+# Initializes the menu options
+# @return an initialized list of menu options
+def initialize():
+    optionList = []
+    
+    # Add a user
+    item = menuOption("Add a new user", add_user)
+    optionList.append(item)
+   
+    # Delete the user
+    item = menuOption("Delete a user", del_user)
+    optionList.append(item)
+
+    # Set passord
+    item = menuOption("Change a user's password", password)
+    optionList.append(item)
+    
+    return optionList
+# End initialize
+
+# Displays the menu of things to setup
+def displayMenu():
+    print "You may configure any of the options below with this program: "
+    
+    for i, option in enumerate(menuOptions):
+        print "\t" + str(i+1) + ". " + option.displayText
+        
+    print "\t" + "0. exit"
+    
+    return
+# End displayMenu
+
+# Processes the menu choice (does a do-while until the choice is 0)
+# @param fileHandle the fileHandle we are working with (for the startup file)
+def mainLoop():
+    done = False
+    
+    while not done:
+        displayMenu()
+                
+        # Process the user's input
+        try:
+            choice = int(raw_input("Make a selection: ").strip())
+        except ValueError, e:
+            choice = -1 # Not valid
+        print " "
+        
+        # Negative numbers are invalid -- as are choices > the length of the choice list (Exit is not in the thing)
+        if choice < 0 or choice > len(menuOptions):
+            print Internet2Consts.YELLOW + "Invalid selection" + Internet2Consts.NORMAL
+            continue
+        
+        # Exit if choice is 0
+        elif choice == 0:
+            done = True
+        else:
+            menuOptions[choice-1].executable() # 0 is exit (so needs -1)
+            print ""
+    
+    return
+# End mainLoop
+
+### MAIN ###
+print "Welcome to the Internet2 pS-Performance Toolkit user administration program."
+print "This program will help you administer users."
+
+# Must be root
+if not Internet2Lib.isRoot():
+    print Internet2Consts.YELLOW + "You must run this script as root. Please rerun this script with root permissions." + Internet2Consts.NORMAL
+    sys.exit(1)
+
+menuOptions = initialize()
+mainLoop()
+
+sys.exit(0)
+### END MAIN

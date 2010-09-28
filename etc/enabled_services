@@ -1,0 +1,9 @@
+snmpma_enabled=enabled
+ndt_enabled=enabled
+owamp_enabled=enabled
+npad_enabled=enabled
+pinger_enabled=enabled
+psb_enabled=enabled
+https_enabled=enabled
+bwctl_enabled=enabled
+ssh_enabled=disabled

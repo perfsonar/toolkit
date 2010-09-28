@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo | /opt/perfsonar_ps/perfsonarbuoy_ma/bin/owdb.pl -i root

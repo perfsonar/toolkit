@@ -1,0 +1,122 @@
+[% title = "pS-Performance Node" %]
+[% IF site_name; SET title = "${title} For ${site_name}"; END %]
+[% IF site_location; SET title = "${title} In ${site_location}"; END %]
+
+[% INCLUDE header.tmpl %]
+
+<div class="mainContainer">
+<div class="rContainer">
+<div class="subTitle1">[% title %]</div>
+
+<table class="basic_table">
+        <tr>
+        <th colspan=2 style="width: 400px">Host Information</th>
+        </tr>
+        <tr>
+        <td style="width: 200px">Organization Name</td><td>[% site_name %]</td>
+        </tr>
+        <tr>
+        <td>Host Location</td><td>[% site_location %]</td>
+        </tr>
+        <tr>
+        <td>Administrator Name</td><td>[% admin_name %]</td>
+        </tr>
+        <tr>
+        <td>Administrator Email</td><td><a href="mailto:[% admin_email %]">[% admin_email %]</a></td>
+        </tr>
+</table>
+
+<table class="basic_table">
+
+[% IF keywords %]
+<table class="basic_table">
+<tr><th style="width: 600px">Communities This Host Participates In</th></tr>
+<tr><td>
+<ul class="tagcloud">
+[% FOREACH keyword IN keywords %]
+    <li><a class="tag5">[% keyword %]</a></li>
+[% END %]
+</ul>
+</td></tr>
+</table>
+[% END %]
+
+<table class="basic_table">
+        <tr>
+        <th colspan=2 style="width: 400px">Host Status</th>
+        </tr>
+        <tr>
+            <td style="width: 200px">Primary Address</td>
+            <td>
+		[% IF external_address %]
+			[% external_address %]
+		[% ELSE %]
+		<div style="color:red">No External Address Configured</div>
+		[% END %]
+            </td>
+        </tr>
+</table>
+
+<div class="rcontainer">
+	<table class="basic_table">
+		<tr><th  style="width: 600px" colspan=2>Services Offered</th></tr>
+	[% FOREACH pair IN services %]
+		[% IF pair.key == "ndt"; pair.value.name = "Network Diagnostic Tester (NDT)"; pair.value.url = "http://www.internet2.edu/performance/ndt/"; END %]
+		[% IF pair.key == "npad"; pair.value.name = "Network Path and Application Diagnosis (NPAD)"; pair.value.url = "http://www.psc.edu/networking/projects/pathdiag/"; END %]
+		[% IF pair.key == "perfsonarbuoy_bwctl"; pair.value.name = "perfSONAR-BUOY Regular Testing (Throughput)"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
+		[% IF pair.key == "perfsonarbuoy_owamp"; pair.value.name = "perfSONAR-BUOY Regular Testing (One-Way Latency)"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
+		[% IF pair.key == "perfsonarbuoy_ma"; pair.value.name = "perfSONAR-BUOY Measurement Archive"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
+		[% IF pair.key == "snmp_ma"; pair.value.name = "SNMP Measurement Archive"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
+		[% IF pair.key == "pinger"; pair.value.name = "PingER Measurement Archive and Regular Tester"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
+		[% IF pair.key == "hls"; pair.value.name = "Lookup Service"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
+		[% IF pair.key == "owamp"; pair.value.name = "One-Way Ping Service (OWAMP)"; pair.value.url = "http://www.internet2.edu/performance/owamp/index.html"; END %]
+		[% IF pair.key == "bwctl"; pair.value.name = "Bandwidth Test Controller (BWCTL)"; pair.value.url = "http://www.internet2.edu/performance/bwctl/index.html"; END %]
+		<tr>
+		<td class="top">[% pair.value.name %]<sup>[<a target="_blank" href="[% pair.value.url %]">1</a>]</sup></td>
+		<td class="top">
+		[% IF pair.value.is_running == "yes" %]
+			<font color="green">Running</font>
+		[% ELSIF pair.value.is_running == "no" %]
+			<font color="red">Not Running</font>
+		[% ELSIF pair.value.is_running == "disabled" %]
+			Disabled
+		[% END %]
+		</td>
+		</tr>
+
+		<tr><td class="bottom" colspan=2>
+		[% IF pair.value.addresses %]
+		<ul>
+		[% FOREACH pair.value.addresses %]
+			[% IF is_url %]
+                                <li><a rel="external" target="_blank" href="[% value %]">[% value %]</a>
+			[% ELSE %]
+				<li>[% value %]
+			[% END %]
+		[% END %]
+		</ul>
+		[% END %]
+		</td>
+		</tr>
+	[% END %]
+	</table>
+
+	<table class="basic_table">
+		<tr><th style="width: 400px" colspan=2>Software Versions</th></tr>
+		<tr><td><a rel="external" target="_blank" href="http://psps.perfsonar.net/toolkit/">pS-Performance Toolkit</a></td><td>[% toolkit_version %]</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS Lookup Service</a></td><td>3.1</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS PingER MA/MP</a></td><td>3.1</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS perfSONAR-BUOY</a></td><td>3.1</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS SNMP MA</a></td><td>3.1</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/bwctl/">BWCTL</a></td><td>1.3</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/owamp/">OWAMP</a></td><td>3.2rc2</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/ndt/">NDT/NDT Applet</a></td><td>3.4.4/5.5.4a</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.psc.edu/networking/projects/pathdiag/">NPAD</a></td><td>1.5.6</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.cacti.net/">Cacti</a></td><td>0.8.7e</td></tr>
+	</table>
+
+</div>
+</div>
+</div>
+
+[% INCLUDE footer.tmpl %]

@@ -1,0 +1,205 @@
+<div class="mainContainer">
+<div class="subTitle1">BWCTL Configuration Tool</div>
+
+<center><font color="red"><div id="web_admin_error">[% error_message %]</div></font></center>
+<center><div id="web_admin_status">[% status_message %]</div></center>
+
+[% IF other_changes %]
+    [% FOREACH change IN other_changes %]
+        [% SET message = "" %]
+
+        [% IF change.group == "regular" %]
+            [% SET message = "Unprivileged Clients" %]
+        [% END %]
+        [% IF change.group == "unrestricted" || change.group == "root" %]
+            [% SET message = "Privileged Clients" %]
+        [% END %]
+
+        [% IF change.limit == "bandwidth" %]
+            [% SET message = "${message} have had their bandwidth restricted to ${change.value} due to the changes you just made" %]
+	[% END %]
+	[% IF change.limit == "duration" %]
+            [% SET message = "${message} have had their maximum test duration restricted to ${change.value} due to the changes you just made" %]
+	[% END %]
+	[% IF change.limit == "allow_tcp" %]
+            [% SET message = "${message} have had their ability to perform TCP tests disabled due to the changes you just made" %]
+	[% END %]
+	[% IF change.limit == "allow_udp" %]
+            [% SET message = "${message} have had their ability to perform UDP tests disabled due to the changes you just made" %]
+	[% END %]
+<center><font color="orange">[% message %]</font></center>
+    [% END %]
+[% END %]
+
+<input type="hidden" id="nptoolkit_is_modified" value="[% is_modified %]" />
+
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save_config()">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset_config()">
+
+<div id="groups">
+        [% FOREACH group IN groups %]
+	[% UNLESS advanced_mode %]
+           [% IF group.name == "regular" %]
+	   	[% SET group.name = "Unprivileged Clients" %]
+  	   [% END %]
+           [% IF group.name == "unrestricted" || group.name == "root" %]
+	   	[% SET group.name = "Privileged Clients" %]
+   	   [% END %]
+           [% IF group.name == "forbidden" || group.name == "jail" %]
+	   	[% SET group.name = "Banned Clients" %]
+   	   [% END %]
+   	[% END %]
+	[% NEXT IF group.id == "forbidden" || group.id == "jail" %]
+
+	<table class="group_table">
+	<tr>
+        <th colspan=2>[% group.name %]</th>
+	</tr>
+        <tr>
+		<td style="width: 200px"><span id="group_[% group.id %]_allow_tcp">
+		[% IF group.allow_tcp_constraint %]
+		<font color="red">Allow TCP Tests?</font>
+		<span dojoType="dijit.Tooltip" connectId="group_[% group.id %]_allow_tcp" toggle="fade">Privileged clients can't specify TCP tests</span>
+		[% ELSE %]
+                Allow TCP Tests?
+		[% END %]
+		</span>
+		</td>
+                <td style="width: 100px; text-align: center">[% IF group.allow_tcp == "on" %] yes [% ELSE %] no [% END %]</td>
+        </tr>
+        <tr>
+		<td style="width: 200px"><span id="group_[% group.id %]_allow_udp">
+		[% IF group.allow_udp_constraint %]
+		<font color="red">Allow UDP Tests?</font>
+		<span dojoType="dijit.Tooltip" connectId="group_[% group.id %]_allow_udp" toggle="fade">Privileged clients can't specify UDP tests</span>
+		[% ELSE %]
+                Allow UDP Tests?
+		[% END %]
+		</span>
+		</td>
+                <td style="width: 100px; text-align: center">[% IF group.allow_udp == "on" %] yes [% ELSE %] no [% END %]</td>
+        </tr>
+	[% IF group.allow_udp == "on" %]
+        <tr>
+		<td style="width: 200px"><span id="group_[% group.id %]_bandwidth">
+		[% IF group.bandwidth_constraint%]
+		<font color="red">Maximum UDP Bandwidth (bps)</font>
+		<span dojoType="dijit.Tooltip" connectId="group_[% group.id %]_bandwidth" toggle="fade">Maximum bandwidth for privileged clients is [% group.bandwidth_constraint %] bps</span>
+		[% ELSE %]
+                Maximum UDP Bandwidth (bps)
+		[% END %]
+		</span>
+		</td>
+                <td style="width: 100px; text-align: center">[% IF group.bandwidth == 0 %] unlimited [% ELSE; group.bandwidth; END %]</td>
+        </tr>
+	[% END %]
+        <tr>
+		<td style="width: 200px"><span id="group_[% group.id %]_duration">
+		[% IF group.duration_constraint %]
+		<font color="red">Maximum Test Length (seconds)</font>
+		<span dojoType="dijit.Tooltip" connectId="group_[% group.id %]_duration" toggle="fade">Maximum duration for privileged clients is [% group.bandwidth_constraint %]</span>
+		[% ELSE %]
+		Maximum Test Length (seconds)
+		[% END %]
+		</span>
+		</td>
+
+                <td style="width: 100px; text-align: center">[% IF group.duration == 0 %] unlimited [% ELSE; group.duration; END %]</td>
+        </tr>
+	[% IF advanced_mode %]
+        <tr>
+                <td style="width: 200px">Allow Anonymous Connections</td><td style="width: 100px; text-align: center">[% IF group.allow_open_mode == "on" %] yes [% ELSE %] no [% END %]</td>
+        </tr>
+        <tr>
+		<td style="width: 200px"><span id="group_[% group.id %]_event_horizon">
+		[% IF group.event_horizon_constraint %]
+		<font color="red">Maximum Time For Pending Requests</font>
+		<span dojoType="dijit.Tooltip" connectId="group_[% group.id %]_event_horizon" toggle="fade">Maximum time for privileged clients is [% group.event_horizon_constraint %]</span>
+		[% ELSE %]
+                Maximum Time For Pending Requests
+		[% END %]
+		</span>
+		</td>
+		<td style="width: 100px; text-align: center">[% group.event_horizon %]</td>
+        </tr>
+        <tr>
+                <td style="width: 200px">Maximum Number Of Pending Requests</td><td style="width: 100px; text-align: center">[% group.pending %]</td>
+        </tr>
+	[% END %]
+
+	<tr>
+		<td colspan=2><a href="#" onClick="display_edit_group_dialog('[% group.id %]', '[% group.name %]', '[% group.allow_tcp %]', '[% group.allow_udp %]', '[% group.bandwidth %]', '[% group.duration %]', '[% group.event_horizon %]', '[% group.allow_open_mode %]', '[% group.pending %]', '[% group.parent %]');">Edit Group Limits</a></td>
+	</tr>
+
+	</table>
+        [% END %]
+</div>
+
+<div id="users">
+<table class="basic_table">
+        <tr>
+        <th style="width: 100px">Users</th><th style="width: 200px">Group</th><th style="width: 300px">Actions</th>
+        </tr>
+        [% FOREACH user IN users %]
+        <tr>
+                <td>[% user.name %]</td>
+                <td>
+                [% FOREACH group IN groups %]
+			[% IF group.id == user.group %]
+				[% SET user.group_name = group.name %]
+			[% END %]
+                [% END %]
+		[% IF user.group_name; user.group_name; ELSE %] No Group [% END %]
+                </td>
+                <td>
+                    <a href="#" onClick="delete_user('[% user.name %]')">Delete</a>
+                    <a href="#" onClick="display_change_password_dialog('[% user.id %]', '[% user.name %]');">Change Password</a>
+                    <a href="#" onClick="display_change_group_dialog('user', '[% user.id %]', '[% user.name %]', '[% user.group %]', { [% FOREACH group IN groups %] '[% group.id %]': '[% group.name %]'[% UNLESS loop.last %],[% END %] [% END %] })">Change Group</a>
+                </td>
+        </tr>
+        [% END %]
+
+        <tfoot>
+    	<tr>
+        	<td colspan="3"><a href="#" onClick="display_add_user_dialog({ [% FOREACH group IN groups %] '[% group.id %]': '[% group.name %]' [% UNLESS loop.last %],[% END %] [% END %] })">Add User</a></td>
+        </tr>
+	</tfoot>
+</table>
+</div>
+
+<div id="networks">
+<table class="basic_table">
+        <tr>
+        <th style="width: 100px">Network</th><th style="width: 200px">Group</th><th style="width: 300px">Actions</th>
+        </tr>
+        [% FOREACH network IN networks %]
+        <tr>
+                <td>[% network.name %]</td>
+                <td>
+                [% FOREACH group IN groups %]
+			[% IF group.id == network.group %]
+				[% SET network.group_name = group.name %]
+			[% END %]
+                [% END %]
+		[% IF network.group_name; network.group_name; ELSE %] No Group [% END %]
+                </td>
+                <td>
+                    <a href="#" onClick="delete_network('[% network.name %]')">Delete</a>
+                    <a href="#" onClick="display_change_group_dialog('network', '[% network.name %]', '[% network.name %]', '[% network.group %]', { [% FOREACH group IN groups %] '[% group.id %]': '[% group.name %]'[% UNLESS loop.last %],[% END %] [% END %] })">Change Group</a>
+                </td>
+        </tr>
+        [% END %]
+        <tfoot>
+    	<tr>
+        	<td colspan="3"><a href="#" onClick="display_add_network_dialog({ [% FOREACH group IN groups %] '[% group.id %]': '[% group.name %]'[% UNLESS loop.last %],[% END %] [% END %] })">Add Network</a></td>
+        </tr>
+	</tfoot>
+
+</table>
+</div>
+
+<br>
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save_config()">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset_config()">
+
+</div>

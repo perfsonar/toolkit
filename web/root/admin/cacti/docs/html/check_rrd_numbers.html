@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Check rrd file numbers</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Debugging"
+HREF="debugging.html"><LINK
+REL="PREVIOUS"
+TITLE="Check rrd file ownership"
+HREF="check_rrd_owner.html"><LINK
+REL="NEXT"
+TITLE="Check rrdtool graph statement"
+HREF="check_rrd_graph.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="check_rrd_owner.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 21. Debugging</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="check_rrd_graph.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CHECK_RRD_NUMBERS"
+>Check rrd file numbers</A
+></H1
+><P
+>You're perhaps wondering about this step,
+			if the former was ok. But due to data sources
+			MINIMUM and MAXIMUM definitions, it is possible,
+			that valid updates for rrd files are suppressed,
+			because MINIMUM was not reached or MAXIMUM was exceeded.</P
+><P
+>Assuming, you've got some valid
+			<KBD
+CLASS="USERINPUT"
+>rrdtool update</KBD
+> in step 3, perform a</P
+><PRE
+CLASS="SCREEN"
+>rrdtool fetch &lt;rrd file&gt; AVERAGE</PRE
+><P
+>and look at the last 10-20 lines. If you find NaN's there,
+			perform</P
+><PRE
+CLASS="SCREEN"
+>rrdtool info &lt;rrd file&gt;</PRE
+><P
+>and check the
+			<KBD
+CLASS="USERINPUT"
+>ds[...].min</KBD
+> and
+			<KBD
+CLASS="USERINPUT"
+>ds[...].max</KBD
+> entries, e.g.</P
+><PRE
+CLASS="SCREEN"
+>ds[loss].min = 0.0000000000e+00
+ds[loss].max = 1.0000000000e+02</PRE
+><P
+>In this example, MINIMUM = 0 and MAXIMUM = 100. For a
+			<KBD
+CLASS="USERINPUT"
+>ds.[...].type=GAUGE</KBD
+>
+			verify, that e.g. the number returned by the script does
+			not exceed
+			<KBD
+CLASS="USERINPUT"
+>ds[...].MAX</KBD
+>
+			(same holds for MINIMUM, respectively).</P
+><P
+>If you run into this, please do not only update
+			the data source definition within the Data Template,
+			but perform a</P
+><PRE
+CLASS="SCREEN"
+>rrdtool tune &lt;rrd file&gt; --maximum &lt;ds-name&gt;:&lt;new ds maximum&gt;</PRE
+><P
+>for all existing rrd files belonging to that Data Template.</P
+><P
+>At this step, it is wise to check
+			<KBD
+CLASS="USERINPUT"
+>step</KBD
+> and <KBD
+CLASS="USERINPUT"
+>heartbeat</KBD
+>
+			of the rrd file as well. For standard 300 seconds
+			polling intervals (step=300), it is wise to set
+			<KBD
+CLASS="USERINPUT"
+>minimal_heartbeat</KBD
+> to 600 seconds.
+			If a single update is missing and the next one occurs in
+			less than 600 seconds from the last one, rrdtool will
+			interpolate the missing update. Thus, gaps are
+			"filled" automatically by interpolation.
+			Be aware of the fact, that this is no "real" data!
+			Again, this must be done in the Data Template itself
+			and by using rrdtool tune for all existing rrd files
+			of this type.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="check_rrd_owner.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="check_rrd_graph.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Check rrd file ownership</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="debugging.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Check rrdtool graph statement</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

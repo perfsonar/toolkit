@@ -1,0 +1,159 @@
+######################
+# This file is filled in via Template Toolkit by the pS Performance Toolkit
+# perfsonarbuoy configuration library. Anything defined here may be
+# overwritten.
+#####################
+
+[% FOREACH key IN owmesh_parameters.keys.sort %]
+[% key %]		[% owmesh_parameters.$key %]
+[% END %]
+
+ADDRTYPES   [[ [% FOREACH addr_type IN address_types %] [% addr_type %] [% END %] ]]
+
+# ADDRDESC is relative to 'node' so it can be over-ridden in NODE blocks
+# (Useful for specifying the ISP a given address is associated with.)
+[% FOREACH addr_type IN addr_types %] 
+[% addr_type %]ADDRDESC        Address
+[% END %]
+
+[% FOREACH test_spec IN test_specs %]
+<TESTSPEC=[% test_spec.id %]>
+
+[% IF test_spec.description.defined %]
+DESCRIPTION			[% test_spec.description %]
+[% END %]
+
+[% IF test_spec.type == "owamp" %]
+TOOL				powstream
+
+[% IF test_spec.packet_interval.defined %]
+OWPINTERVAL		[% test_spec.packet_interval %]
+[% END %]
+
+[% IF test_spec.loss_threshold.defined %]
+OWPLOSSTHRESH			[% test_spec.loss_threshold %]
+[% END %]
+
+[% IF test_spec.session_count.defined %]
+OWPSESSIONCOUNT                 [% test_spec.session_count %]
+[% END %]
+
+[% IF test_spec.sample_count.defined %]
+OWPSAMPLECOUNT                  [% test_spec.sample_count %]
+[% END %]
+
+[% IF test_spec.packet_padding.defined %]
+OWPPACKETPADDING                [% test_spec.packet_padding %]
+[% END %]
+
+[% IF test_spec.bucket_width.defined %]
+OWPBUCKETWIDTH                  [% test_spec.bucket_width %]
+[% END %]
+
+[% ELSE %]
+TOOL				[% test_spec.tool %]
+
+[% IF test_spec.test_interval.defined %]
+BWTestInterval			[% test_spec.test_interval %]
+[% END %]
+
+[% IF test_spec.test_duration.defined %]
+BWTestDuration			[% test_spec.test_duration %]
+[% END %]
+
+[% IF test_spec.test_interval_start_alpha.defined %]
+BWTestIntervalStartAlpha	[% test_spec.test_interval_start_alpha %]
+[% END %]
+
+[% IF test_spec.report_interval.defined %]
+BWReportInterval		[% test_spec.report_interval %]
+[% END %]
+
+# XXX UDP Bandwidth Limit
+[% IF test_spec.protocol == "tcp" %]		
+BWTCP
+[% ELSE %]
+BWUDP
+[% END %]
+
+[% IF test_spec.window_size.defined %]
+BWWindowSize			[% test_spec.window_size %]
+[% END %]
+
+[% IF test_spec.buffer_length.defined %]
+BWBufferLength			[% test_spec.buffer_length %]
+[% END %]
+[% END %]
+</TESTSPEC>
+[% END %]
+
+[% FOREACH group IN groups %]
+<GROUP=[% group.id %]>
+[% IF group.description %]
+DESCRIPTION			[% group.description %]
+[% END %]
+
+[% IF group.type %]
+GROUPTYPE			[% group.type %]
+[% END %]
+
+[% IF group.center %]
+HAUPTNODE			[% group.center %]
+[% END %]
+
+NODES	[[ [% FOREACH node IN group.nodes %] [% node %] [% END %] ]]
+SENDERS [[ [% FOREACH node IN group.nodes %] [% node %] [% END %] ]]
+RECEIVERS [[ [% FOREACH node IN group.nodes %] [% node %] [% END %] ]]
+
+[% IF group.exclude_senders %]
+EXCLUDE_SENDERS [[ [% FOREACH node IN group.exclude_senders %] [% node %] [% END %] ]]
+[% END %]
+[% IF group.exclude_receivers %]
+EXCLUDE_RECEIVERS [[ [% FOREACH node IN group.exclude_receivers %] [% node %] [% END %] ]]
+[% END %]
+[% IF group.include_senders %]
+INCLUDE_SENDERS [[ [% FOREACH node IN group.include_senders %] [% node %] [% END %] ]]
+[% END %]
+[% IF group.include_receivers %]
+INCLUDE_RECEIVERS [[ [% FOREACH node IN group.include_receivers %] [% node %] [% END %] ]]
+[% END %]
+</GROUP>
+[% END %]
+
+[% FOREACH node IN nodes %]
+<NODE=[% node.id %]>
+LONGNAME				[% node.description %]
+CONTACTADDR				[% node.contact_address %]
+[% FOREACH address IN node.addresses %]
+[% IF address.is_ipv6 %]
+[% address.address_type %]ADDR		[[% address.address %]][% IF address.port %]:[%address.port%][% END %]
+[% ELSE %]
+[% address.address_type %]ADDR		[% address.address %][% IF address.port %]:[%address.port%][% END %]
+[% END %]
+[% END %]
+[% IF node.noagent %]
+NOAGENT
+[% END %]
+[% IF node.owamp_port_range %]
+OWPTESTPORTS		[% node.owamp_port_range %]
+[% END %]
+</NODE>
+[% END %]
+
+[% FOREACH measurement_set IN measurement_sets %]
+<MeasurementSet=[% measurement_set.id %]>
+GROUP   	[% measurement_set.group %]
+ADDRTYPE	[% measurement_set.address_type %]
+TESTSPEC	[% measurement_set.test_spec %]
+[% IF measurement_set.description %]
+DESCRIPTION	[% measurement_set.description %]
+[% END %]
+[% IF measurement_set.exclude_self %]
+EXCLUDE_SELF
+[% END %]
+</MeasurementSet>
+[% END %]
+
+[% IF localnodes.0 %]
+LOCALNODES	[[ [% FOREACH node IN localnodes %] [% node %] [% END %] ]]
+[% END %]

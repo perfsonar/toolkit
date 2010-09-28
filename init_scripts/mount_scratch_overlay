@@ -1,0 +1,155 @@
+#!/bin/bash
+#
+# mount_scratch_overlay: Mounts the pS-Performance Toolkit scratch overlay
+#
+# chkconfig: 2345 0 99
+# description:  The pS-Performance Toolkit LiveCD version mounts a file \
+#               on disk to prevent I/O failures if ram fills up.
+#
+
+. /etc/rc.d/init.d/functions
+
+start() {
+#    # sanity check
+#    echo "Are you sure you want to pivot_root?"
+#    read VERIFY
+#    if [ "$VERIFY" != "yes" ]; then
+#    	exit
+#    fi
+    
+    STORE_LOCATION=/mnt/store
+    TEMP_ROOT_LOCATION=/mnt/temp_root
+    TEMP_ROOT_FILE=/opt/perfsonar_ps/toolkit/scripts/temp_root.img
+    SCRATCH_FILE=$STORE_LOCATION/NPTools/scratch
+    
+    echo -n $"Looking for backing store... "
+    # Find any configured block device
+    for dev in `blkid -o device -t TYPE='ext3'`; do
+        mount -n -t ext3 $dev $STORE_LOCATION &> /dev/null
+    
+        if [ $? != 0 ]; then
+            umount $STORE_LOCATION &> /dev/null
+            continue
+        fi
+    
+        if [  -d $STORE_LOCATION/NPTools ]; then
+            break
+        fi
+    
+        umount $STORE_LOCATION &> /dev/null
+    done
+    
+    if [ ! -d $STORE_LOCATION/NPTools ]; then
+        # blkid (in the case of Brian Tierney's machine) was not outputing
+        # /dev/sda even though /dev/sda was available, and ext3. To work around
+        # this, we manually grot through /proc/partitions looking for ext3
+        # devices that blkid didn't display.
+        for i in `cat /proc/partitions | awk '{ print $4 }'`; do
+            if [ -e /dev/$i ]; then
+                mount -n -t ext3 /dev/$i $STORE_LOCATION &> /dev/null
+                if [ $? == 0 ]; then
+                    if [  -d $STORE_LOCATION/NPTools ]; then
+                        break
+                    fi
+                fi
+                umount $STORE_LOCATION &> /dev/null
+            fi
+        done
+    fi
+    
+    if [ -d $STORE_LOCATION/NPTools ]; then
+    	success && echo
+    else
+    	failure
+	echo
+    fi
+    
+    if [ -d $STORE_LOCATION/NPTools ]; then
+        # mount root readwrite using scratch as the read-write aspect. Uses
+        # pivot_root since the scratch file needs to be mounted outside the
+        # directory tree it's being made read-write against (/).
+    
+        # Create the scratch file if it doesn't already exist
+        if [ ! -f $SCRATCH_FILE ]; then
+            touch $SCRATCH_FILE
+        fi
+    
+        # Resize the scratch file to 800M if it's less than that
+        ScratchSize=$(du -ks $SCRATCH_FILE | cut -f1)
+        if [ ${ScratchSize} -lt 800000 ]; then
+            echo -n $"Resizing scratch file: "
+            dd if=/dev/zero of=$SCRATCH_FILE bs=10M count=80 &> /dev/null
+            success && echo
+        fi
+    
+        # Blow away whatever was in the scratch file
+        echo -n $"Clearing scratch file: "
+        mkfs.ext2 -F $SCRATCH_FILE &> /dev/null
+        success && echo
+    
+        echo -n $"Setting up temporary root: "
+        # Mount the temporary root image
+        mount -n -t ext2 -o loop $TEMP_ROOT_FILE $TEMP_ROOT_LOCATION
+    
+        # Mount scratch inside the temporary root
+        mount -n -t ext2 -o loop $SCRATCH_FILE $TEMP_ROOT_LOCATION/scratch
+        success && echo
+    
+        # AUFS needs to be loaded before we do the pivot_root since that module
+        # isn't necessarily available in our temp root location.
+        modprobe aufs
+    
+        # Swap to the temporary root
+        cd $TEMP_ROOT_LOCATION
+        /sbin/pivot_root . $TEMP_ROOT_LOCATION/sysroot
+    
+        echo -n $"Creating overlay: "
+        # Create the aufs overlay of the old / and the scratch file
+        /bin/mount -t aufs -o br=/scratch:/sysroot=ro none /new_root
+        success && echo
+    
+        echo -n $"Swapping to new root: "
+        # Swap to the overlay as the new root
+        cd /new_root
+        /bin/mkdir -p /new_root/old_temp_root
+        /sbin/pivot_root . /new_root/old_temp_root
+        success && echo
+    
+        # Recreate all the various things that were mounted under the original
+        # root. 
+        echo -n $"Recreating /proc, /sys, /dev: "
+        mount -t proc proc /proc
+        mount -t sysfs sys /sys
+        mkdir /dev/shm
+        mount -t tmpfs shm /dev/shm
+        rm -f /dev/null
+        cp -Ra /old_temp_root/sysroot/dev/* /dev
+        mount -t devpts devpts /dev/pts
+        if [ -d /proc/sys/fs/binfmt_misc ]; then
+            mount -t binfmt_misc none /proc/sys/fs/binfmt_misc
+        fi
+
+        success && echo
+    
+        # These umounts will likely fail, but they clean up the view of 'df'.
+        echo -n $"Cleaning up df output: "
+        umount $TEMP_ROOT_LOCATION/scratch &> /dev/null
+        umount $TEMP_ROOT_LOCATION &> /dev/null
+        umount $STORE_LOCATION &> /dev/null
+        success && echo
+    fi
+}
+
+# See how we were called.
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	*)
+		echo $"Usage: $0 {start|stop}"
+		;;
+esac
+exit $RETVAL

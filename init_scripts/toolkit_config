@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# Init file to restore and save pS-Toolkit configuration to the backing store
+#
+# chkconfig: 2345 0 70
+# description: init file to restore and save pS-Toolkit configuration from the backing store
+#
+
+PREFIX=/opt/perfsonar_ps/toolkit
+BINDIR=${PREFIX}/scripts
+
+ERROR=0
+ARGV="$@"
+if [ "x$ARGV" = "x" ] ; then 
+    ARGS="help"
+fi
+
+for ARG in $@ $ARGS
+do
+    case $ARG in
+    start)
+	CMD="${BINDIR}/restore_config"
+
+	echo $CMD
+
+	if $CMD ; then
+	    echo "$0 $ARG: pS-Toolkit configuration restored"
+	else
+	    echo "$0 $ARG: pS-Toolkit configuration could not be restored"
+	    ERROR=3
+	fi
+
+        touch /var/lock/subsys/toolkit_config
+	;;
+    stop)
+	CMD="${BINDIR}/save_config"
+
+	echo $CMD
+
+	if $CMD ; then
+	    echo "$0 $ARG: pS-Toolkit configuration saved"
+	else
+	    echo "$0 $ARG: pS-Toolkit configuration could not be saved"
+	    ERROR=3
+	fi
+    umount /mnt/toolkit   &> /dev/null
+    umount /mnt/squashfs  &> /dev/null
+    umount /mnt/cdrom     &> /dev/null
+
+        rm /var/lock/subsys/toolkit_config
+	;;
+    *)
+	echo "usage: $0 (start|stop|help)"
+	cat <<EOF
+
+start      - restores the configuration from the backing store
+stop       - does nothing
+restart    - does nothing
+help       - this screen
+
+EOF
+	ERROR=2
+    ;;
+
+    esac
+
+done
+
+exit $ERROR

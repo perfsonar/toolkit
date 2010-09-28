@@ -1,0 +1,45 @@
+#!/bin/bash
+
+STORE_LOCATION=/mnt/store/NPTools/debug
+LOG_LOCATION=/var/log
+DATE=`date +%Y-%m-%d`
+CONTEXT_DAYS=1
+COMPRESSION=gzip
+
+SERVICE=$1
+STATUS=$2
+REPORT=$3
+
+if [ ! -z "$STATUS" -a "$STATUS" != "Critical" ]; then
+	exit 0;
+fi
+
+if [ "$COMPRESSION" == "gzip" ]; then
+	COMPRESSION_FLAG=--gzip
+	SUFFIX=tgz
+else
+	COMPRESSION_FLAG=--bzip2
+	SUFFIX=tbz2
+fi
+
+files=();
+new_files=`find $LOG_LOCATION -type f -mtime -$CONTEXT_DAYS`;
+files=(${files[@]} ${new_files[@]})
+
+file_list=
+for i in "${files[@]}"; do
+	file_list+=" $i"
+done
+
+TOTAL_SIZE=`du -kc $file_list | grep total | grep -v $LOG_LOCATION | awk '{ print $1 }'`
+FREE_SPACE=`df -k $STORE_LOCATION | grep -v Filesystem | awk '{ print $4 }'`
+
+if [ $TOTAL_SIZE -gt $FREE_SPACE ]; then
+	exit -1;
+fi
+
+mkdir -p $STORE_LOCATION
+
+tar --create $COMPRESSION_FLAG --file $STORE_LOCATION/logs-$DATE.$SUFFIX $file_list
+
+exit 0;
