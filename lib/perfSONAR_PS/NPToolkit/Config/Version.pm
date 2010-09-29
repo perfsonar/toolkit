@@ -3,7 +3,7 @@ package perfSONAR_PS::NPToolkit::Config::Version;
 use strict;
 use warnings;
 
-our $VERSION = 3.1;
+our $VERSION = 3.2;
 
 =head1 NAME
 
@@ -149,9 +149,9 @@ __END__
 
 =head1 SEE ALSO
 
-To join the 'perfSONAR Users' mailing list, please visit:
+To join the 'perfSONAR-PS Users' mailing list, please visit:
 
-  https://mail.internet2.edu/wws/info/perfsonar-user
+  https://lists.internet2.edu/sympa/info/perfsonar-ps-users
 
 The perfSONAR-PS subversion repository is located at:
 
@@ -178,7 +178,7 @@ along with this software.  If not, see
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008-2009, Internet2
+Copyright (c) 2008-2010, Internet2
 
 All rights reserved.
 

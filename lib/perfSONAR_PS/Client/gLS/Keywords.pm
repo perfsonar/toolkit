@@ -3,7 +3,7 @@ package perfSONAR_PS::Client::gLS::Keywords;
 use strict;
 use warnings;
 
-our $VERSION = 3.1;
+our $VERSION = 3.2;
 
 use fields 'GLS_CLIENT', 'CACHE_DIRECTORY', 'LOGGER';
 
@@ -121,3 +121,44 @@ sub get_cached_keywords {
 }
 
 1;
+
+__END__
+
+=head1 SEE ALSO
+
+To join the 'perfSONAR-PS Users' mailing list, please visit:
+
+  https://lists.internet2.edu/sympa/info/perfsonar-ps-users
+
+The perfSONAR-PS subversion repository is located at:
+
+  http://anonsvn.internet2.edu/svn/perfSONAR-PS/trunk
+
+Questions and comments can be directed to the author, or the mailing list.
+Bugs, feature requests, and improvements can be directed here:
+
+  http://code.google.com/p/perfsonar-ps/issues/list
+
+=head1 VERSION
+
+$Id$
+
+=head1 AUTHOR
+
+Aaron Brown, aaron@internet2.edu
+
+=head1 LICENSE
+
+You should have received a copy of the Internet2 Intellectual Property Framework
+along with this software.  If not, see
+<http://www.internet2.edu/membership/ip.html>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2008-2010, Internet2
+
+All rights reserved.
+
+=cut
+
+# vim: expandtab shiftwidth=4 tabstop=4

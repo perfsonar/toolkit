@@ -3,7 +3,7 @@ package perfSONAR_PS::NPToolkit::BackingStore::Config;
 use strict;
 use warnings;
 
-our $VERSION = 3.1;
+our $VERSION = 3.2;
 
 use Params::Validate qw(:all);
 use Log::Log4perl qw(get_logger);
@@ -72,9 +72,9 @@ __END__
 
 L<Config::General>, L<FindBin>
 
-To join the 'perfSONAR Users' mailing list, please visit:
+To join the 'perfSONAR-PS Users' mailing list, please visit:
 
-  https://mail.internet2.edu/wws/info/perfsonar-user
+  https://lists.internet2.edu/sympa/info/perfsonar-ps-users
 
 The perfSONAR-PS subversion repository is located at:
 
