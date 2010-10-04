@@ -206,7 +206,7 @@ if ( $cgi->param( 'key' ) and $cgi->param( 'url' ) ) {
                 if ( $#year > 1 and $#time > 1 ) {
                     print "        data.setValue(" . $counter . ", 0, new Date(" . $year[0] . "," . ( $year[1] - 1 ) . "," . $year[2] . "," . $time[0] . "," . $time[1] . "," . $time[2] . "));\n";
                     if ( exists $store{$time}{"min"}{"src"} and $store{$time}{"min"}{"src"} ) {
-                        print "        data.setValue(" . $counter . ", 1, " . ( $store{$time}{"min"}{"src"} * 1000 ) . ");\n" if $store{$time}{"min"}{"src"};
+                        print "        data.setValue(" . $counter . ", 1, " . sprintf( "%.3f", ( $store{$time}{"min"}{"src"} * 1000 ) ) . ");\n" if $store{$time}{"min"}{"src"};
                     }
                     if ( $store{$time}{"loss"}{"src"} ) {
                         print "        data.setValue(" . $counter . ", 2, 'Loss Observed (SRC to DST)');\n";
@@ -219,7 +219,7 @@ if ( $cgi->param( 'key' ) and $cgi->param( 'url' ) ) {
                     }
 
                     if ( exists $store{$time}{"min"}{"dst"} and $store{$time}{"min"}{"dst"} ) {
-                        print "        data.setValue(" . $counter . ", 7, " . ( $store{$time}{"min"}{"dst"} * 1000 ) . ");\n" if $store{$time}{"min"}{"dst"};
+                        print "        data.setValue(" . $counter . ", 7, " . sprintf( "%.3f", ( $store{$time}{"min"}{"dst"} * 1000 ) ) . ");\n" if $store{$time}{"min"}{"dst"};
                     }
                     if ( $store{$time}{"loss"}{"dst"} ) {
                         print "        data.setValue(" . $counter . ", 8, 'Loss Observed (DST to SRC)');\n";

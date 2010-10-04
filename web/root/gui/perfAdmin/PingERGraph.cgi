@@ -183,10 +183,10 @@ if ( $cgi->param( 'key' ) and $cgi->param( 'url' ) ) {
                     print "        data.setValue(" . $counter . ", 0, new Date(" . $year[0] . "," . ( $year[1] - 1 ) . ",";
                     print $year[2] . "," . $time[0] . "," . $time[1] . "," . $time[2] . "));\n";
 
-                    print "        data.setValue(" . $counter . ", 1, " . $store{$time}{"min"} . ");\n"    if $store{$time}{"min"};
-                    print "        data.setValue(" . $counter . ", 2, " . $store{$time}{"median"} . ");\n" if $store{$time}{"median"};
-                    print "        data.setValue(" . $counter . ", 3, " . $store{$time}{"mean"} . ");\n"   if $store{$time}{"mean"};
-                    print "        data.setValue(" . $counter . ", 4, " . $store{$time}{"max"} . ");\n"    if $store{$time}{"max"};
+                    print "        data.setValue(" . $counter . ", 1, " . sprintf( "%.2f", $store{$time}{"min"} ) . ");\n"    if $store{$time}{"min"};
+                    print "        data.setValue(" . $counter . ", 2, " . sprintf( "%.2f", $store{$time}{"median"} ) . ");\n" if $store{$time}{"median"};
+                    print "        data.setValue(" . $counter . ", 3, " . sprintf( "%.2f", $store{$time}{"mean"} ) . ");\n"   if $store{$time}{"mean"};
+                    print "        data.setValue(" . $counter . ", 4, " . sprintf( "%.2f", $store{$time}{"max"} ) . ");\n"    if $store{$time}{"max"};
                 }
             }
             $counter++;

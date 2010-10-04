@@ -279,8 +279,8 @@ if ( ( $cgi->param( 'key1_type' ) or $cgi->param( 'key2_type' ) ) and $cgi->para
                     $store{$time}{"out"} /= $scale;
                 }
                 print "        data.setValue(" . $counter . ", 0, new Date(" . $year[0] . "," . ( $year[1] - 1 ) . "," . $year[2] . "," . $time[0] . "," . $time[1] . "," . $time[2] . "));\n";
-                print "        data.setValue(" . $counter . ", 1, " . $store{$time}{"in"} . ");\n";
-                print "        data.setValue(" . $counter . ", 2, " . $store{$time}{"out"} . ");\n";
+                print "        data.setValue(" . $counter . ", 1, " . sprintf( "%.2f", $store{$time}{"in"} ) . ");\n";
+                print "        data.setValue(" . $counter . ", 2, " . sprintf( "%.2f", $store{$time}{"out"} ) . ");\n";
                 $counter++;
             }
         }

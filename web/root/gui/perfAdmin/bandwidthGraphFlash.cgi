@@ -275,12 +275,12 @@ if ( $cgi->param( 'key' ) and $cgi->param( 'url' ) ) {
                 if ( exists $store{$time}{"src"} and $store{$time}{"src"} ) {
                     print "        data.setValue(" . $counter . ", 0, new Date(" . $year[0] . "," . ( $year[1] - 1 ) . "," . $year[2] . "," . $time[0] . "," . $time[1] . "," . $time[2] . "));\n";
                     $store{$time}{"src"} /= $scale if $scale;
-                    print "        data.setValue(" . $counter . ", 1, " . $store{$time}{"src"} . ");\n" if exists $store{$time}{"src"};
+                    print "        data.setValue(" . $counter . ", 1, " . sprintf( "%.2f", $store{$time}{"src"} ) . ");\n" if exists $store{$time}{"src"};
                 }
                 if ( exists $store{$time}{"dest"} and $store{$time}{"dest"} ) {
                     print "        data.setValue(" . $counter . ", 0, new Date(" . $year[0] . "," . ( $year[1] - 1 ) . "," . $year[2] . "," . $time[0] . "," . $time[1] . "," . $time[2] . "));\n" unless ( exists $store{$time}{"src"} and $store{$time}{"src"} );
                     $store{$time}{"dest"} /= $scale if $scale;
-                    print "        data.setValue(" . $counter . ", 2, " . $store{$time}{"dest"} . ");\n" if exists $store{$time}{"dest"};
+                    print "        data.setValue(" . $counter . ", 2, " . sprintf( "%.2f", $store{$time}{"dest"} ) . ");\n" if exists $store{$time}{"dest"};
                 }
                 $counter++ if ( exists $store{$time}{"dest"} and $store{$time}{"dest"} ) or ( exists $store{$time}{"src"} and $store{$time}{"src"} );
             }
