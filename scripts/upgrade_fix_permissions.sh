@@ -15,7 +15,7 @@ chown -R apache:perfsonar /var/log/perfsonar/web_admin
 
 # Make sure that the various /var/lib/perfsonar directories are correct.
 mkdir -p /var/lib/perfsonar
-chown perfsonar:perfsonar /var/lib/perfsonar
+chown -R perfsonar:perfsonar /var/lib/perfsonar
 
 mkdir -p /var/lib/perfsonar/snmp_ma
 chown -R perfsonar:perfsonar /var/lib/perfsonar/snmp_ma
