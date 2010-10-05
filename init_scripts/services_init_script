@@ -82,9 +82,10 @@ sub start {
             foreach my $script (@scripts) {
                 if ($service->{enabled}) {
                     system( "chkconfig --add $script" );
+                    system( "chkconfig $script on" );
                 }
                 else {
-                    system( "chkconfig --level 2345 $script off" );
+                    system( "chkconfig $script off" );
                 }
             }
         }
