@@ -55,13 +55,22 @@ else {
 
 exit 0;
 
-sub stop {
+sub start {
+    `touch /var/lock/subsys/services_init_script`;
 
-    # This could restore anything that's been removed, but since the file
-    # removals won't get saved anyway, there's no point.
+    setup_links();
 }
 
-sub start {
+sub stop {
+    # Theoretically, we shouldn't have to do this. However, during startup  
+    # RedHat doesn't let you add scripts, only remove them. This problem is
+    # only applicable to the NetInstalls.
+    `rm /var/lock/subsys/services_init_script`;
+
+    setup_links();
+}
+
+sub setup_links {
     my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
     $services_conf->init();
 

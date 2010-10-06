@@ -212,6 +212,12 @@ chmod o+r /etc/bwctld/bwctld.keys
 chmod o+r /etc/owampd/owampd.limits
 chmod o+r /etc/owampd/owampd.pfs
 
+chkconfig --add %{init_script_1}
+chkconfig --add %{init_script_2}
+chkconfig --add %{init_script_3}
+chkconfig --add %{init_script_4}
+chkconfig --add %{init_script_5}
+
 chkconfig %{init_script_1} on
 chkconfig %{init_script_2} on
 chkconfig %{init_script_3} on
@@ -233,6 +239,10 @@ echo "-------------------------------------------------------"
 %post LiveCD
 # The toolkit_config init script is only enabled when the LiveCD is being used
 # so it gets enabled as part of the kickstart.
+chkconfig --add %{init_script_6}
+chkconfig --add %{init_script_7}
+chkconfig --add %{init_script_8}
+
 chkconfig %{init_script_6} on
 chkconfig %{init_script_7} on
 chkconfig %{init_script_8} on
