@@ -19,7 +19,7 @@
 %define crontab_3     cron-owamp_cleaner
 %define crontab_4     cron-save_config
 
-%define relnum 5
+%define relnum 6
 %define disttag pSPS
 
 Name:           perl-perfSONAR_PS-Toolkit
@@ -335,6 +335,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_fix_permissions.sh
 
 %changelog
+* Tue Oct 19 2010 aaron@internet2.edu 3.2-6
+- 3.2 final RPM release
+
 * Wed Sep 08 2010 aaron@internet2.edu 3.2-4
 - -rc4 RPM release
 
