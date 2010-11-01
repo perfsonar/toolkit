@@ -304,15 +304,14 @@ my $site="";#Allows us to special case SLAC's configuration
 if($hostname=~/\.slac\.stanford\.edu/) {$site="slac";}
 my $archname=$^O;
 my $Tr = 'traceroute'; # Usually works
+my $temp;
 
 ########################## Get the form action field #########################
 #$form allows one to use a different form action field, e.g.
 #REQUEST_URI is of the form: /cgi-bin/traceroute.pl?choice=yes
-my ($temp, $bin_dir);
-($temp,$bin_dir,$temp)=split /\//,$ENV{'REQUEST_URI'};
-my $form="<form action='/$bin_dir/$progname' method='GET'>";
+my $form="<form action='$progname' method='GET'>";
 if($debug>0) {
-  print "REQUEST_URI=$ENV{'REQUEST_URI'}, bin_dir=$bin_dir, form=$form<br>\n";
+  print "REQUEST_URI=$ENV{'REQUEST_URI'}, form=$form<br>\n";
 }
 
 # **********************  tailor first section as required:- *****************
