@@ -22,7 +22,7 @@
 #--------------------------------------------------------------#
 #Copyright (c) 1995, 1996, 1997, 1998, 1999, 2000, 2001,
 #              2002, 2003, 2004, 2005, 2006, 2007, 2008,
-#              2009
+#              2009, 2010
 #  The Board of Trustees of the Leland
 #  Stanford Junior University. All Rights Reserved.
 
@@ -215,7 +215,8 @@
 #Special case to allow ICMP traceroute for Brunsvigia
 
 #my $version="4.25, 1/25/07, Les Cottrell";
-#Fixed -T on first line, removed useless use of private variable $temp around line 743.
+#Fixed -T on first line, removed useless use of 
+#private variable $temp around line 743.
 #Also explicity untainted the $addr before passing to traceroute.
 
 #my $version="4.26, 1/27/07, Les Cottrell";
@@ -234,7 +235,8 @@
 
 #my $version="4.50, 5/23/09, Les Cottrell";
 #Add 140 to packet size of traceroute to avoid RHAT bug that adds
-#chksum errors for MPLS links.
+#chksum errors for MPLS links. See:
+#http://www.webhostingtalk.com/showthread.php?t=615385
 
 #my $version="4.60, 7/6/09, Les Cottrell";
 #If the addr is an IPv6 address then change traceroute>traceroute6
@@ -247,8 +249,15 @@
 #periods in the string.
 #This suggestion came from Mark Foster [mark.foster @ nasa.gov]
 
-my $version="4.60, 8/9/09, Les Cottrell";
-#Replaced he lat/long link with a Link to GeoIPTools
+#my $version="4.65, 8/9/09, Les Cottrell";
+#Replaced the lat/long link with a Link to GeoIPTools
+
+#my $version="4.70, 8/20/10, Les Cottrell";
+#Added $debug=-1 capability to remove most of the fancy formatting at the beginning 
+
+my $version="4.80, 9/13/2010, Les Cottrell";
+#Retained function as enter a new host.
+###############################################################################
 use strict;
 $ENV{PATH}='/bin:/usr/bin:/sbin:/usr/local/bin:/usr/local/etc:/usr/sbin:/usr/local/sbin';#For untainting
 
@@ -295,14 +304,15 @@ my $site="";#Allows us to special case SLAC's configuration
 if($hostname=~/\.slac\.stanford\.edu/) {$site="slac";}
 my $archname=$^O;
 my $Tr = 'traceroute'; # Usually works
-my $temp;
 
 ########################## Get the form action field #########################
 #$form allows one to use a different form action field, e.g.
 #REQUEST_URI is of the form: /cgi-bin/traceroute.pl?choice=yes
-my $form="<form action='$progname' method='GET'>";
+my ($temp, $bin_dir);
+($temp,$bin_dir,$temp)=split /\//,$ENV{'REQUEST_URI'};
+my $form="<form action='/$bin_dir/$progname' method='GET'>";
 if($debug>0) {
-  print "REQUEST_URI=$ENV{'REQUEST_URI'}, form=$form<br>\n";
+  print "REQUEST_URI=$ENV{'REQUEST_URI'}, bin_dir=$bin_dir, form=$form<br>\n";
 }
 
 # **********************  tailor first section as required:- *****************
@@ -384,7 +394,7 @@ if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
 }
 
 ############################################################################
-#Get function information if supplied
+#Get optional information if supplied
 if($progname =~ /ping/) {$function="ping";} else {$function="traceroute";}
 my @pairs=split(/&/,$query);
 my $ping_size="";
@@ -637,8 +647,9 @@ print "<title>$msg</title>\n";# Now put out title and header
 ##################################################################################
 # *** Sites may want to tailor the following statement to meet their needs. ******
 if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
-  print "<div align='center'><table border='1'>
-       <tr><td align='center'>",
+  if($debug>=0) {
+    print "<div align='center'><table border='1'>
+        <tr><td align='center'>",
       "<a href='http://www.stanford.edu/'>
         <img src='http://www.slac.stanford.edu/comp/net/wan-mon/stanford-seal.gif'
            alt='Stanford University seal' title='Stanford University seal'></a>
@@ -667,6 +678,7 @@ if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
        $form
        Enter target name or address:
        <input type='text' size='30' name='target'> then push 'Enter' key.
+       <input type='hidden' name='function' value='$function'>
        </form>",
       "Lookup:
        <a href='http://www.slac.stanford.edu/comp/net/util/nslookup.html'>host name</a> |
@@ -688,11 +700,13 @@ if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
         Internet monitoring</a><br>",
       "<a href='http://www.ipaddressworld.com/'>What is my IP address?</a>",
       "</tr></table></div>\n";
+  }
 }
 # *** end of second and last part of tailoring ************************************
 
 if($function ne "ping") {
-  print "<table bgcolor='yellow'><tr><td align='center'><font color=red><b>\n",
+  if($debug>=0) {
+    print "<table bgcolor='yellow'><tr><td align='center'><font color=red><b>\n",
       "Please note that traceroutes can appear similar \n",
       "to port scans. If you see a suspected port scan alert, \n",
       "for example from your firewall, with \n",
@@ -703,7 +717,7 @@ if($function ne "ping") {
       "For more on this see<br>\n",
       "<a href='http://www.slac.stanford.edu/comp/net/wan-mon/traceroute-srv.html#security'>\n",
       "Traceroute security issues</a>.</b></font></td></tr></table>\n";
-
+  }
   #No query string, user maybe a novice and needs to be warned that the
   #traceroute may result in something that appears as a port scan to
   #some firewalls, so she/he won't later complain about our web server
