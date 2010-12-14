@@ -24,7 +24,7 @@ rm -f $KEYFILE
 /usr/bin/openssl genrsa > $KEYFILE
 
 pushd $TLSROOT/certs
-cat << EOF | make testcert
+cat << EOF | make SERIAL=$RANDOM testcert
 --
 ${STATE}
 ${CITY}
