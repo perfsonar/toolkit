@@ -906,7 +906,7 @@ sub kill {
 
 	my ($status, $res) = $self->SUPER::kill();
 
-	my $master_pid = `pgrep -f -l hLS | grep -v grep | awk '{ print \$3 }'`;
+	my $master_pid = `pgrep -f -l hLS | grep -v grep | awk '{ print \$3 }' | uniq`;
 	if ($master_pid) {
 		chomp($master_pid);
 		system("pkill -9 -f '$master_pid'");
@@ -941,7 +941,7 @@ sub kill {
 
 	my ($status, $res) = $self->SUPER::kill();
 
-	my $master_pid = `pgrep -f -l pSB | grep -v grep | awk '{ print \$3 }'`;
+	my $master_pid = `pgrep -f -l pSB | grep -v grep | awk '{ print \$3 }' | uniq`;
 	if ($master_pid) {
 		chomp($master_pid);
 		system("pkill -9 -f '$master_pid'");
@@ -976,7 +976,7 @@ sub kill {
 
 	my ($status, $res) = $self->SUPER::kill();
 
-	my $master_pid = `pgrep -f -l SNMPMA | grep -v grep | awk '{ print \$3 }'`;
+	my $master_pid = `pgrep -f -l SNMPMA | grep -v grep | awk '{ print \$3 }' | uniq`;
 	if ($master_pid) {
 		chomp($master_pid);
 		system("pkill -9 -f '$master_pid'");
