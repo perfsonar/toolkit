@@ -332,6 +332,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/temp_root.img
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_3.1.x.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_conman_fix.sh
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_fix_cert_serial.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_fix_permissions.sh
 
 %changelog

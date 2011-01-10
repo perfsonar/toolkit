@@ -18,6 +18,7 @@ etc/backingstore.conf.d/pinger.conf
 etc/backingstore.conf.d/snmp_ma.conf
 etc/backingstore.conf.d/toolkit.conf
 etc/backingstore.conf.d/upgrade_3.1.x.conf
+etc/backingstore.conf.d/upgrade_fix_cert_serial.conf
 etc/backingstore.conf.d/upgrade_fix_permissions.conf
 etc/config_daemon-logger.conf
 etc/config_daemon.conf
@@ -3075,5 +3076,6 @@ scripts/initialize_pinger_database
 scripts/pinger_toolkit_init.sql
 scripts/upgrade_3.1.x.sh
 scripts/upgrade_conman_fix.sh
+scripts/upgrade_fix_cert_serial.sh
 scripts/upgrade_fix_permissions.sh
 scripts/get_enabled_services
