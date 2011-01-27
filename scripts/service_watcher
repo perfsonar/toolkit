@@ -173,8 +173,6 @@ if ($REGULAR_RESTART) {
 		# Pause some to make sure it's really dead.
 		sleep(5);
 
-		$status = $service->regular_maintenance();
-
 		$status = $service->start();
 	}
 }
@@ -466,13 +464,6 @@ sub kill {
     }
 
     return stop_service( { name => $self->{SERVICE_NAME} } );
-}
-
-sub regular_maintenance {
-    my ($self) = @_;
-    # Defaults to doing nothing.
- 
-    return;
 }
 
 package perfSONAR_PS::ServiceWatcher::pSB_bwctl_master;
@@ -1090,17 +1081,6 @@ sub needs_regular_restart {
 	my ($self) = @_;
 
 	return 1;
-}
-
-sub regular_maintenance {
-    my ($self) = @_;
-    # We run myisamchk on the tables while we're doing regular maintenance
-
-    system("myisamchk -oe /var/lib/mysql/owamp/*MYI");
-    system("myisamchk -oe /var/lib/mysql/bwctl/*MYI");
-    system("myisamchk -oe /var/lib/mysql/pingerMA/*MYI");
- 
-    return;
 }
 
 package perfSONAR_PS::ServiceWatcher::LSCacheDaemon;
