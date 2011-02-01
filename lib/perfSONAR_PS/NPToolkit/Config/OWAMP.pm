@@ -199,7 +199,7 @@ sub add_network {
     my ( $ip, $netmask ) = split( '/', $name );
 
     # verify the netmask is of /[number] form
-    return -1 unless ( int( $netmask ) == $netmask and int( $netmask ) >= 0 and int( $netmask ) <= 32 );
+    return -1 unless ( int( $netmask ) == $netmask and int( $netmask ) >= 0 and int( $netmask ) <= 64 );
 
     $self->{OWAMP_LIMITS}->{networks}->{$name} = $group;
 

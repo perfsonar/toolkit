@@ -179,10 +179,10 @@ function display_add_network_dialog(groups) {
 	dialog_content += "<table>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Network</td>";
-	dialog_content += "<td><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' regExpGen='dojox.validate.regexp.ipAddress' invalidMessage='You must enter an IP address' id='add_network_dialog_ip' size='10' value='' /></td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.TextBox' required='true' id='add_network_dialog_ip' size='10' value='' /></td>";
 	dialog_content += "<td>";
 	dialog_content += "<select id='add_network_dialog_netmask' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='32'>";
-	for(var i = 1; i <= 31; i++) {
+	for(var i = 1; i <= 64; i++) {
 		dialog_content += "	<option value='"+i+"'>"+i+"</option>";
 	}
 	dialog_content += "	<option value='32' selected='selected'>32</option>";

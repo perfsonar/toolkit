@@ -10,7 +10,9 @@ use Template;
 use Data::Dumper;
 use Config::General;
 use Log::Log4perl qw(get_logger :easy :levels);
-use Net::IP;
+use NetAddr::IP;
+use Data::Validate::IP qw(is_ipv4);
+use Net::IPv6Addr;
 
 use FindBin qw($RealBin);
 
@@ -258,23 +260,27 @@ sub add_network {
         return display_body();
     }
 
-    # If they only give us an IP or hostname, make it a /32
-    $network_name = $network_name . "/32" unless ( $network_name =~ /\// );
+    # If they only give us an IP or hostname, make it a /32 or /64
+    unless ( $network_name =~ /\// ) {
+        if (is_ipv4($network_name)) {
+            $network_name = $network_name . "/32";
+        }
+        else {
+            $network_name = $network_name . "/64";
+        }
+    }
 
-    # Make sure the netmask is in /N form.
-    my ( $network, $netmask ) = split( '/', $network_name );
+    $logger->info( "Trying to add $network_name" );
 
-    $logger->info( "Trying to add $network/$netmask" );
+    my $netmask_calc = NetAddr::IP->new( $network_name );
 
-    my $netmask_calc = Net::IP->new( "0.0.0.0/$netmask" );
     unless ( $netmask_calc ) {
-        $error_msg = "Invalid netmask";
+        $error_msg = "'$network_name' is an invalid netmask";
         return display_body();
     }
 
-    $netmask = $netmask_calc->prefixlen;
-
-    $network_name = $network . "/" . $netmask;
+    # Convert to a proper subnet
+    $network_name = $netmask_calc->network();
 
     if ( $bwctl_conf->lookup_network( { name => $network_name } ) ) {
         $error_msg = "Network $network_name already exists";
