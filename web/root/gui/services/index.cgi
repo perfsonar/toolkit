@@ -566,7 +566,7 @@ sub get_addresses {
 
     my %res = $self->read_app_config( $self->{CONF_FILE} );
 
-    my $ctrl_port = 8100;
+    my $ctrl_port = 8001;
     my $web_port  = 8000;
 
     if ( $res{port} ) {
