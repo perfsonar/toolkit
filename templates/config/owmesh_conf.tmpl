@@ -69,7 +69,6 @@ BWTestIntervalStartAlpha	[% test_spec.test_interval_start_alpha %]
 BWReportInterval		[% test_spec.report_interval %]
 [% END %]
 
-# XXX UDP Bandwidth Limit
 [% IF test_spec.protocol == "tcp" %]		
 BWTCP
 [% ELSE %]
@@ -78,6 +77,10 @@ BWUDP
 
 [% IF test_spec.window_size.defined %]
 BWWindowSize			[% test_spec.window_size %]
+[% END %]
+
+[% IF test_spec.udp_bandwidth.defined %]
+BWUDPBandwidthLimit             [% test_spec.udp_bandwidth %]
 [% END %]
 
 [% IF test_spec.buffer_length.defined %]

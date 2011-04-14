@@ -1841,7 +1841,7 @@ sub generate_owmesh_conf {
                 $test_spec{test_duration}             = $test->{parameters}->{duration};
                 $test_spec{window_size}               = $test->{parameters}->{window_size} . "m" if ( $test->{parameters}->{window_size} );                    # Add the 'm' on since it's in Megabytes
                 $test_spec{report_interval}           = $test->{parameters}->{report_interval};
-                $test_spec{udp_bandwidth_limit}       = $test->{parameters}->{udp_bandwidth_limit} . "m" if ( $test->{parameters}->{udp_bandwidth_limit} );    # Add the 'm' on since it's in Mbps
+                $test_spec{udp_bandwidth}             = $test->{parameters}->{udp_bandwidth} . "m" if ( $test->{parameters}->{udp_bandwidth} );    # Add the 'm' on since it's in Mbps
                 $test_spec{buffer_len}                = $test->{parameters}->{buffer_length};
                 $test_spec{test_interval_start_alpha} = $test->{parameters}->{test_interval_start_alpha};
                 $measurement_set{exclude_self} = 1;
