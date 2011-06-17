@@ -173,6 +173,9 @@ chown apache /var/run/web_admin_sessions
 
 mkdir -p /var/run/toolkit/
 
+# Install a link to the logs into the web location
+ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web/root/admin/logs
+
 # Create the cacti RRD location
 mkdir -p /var/lib/cacti/rra
 chown apache /var/lib/cacti/rra
