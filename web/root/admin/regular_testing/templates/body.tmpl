@@ -37,6 +37,10 @@
 <br><div style="color:red">This host has owamp test ports configured ([% owamp_ports.min_port %]-[% owamp_ports.max_port %]). However, based on the number of hosts being tested against, at least [% owamp_port_usage %] ports need to be available.</div>
 [% END %]
 
+[% IF bwctl_port_range > 0 && bwctl_port_usage > bwctl_port_range %]
+<br><div style="color:red">This host has bwctl test ports configured ([% bwctl_ports.min_port %]-[% bwctl_ports.max_port %]). However, based on the number of hosts being tested against, at least [% bwctl_port_usage %] ports need to be available.</div>
+[% END %]
+
 [% IF throughput_tests > 0 %]
 [% IF network_percent_used > 100 %]
 [% SET network_percentage_color = "red" %]
@@ -101,6 +105,9 @@
 
 [% IF owamp_tests > 0 %]
 <input class="button" type="submit" name="display_set_owamp_test_port_range_dialog" id="display_set_owamp_test_port_range_dialog" onClick="display_owamp_port_configuration_dialog('[% owamp_ports.min_port %]', '[% owamp_ports.max_port %]')" value="Configure OWAMP Tests Port Range">
+[% END %]
+[% IF throughput_tests > 0 %]
+<input class="button" type="submit" name="display_set_bwctl_test_port_range_dialog" id="display_set_bwctl_test_port_range_dialog" onClick="display_bwctl_port_configuration_dialog('[% bwctl_ports.min_port %]', '[% bwctl_ports.max_port %]')" value="Configure BWCTL Tests Port Range">
 [% END %]
 
 <div id="test_configuration">

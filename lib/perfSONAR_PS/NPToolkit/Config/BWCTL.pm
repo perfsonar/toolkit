@@ -18,22 +18,23 @@ extended to configure all aspects of BWCTL configuration.
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'BWCTL_LIMITS', 'BWCTL_KEYS', 'BWCTLD_LIMITS_FILE', 'BWCTLD_LIMITS_TEMPLATE', 'BWCTLD_KEYS_FILE', 'BWCTLD_KEYS_TEMPLATE';
+use fields 'BWCTL_CONF', 'BWCTL_LIMITS', 'BWCTL_KEYS', 'BWCTLD_CONF_FILE', 'BWCTLD_LIMITS_FILE', 'BWCTLD_KEYS_FILE';
 
 use Params::Validate qw(:all);
 use Storable qw(store retrieve freeze thaw dclone);
 use Data::Dumper;
 
-use perfSONAR_PS::Utils::Config::BWCTL qw( bwctl_keys_parse_file bwctl_limits_parse_file bwctl_keys_hash_password bwctl_keys_output bwctl_limits_output bwctl_known_limits );
+use perfSONAR_PS::Utils::Config::BWCTL qw( bwctl_conf_parse_file bwctl_keys_parse_file bwctl_limits_parse_file bwctl_keys_hash_password bwctl_conf_output bwctl_keys_output bwctl_limits_output bwctl_known_limits );
 use perfSONAR_PS::NPToolkit::ConfigManager::Utils qw( save_file restart_service );
 
 # These are the defaults for the current NPToolkit
 my %defaults = (
     bwctld_limits => "/etc/bwctld/bwctld.limits",
     bwctld_keys   => "/etc/bwctld/bwctld.keys",
+    bwctld_conf   => "/etc/bwctld/bwctld.conf",
 );
 
-=head2 init({ bwctld_limits => 0, bwctld_keys => 0 })
+=head2 init({ bwctld_limits => 0, bwctld_keys => 0, bwctld_conf => 0 })
 
 Initializes the client. Returns 0 on success and -1 on failure. The
 bwctld_limits and bwctld_keys parameters can be specified to set which files
@@ -48,6 +49,7 @@ sub init {
         {
             bwctld_limits => 0,
             bwctld_keys   => 0,
+            bwctld_conf   => 0,
         }
     );
 
@@ -59,9 +61,11 @@ sub init {
     }
 
     # Initialize the defaults
+    $self->{BWCTLD_CONF_FILE}   = $defaults{bwctld_conf};
     $self->{BWCTLD_KEYS_FILE}   = $defaults{bwctld_keys};
     $self->{BWCTLD_LIMITS_FILE} = $defaults{bwctld_limits};
 
+    $self->{BWCTLD_CONF_FILE}   = $parameters->{bwctld_conf}   if ( $parameters->{bwctld_conf} );
     $self->{BWCTLD_KEYS_FILE}   = $parameters->{bwctld_keys}   if ( $parameters->{bwctld_keys} );
     $self->{BWCTLD_LIMITS_FILE} = $parameters->{bwctld_limits} if ( $parameters->{bwctld_limits} );
 
@@ -100,14 +104,27 @@ sub save {
 
     my $bwctld_keys_output = join( "\n", @{$res} );
 
+    ( $status, $res ) = bwctl_conf_output( { variables => $self->{BWCTL_CONF} } );
+    if ($status != 0) {
+        $self->{LOGGER}->error("Couldn't save conf: ".$res);
+        return (-1, "Problem generating conf file");
+    }
+
+    my $bwctld_conf_output = join( "\n", @{$res} );
+
     $res = save_file( { file => $self->{BWCTLD_LIMITS_FILE}, content => $bwctld_limits_output } );
     if ( $res == -1 ) {
-        return (-1, "Problem saving limits file");
+        return (-1, "Problem saving limits file: ".$self->{BWCTLD_LIMITS_FILE});
     }
 
     $res = save_file( { file => $self->{BWCTLD_KEYS_FILE}, content => $bwctld_keys_output } );
     if ( $res == -1 ) {
         return (-1, "Problem saving keys file");
+    }
+
+    $res = save_file( { file => $self->{BWCTLD_CONF_FILE}, content => $bwctld_conf_output } );
+    if ( $res == -1 ) {
+        return (-1, "Problem saving conf file");
     }
 
     if ( $parameters->{restart_services} ) {
@@ -585,6 +602,73 @@ sub delete_group {
     return ( 0, "" );
 }
 
+=head2 get_port_range
+	Gets the port range for the test type specified in port_type
+=cut
+sub get_port_range {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { port_type => 1 } );
+    my $port_type = $parameters->{port_type};
+
+    unless ($port_type eq "test" or $port_type eq "iperf") {
+        my $msg = "Invalid port range: ".$port_type;
+        $self->{LOGGER}->error($msg);
+        return (-1, $msg);
+    }
+
+    my $port_variable = $port_type."_port";
+
+    my ($min_port, $max_port) = (0, 0);
+
+    if ($self->{BWCTL_CONF}->{$port_variable}) {
+        if ($self->{BWCTL_CONF}->{$port_variable} =~ /^(\d+)-(\d+)$/) {
+            $min_port = $1;
+            $max_port = $2;
+        }
+        else {
+            my $msg = "Invalid port range for $port_variable: ".$self->{BWCTL_CONF}->{$port_variable};
+            $self->{LOGGER}->error($msg);
+            return (-1, $msg);
+        }
+    }
+
+    return (0, { min_port => $min_port, max_port => $max_port });
+}
+
+=head2 set_port_range
+	Set the port range for the test type specified in port_type
+=cut
+sub set_port_range {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { port_type => 1, min_port => 1, max_port => 1 } );
+    my $port_type = $parameters->{port_type};
+    my $min_port  = $parameters->{min_port};
+    my $max_port  = $parameters->{max_port};
+
+    unless ($port_type eq "test" or $port_type eq "iperf") {
+        my $msg = "Invalid port range: ".$port_type;
+        $self->{LOGGER}->error($msg);
+        return (-1, $msg);
+    }
+
+    if ($min_port > $max_port) {
+        my $msg = "Invalid port range (min port > max port): ".$min_port."<".$max_port;
+        $self->{LOGGER}->error($msg);
+        return (-1, $msg);
+    }
+
+    my $port_variable = $port_type."_port";
+
+    my $range_desc = $min_port."-".$max_port;
+    if ($min_port == 0 and $max_port == 0) {
+        $range_desc = "0";
+    }
+
+    $self->{BWCTL_CONF}->{$port_variable} = $range_desc;
+
+    return 0;
+}
+
 =head2 lookup_limit
 	Looks up the limit for the specified group
 =cut
@@ -692,11 +776,14 @@ sub last_modified {
 
     my ($mtime1) = (stat ( $self->{BWCTLD_KEYS_FILE} ) )[9];
     my ($mtime2) = (stat ( $self->{BWCTLD_LIMITS_FILE} ) )[9];
+    my ($mtime3) = (stat ( $self->{BWCTLD_CONF_FILE} ) )[9];
 
     $mtime1 = 0 unless ($mtime1);
     $mtime2 = 0 unless ($mtime2);
+    $mtime3 = 0 unless ($mtime3);
 
     my $mtime = ($mtime1 > $mtime2)?$mtime1:$mtime2;
+    $mtime = ($mtime > $mtime3)?$mtime:$mtime3;
 
     return $mtime;
 }
@@ -738,6 +825,22 @@ sub reset_state {
         $self->{BWCTL_KEYS} = {};
     }
 
+    if ( -f $self->{BWCTLD_CONF_FILE} ) {
+        ( $status, $res ) = bwctl_conf_parse_file( { file => $self->{BWCTLD_CONF_FILE} } );
+        if ( $status != 0 ) {
+            $self->{LOGGER}->error( "Keys: $res" );
+            return -1;
+        }
+
+        $self->{BWCTL_CONF} = $res;
+
+        use Data::Dumper;
+        $self->{LOGGER}->error("BWCTL_CONF: ".Dumper($res));
+    }
+    else {
+        $self->{BWCTL_CONF} = {};
+    }
+
     return 0;
 }
 
@@ -753,8 +856,10 @@ sub save_state {
     my %state = (
         bwctl_limits       => $self->{BWCTL_LIMITS},
         bwctl_keys         => $self->{BWCTL_KEYS},
+        bwctl_conf         => $self->{BWCTL_CONF},
         bwctld_limits_file => $self->{BWCTLD_LIMITS_FILE},
         bwctld_keys_file   => $self->{BWCTLD_KEYS_FILE},
+        bwctld_conf_file   => $self->{BWCTLD_CONF_FILE},
     );
 
     my $str = freeze( \%state );
@@ -775,8 +880,10 @@ sub restore_state {
 
     $self->{BWCTL_LIMITS}       = $state->{bwctl_limits};
     $self->{BWCTL_KEYS}         = $state->{bwctl_keys};
+    $self->{BWCTL_CONF}         = $state->{bwctl_conf};
     $self->{BWCTLD_LIMITS_FILE} = $state->{bwctld_limits_file};
     $self->{BWCTLD_KEYS_FILE}   = $state->{bwctld_keys_file};
+    $self->{BWCTLD_CONF_FILE}   = $state->{bwctld_conf_file};
 
     return;
 }

@@ -124,10 +124,12 @@ sub writeFile {
     my $contents = $parameters->{contents};
 
     unless ($self->{ACCESS_CONTROL}->{file}->{$filename}) {
+        $self->{LOGGER}->error("Couldn't write file $filename: unknown file");
         die("Access denied");
     }
 
     unless ($self->{ACCESS_CONTROL}->{file}->{$filename}->{write}) {
+        $self->{LOGGER}->error("Couldn't write file $filename: write permission denied");
         die("Access denied");
     }
 

@@ -4,11 +4,14 @@ use strict;
 use warnings;
 
 use Params::Validate;
+use Log::Log4perl qw(get_logger);
 use Digest::MD5 qw(md5_hex);
 
 use base 'Exporter';
 
-our @EXPORT_OK = qw( bwctl_keys_parse bwctl_keys_parse_file bwctl_keys_output bwctl_keys_output_file bwctl_keys_hash_password bwctl_limits_parse bwctl_limits_parse_file bwctl_limits_output bwctl_limits_output_file bwctl_known_limits );
+our @EXPORT_OK = qw( bwctl_conf_parse bwctl_conf_parse_file bwctl_conf_output bwctl_conf_output_file bwctl_keys_parse bwctl_keys_parse_file bwctl_keys_output bwctl_keys_output_file bwctl_keys_hash_password bwctl_limits_parse bwctl_limits_parse_file bwctl_limits_output bwctl_limits_output_file bwctl_known_limits );
+
+our $logger = get_logger(__PACKAGE__);
 
 our %known_limits = (
     parent          => {
@@ -59,6 +62,104 @@ sub bwctl_known_limits {
     } else {
         return (0, \%known_limits);
     }
+}
+
+sub bwctl_conf_parse_file {
+    my $parameters = validate( @_, { file => 1, } );
+
+    unless ( open( LIMITS_FILE, $parameters->{file} ) ) {
+        return ( -1, "Couldn't open file: " . $parameters->{file} );
+    }
+
+    my @lines = <LIMITS_FILE>;
+
+    close( LIMITS_FILE );
+
+    return bwctl_conf_parse( { lines => \@lines } );
+}
+
+sub bwctl_conf_output_file {
+    my $parameters = validate(
+        @_,
+        {
+            file  => 1,
+            variables => 0,
+        }
+    );
+
+    my ( $status, $res ) = bwctl_conf_output( { variables => $parameters->{variables} } );
+
+    if ( $status != 0 ) {
+        return ( $status, $res );
+    }
+
+    unless ( open( CONF_FILE, ">" . $parameters->{file} ) ) {
+        return ( -1, "Couldn't open file: " . $parameters->{file} );
+    }
+
+    foreach my $line ( @{$res} ) {
+        print CONF_FILE $line . "\n";
+    }
+
+    close( CONF_FILE );
+
+    return ( 0, "" );
+}
+
+sub bwctl_conf_parse {
+    my $parameters = validate( @_, { lines => 1, } );
+
+    my $line_number = 0;
+
+    my %variables = ();
+
+    foreach my $line ( @{ $parameters->{lines} } ) {
+        chomp( $line );
+
+        $line_number++;
+
+        # Strip out comments
+        $line =~ s/#.*//;
+
+        # Strip leading and trailing whitespace
+        $line =~ s/^\s+//;
+        $line =~ s/\s+$//;
+
+        # skip empty lines (may be empty because they were comments)
+        next if ( $line eq "" );
+
+        my ($variable, $value);
+
+        if ($line =~ /^(\S*)\s+(\S*)$/) {
+            $variables{$1} = $2;
+        }
+        elsif ($line =~ /^(\S*)$/) {
+            $variables{$1} = undef;
+        }
+        else {
+            return ( -1, "Invalid line $line_number" );
+        }
+    }
+
+    return ( 0, \%variables );
+}
+
+sub bwctl_conf_output {
+    my $parameters = validate( @_, { variables => 1, } );
+
+    my $variables = $parameters->{variables};
+
+    my @lines = ();
+
+    foreach my $variable ( keys %{$variables} ) {
+        my $line = $variable;
+
+	$line .= "\t" . $variables->{$variable} if (defined $variables->{$variable});
+
+        push @lines, $line;
+    }
+
+    return ( 0, \@lines );
 }
 
 sub bwctl_keys_parse_file {
@@ -139,7 +240,6 @@ sub bwctl_keys_parse {
             return ( -1, "Invalid line $line_number" );
         }
     }
-    close( KEYS_FILE );
 
     return ( 0, \%users );
 }

@@ -24,6 +24,7 @@ use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address reverse_dns_multi r
 use perfSONAR_PS::Client::gLS::Keywords;
 use perfSONAR_PS::Client::Parallel::gLS;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
+use perfSONAR_PS::NPToolkit::Config::BWCTL;
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
 use perfSONAR_PS::NPToolkit::Config::Services;
 use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
@@ -75,9 +76,10 @@ else {
 
 die( "Couldn't instantiate session: " . CGI::Session->errstr() ) unless ( $session );
 
-our ( $testing_conf, $lookup_info, $status_msg, $error_msg, $current_test, $dns_cache, $is_modified, $initial_state_time );
+our ( $testing_conf, $bwctl_conf, $lookup_info, $status_msg, $error_msg, $current_test, $dns_cache, $is_modified, $initial_state_time );
 if ( $session and not $session->is_expired and $session->param( "testing_conf" ) ) {
     $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new( { saved_state => $session->param( "testing_conf" ) } );
+    $bwctl_conf   = perfSONAR_PS::NPToolkit::Config::BWCTL->new( { saved_state => $session->param( "bwctl_conf" ) } );
     $lookup_info  = thaw( $session->param( "lookup_info" ) );
     $dns_cache    = thaw( $session->param( "dns_cache" ) );
     $current_test = $session->param( "current_test" );
@@ -141,6 +143,7 @@ my $ajax = CGI::Ajax->new(
 
     'show_test' => \&show_test,
     'update_owamp_test_port_range' => \&update_owamp_test_port_range,
+    'update_bwctl_test_port_range' => \&update_bwctl_test_port_range,
 
     'add_pinger_test'    => \&add_pinger_test,
     'update_pinger_test' => \&update_pinger_test,
@@ -181,9 +184,14 @@ sub save_config {
     if ($status != 0) {
         $error_msg = "Problem saving configuration: $res";
     } else {
-        $status_msg = "Configuration Saved And Services Restarted";
-        $is_modified = 0;
-        $initial_state_time = $testing_conf->last_modified();
+        ( $status, $res ) = $bwctl_conf->save( { restart_services => 1 } );
+        if ($status != 0) {
+            $error_msg = "Problem saving configuration: $res";
+        } else {
+            $status_msg = "Configuration Saved And Services Restarted";
+            $is_modified = 0;
+            $initial_state_time = $testing_conf->last_modified();
+        }
     }
 
     save_state();
@@ -212,6 +220,12 @@ sub reset_state {
     $lookup_info = undef;
     $dns_cache   = {};
 
+    $bwctl_conf = perfSONAR_PS::NPToolkit::Config::BWCTL->new();
+    ( $status, $res ) = $bwctl_conf->init( { bwctld_limits => $conf{bwctld_limits}, bwctld_conf => $conf{bwctld_conf}, bwctld_keys => $conf{bwctld_keys} } );
+    if ( $status != 0 ) {
+        return ( $status, "Problem reading testing configuration: $res" );
+    }
+
     $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
     ( $status, $res ) = $testing_conf->init( { perfsonarbuoy_conf_template => $conf{perfsonarbuoy_conf_template}, perfsonarbuoy_conf_file => $conf{perfsonarbuoy_conf_file}, pinger_landmarks_file => $conf{pinger_landmarks_file} } );
     if ( $status != 0 ) {
@@ -224,6 +238,7 @@ sub reset_state {
 
 sub save_state {
     $session->param( "testing_conf", $testing_conf->save_state() );
+    $session->param( "bwctl_conf", $bwctl_conf->save_state() );
     $session->param( "lookup_info",  freeze( $lookup_info ) ) if ( $lookup_info );
     $session->param( "dns_cache",    freeze( $dns_cache ) );
     $session->param( "current_test", $current_test );
@@ -322,6 +337,7 @@ sub fill_variables_status {
     my $psb_owamp_tests      = 0;
     my $network_usage        = 0;
     my $owamp_port_usage     = 0;
+    my $bwctl_port_usage     = 0;
 
     if ( $status == 0 ) {
         my $tests = $res;
@@ -354,9 +370,11 @@ sub fill_variables_status {
                 my $num_tests = 0;
                 foreach my $member ( @{ $test->{members} } ) {
                     if ( $member->{sender} ) {
+                        $bwctl_port_usage += 2;
                         $num_tests++;
                     }
                     if ( $member->{receiver} ) {
+                        $bwctl_port_usage += 2;
                         $num_tests++;
                     }
                 }
@@ -369,7 +387,32 @@ sub fill_variables_status {
         }
     }
 
+    # "merge" the two bwctl port ranges
+    my %bwctl_ports = ();
+    my $bwctl_port_range;
+
+    ($status, $res) = $bwctl_conf->get_port_range({ port_type => "test" });
+    if ($status == 0) {
+        if ($res->{min_port} and $res->{max_port}) {
+            $bwctl_ports{min_port} = $res->{min_port};
+            $bwctl_ports{max_port} = $res->{max_port};
+        }
+    }
+
+    ($status, $res) = $bwctl_conf->get_port_range({ port_type => "iperf" });
+    if ($status == 0) {
+        if ($res->{min_port} and $res->{max_port}) {
+            $bwctl_ports{min_port} = ($bwctl_ports{min_port} and $bwctl_ports{min_port} < $res->{min_port})?$bwctl_ports{min_port}:$res->{min_port};
+            $bwctl_ports{max_port} = ($bwctl_ports{max_port} and $bwctl_ports{max_port} > $res->{max_port})?$bwctl_ports{max_port}:$res->{max_port};
+        }
+    }
+
+    if (defined $bwctl_ports{min_port} and defined $bwctl_ports{max_port}) {
+        $bwctl_port_range = $bwctl_ports{max_port} - $bwctl_ports{min_port} + 1;
+    }
+
     my %owamp_ports = ();
+    my $owamp_port_range;
 
     ($status, $res) = $testing_conf->get_local_port_range({ test_type => "owamp" });
     if ($status == 0) {
@@ -379,13 +422,14 @@ sub fill_variables_status {
         }
     }
 
-    my $owamp_port_range;
-
     if (defined $owamp_ports{min_port} and defined $owamp_ports{max_port}) {
         $owamp_port_range = $owamp_ports{max_port} - $owamp_ports{min_port} + 1;
     }
 
     $vars->{network_percent_used} = sprintf "%.1d", $network_usage * 100;
+    $vars->{bwctl_ports}          = \%bwctl_ports;
+    $vars->{bwctl_port_range}     = $bwctl_port_range;
+    $vars->{bwctl_port_usage}     = $bwctl_port_usage;
     $vars->{owamp_ports}          = \%owamp_ports;
     $vars->{owamp_port_range}     = $owamp_port_range;
     $vars->{owamp_port_usage}     = $owamp_port_usage;
@@ -613,6 +657,53 @@ sub update_owamp_test_port_range {
         ( $status, $res ) = $testing_conf->set_local_port_range( { test_type => "owamp", min_port => $min_port, max_port => $max_port } );
     }
 
+    if ( $status != 0 ) {
+        $error_msg = "Port range update failed: $res";
+        return display_body();
+    }
+
+    $is_modified = 1;
+
+    save_state();
+
+    return display_body();
+}
+
+sub update_bwctl_test_port_range {
+    my ($min_port, $max_port) = @_;
+
+    if ($min_port eq "NaN" or $max_port eq "NaN") {
+        $min_port = 0;
+        $max_port = 0;
+    }
+
+    unless ($min_port <= $max_port) {
+        $error_msg = "Minimum port must be less than maximum port";
+        return display_body();
+    }
+
+    unless (($min_port == 0 and $max_port == 0) or ($max_port - $min_port) > 0) {
+        $error_msg = "Must specify at least two ports";
+        return display_body();
+    }
+
+    my ($test_min_port, $test_max_port, $iperf_min_port, $iperf_max_port);
+
+    # Divide the range into the "iperf" ports, and the "test" ports.
+    $test_min_port = $min_port;
+    $test_max_port = int(($max_port - $min_port)/2) + $min_port;
+    $iperf_min_port = int(($max_port - $min_port)/2) + 1 + $min_port;
+    $iperf_max_port = $max_port;
+
+    my ($status, $res);
+
+    ( $status, $res ) = $bwctl_conf->set_port_range({ port_type => "test", min_port => $test_min_port, max_port => $test_max_port });
+    if ( $status != 0 ) {
+        $error_msg = "Port range update failed: $res";
+        return display_body();
+    }
+
+    ( $status, $res ) = $bwctl_conf->set_port_range({ port_type => "iperf", min_port => $iperf_min_port, max_port => $iperf_max_port });
     if ( $status != 0 ) {
         $error_msg = "Port range update failed: $res";
         return display_body();
