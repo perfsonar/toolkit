@@ -2,6 +2,7 @@
 
 logfile /var/log/ntpd
 driftfile /var/lib/ntp/ntp.drift
+statsdir  /var/lib/ntp
 statistics loopstats peerstats clockstats
 filegen loopstats file loopstats type day enable
 filegen peerstats file peerstats type day enable
