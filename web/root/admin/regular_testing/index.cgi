@@ -856,54 +856,72 @@ sub update_pinger_test {
 }
 
 sub add_member_to_test {
+    $error_msg = "";
     my ( $test_id, $address, $port, $description ) = @_;
 
-    my $hostname;
+    my @addressList = split(',', $address);
 
-    if ( is_ipv4( $address ) ) {
-        $hostname = reverse_dns( $address );
-    }
-    elsif ( &Net::IPv6Addr::is_ipv6( $address ) ) {
-        $hostname = reverse_dns( $address );
-    }
-    elsif ( is_hostname( $address ) ) {
-        $hostname = $address;
-    }
-    else {
-        $error_msg = "Can't parse the specified address";
-        return display_body();
-    }
+    my %hostname;
 
-    my $new_description = $description;
-
-    $new_description = $hostname if ( not $description and $hostname );
-    $new_description = $address  if ( not $description and $address );
-
-    $logger->debug( "Adding address: $address Port: $port Description: $description" );
-
-    my ( $status, $res ) = $testing_conf->add_test_member(
-        {
-            test_id     => $test_id,
-            address     => $address,
-            port        => $port,
-            description => $description,
-            sender      => 1,
-            receiver    => 1,
+    foreach my $addr(@addressList){
+            if ( is_ipv4( $addr ) ) {
+                $hostname{$addr} = reverse_dns( $addr );
+         }
+        elsif ( &Net::IPv6Addr::is_ipv6( $addr ) ) {
+                 $hostname{$addr} = reverse_dns( $addr );
         }
-    );
+        elsif ( is_hostname( $addr ) ) {
+                $hostname{$addr} = $addr;
+         }
+        else {
+                $error_msg = "Can't parse the specified address";
+                return display_body();
+        }
 
-    if ( $status != 0 ) {
-        $error_msg = "Failed to add test: $res";
-        return display_body();
     }
+
+   my %status;
+   my %res;
+   foreach my $addr(@addressList){
+            my $new_description = $description;
+
+            $new_description = $hostname{$addr} if ( not $description and $hostname{$addr} );
+            $new_description = $addr  if ( not $description and $addr );
+
+            $logger->debug( "Adding address: $addr Port: $port Description: $description" );
+
+            ( $status{$addr}, $res{$addr} ) = $testing_conf->add_test_member(
+                {
+                        test_id     => $test_id,
+                        address     => $addr,
+                        port        => $port,
+                        description => $description,
+                        sender      => 1,
+                        receiver    => 1,
+                }
+             );
+
+   }
+
+   foreach my $addr (@addressList){
+        if ( $status{$addr} != 0 ) {
+                $error_msg = "Failed to add test: $res{$addr}\n";
+                #return display_body();
+        }
+   }
+
+   if($error_msg ne ""){
+        return display_body();
+   }
 
     $is_modified = 1;
 
     save_state();
 
-    $status_msg = "Host Added To Test";
+    $status_msg = "Host(s) Added To Test";
     return display_body();
 }
+
 
 sub remove_member_from_test {
     my ( $test_id, $member_id ) = @_;
