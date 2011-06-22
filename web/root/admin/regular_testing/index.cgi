@@ -391,7 +391,7 @@ sub fill_variables_status {
     my %bwctl_ports = ();
     my $bwctl_port_range;
 
-    ($status, $res) = $bwctl_conf->get_port_range({ port_type => "test" });
+    ($status, $res) = $bwctl_conf->get_port_range({ port_type => "peer" });
     if ($status == 0) {
         if ($res->{min_port} and $res->{max_port}) {
             $bwctl_ports{min_port} = $res->{min_port};
@@ -689,7 +689,7 @@ sub update_bwctl_test_port_range {
 
     my ($test_min_port, $test_max_port, $iperf_min_port, $iperf_max_port);
 
-    # Divide the range into the "iperf" ports, and the "test" ports.
+    # Divide the range into the "iperf" ports, and the "peer" ports.
     $test_min_port = $min_port;
     $test_max_port = int(($max_port - $min_port)/2) + $min_port;
     $iperf_min_port = int(($max_port - $min_port)/2) + 1 + $min_port;
@@ -697,7 +697,7 @@ sub update_bwctl_test_port_range {
 
     my ($status, $res);
 
-    ( $status, $res ) = $bwctl_conf->set_port_range({ port_type => "test", min_port => $test_min_port, max_port => $test_max_port });
+    ( $status, $res ) = $bwctl_conf->set_port_range({ port_type => "peer", min_port => $test_min_port, max_port => $test_max_port });
     if ( $status != 0 ) {
         $error_msg = "Port range update failed: $res";
         return display_body();

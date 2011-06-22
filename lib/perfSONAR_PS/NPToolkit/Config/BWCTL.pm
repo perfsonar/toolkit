@@ -610,7 +610,7 @@ sub get_port_range {
     my $parameters = validate( @params, { port_type => 1 } );
     my $port_type = $parameters->{port_type};
 
-    unless ($port_type eq "test" or $port_type eq "iperf") {
+    unless ($port_type eq "peer" or $port_type eq "iperf") {
         my $msg = "Invalid port range: ".$port_type;
         $self->{LOGGER}->error($msg);
         return (-1, $msg);
@@ -645,7 +645,7 @@ sub set_port_range {
     my $min_port  = $parameters->{min_port};
     my $max_port  = $parameters->{max_port};
 
-    unless ($port_type eq "test" or $port_type eq "iperf") {
+    unless ($port_type eq "peer" or $port_type eq "iperf") {
         my $msg = "Invalid port range: ".$port_type;
         $self->{LOGGER}->error($msg);
         return (-1, $msg);
