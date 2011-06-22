@@ -21,7 +21,7 @@ use Template;
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'CONFIG_FILE', 'SERVICE_NAME', 'ORGANIZATION_NAME', 'LOCATION', 'EXTERNAL_ADDRESS', 'PROJECTS';
+use fields 'CONFIG_FILE', 'SERVICE_NAME', 'ORGANIZATION_NAME', 'LOCATION', 'EXTERNAL_ADDRESS', 'PROJECTS', 'LS_REGISTRATION_INTERVAL';
 
 use Params::Validate qw(:all);
 use Storable qw(store retrieve freeze thaw dclone);
@@ -111,6 +111,32 @@ sub get_projects {
     my $parameters = validate( @params, { } );
 
     return $self->{PROJECTS};
+}
+
+=head2 get_ls_registration_interval({ })
+Returns the LS registration interval
+=cut
+
+sub get_ls_registration_interval {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{LS_REGISTRATION_INTERVAL};
+}
+
+=head2 set_ls_registration_interval({ ls_registration_interval => 1 })
+Sets the LS registration interval
+=cut
+
+sub set_ls_registration_interval {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { ls_registration_interval => 1, } );
+
+    my $ls_registration_interval = $parameters->{ls_registration_interval};
+
+    $self->{LS_REGISTRATION_INTERVAL} = $ls_registration_interval;
+
+    return 0;
 }
 
 =head2 set_external_address({ external_address => 1 })
@@ -229,6 +255,11 @@ sub save {
                             cv => "site_project",
                             lv => "PROJECTS",
                             ov => [],
+                        },
+                        {
+                            cv => "ls_registration_interval",
+                            lv => "LS_REGISTRATION_INTERVAL",
+                            ov => [],
                         }
                     );
 
@@ -241,12 +272,13 @@ sub save {
                                                 });
             }
 
-            $self->psps_config_clear_variable({
+            my $res = $self->psps_config_replace_variable({
                                                 config => $config,
-                                                variable => $var->{cv}
+                                                variable => $var->{cv},
+                                                value    => $self->{$var->{lv}}
                                             });
 
-            $config->{$var->{cv}} = $self->{$var->{lv}};
+            $config->{$var->{cv}} = $self->{$var->{lv}} unless ($res);
         }
     }
 
@@ -265,6 +297,97 @@ sub save {
     }
 
     return 0;
+}
+
+=head2 psps_config_replace_variable ({ config => 1, variable => 1 })
+    Recursive function that takes a pSPS configuration (as a hash), and finds
+    the specified variable, recursing through the structure if needed. It takes
+    the most deep instance of that variable.
+=cut
+sub psps_config_replace_variable {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { config => 1, variable => 1, value => 1 } );
+
+    my $config   = $parameters->{config};
+    my $variable = $parameters->{variable};
+    my $value    = $parameters->{value};
+
+    my $retval;
+
+    foreach my $key (keys %$config) {
+        if (ref($config->{$key}) eq "ARRAY") {
+            foreach my $entry (@{ $config->{$key} }) {
+                if (ref($entry) eq "HASH") {
+                    my $res = $self->psps_config_replace_variable({
+                                                        config => $entry,
+                                                        variable => $variable,
+                                                        value    => $value
+                                                });
+
+                    $retval = $res if ($res);
+                }
+            }
+        }
+        elsif (ref($config->{$key}) eq "HASH") {
+            my $res = $self->psps_config_replace_variable({
+                                                config => $config->{$key},
+                                                variable => $variable,
+                                                value    => $value
+                                        });
+            $retval = $res if ($res);
+        }
+    }
+
+    foreach my $key (keys %$config) {
+        if ($key eq $variable) {
+            $config->{$key} = $value;
+            $retval = 1;
+        }
+    }
+
+    return $retval;
+}
+
+=head2 psps_config_find_variable ({ config => 1, variable => 1 })
+    Recursive function that takes a pSPS configuration (as a hash), and finds
+    the specified variable, recursing through the structure if needed. It takes
+    the most deep instance of that variable.
+=cut
+sub psps_config_find_variable {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { config => 1, variable => 1 } );
+
+    my $config   = $parameters->{config};
+    my $variable = $parameters->{variable};
+
+    foreach my $key (keys %$config) {
+        if (ref($config->{$key}) eq "ARRAY") {
+            foreach my $entry (@{ $config->{$key} }) {
+                if (ref($entry) eq "HASH") {
+                    my $res = $self->psps_config_find_variable({
+                                                        config => $entry,
+                                                        variable => $variable
+                                                });
+		    return $res if (defined $res);
+                }
+            }
+        }
+        elsif (ref($config->{$key}) eq "HASH") {
+            my $res = $self->psps_config_find_variable({
+                                                config => $config->{$key},
+                                                variable => $variable
+                                        });
+	    return $res if (defined $res);
+        }
+    }
+
+    foreach my $key (keys %$config) {
+        if ($key eq $variable) {
+            return $config->{$key};
+        }
+    }
+
+    return;
 }
 
 =head2 psps_config_clear_variable ({ config => 1, variable => 1 })
@@ -318,13 +441,14 @@ sub reset_state {
         return -1;
     }
 
-    $self->{EXTERNAL_ADDRESS}  = $config->{external_address};
-    $self->{ORGANIZATION_NAME} = $config->{site_name};
-    $self->{LOCATION}          = $config->{site_location};
-    $self->{PROJECTS}          = $config->{site_project};
+    $self->{EXTERNAL_ADDRESS}  = $self->psps_config_find_variable({ config => $config, variable => "external_address" });
+    $self->{ORGANIZATION_NAME} = $self->psps_config_find_variable({ config => $config, variable => "site_name" });
+    $self->{LOCATION}          = $self->psps_config_find_variable({ config => $config, variable => "site_location" });
+    $self->{PROJECTS}          = $self->psps_config_find_variable({ config => $config, variable => "site_project" });
     if ($self->{PROJECTS} and ref($self->{PROJECTS}) ne "ARRAY") {
         $self->{PROJECTS} = [ $self->{PROJECTS} ];
     }
+    $self->{LS_REGISTRATION_INTERVAL} = $self->psps_config_find_variable({ config => $config, variable => "ls_registration_interval" });
 
     return 0;
 }

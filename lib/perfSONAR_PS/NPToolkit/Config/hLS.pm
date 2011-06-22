@@ -53,6 +53,24 @@ sub init {
     return $self->SUPER::init({ config_file => $config_file, service_name => $service_name });
 }
 
+sub save {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { restart_services => 0, } );
+
+    my $restart_services = $parameters->{restart_services};
+
+    # Disable registration if the organization and location aren't set
+    unless ($self->{ORGANIZATION_NAME} and $self->{LOCATION}) {
+        $self->{LS_REGISTRATION_INTERVAL} = 0;
+    }
+    elsif ($self->{LS_REGISTRATION_INTERVAL} == 0) {
+        # The default value if it's not currently set
+        $self->{LS_REGISTRATION_INTERVAL} = 180;
+    }
+
+    return $self->SUPER::save({ restart_services => $restart_services });
+}
+
 1;
 
 __END__
