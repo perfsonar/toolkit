@@ -547,7 +547,7 @@ sub fill_variables_keywords {
         my $max = $popular_keywords->{ $frequencies[0] };
         my $min = $popular_keywords->{ $frequencies[$#frequencies] };
 
-        foreach my $keyword ( sort keys %$popular_keywords ) {
+        foreach my $keyword ( sort { lc($a) cmp lc($b) } keys %$popular_keywords ) {
             next unless ( $keyword =~ /^project:/ );
 
             my $class;
