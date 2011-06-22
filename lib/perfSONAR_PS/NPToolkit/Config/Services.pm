@@ -38,6 +38,7 @@ my @default_known_services = (
         name        => "hls",
         description => "Lookup Service",
         service_name=> "lookup_service",
+        enabled_services_variable => "hls_enabled",
         enabled     => 1,
     },
     {

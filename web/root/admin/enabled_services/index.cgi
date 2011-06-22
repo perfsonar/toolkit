@@ -142,7 +142,10 @@ sub save_config {
     }
 
     foreach my $name (keys %$params) {
-    	next unless ($services_conf->lookup_service({ name => $name }));
+    	unless ($services_conf->lookup_service({ name => $name })) {
+            $logger->error("Service $name not found");
+            next;
+        }
 
 	if ($params->{$name} eq "off") {
 		$services_conf->disable_service({ name => $name});

@@ -7,3 +7,4 @@ psb_enabled=enabled
 https_enabled=enabled
 bwctl_enabled=enabled
 ssh_enabled=disabled
+hls_enabled=enabled
