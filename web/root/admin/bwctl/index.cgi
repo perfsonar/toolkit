@@ -288,6 +288,7 @@ sub add_network {
     }
 
     $bwctl_conf->add_network( { name => $network_name, group => $group } );
+    $bwctl_conf->update_group( { name => $group, allow_open_mode => "on" } );
 
     $is_modified = 1;
 
