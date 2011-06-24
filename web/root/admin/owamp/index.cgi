@@ -295,6 +295,7 @@ sub add_network {
     }
 
     $owamp_conf->add_network( { name => $network_name, group => $group } );
+    $owamp_conf->update_group( { name => $group, allow_open_mode => "on" } );
 
     $is_modified = 1;
 
