@@ -26,6 +26,7 @@ use fields 'EXTERNAL_ADDRESS_FILE', 'PRIMARY_ADDRESS', 'PRIMARY_IPV4', 'PRIMARY_
 use Params::Validate qw(:all);
 use Storable qw(store retrieve freeze thaw dclone);
 use Data::Dumper;
+use Net::Interface;
 
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
 use perfSONAR_PS::NPToolkit::Config::NDT;
@@ -144,6 +145,25 @@ sub save {
         }
     }
 
+    return 0;
+}
+
+=head2 get_primary_address_mtu({})
+Returns the mtu of the primary interface
+=cut
+
+sub get_primary_address_mtu {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+
+    my $ifcename = $self->get_primary_address_iface();
+    my @all_ifs = Net::Interface->interfaces();
+    foreach my $if (@all_ifs){
+        if($if->name eq $ifcename  && $if->mtu){
+          return $if->mtu;
+        }
+    }
+ 
     return 0;
 }
 

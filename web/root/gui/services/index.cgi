@@ -151,6 +151,7 @@ $vars{services}        = \%services;
 $vars{admin_name}      = $administrative_info_conf->get_administrator_name();
 $vars{admin_email}     = $administrative_info_conf->get_administrator_email();
 $vars{external_address}     = $external_address_conf->get_primary_address();
+$vars{mtu}     = $external_address_conf->get_primary_address_mtu();
 
 $tt->process( "status.tmpl", \%vars, \$html ) or die $tt->error();
 
