@@ -21,7 +21,7 @@ configuration.
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'EXTERNAL_ADDRESS_FILE', 'PRIMARY_ADDRESS', 'PRIMARY_IPV4', 'PRIMARY_IPV6';
+use fields 'EXTERNAL_ADDRESS_FILE', 'PRIMARY_ADDRESS', 'PRIMARY_IPV4', 'PRIMARY_IPV6', 'PRIMARY_ADDRESS_IFACE', 'PRIMARY_IPV4_IFACE', 'PRIMARY_IPV6_IFACE';
 
 use Params::Validate qw(:all);
 use Storable qw(store retrieve freeze thaw dclone);
@@ -225,6 +225,84 @@ sub set_primary_ipv6 {
     return 0;
 }
 
+=head2 get_primary_address_iface({})
+Returns the primary interface for the toolkit
+=cut
+
+sub get_primary_address_iface {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+
+    return $self->{PRIMARY_ADDRESS_IFACE};
+}
+
+=head2 get_primary_ipv4_iface({})
+Returns the primary IPv4 interface for the toolkit
+=cut
+
+sub get_primary_ipv4_iface {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+
+    return $self->{PRIMARY_IPV4_IFACE};
+}
+
+=head2 get_primary_ipv6_iface({})
+Returns the primary IPv6 interface for the toolkit
+=cut
+
+sub get_primary_ipv6_iface {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+
+    return $self->{PRIMARY_IPV6_IFACE};
+}
+
+=head2 set_primary_address_iface({ iface => 1 })
+Sets the primary interface for the toolkit
+=cut
+
+sub set_primary_address_iface {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { iface => 1, } );
+
+    my $iface = $parameters->{iface};
+
+    $self->{PRIMARY_ADDRESS_IFACE} = $iface;
+
+    return 0;
+}
+
+=head2 set_primary_ipv4_iface({ iface => 1 })
+Sets the primary IPv4 interface for the toolkit
+=cut
+
+sub set_primary_ipv4_iface {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { iface => 1, } );
+
+    my $iface = $parameters->{iface};
+
+    $self->{PRIMARY_IPV4_IFACE} = $iface;
+
+    return 0;
+}
+
+=head2 set_primary_ipv6_iface({ iface => 1 })
+Sets the primary IPv6 interface for the toolkit
+=cut
+
+sub set_primary_ipv6_iface {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { iface => 1, } );
+
+    my $iface = $parameters->{iface};
+
+    $self->{PRIMARY_IPV6_IFACE} = $iface;
+
+    return 0;
+}
+
 =head2 last_modified()
     Returns when the configuration was last saved.
 =cut
@@ -248,9 +326,12 @@ sub reset_state {
 
     my ( $status, $res ) = read_external_address_file( { file => $self->{EXTERNAL_ADDRESS_FILE} } );
     if ( $status == 0 ) {
-        $self->{PRIMARY_IPV6}    = $res->{primary_ipv6};
-        $self->{PRIMARY_IPV4}    = $res->{primary_ipv4};
-        $self->{PRIMARY_ADDRESS} = $res->{primary_address};
+        $self->{PRIMARY_IPV6}          = $res->{primary_ipv6};
+        $self->{PRIMARY_IPV4}          = $res->{primary_ipv4};
+        $self->{PRIMARY_ADDRESS}       = $res->{primary_address};
+        $self->{PRIMARY_IPV6_IFACE}    = $res->{primary_ipv6_iface};
+        $self->{PRIMARY_IPV4_IFACE}    = $res->{primary_ipv4_iface};
+        $self->{PRIMARY_ADDRESS_IFACE} = $res->{primary_address_iface};
     }
 
     return 0;
@@ -275,6 +356,9 @@ sub read_external_address_file {
     my $primary_address;
     my $primary_ipv4;
     my $primary_ipv6;
+    my $primary_address_iface;
+    my $primary_ipv4_iface;
+    my $primary_ipv6_iface;
 
     while ( <EXTERNAL_ADDRESS_FILE> ) {
         chomp;
@@ -291,14 +375,26 @@ sub read_external_address_file {
         elsif ( $variable eq "default_ipv6_address" ) {
             $primary_ipv6 = $value;
         }
+        elsif ( $variable eq "default_accesspoint_iface" ) {
+            $primary_address_iface = $value;
+        }
+        elsif ( $variable eq "default_ipv4_address_iface" ) {
+            $primary_ipv4_iface = $value;
+        }
+        elsif ( $variable eq "default_ipv6_address_iface" ) {
+            $primary_ipv6_iface = $value;
+        }
     }
 
     close( EXTERNAL_ADDRESS_FILE );
 
     my %info = (
-        primary_ipv6    => $primary_ipv6,
-        primary_ipv4    => $primary_ipv4,
-        primary_address => $primary_address,
+        primary_ipv6          => $primary_ipv6,
+        primary_ipv4          => $primary_ipv4,
+        primary_address       => $primary_address,
+        primary_ipv6_iface    => $primary_ipv6_iface,
+        primary_ipv4_iface    => $primary_ipv4_iface,
+        primary_address_iface => $primary_address_iface,
     );
 
     return ( 0, \%info );
@@ -329,10 +425,23 @@ sub generate_external_address_file {
     my $ipv6_addr = $self->{PRIMARY_IPV6};
     $ipv6_addr = "" unless ( $ipv6_addr );
 
+    my $addr_iface = $self->{PRIMARY_ADDRESS_IFACE};
+    $addr_iface = "" unless ( $addr_iface );
+
+    my $ipv4_addr_iface = $self->{PRIMARY_IPV4_IFACE};
+    $ipv4_addr_iface = "" unless ( $ipv4_addr_iface );
+
+    my $ipv6_addr_iface = $self->{PRIMARY_IPV6_IFACE};
+    $ipv6_addr_iface = "" unless ( $ipv6_addr_iface );
+
+
     $output .= "external_address=" . $addr . "\n";
     $output .= "default_accesspoint=" . $addr . "\n";
     $output .= "default_ipv4_address=" . $ipv4_addr . "\n";
     $output .= "default_ipv6_address=" . $ipv6_addr . "\n";
+    $output .= "default_accesspoint_iface=" . $addr_iface . "\n";
+    $output .= "default_ipv4_address_iface=" . $ipv4_addr_iface . "\n";
+    $output .= "default_ipv6_address_iface=" . $ipv6_addr_iface . "\n";
 
     return $output;
 }
@@ -350,6 +459,9 @@ sub save_state {
         primary_address      => $self->{PRIMARY_ADDRESS},
         primary_ipv4_address => $self->{PRIMARY_IPV4},
         primary_ipv6_address => $self->{PRIMARY_IPV6},
+        primary_address_iface      => $self->{PRIMARY_ADDRESS_IFACE},
+        primary_ipv4_address_iface => $self->{PRIMARY_IPV4_IFACE},
+        primary_ipv6_address_iface => $self->{PRIMARY_IPV6_IFACE},
     );
 
     my $str = freeze( \%state );
@@ -369,8 +481,9 @@ sub restore_state {
     my $state = thaw( $parameters->{state} );
 
     $self->{PRIMARY_IPV6} = $state->{primary_ipv6}, $self->{PRIMARY_IPV4} = $state->{primary_ipv4}, $self->{PRIMARY_ADDRESS} = $state->{primary_address},
+    $self->{PRIMARY_IPV6_IFACE} = $state->{primary_ipv6_iface}, $self->{PRIMARY_IPV4_IFACE} = $state->{primary_ipv4_iface}, $self->{PRIMARY_ADDRESS_IFACE} = $state->{primary_address_iface},
 
-        $self->{LOGGER}->debug( "State: " . Dumper( $state ) );
+    $self->{LOGGER}->debug( "State: " . Dumper( $state ) );
     return;
 }
 

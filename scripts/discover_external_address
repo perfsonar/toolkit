@@ -46,8 +46,8 @@ my $status = GetOptions(
                        );
 
 unless ($status) {
-	print "$0: [--config=/path/to/service-watcher.conf] [--logger=/path/to/service-watcher_logger.conf] [--restart_services] [--verbose]\n";
-	exit 1;
+    print "$0: [--config=/path/to/service-watcher.conf] [--logger=/path/to/service-watcher_logger.conf] [--restart_services] [--verbose]\n";
+    exit 1;
 }
 
 $CONFIG_FILE = $default_config unless ($CONFIG_FILE);
@@ -55,7 +55,7 @@ $LOGGER_CONF = $default_logger_config unless ($LOGGER_CONF);
 
 my %conf = ();
 if (-f $CONFIG_FILE) {
-	%conf = Config::General->new( $CONFIG_FILE )->getall();
+    %conf = Config::General->new( $CONFIG_FILE )->getall();
 }
 
 # Now that we've dropped privileges, create the logger. If we do it in reverse
@@ -100,102 +100,155 @@ if ($conf{allow_internal_addresses}) {
     $allow_internal_addresses = $conf{allow_internal_addresses};
 }
 
-my @ips = ();
+my $ips_by_iface;
 
 if ( $external_interface ) {
-    @ips = get_interface_addresses( { interface => $external_interface } );
+    my @ips = get_interface_addresses( { interface => $external_interface } );
+    $ips_by_iface = { $external_interface => \@ips };
 }
 else {
     # If they've not told us which interface to use, it's time to guess.
-    @ips = get_ips();
+    $ips_by_iface = get_ips({ by_interface => 1 });
 }
 
 my $chosen_address;
 my $ipv4_address;
 my $ipv6_address;
+my $chosen_interface;
+my $ipv4_interface;
+my $ipv6_interface;
 
-my $reverse_dns_mapping = reverse_dns_multi({ addresses => \@ips, timeout => 10 }); # don't wait more than 10 seconds.
+my @all_ips = ();
+foreach my $iface ( keys %$ips_by_iface ) {
+    foreach my $ip (@{ $ips_by_iface->{$iface} }) {
+        push @all_ips, $ip;
+    }
+}
+
+my $reverse_dns_mapping = reverse_dns_multi({ addresses => \@all_ips, timeout => 10 }); # don't wait more than 10 seconds.
 
 # Try to find an address with an ipv4 address with that resolves to something
 unless ( $chosen_address and $ipv4_address ) {
-    foreach my $ip ( @ips ) {
-        my @private_list = ( '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16' );
+    foreach my $iface ( keys %$ips_by_iface ) {
+        foreach my $ip ( @{ $ips_by_iface->{$iface } } ) {
+            my @private_list = ( '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16' );
 
-        next unless (is_ipv4( $ip ));
-        $logger->info("$ip is ipv4");
-	next unless (defined $reverse_dns_mapping->{$ip} and $reverse_dns_mapping->{$ip}->[0]);
-        $logger->info("$ip has a DNS name: ". $reverse_dns_mapping->{$ip}->[0]);
-        next unless ($allow_internal_addresses or not Net::CIDR::cidrlookup( $ip, @private_list ));
-        $logger->info("$ip isn't private or we're okay with private addresses");
+            next unless (is_ipv4( $ip ));
+            $logger->info("$ip is ipv4");
+            next unless (defined $reverse_dns_mapping->{$ip} and $reverse_dns_mapping->{$ip}->[0]);
+            $logger->info("$ip has a DNS name: ". $reverse_dns_mapping->{$ip}->[0]);
+            next unless ($allow_internal_addresses or not Net::CIDR::cidrlookup( $ip, @private_list ));
+            $logger->info("$ip isn't private or we're okay with private addresses");
 
-    	my $dns_name = $reverse_dns_mapping->{$ip}->[0];
-        $chosen_address = $dns_name unless ( $chosen_address );
-        $ipv4_address   = $dns_name unless ( $ipv4_address );
-        last;
+            my $dns_name = $reverse_dns_mapping->{$ip}->[0];
+
+            unless ( $chosen_address ) { 
+                $chosen_address = $dns_name;
+                $chosen_interface = $iface;
+            }
+
+            unless ( $ipv4_address ) {
+                $ipv4_address   = $dns_name;
+                $ipv4_interface = $iface;
+            }
+
+            last;
+        }
     }
 }
 
 # Try to find an ipv6 address that resolves to something
 unless ( $chosen_address and $ipv6_address ) {
-    foreach my $ip ( @ips ) {
-        next unless (Net::IPv6Addr::is_ipv6( $ip ));
-        $logger->info("$ip is IPv6");
-	next unless (defined $reverse_dns_mapping->{$ip} and $reverse_dns_mapping->{$ip}->[0]);
-        $logger->info("$ip has a DNS name: ". $reverse_dns_mapping->{$ip}->[0]);
+    foreach my $iface ( keys %$ips_by_iface ) {
+        foreach my $ip ( @{ $ips_by_iface->{$iface } } ) {
+            next unless (Net::IPv6Addr::is_ipv6( $ip ));
+            $logger->info("$ip is IPv6");
+            next unless (defined $reverse_dns_mapping->{$ip} and $reverse_dns_mapping->{$ip}->[0]);
+            $logger->info("$ip has a DNS name: ". $reverse_dns_mapping->{$ip}->[0]);
 
-        my $dns_name = $reverse_dns_mapping->{$ip}->[0];
-        $chosen_address = $dns_name unless ( $chosen_address );
-        $ipv6_address   = $dns_name unless ( $ipv6_address );
-        last;
+            my $dns_name = $reverse_dns_mapping->{$ip}->[0];
+
+            unless ( $chosen_address ) { 
+                $chosen_address = $dns_name;
+                $chosen_interface = $iface;
+            }
+
+            unless ( $ipv6_address ) {
+                $ipv6_address   = $dns_name;
+                $ipv6_interface = $iface;
+            }
+
+            last;
+        }
     }
 }
 
 # Try to find an ipv4 address
 unless ( $chosen_address and $ipv4_address ) {
-    foreach my $ip ( @ips ) {
-        my @private_list = ( '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16' );
+    foreach my $iface ( keys %$ips_by_iface ) {
+        foreach my $ip ( @{ $ips_by_iface->{$iface } } ) {
 
-        next unless (is_ipv4( $ip ));
-        $logger->info("$ip is IPv4");
-        next unless ($allow_internal_addresses or not Net::CIDR::cidrlookup( $ip, @private_list ));
-        $logger->info("$ip isn't private or we're okay with private addresses");
+            my @private_list = ( '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16' );
 
-        $chosen_address = $ip unless ( $chosen_address );
-        $ipv4_address   = $ip unless ( $ipv4_address );
-        last;
+            next unless (is_ipv4( $ip ));
+            $logger->info("$ip is IPv4");
+            next unless ($allow_internal_addresses or not Net::CIDR::cidrlookup( $ip, @private_list ));
+            $logger->info("$ip isn't private or we're okay with private addresses");
+
+            unless ( $chosen_address ) { 
+                $chosen_address = $ip;
+                $chosen_interface = $iface;
+            }
+
+            unless ( $ipv4_address ) {
+                $ipv4_address   = $ip;
+                $ipv4_interface = $iface;
+            }
+        }
+        last if ($ipv4_address and $chosen_address);
     }
 }
 
 # Try to find an ipv6 address
 unless ( $chosen_address and $ipv6_address ) {
-    foreach my $ip ( @ips ) {
-        next unless (Net::IPv6Addr::is_ipv6( $ip ));
-        $logger->info("$ip is IPv6");
-        $chosen_address = $ip unless ( $chosen_address );
-        $ipv6_address   = $ip unless ( $ipv6_address );
-        last;
+    foreach my $iface ( keys %$ips_by_iface ) {
+        foreach my $ip ( @{ $ips_by_iface->{$iface } } ) {
+            next unless (Net::IPv6Addr::is_ipv6( $ip ));
+            $logger->info("$ip is IPv6");
+
+            unless ( $chosen_address ) { 
+                $chosen_address = $ip;
+                $chosen_interface = $iface;
+            }
+
+            unless ( $ipv6_address ) {
+                $ipv6_address   = $ip;
+                $ipv6_interface = $iface;
+            }
+        }
+        last if ($ipv6_address and $chosen_address);
     }
 }
 
 if ($chosen_address) {
-	$logger->info("Selected $chosen_address as the primary address");
+    $logger->info("Selected $chosen_interface/$chosen_address as the primary address");
 }
 else {
-	$logger->info("No primary address found");
+    $logger->info("No primary address found");
 }
 
 if ($ipv4_address) {
-	$logger->info("Selected $ipv4_address as the primary ipv4 address");
+    $logger->info("Selected $ipv4_interface/$ipv4_address as the primary ipv4 address");
 }
 else {
-	$logger->info("No primary ipv4 address found");
+    $logger->info("No primary ipv4 address found");
 }
 
 if ($ipv6_address) {
-	$logger->info("Selected $ipv6_address as the primary ipv6 address");
+    $logger->info("Selected $ipv6_interface/$ipv6_address as the primary ipv6 address");
 }
 else {
-	$logger->info("No primary ipv6 address found");
+    $logger->info("No primary ipv6 address found");
 }
 
 my $external_address_config = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
@@ -203,6 +256,9 @@ if ( $external_address_config->init() == 0 ) {
     $external_address_config->set_primary_address( { address => $chosen_address } );
     $external_address_config->set_primary_ipv6( { address => $ipv6_address } );
     $external_address_config->set_primary_ipv4( { address => $ipv4_address } );
+    $external_address_config->set_primary_address_iface( { iface => $chosen_interface } );
+    $external_address_config->set_primary_ipv6_iface( { iface => $ipv6_interface } );
+    $external_address_config->set_primary_ipv4_iface( { iface => $ipv4_interface } );
 
     $external_address_config->save( { restart_services => $RESTART_SERVICES } );
 }
