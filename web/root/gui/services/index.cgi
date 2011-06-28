@@ -138,6 +138,8 @@ foreach my $service ( $owamp, $bwctl, $npad, $ndt, $psb_ma, $hls, $pinger, $snmp
     $services{$name} = \%service_info;
 }
 
+my $ntpinfo = perfSONAR_PS::HostInfo::NTP->new();
+
 my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
 
 my $html;
@@ -152,6 +154,8 @@ $vars{admin_name}      = $administrative_info_conf->get_administrator_name();
 $vars{admin_email}     = $administrative_info_conf->get_administrator_email();
 $vars{external_address}     = $external_address_conf->get_primary_address();
 $vars{mtu}     = $external_address_conf->get_primary_address_mtu();
+$vars{ntp_sync_status}     = $ntpinfo->is_synced();
+
 
 $tt->process( "status.tmpl", \%vars, \$html ) or die $tt->error();
 
@@ -160,6 +164,32 @@ print $cgi->header;
 print $html;
 
 exit 0;
+
+package perfSONAR_PS::HostInfo::Base;
+
+sub new{
+	my ( $package ) = @_;
+
+    my $self = fields::new( $package );
+
+    return $self;
+}
+
+package perfSONAR_PS::HostInfo::NTP;
+use Net::NTP;
+use base 'perfSONAR_PS::HostInfo::Base';
+
+sub is_synced {
+    my %response;
+    eval {
+        %response = get_ntp_response("localhost");
+    };
+    return if ($@);
+
+    return ($response{'Reference Clock Identifier'} ne "INIT");
+}
+
+
 
 package perfSONAR_PS::ServiceInfo::Base;
 
