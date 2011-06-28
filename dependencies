@@ -1,3 +1,4 @@
+5
 AnyEvent
 AnyEvent::HTTP
 Archive::Tar
@@ -5,6 +6,7 @@ CGI
 CGI::Ajax
 CGI::Carp
 CGI::Session
+Carp
 Class::Accessor
 Class::Fields
 Config::General
@@ -36,6 +38,8 @@ Net::CIDR
 Net::DNS
 Net::IP
 Net::IPv6Addr
+Net::Interface
+Net::NTP
 Net::Ping
 Net::Server
 NetAddr::IP

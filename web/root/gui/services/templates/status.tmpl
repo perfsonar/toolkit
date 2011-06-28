@@ -55,6 +55,27 @@
 		[% END %]
             </td>
         </tr>
+        <tr>
+            <td style="width: 200px">MTU</td>
+            <td>
+		[% IF mtu %]
+			[% mtu %]
+		[% ELSE %]
+		<div style="color:red">Could not retrieve MTU</div>
+		[% END %]
+            </td>
+        </tr>
+       <tr>
+            <td style="width: 200px">NTP Status</td>
+            <td>
+		[% IF ntp_sync_status %]
+		<div>Synced</div>
+		[% ELSE %]
+		<div style="color:red">Not synced</div>
+		[% END %]
+            </td>
+        </tr>
+
 </table>
 
 <div class="rcontainer">
