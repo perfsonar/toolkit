@@ -124,12 +124,13 @@ foreach my $service ( $owamp, $bwctl, $npad, $ndt, $psb_ma, $hls, $pinger, $snmp
     my $enabled_service_info = $services_conf->lookup_service({ name => $name });
 
     my $is_running_output = ($is_running)?"yes":"no";
+    
     if ($enabled_service_info) {
         unless ($enabled_service_info->{enabled}) {
             $is_running_output = "disabled" unless ($is_running);
         }
     }
-
+    
     my %service_info = ();
     $service_info{"name"}       = $name;
     $service_info{"is_running"} = $is_running_output;

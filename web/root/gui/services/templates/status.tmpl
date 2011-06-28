@@ -98,10 +98,14 @@
 		[% IF pair.value.is_running == "yes" %]
 			<font color="green">Running</font>
 		[% ELSIF pair.value.is_running == "no" %]
-			<font color="red">Not Running</font>
+			<font color="red">Not Running</font>	
 		[% ELSIF pair.value.is_running == "disabled" %]
 			Disabled
 		[% END %]
+		[% IF pair.key == "bwctl" && !ntp_sync_status %]
+             <br/><font color="red"> NTP not synced </font>
+        [% END %]
+
 		</td>
 		</tr>
 
