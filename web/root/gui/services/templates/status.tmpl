@@ -65,6 +65,16 @@
 		[% END %]
             </td>
         </tr>
+       <tr>
+            <td style="width: 200px">NTP Status</td>
+            <td>
+		[% IF ntp_sync_status %]
+		<div>Synced</div>
+		[% ELSE %]
+		<div style="color:red">Not synced</div>
+		[% END %]
+            </td>
+        </tr>
 
 </table>
 
