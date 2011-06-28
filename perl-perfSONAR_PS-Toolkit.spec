@@ -201,6 +201,9 @@ grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrativ
 echo "site_project=pS-NPToolkit-%{version}" >> /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp
 mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
 
+#Make sure that the administrator_info file gets reloaded
+/opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl
+
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
 # so we'll put that in the "maybe" category.
@@ -323,6 +326,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/reset_psb_owamp.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/set_default_passwords
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/update_administrative_info.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/watcher_log_archive
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/watcher_log_archive_cleanup
 

@@ -193,6 +193,7 @@ scripts/save_config
 scripts/service_watcher
 scripts/set_default_passwords
 scripts/temp_root.img
+scripts/update_administrative_info.pl
 scripts/upgrade_3.1.x.sh
 scripts/upgrade_conman_fix.sh
 scripts/upgrade_fix_cert_serial.sh
