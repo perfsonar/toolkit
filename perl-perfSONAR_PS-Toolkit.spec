@@ -196,6 +196,11 @@ RESET_DATABASE=YES
 CLEAN_DATABASE=YES
 EOF
 
+#Add most recent version information to ls_registration_daemon.conf
+grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrative_info > /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp
+echo "site_project=pS-NPToolkit-%{version}" >> /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp
+mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
+
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
 # so we'll put that in the "maybe" category.
