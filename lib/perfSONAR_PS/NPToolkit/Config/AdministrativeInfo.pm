@@ -398,6 +398,25 @@ sub read_administrative_info_file {
     return ( 0, \%info );
 }
 
+=head2 has_admin_info({})
+
+Returns 1 if admin info is present and 0 if not.
+
+=cut
+
+sub has_admin_info{
+	my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+    
+    if($self->{ADMINISTRATOR_NAME} && $self->{ORGANIZATION_NAME} && $self->{ADMINISTRATOR_EMAIL} && $self->{LOCATION}){
+    	return 1;
+    }eles{
+    	return 0;
+    }
+	
+}
+
+
 =head2 generate_administrative_info_file({})
 
 Takes the current configuration for the module and generates the content for the site.info file.

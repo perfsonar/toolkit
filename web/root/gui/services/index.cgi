@@ -156,6 +156,7 @@ $vars{admin_email}     = $administrative_info_conf->get_administrator_email();
 $vars{external_address}     = $external_address_conf->get_primary_address();
 $vars{mtu}     = $external_address_conf->get_primary_address_mtu();
 $vars{ntp_sync_status}     = $ntpinfo->is_synced();
+$vars{global_reg} 		= $administrative_info_conf->has_admin_info() && $hls->check_running();
 
 
 $tt->process( "status.tmpl", \%vars, \$html ) or die $tt->error();
