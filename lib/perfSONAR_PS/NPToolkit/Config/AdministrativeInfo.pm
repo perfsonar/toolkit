@@ -408,11 +408,7 @@ sub has_admin_info{
 	my ( $self, @params ) = @_;
     my $parameters = validate( @params, {} );
     
-    if($self->{ADMINISTRATOR_NAME} && $self->{ORGANIZATION_NAME} && $self->{ADMINISTRATOR_EMAIL} && $self->{LOCATION}){
-    	return 1;
-    }eles{
-    	return 0;
-    }
+    return ($self->{ADMINISTRATOR_NAME} && $self->{ORGANIZATION_NAME} && $self->{ADMINISTRATOR_EMAIL} && $self->{LOCATION});
 	
 }
 
