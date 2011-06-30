@@ -261,7 +261,14 @@
 #my $version="5.0, 12/13/2010, Les Cottrell";
 #Removed potential XSS vulnerability
 
-my $version="5.1, 12/29/2010, Les Cottrell";
+#my $version="5.1, 12/29/2010, Les Cottrell";
+
+#my $version="5.2, 04/15/2011, Les Cottrell";
+#Do not check whether client and server are in the same 1st 2 octets if IPv6
+
+my $version="5.3, 05/20/2011, Les Cottrell";
+#Special case PERN nodes at multiple sites having the  same class B 
+#network starting with 111.68 or 121.51
 ###############################################################################
 use strict;
 $ENV{PATH}='/bin:/usr/bin:/sbin:/usr/local/bin:/usr/local/etc:/usr/sbin:/usr/local/sbin';#For untainting
@@ -315,7 +322,7 @@ my $Tr = 'traceroute'; # Usually works
 #REQUEST_URI is of the form: /cgi-bin/traceroute.pl?choice=yes
 my ($temp, $bin_dir);
 ($temp,$bin_dir,$temp)=split /\//,$ENV{'REQUEST_URI'};
-my $form="<form action='/$bin_dir/$progname' method='GET'>";
+my $form="<form action='/$bin_dir/gui/$progname' method='GET'>";
 if($debug>0) {
   print "REQUEST_URI=$ENV{'REQUEST_URI'}, bin_dir=$bin_dir, form=$form<br>\n";
 }
@@ -599,7 +606,8 @@ if($function ne 'traceroute') {;}
 elsif(!( $http_addr=(gethostbyname($ENV{'SERVER_NAME'}))[4] )) {
    $err.="Can't find address of $function SERVER_NAME $ENV{'SERVER_NAME'}:$!$?.<br>\n";
 }
-else {#traceroute function
+elsif($ipv6 == 1) {;}#No domain check for IPv6 (add by Cottrell 4/15/2011)
+else {#IPv4 traceroute function
   my ($a, $b, $c, $d)=unpack('C4',$http_addr);
   # compare class-C networks correctly.
   if ($a>=192) {
@@ -616,7 +624,9 @@ else {#traceroute function
   if(!($http_domain eq $remote_domain)) {
     #Under some error conditions $target_domain is not defined
     if(defined($target_domain)) {
-      if($target_domain eq $http_domain) {
+      if( ($target_domain eq $http_domain) 
+       && ($http_domain ne "121.52") #Special case PERN
+       && ($http_domain ne "111.68")) {
         # Client (browser) is outside the web server domain and so is not
         # allowed to traceroute to a target inside the web server's domain.
         $err.="$function server does not provide $function"."s to ".
