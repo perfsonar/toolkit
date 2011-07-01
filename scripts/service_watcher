@@ -145,7 +145,7 @@ $config_daemon->init( pid_files => $config_daemon_pid, init_script => $config_da
 
 # do a 'restart' pass if the "--regular-restart" flag was specified
 if ($REGULAR_RESTART) {
-	foreach my $service ( $hls, $mysql, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
+	foreach my $service ( $mysql, $hls, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
 		my ($status, $res);
 
 		($status, $res) = $service->is_enabled();
@@ -1022,11 +1022,17 @@ sub start {
 	}
 }
 
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 1;
+}
+
 # kill any process matching the ls registration daemon
 sub kill {
 	my ($self) = @_;
 
-	system("pkill -f LSRegistrationDaemon");
+	system("pkill -f ls_registration_daemon.pl");
 
 	return 0;
 }
