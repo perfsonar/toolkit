@@ -19,11 +19,11 @@
 %define crontab_3     cron-owamp_cleaner
 %define crontab_4     cron-save_config
 
-%define relnum 6
+%define relnum 1
 %define disttag pSPS
 
 Name:           perl-perfSONAR_PS-Toolkit
-Version:        3.2
+Version:        3.2.1
 Release:        %{relnum}.%{disttag}
 Summary:        perfSONAR_PS Toolkit
 License:        distributable, see LICENSE
@@ -107,6 +107,7 @@ Requires:       perl-perfSONAR_PS-perfSONARBUOY-server
 Requires:       perl-perfSONAR_PS-perfSONARBUOY-client
 Requires:       perl-perfSONAR_PS-perfSONARBUOY-config
 Requires:       perl-perfSONAR_PS-SNMPMA
+Requires:       perl-perfSONAR_PS-serviceTest
 Requires:       ndt
 Requires:       npad
 # the following RPMs are needed by cacti
@@ -172,6 +173,11 @@ mkdir -p /var/run/web_admin_sessions
 chown apache /var/run/web_admin_sessions
 
 mkdir -p /var/run/toolkit/
+
+# Modify the perl-perfSONAR_PS-serviceTest CGIs to use the toolkit's header/footer/sidebar
+ln -sf /opt/perfsonar_ps/toolkit/web/templates/header.tmpl /opt/perfsonar_ps/serviceTest/templates/
+ln -sf /opt/perfsonar_ps/toolkit/web/templates/sidebar.html /opt/perfsonar_ps/serviceTest/templates/
+ln -sf /opt/perfsonar_ps/toolkit/web/templates/footer.tmpl /opt/perfsonar_ps/serviceTest/templates/
 
 # Install a link to the logs into the web location
 ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web/root/admin/logs
