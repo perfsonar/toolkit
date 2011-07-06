@@ -25,7 +25,11 @@ function handle_modify_host_information() {
 	var administrator_email = dijit.byId('modify_host_information_administrator_email').attr('value');
 	var administrator_name = dijit.byId('modify_host_information_administrator_name').attr('value');
 
-	handle_cgi_ajax_call(null, 'Problem setting host information', true, 'set_host_information', [ organization_name, host_location, administrator_name, administrator_email ]);
+    var subscribe = dijit.byId('subscribe').attr('checked');
+    console.log(subscribe);
+    var existing_email = dojo.byId('administrator_email').value;
+
+	handle_cgi_ajax_call(null, 'Problem setting host information', true, 'set_host_information', [ organization_name, host_location, administrator_name, administrator_email, subscribe ]);
 }
 
 function display_modify_host_information_dialog() {
@@ -97,6 +101,7 @@ Administrator Email
 </td>
 <td>
 <input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_administrator_email" size="20" />
+<input id="subscribe" name="subscribe" dojoType="dijit.form.CheckBox" value="agreed" > <label for="subscribe">Subscribe to NP Toolkit user list</label>
 </td>
 </tr>
 </table>

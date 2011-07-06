@@ -205,13 +205,16 @@ sub fill_variables {
 }
 
 sub set_host_information  {
-    my ( $organization_name, $host_location, $administrator_name, $administrator_email ) = @_;
+    my ( $organization_name, $host_location, $administrator_name, $administrator_email, $subscribe ) = @_;
 
     $administrative_info_conf->set_organization_name( { organization_name => $organization_name } );
     $administrative_info_conf->set_location( { location => $host_location } );
     $administrative_info_conf->set_administrator_name( { administrator_name => $administrator_name } );
     $administrative_info_conf->set_administrator_email( { administrator_email => $administrator_email } );
 
+	if($administrator_email && $subscribe eq "true"){
+		subscribe($administrator_email);
+	}
     $is_modified = 1;
 
     save_state();
@@ -241,6 +244,27 @@ sub delete_keyword {
     $status_msg = "Keyword $value deleted";
     return display_body();
 }
+
+sub subscribe{
+        my ($value) = @_;
+        #my $email = $administrative_info_conf->get_administrator_email();
+        print "came here";
+        my $sendmail = "/usr/sbin/sendmail -t";
+        if($value){
+                open(SENDMAIL, "| $sendmail");
+                my $subject = "Subject: Do not reply. NP Toolkit user list subscription\n";
+                my $content = "Please click<a href=\"https://lists.internet2.edu/sympa/subscribe/performance-node-users\"> here</a> to complete the NP Toolkit user list subscription process\n";
+                my $send_to = "To: ".$value."\n";
+                my $from = "From: admin\n";
+                print SENDMAIL $from;
+                print SENDMAIL $send_to;
+                print SENDMAIL $subject;
+                print SENDMAIL "Content-type: text/html\n\n";
+                print SENDMAIL $content;
+                close(SENDMAIL);
+        }
+}
+
 
 sub save_config {
     my ($status, $res) = $administrative_info_conf->save( { restart_services => 1 } );
