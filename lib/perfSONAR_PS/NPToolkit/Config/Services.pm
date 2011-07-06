@@ -125,6 +125,20 @@ my @default_known_services = (
         enabled                   => 1,
     },
     {
+        name                      => "traceroute_scheduler",
+        description               => "perfSONAR-PS Traceroute Scheduler",
+        enabled_services_variable => "traceroute_scheduler_enabled",
+        service_name              => [ "traceroute_scheduler", "traceroute_master" ],
+        enabled                   => 1,
+    },
+    {
+        name                      => "traceroute_ma",
+        description               => "perfSONAR-PS Traceroute MA",
+        enabled_services_variable => "traceroute_ma_enabled",
+        service_name              => [ "traceroute_ma" ],
+        enabled                   => 1,
+    },
+    {
         name        => "ntp",
         description => "NTP",
         service_name=> "ntpd",

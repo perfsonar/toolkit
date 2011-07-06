@@ -34,6 +34,7 @@ use perfSONAR_PS::NPToolkit::Config::NPAD;
 use perfSONAR_PS::NPToolkit::Config::PingER;
 use perfSONAR_PS::NPToolkit::Config::perfSONARBUOYMA;
 use perfSONAR_PS::NPToolkit::Config::SNMPMA;
+use perfSONAR_PS::NPToolkit::Config::TracerouteMA;
 use perfSONAR_PS::NPToolkit::Config::hLS;
 use perfSONAR_PS::NPToolkit::Config::LSRegistrationDaemon;
 use perfSONAR_PS::NPToolkit::ConfigManager::Utils qw( save_file restart_service );
@@ -118,7 +119,12 @@ sub save {
     if ( $snmp_ma_config->init() != 0 ) {
         return (-1, "Couldn't initialize perfSONARBUOY-MA configuration");
     }
-
+    
+    my $traceroute_ma_config = perfSONAR_PS::NPToolkit::Config::TracerouteMA->new();
+    if ( $traceroute_ma_config->init() != 0 ) {
+        return (-1, "Couldn't initialize Traceroute MA configuration");
+    }
+    
     my $hls_config = perfSONAR_PS::NPToolkit::Config::hLS->new();
     if ( $hls_config->init() != 0 ) {
         return (-1, "Couldn't initialize hLS configuration");
@@ -137,7 +143,7 @@ sub save {
 
     $res = $regular_testing_config->save( { restart_services => $parameters->{restart_services} } );
 
-    foreach my $service_config ($pinger_config, $psb_ma_config, $snmp_ma_config, $hls_config, $ls_reg_daemon_config) {
+    foreach my $service_config ($pinger_config, $psb_ma_config, $snmp_ma_config, $traceroute_ma_config, $hls_config, $ls_reg_daemon_config) {
         $service_config->set_external_address( external_address => $self->{PRIMARY_ADDRESS} );
         $res = $service_config->save({ restart_services => $parameters->{restart_services} });
         if ($res != 0) {

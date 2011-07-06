@@ -151,6 +151,9 @@ my $ajax = CGI::Ajax->new(
     'add_owamp_test'    => \&add_owamp_test,
     'update_owamp_test' => \&update_owamp_test,
 
+    'add_traceroute_test'    => \&add_traceroute_test,
+    'update_traceroute_test' => \&update_traceroute_test,
+    
     'add_bwctl_throughput_test'    => \&add_bwctl_throughput_test,
     'update_bwctl_throughput_test' => \&update_bwctl_throughput_test,
 
@@ -338,7 +341,8 @@ sub fill_variables_status {
     my $network_usage        = 0;
     my $owamp_port_usage     = 0;
     my $bwctl_port_usage     = 0;
-
+    my $traceroute_tests     = 0;
+    
     if ( $status == 0 ) {
         my $tests = $res;
         foreach my $test ( @{$tests} ) {
@@ -351,7 +355,10 @@ sub fill_variables_status {
             elsif ( $test->{type} eq "owamp" ) {
                 $psb_owamp_tests++;
             }
-
+            elsif ( $test->{type} eq "traceroute" ) {
+                $traceroute_tests++;
+            }
+            
             if ( $test->{type} eq "owamp" ) {
                 foreach my $member ( @{ $test->{members} } ) {
                     if ( $member->{sender} ) {
@@ -440,6 +447,7 @@ sub fill_variables_status {
     $vars->{psb_ma_enabled}       = $psb_ma_enabled;
     $vars->{psb_owamp_enabled}    = $psb_owamp_enabled;
     $vars->{pinger_enabled}       = $pinger_enabled;
+    $vars->{traceroute_tests}     = $traceroute_tests;
 
     return 0;
 }
@@ -785,6 +793,68 @@ sub update_owamp_test {
     ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, loss_threshold => $loss_threshold } );
     ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, session_count  => $session_packets } );
     ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, sample_count => $sample_packets } );
+
+    if ( $status != 0 ) {
+        $error_msg = "Test update failed: $res";
+        return display_body();
+    }
+
+    $is_modified = 1;
+
+    save_state();
+
+    $status_msg = "Test updated";
+    return display_body();
+}
+
+sub add_traceroute_test {
+    my ($description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol) = @_;
+
+    # Add the new group
+    my ( $status, $res ) = $testing_conf->add_test_traceroute(
+        {
+            mesh_type     => "star",
+            description   => $description,
+            test_interval => $test_interval,
+            packet_size   => $packet_size,
+            timeout       => $timeout,
+            waittime      => $waittime,
+            first_ttl     => $first_ttl,
+            max_ttl       => $max_ttl,
+            pause       => $pause,
+            protocol      => $protocol,
+        }
+    );
+
+    if ( $status != 0 ) {
+        $error_msg = "Failed to add test: $res";
+        return display_body();
+    }
+
+    $is_modified = 1;
+
+    $current_test = $res;
+
+    save_state();
+
+    $status_msg = "Test ".$description." Added";
+    return display_body();
+}
+
+sub update_traceroute_test {
+    my ($id, $description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol) = @_;
+
+    my ( $status, $res );
+
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, description => $description } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, test_interval => $test_interval } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, packet_size => $packet_size } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, timeout => $timeout } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, waittime => $waittime } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, first_ttl => $first_ttl } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, max_ttl => $max_ttl } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, pause => $pause } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, protocol => $protocol } );
 
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";
@@ -1173,6 +1243,9 @@ sub lookup_servers_cache {
     }
     elsif ( $service_type eq "owamp" ) {
         $service_cache_file = "list.owamp";
+    }
+    elsif ( $service_type eq "traceroute" ) {
+        $service_cache_file = "list.traceroute";
     }
     else {
         $error_msg = "Unknown server type specified";

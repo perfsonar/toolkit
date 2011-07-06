@@ -238,6 +238,16 @@ function select_latency_services() {
 	<td>SNMP MA</td>
 	<td>Makes available SNMP statistics collected by Cacti (Note: you must configure cacti for this to work)</td>
         </tr>
+    <tr>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="traceroute_ma" name="traceroute_ma" [% IF services.traceroute_ma.enabled %] checked="checked" [% END %] /></td>
+	<td>Traceroute MA</td>
+	<td>Makes available results of data collected by scheduled traceroute tests</td>
+        </tr>
+    <tr>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="traceroute_scheduler" name="traceroute_scheduler" [% IF services.traceroute_scheduler.enabled %] checked="checked" [% END %] /></td>
+	<td>Traceroute Scheduler</td>
+	<td>Enables this host to run scheduled traceroute tests.</td>
+        </tr>
 	<tr>
 	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="hls" name="hls" [% IF services.hls.enabled %] checked="checked" [% END %] /></td>
 	<td>Lookup Service</td>

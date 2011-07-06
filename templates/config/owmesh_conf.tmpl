@@ -50,6 +50,41 @@ OWPPACKETPADDING                [% test_spec.packet_padding %]
 OWPBUCKETWIDTH                  [% test_spec.bucket_width %]
 [% END %]
 
+[% ELSIF test_spec.type == "traceroute" %]
+TOOL				traceroute
+
+[% IF test_spec.test_interval.defined %]
+TRACETestInterval			[% test_spec.test_interval %]
+[% END %]
+
+[% IF test_spec.packet_size.defined %]
+TRACEPacketSize			[% test_spec.packet_size %]
+[% END %]
+
+[% IF test_spec.timeout.defined %]
+TRACETimeout		[% test_spec.timeout %]
+[% END %]
+
+[% IF test_spec.waittime.defined %]
+TRACEWaitTime		[% test_spec.waittime %]
+[% END %]
+
+[% IF test_spec.first_ttl.defined %]
+TRACEFirstTTL		[% test_spec.first_ttl %]
+[% END %]
+
+[% IF test_spec.max_ttl.defined %]
+TRACEMaxTTL		[% test_spec.max_ttl %]
+[% END %]
+
+[% IF test_spec.pause.defined %]
+TRACEPause		[% test_spec.pause %]
+[% END %]
+
+[% IF (test_spec.protocol.defined && test_spec.protocol == 'icmp') %]
+TRACEICMP  		1
+[% END %]
+
 [% ELSE %]
 TOOL				[% test_spec.tool %]
 

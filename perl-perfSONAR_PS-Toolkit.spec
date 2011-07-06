@@ -195,6 +195,8 @@ cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/pinger.conf /opt/per
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/psb_ma.conf /opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/hLS.conf /opt/perfsonar_ps/lookup_service/etc/daemon.conf
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/snmp_ma.conf /opt/perfsonar_ps/snmp_ma/etc/daemon.conf
+cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/traceroute_ma.conf /opt/perfsonar_ps/traceroute_ma/etc/daemon.conf
+cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/traceroute_master.conf /opt/perfsonar_ps/traceroute_ma/etc/traceroute-master.conf
 
 # Have the lookup service clear the database when starting
 cat > /etc/sysconfig/lookup_service <<EOF

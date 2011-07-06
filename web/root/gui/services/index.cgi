@@ -41,7 +41,13 @@ my $pSB_owamp_master_pid        = "/var/lib/perfsonar/perfsonarbuoy_ma/owamp/pow
 my $pSB_owamp_master_pname      = "powmaster";
 my $pSB_owamp_collector_pid     = "/var/lib/perfsonar/perfsonarbuoy_ma/owamp/upload/powcollector.pid";
 my $pSB_owamp_collector_pname   = "powcollector";
-
+my $traceroute_MA_cfg           = "/opt/perfsonar_ps/traceroute_ma/etc/daemon.conf";
+my $traceroute_MA_pid           = "/var/run/traceroute_ma.pid";
+my $traceroute_MA_pname         = "daemon.pl";
+my $traceroute_scheduler_pid    = "/var/run/traceroute-scheduler.pid";
+my $traceroute_scheduler_pname      = "traceroute_sche";
+my $traceroute_master_pid    = "/var/run/traceroute-master.pid";
+my $traceroute_master_pname      = "traceroute_mas";
 ######################
 # End Configuration
 ######################
@@ -110,14 +116,19 @@ my $snmp_ma = perfSONAR_PS::ServiceInfo::SNMP_MA->new();
 $snmp_ma->init( conf_file => $SNMP_MA_cfg, pid_files => $SNMP_MA_pid, process_names => $SNMP_MA_pname );
 my $psb_ma = perfSONAR_PS::ServiceInfo::pSB_MA->new();
 $psb_ma->init( conf_file => $pSB_MA_cfg, pid_files => $pSB_MA_pid, process_names => $pSB_MA_pname );
+my $traceroute_ma = perfSONAR_PS::ServiceInfo::Traceroute_MA->new();
+$traceroute_ma->init( conf_file => $traceroute_MA_cfg, pid_files => $traceroute_MA_pid, process_names => $traceroute_MA_pname );
 my $psb_bwctl = perfSONAR_PS::ServiceInfo::pSB_bwctl->new();
 $psb_bwctl->init( pid_files => [ $pSB_bwctl_collector_pid, $pSB_bwctl_master_pid ], process_names => [$pSB_bwctl_collector_pname, $pSB_bwctl_master_pname] );
 my $psb_owamp = perfSONAR_PS::ServiceInfo::pSB_owamp->new();
 $psb_owamp->init( pid_files => [ $pSB_owamp_collector_pid, $pSB_owamp_master_pid ], process_names => [$pSB_owamp_collector_pname, $pSB_owamp_master_pname] );
+my $traceroute_scheduler = perfSONAR_PS::ServiceInfo::TracerouteScheduler->new();
+$traceroute_scheduler->init( pid_files => [ $traceroute_scheduler_pid, $traceroute_master_pid ], process_names => [$traceroute_scheduler_pname, $traceroute_master_pname] );
+
 
 my %services = ();
 
-foreach my $service ( $owamp, $bwctl, $npad, $ndt, $psb_ma, $hls, $pinger, $snmp_ma, $psb_owamp, $psb_bwctl ) {
+foreach my $service ( $owamp, $bwctl, $npad, $ndt, $psb_ma, $traceroute_ma, $hls, $pinger, $snmp_ma, $psb_owamp, $psb_bwctl ) {
     my $is_running = $service->check_running();
     my $addresses  = $service->get_addresses();
     my $name       = $service->name();
@@ -352,6 +363,24 @@ sub init {
 
     $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::pSB" );
     $self->{SERVICE_NAME} = "perfsonarbuoy_owamp";
+    $self->SUPER::init( %conf );
+    return 0;
+}
+
+sub get_addresses {
+    return undef;
+}
+
+package perfSONAR_PS::ServiceInfo::TracerouteScheduler;
+
+use base 'perfSONAR_PS::ServiceInfo::Base';
+use Log::Log4perl qw(:easy);
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::TracerouteScheduler" );
+    $self->{SERVICE_NAME} = "traceroute_scheduler";
     $self->SUPER::init( %conf );
     return 0;
 }
@@ -854,6 +883,23 @@ sub init {
     $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::pSB_MA" );
     $self->{SERVICE_NAME} = "perfsonarbuoy_ma";
     $self->{VALID_MODULE} = "perfSONAR_PS::Services::MA::perfSONARBUOY";
+
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+package perfSONAR_PS::ServiceInfo::Traceroute_MA;
+
+use base 'perfSONAR_PS::ServiceInfo::perfSONAR_PS';
+use Log::Log4perl qw(:easy);
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::Traceroute_MA" );
+    $self->{SERVICE_NAME} = "traceroute_ma";
+    $self->{VALID_MODULE} = "perfSONAR_PS::Services::MA::Traceroute";
 
     $self->SUPER::init( %conf );
 

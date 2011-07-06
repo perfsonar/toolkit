@@ -125,7 +125,8 @@ sub save {
     my $pinger_tests = 0;
     my $psb_owamp_tests = 0;
     my $psb_bwctl_tests = 0;
-
+    my $traceroute_tests = 0;
+    
     foreach my $key ( keys %{ $self->{TESTS} } ) {
         if ( $self->{TESTS}->{$key}->{type} eq "pinger" ) {
             push @pinger_tests, $self->{TESTS}->{$key};
@@ -135,6 +136,8 @@ sub save {
             push @psb_tests, $self->{TESTS}->{$key};
             if ($self->{TESTS}->{$key}->{type} eq "owamp") {
                 $psb_owamp_tests++;
+            }elsif ($self->{TESTS}->{$key}->{type} eq "traceroute") {
+                $traceroute_tests++;
             } else {
                 $psb_bwctl_tests++;
             }
@@ -699,6 +702,111 @@ sub update_test_pinger {
     $test->{parameters}->{test_offset}     = $parameters->{test_offset}     if ( defined $parameters->{test_offset} );
     $test->{parameters}->{ttl}             = $parameters->{ttl}             if ( defined $parameters->{ttl} );
 
+    return ( 0, "" );
+}
+
+=head2 add_test_traceroute({ mesh_type => 1, name => 0, description => 1, test_interval => 1, packet_size => 0, timeout => 0, waittime => 0, first_ttl => 0, max_ttl => 0, pause => 0, protocol => 0 })
+    Add a new traceroute test of type STAR to the owmesh file. All parameters correspond
+    to test parameters. Returns (-1, error_msg)  on failure and (0, $test_id) on success.
+=cut
+
+sub add_test_traceroute {
+    my ( $self, @params ) = @_;
+    my $parameters = validate(
+        @params,
+        {
+            mesh_type     => 1,
+            name          => 0,
+            description   => 1,
+            test_interval => 1,
+            packet_size   => 0,
+            timeout       => 0,
+            waittime      => 0,
+            first_ttl     => 0,
+            max_ttl       => 0,
+            pause         => 0,
+            protocol      => 0,
+        }
+    );
+
+    $self->{LOGGER}->debug( "Add: " . Dumper( $parameters ) );
+
+    my $test_id;
+    do {
+        $test_id = "test." . genuid();
+    } while ( $self->{TESTS}->{$test_id} );
+
+    my %test = ();
+    $test{id}          = $test_id;
+    $test{name}        = $parameters->{name};
+    $test{description} = $parameters->{description};
+    $test{type}        = "traceroute";
+    $test{mesh_type}   = $parameters->{mesh_type};
+
+    my %test_parameters = ();
+    $test_parameters{test_interval}             = $parameters->{test_interval}             if ( defined $parameters->{test_interval} );
+    $test_parameters{packet_size}               = $parameters->{packet_size}               if ( defined $parameters->{packet_size} );
+    $test_parameters{timeout}                   = $parameters->{timeout}                   if ( defined $parameters->{timeout} );
+    $test_parameters{waittime}                  = $parameters->{waittime}                  if ( defined $parameters->{waittime} );
+    $test_parameters{first_ttl}                 = $parameters->{first_ttl}                 if ( defined $parameters->{first_ttl} );
+    $test_parameters{max_ttl}                   = $parameters->{max_ttl}                   if ( defined $parameters->{max_ttl} );
+    $test_parameters{pause}                     = $parameters->{pause}                     if ( defined $parameters->{pause} );
+    $test_parameters{protocol}                  = $parameters->{protocol}                  if ( defined $parameters->{protocol} );
+    
+
+    $test{parameters} = \%test_parameters;
+
+    my %tmp = ();
+    $test{members} = \%tmp;
+
+    $self->{TESTS}->{$test_id} = \%test;
+
+    return ( 0, $test_id );
+}
+
+=head2 update_test_traceroute({ mesh_type => 1, name => 0, description => 1, test_interval => 1, packet_size => 0, timeout => 0, waittime => 0, first_ttl => 0, max_ttl => 0, pause => 0, protocol => 0 })
+    Updates an existing traceroute test. mesh_type must be "star" as mesh tests
+    aren't currently supported. All other parameters corresponf to test parameters.
+    Returns (-1, $error_msg) on failure and (0, "") on success.
+=cut
+
+sub update_test_traceroute {
+    my ( $self, @params ) = @_;
+    my $parameters = validate(
+        @params,
+        {
+            test_id       => 1,
+            name          => 0,
+            description   => 0,
+            test_interval => 0,
+            packet_size   => 0,
+            timeout       => 0,
+            waittime      => 0,
+            first_ttl     => 0,
+            max_ttl       => 0,
+            pause         => 0,
+            protocol      => 0,
+        }
+    );
+
+    $self->{LOGGER}->debug( "Updating traceroute test " . $parameters->{test_id} );
+
+    my $test = $self->{TESTS}->{ $parameters->{test_id} };
+
+    return ( -1, "Test does not exist" ) unless ( $test );
+    return ( -1, "Test is not traceroute" ) unless ( $test->{type} eq "traceroute" );
+
+    $test->{name}                                    = $parameters->{name}                      if ( defined $parameters->{name} );
+    $test->{description}                             = $parameters->{description}               if ( defined $parameters->{description} );
+    $test->{parameters}->{test_interval}             = $parameters->{test_interval}             if ( defined $parameters->{test_interval} );
+    $test->{parameters}->{packet_size}               = $parameters->{packet_size}               if ( defined $parameters->{packet_size} );
+    $test->{parameters}->{timeout}                   = $parameters->{timeout}                   if ( defined $parameters->{timeout} );
+    $test->{parameters}->{waittime}                  = $parameters->{waittime}                  if ( defined $parameters->{waittime} );
+    $test->{parameters}->{first_ttl}                 = $parameters->{first_ttl}                 if ( defined $parameters->{first_ttl} );
+    $test->{parameters}->{max_ttl}                   = $parameters->{max_ttl}                   if ( defined $parameters->{max_ttl} );
+    $test->{parameters}->{pause}                     = $parameters->{pause}                     if ( defined $parameters->{pause} );
+    $test->{parameters}->{protocol}                  = $parameters->{protocol}                  if ( defined $parameters->{protocol} );
+    
     return ( 0, "" );
 }
 
@@ -1537,6 +1645,37 @@ sub parse_owmesh_conf {
                     die( "Couldn't add new test: $res" ) unless ( $status == 0 );
 
                     $test_id = $res;
+                }elsif ( $tool eq "traceroute" ) {
+                    my $test_interval = $conf->must_get_val( TESTSPEC => $test, ATTR => 'TRACETESTINTERVAL' );
+                    my $packet_size = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEPACKETSIZE' );
+                    my $timeout     = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACETIMEOUT' );
+                    my $waittime    = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEWAITTIME' );
+                    my $first_ttl   = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEFIRSTTTL' );
+                    my $max_ttl     = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEMAXTTL' );
+                    my $pause       = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEPAUSE' );
+                    my $icmp        = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEICMP' );
+                    my $description = $conf->get_val( TESTSPEC => $test, ATTR => 'DESCRIPTION' );
+                    $description = $group_name unless ( $description );
+
+                    my ( $status, $res ) = $self->add_test_traceroute(
+                        {
+                            description   => $description,
+                            mesh_type     => "star",
+                            name          => $test_name,
+                            test_interval => $test_interval,
+                            packet_size   => $packet_size,
+                            timeout       => $timeout,
+                            waittime      => $waittime,
+                            first_ttl     => $first_ttl,
+                            max_ttl       => $max_ttl,
+                            pause         => $pause,
+                            protocol      => ($icmp ? 'icmp' : 'udp')
+                        }
+                    );
+
+                    die( "Couldn't add new test: $res" ) unless ( $status == 0 );
+
+                    $test_id = $res;
                 }
                 elsif ( $tool =~ /bwctl\/(thrulay|nuttcp|iperf)/ ) {
                     my $protocol;
@@ -1755,7 +1894,7 @@ sub generate_owmesh_conf {
     my @measurement_sets = ();
     my @groups           = ();
     my @test_specs       = ();
-    my @addr_types       = ( "BW4", "BW6", "LAT4", "LAT6");
+    my @addr_types       = ( "BW4", "BW6", "LAT4", "LAT6", "TRACE4", "TRACE6");
     my %nodes            = ();
     my @localnodes       = ();
     my %local_node       = ();
@@ -1855,6 +1994,19 @@ sub generate_owmesh_conf {
                 $test_spec{packet_padding}   = $test->{parameters}->{packet_padding}   if ( defined $test->{parameters}->{packet_padding} );
                 $test_spec{bucket_width}     = $test->{parameters}->{bucket_width}     if ( defined $test->{parameters}->{bucket_width} );
                 $measurement_set{exclude_self} = 0;
+            } elsif ($test->{type} eq "traceroute") {
+                $test_spec{type}                      = "traceroute";
+                $test_spec{tool}                      = "traceroute";
+                $test_spec{test_interval}             = $test->{parameters}{test_interval}             if ( defined $test->{parameters}{test_interval} );
+                $test_spec{packet_size}               = $test->{parameters}{packet_size}               if ( defined $test->{parameters}{packet_size} );
+                $test_spec{timeout}                   = $test->{parameters}{timeout}                   if ( defined $test->{parameters}{timeout} );
+                $test_spec{waittime}                  = $test->{parameters}{waittime}                  if ( defined $test->{parameters}{waittime} );
+                $test_spec{first_ttl}                 = $test->{parameters}{first_ttl}                 if ( defined $test->{parameters}{first_ttl} );
+                $test_spec{max_ttl}                   = $test->{parameters}{max_ttl}                   if ( defined $test->{parameters}{max_ttl} );
+                $test_spec{pause}                     = $test->{parameters}{pause}                     if ( defined $test->{parameters}{pause} );
+                $test_spec{protocol}                  = $test->{parameters}{protocol}                  if ( defined $test->{parameters}{protocol} );
+    
+                $measurement_set{exclude_self} = 0;
             }
 
             my $addr_type;
@@ -1870,7 +2022,14 @@ sub generate_owmesh_conf {
                 } else {
                     $addr_type = "BW6";
                 }
+            } elsif ($test->{type} eq "traceroute") {
+                if ($ip_type eq "IPV4") {
+                    $addr_type = "TRACE4";
+                } else {
+                    $addr_type = "TRACE6";
+                }
             }
+
 
             $measurement_set{description}  = $test->{description};
             $measurement_set{address_type} = $addr_type;

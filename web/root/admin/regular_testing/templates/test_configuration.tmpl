@@ -75,6 +75,38 @@
 	<tr>
 	<td colspan="2"><a href="#" onClick='display_owamp_test_dialog("[% current_test.id %]", "[% current_test.description %]", "[% current_test.parameters.packet_interval %]", "[% current_test.parameters.packet_padding %]", "[% current_test.parameters.loss_threshold %]", "[% current_test.parameters.bucket_width %]", "[% current_test.parameters.session_count %]", "[% current_test.parameters.sample_count %]")'>Edit Test Parameters</a></td>
 	</tr>
+[% ELSIF current_test.type == "traceroute" %]
+	<tr>
+	<td style="width: 200px">Description</td>
+	<td>[% current_test.description %]</td>
+	</tr>
+	<tr>
+	<td style="width: 200px">Time between tests (seconds)</td><td>[% current_test.parameters.test_interval %]</td>
+	</tr>
+	<tr>
+	<td style="width: 200px">Packet Size (bytes)</td><td>[% current_test.parameters.packet_size %]</td>
+	</tr>
+	<tr>
+	<td style="width: 200px">Time between packets (seconds)</td><td>[% current_test.parameters.pause %]</td>
+	</tr>
+	<tr>
+	<td style="width: 200px">Timeout for test (seconds)</td><td>[% current_test.parameters.timeout %]</td>
+	</tr>
+	<tr>
+	<td style="width: 200px">Timeout for individual hops (seconds)</td><td>[% current_test.parameters.waittime %]</td>
+	</tr>
+	<tr>
+	<td style="width: 200px">First hop to report</td><td>[% current_test.parameters.first_ttl %]</td>
+	</tr>
+	<tr>
+	<td style="width: 200px">Maximum Number of Hops</td><td>[% current_test.parameters.max_ttl %]</td>
+	</tr>
+	<tr>
+	<td style="width: 200px">Protocol</td><td>[% current_test.parameters.protocol %]</td>
+	</tr>
+	<tr>
+	<td colspan="2"><a href="#" onClick='display_traceroute_test_dialog("[% current_test.id %]", "[% current_test.description %]", [% current_test.parameters.test_interval %], [% current_test.parameters.packet_size %], [% current_test.parameters.timeout %], [% current_test.parameters.waittime %], [% current_test.parameters.first_ttl %], [% current_test.parameters.max_ttl %], [% current_test.parameters.pause %], "[% current_test.parameters.protocol %]")'>Edit Test Parameters</a></td>
+	</tr>
 [% END %]
 </table>
 
