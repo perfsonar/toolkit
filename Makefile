@@ -31,8 +31,8 @@ rpminstall:
 
 install:
 	for i in `ls ./scripts`; do sed -i "s|/opt/perfsonar_ps/toolkit|${ROOTPATH}|g" ./scripts/$${i}; done
-	for i in `ls ./init_scripts`; do sed -i "s|/opt/perfsonar_ps/toolkit|${ROOTPATH}|g" ./scripts/$${i}; done
+	for i in `ls ./init_scripts`; do sed -i "s|/opt/perfsonar_ps/toolkit|${ROOTPATH}|g" ./init_scripts/$${i}; done
 	mkdir -p ${ROOTPATH}
-	tar ch --exclude '*.svn*' ---exclude=web/* --exclude=etc/* --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
+	tar ch --exclude '*.svn*' --exclude=web/* --exclude=etc/* --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
 	tar c --exclude '*.svn*' web | tar x -C ${ROOTPATH}
 	for i in `cat MANIFEST | grep ^etc`; do  mkdir -p `dirname $(ROOTPATH)/$${i}`; if [ -e $(ROOTPATH)/$${i} ]; then install -m 640 -c $${i} $(ROOTPATH)/$${i}.new; else install -m 640 -c $${i} $(ROOTPATH)/$${i}; fi; done
