@@ -181,6 +181,7 @@ scripts/initialize_databases
 scripts/initialize_perfsonarbuoy_bwctl_database
 scripts/initialize_perfsonarbuoy_owamp_database
 scripts/initialize_pinger_database
+scripts/initialize_traceroute_ma_database
 scripts/manage_users
 scripts/nptoolkit-configure.py
 scripts/pinger_toolkit_init.sql
@@ -199,6 +200,7 @@ scripts/upgrade_fix_cert_serial.sh
 scripts/upgrade_fix_permissions.sh
 scripts/watcher_log_archive
 scripts/watcher_log_archive_cleanup
+scripts/upgrade_owmesh_traceroute
 templates/config/diag_form_html.tmpl
 templates/config/motd.tmpl
 templates/config/ntp_conf.tmpl

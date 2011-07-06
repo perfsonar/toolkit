@@ -210,6 +210,9 @@ echo "site_project=pS-NPToolkit-%{version}" >> /opt/perfsonar_ps/toolkit/etc/adm
 mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
 
 #Make sure that the administrator_info file gets reloaded
+/opt/perfsonar_ps/toolkit/scripts/upgrade_owmesh_traceroute
+
+#Make sure that the owmesh file supports default traceroute options
 /opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl
 
 # we need all these things readable the CGIs (XXX: the configuration daemon
@@ -325,6 +328,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_perfsonarbuoy_bwctl_database
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_perfsonarbuoy_owamp_database
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_pinger_database
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_traceroute_ma_database
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
@@ -335,6 +339,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/set_default_passwords
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/update_administrative_info.pl
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_owmesh_traceroute
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/watcher_log_archive
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/watcher_log_archive_cleanup
 

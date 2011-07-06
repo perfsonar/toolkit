@@ -1475,7 +1475,7 @@ sub parse_owmesh_conf {
 
     return ( 0, "" ) unless ( -e $parameters->{file} );
 
-    my @known_prefixes = ( "OWP", "BW" );
+    my @known_prefixes = ( "OWP", "BW", "TRACE" );
 
     my @known_parameters = (
                         "SessionSuffix",

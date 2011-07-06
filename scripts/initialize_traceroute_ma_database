@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo | /opt/perfsonar_ps/traceroute_ma/bin/tracedb.pl -i root -c /opt/perfsonar_ps/perfsonarbuoy_ma/etc
