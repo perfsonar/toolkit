@@ -225,6 +225,8 @@ chmod o+r /opt/perfsonar_ps/PingER/etc/daemon.conf
 chmod o+r /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf
 chmod o+r /opt/perfsonar_ps/PingER/etc/pinger-landmarks.xml
 chmod o+r /opt/perfsonar_ps/snmp_ma/etc/daemon.conf
+chmod o+r /opt/perfsonar_ps/traceroute_ma/etc/daemon.conf
+chmod o+r /opt/perfsonar_ps/traceroute_ma/etc/traceroute-master.conf
 chmod o+r /opt/perfsonar_ps/toolkit/etc/administrative_info
 chmod o+r /opt/perfsonar_ps/toolkit/etc/enabled_services
 chmod o+r /opt/perfsonar_ps/toolkit/etc/external_addresses
