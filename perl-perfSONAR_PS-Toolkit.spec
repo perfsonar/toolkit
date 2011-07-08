@@ -198,6 +198,10 @@ cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/snmp_ma.conf /opt/pe
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/traceroute_ma.conf /opt/perfsonar_ps/traceroute_ma/etc/daemon.conf
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/traceroute_master.conf /opt/perfsonar_ps/traceroute_ma/etc/traceroute-master.conf
 
+#make sure traceroute_scheduler uses pSB owmesh file
+rm /opt/perfsonar_ps/traceroute_ma/etc/owmesh.conf
+ln -s /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf /opt/perfsonar_ps/traceroute_ma/etc/owmesh.conf
+
 # Have the lookup service clear the database when starting
 cat > /etc/sysconfig/lookup_service <<EOF
 RESET_DATABASE=YES
