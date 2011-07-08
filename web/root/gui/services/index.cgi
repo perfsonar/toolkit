@@ -128,7 +128,7 @@ $traceroute_scheduler->init( pid_files => [ $traceroute_scheduler_pid, $tracerou
 
 my %services = ();
 
-foreach my $service ( $owamp, $bwctl, $npad, $ndt, $psb_ma, $traceroute_ma, $hls, $pinger, $snmp_ma, $psb_owamp, $psb_bwctl ) {
+foreach my $service ( $owamp, $bwctl, $npad, $ndt, $psb_ma, $traceroute_ma, $traceroute_scheduler, $hls, $pinger, $snmp_ma, $psb_owamp, $psb_bwctl ) {
     my $is_running = $service->check_running();
     my $addresses  = $service->get_addresses();
     my $name       = $service->name();
