@@ -7,6 +7,7 @@ use CGI;
 use Template;
 use Log::Log4perl qw(get_logger :easy :levels);
 use Config::General;
+use URI::Escape;
 
 use FindBin qw($RealBin);
 
@@ -49,6 +50,8 @@ my $script_name = $cgi->url(-relative=>1);
 my $codebase_url = $script_url;
 $codebase_url =~ s/$script_name//;
 
+$codebase_url = uri_unescape($codebase_url);
+
 my $port = 861;
 
 my $owampd_address;
@@ -56,23 +59,25 @@ my $owampd_address;
 my $addr_conf = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
 my $res = $addr_conf->init();
 if ($res == 0) {
-	my $external_address = $addr_conf->get_primary_address();
-	if ($external_address) {
-		$owampd_address = $external_address.":".$port;
-		if ($codebase_url =~ /localhost/) {
-			$codebase_url =~ s/localhost/$external_address/g;
-		}
-		if ($codebase_url =~ /127.0.0.1/) {
-			$codebase_url =~ s/127.0.0.1/$external_address/g;
-		}
-	}
+    my $external_address = $addr_conf->get_primary_address();
+    if ($external_address) {
+        $external_address = "[".$external_address."]" if ($external_address =~ /:/);
+        $owampd_address = $external_address.":".$port;
+
+        if ($codebase_url =~ /localhost/) {
+                $codebase_url =~ s/localhost/$external_address/g;
+        }
+        if ($codebase_url =~ /127.0.0.1/) {
+                $codebase_url =~ s/127.0.0.1/$external_address/g;
+        }
+    }
 }
 
 my $output;
 
 my %vars = (
-	owampd_address => $owampd_address,
-	codebase_url   => $codebase_url,
+    owampd_address => $owampd_address,
+    codebase_url   => $codebase_url,
 );
 
 my $tt = Template->new( INCLUDE_PATH => '.' ) or die( "Couldn't initialize template toolkit" );
