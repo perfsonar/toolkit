@@ -199,6 +199,7 @@ scripts/upgrade_owmesh_traceroute
 scripts/watcher_log_archive
 scripts/watcher_log_archive_cleanup
 scripts/system_environment/configure_ntpd
+scripts/system_environment/configure_sysctl
 scripts/system_environment/disable_http_trace
 scripts/system_environment/disable_mysql_network_access
 scripts/system_environment/disable_php_advertising
