@@ -1,0 +1,20 @@
+#!/bin/bash
+#######################
+# Add /sbin, /usr/sbin, /usr/local/sbin to everyone's path
+#######################
+cat >/etc/profile.d/add_sbin_dirs.sh <<EOF
+
+pathmunge () {
+        if ! echo \$PATH | /bin/egrep -q "(^|:)\$1($|:)" ; then
+           if [ "\$2" = "after" ] ; then
+              PATH=\$PATH:\$1
+           else
+              PATH=\$1:\$PATH
+           fi
+        fi
+}
+
+pathmunge "/sbin"
+pathmunge "/usr/sbin"
+pathmunge "/usr/local/sbin"
+EOF

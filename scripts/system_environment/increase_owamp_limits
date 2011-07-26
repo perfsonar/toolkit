@@ -1,0 +1,13 @@
+#!/bin/bash
+#######################
+# Override the owampd.conf to make sure that the disk limit to 1G from the
+# default of 10M. XXX: this unilaterally overwrite the existing owamp
+# configuration. Since I doubt anyone changes it, it's not a big deal, but we
+# should look into properly upgrading it.
+#######################
+cat >/etc/owampd/owampd.limits <<EOF
+limit root with delete_on_fetch=on, bandwidth=0, disk=0, allow_open_mode=on
+limit regular with delete_on_fetch=on, parent=root, bandwidth=1000000, disk=1073741824, allow_open_mode=on
+limit jail with parent=root, bandwidth=1, disk=1, allow_open_mode=off
+assign default regular
+EOF

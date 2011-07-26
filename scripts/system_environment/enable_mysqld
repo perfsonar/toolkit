@@ -1,0 +1,7 @@
+#!/bin/bash
+#######################
+# Enable MySQL. Does not matter if this is running in an 'upgrade' or 'new
+# install' context.
+#######################
+
+/sbin/chkconfig mysqld on

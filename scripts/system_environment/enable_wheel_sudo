@@ -1,0 +1,8 @@
+#!/bin/bash
+#######################
+# Make sure that the wheel group can use sudo
+#######################
+grep ^%wheel /etc/sudoers &> /dev/null
+if [ $? != 0 ]; then
+echo "%wheel        ALL=(ALL)       ALL" >> /etc/sudoers
+fi

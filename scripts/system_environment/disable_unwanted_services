@@ -1,0 +1,40 @@
+#!/bin/bash
+#######################
+# Make sure some unused services are disabled. Does not matter if this is
+# running in an 'upgrade' or 'new install' context.
+#######################
+
+/sbin/chkconfig cups off
+/sbin/chkconfig gpm off
+/sbin/chkconfig portmap off
+/sbin/chkconfig iptables off
+/sbin/chkconfig ip6tables off
+/sbin/chkconfig irqbalance off
+/sbin/chkconfig bluetooth off
+/sbin/chkconfig haldaemon off
+/sbin/chkconfig cpuspeed off
+/sbin/chkconfig pcscd off
+/sbin/chkconfig nfslock off
+/sbin/chkconfig ypbind off
+/sbin/chkconfig mdmonitor off
+/sbin/chkconfig rpcidmapd off
+/sbin/chkconfig rpcgssd off
+/sbin/chkconfig netfs off
+/sbin/chkconfig autofs off
+/sbin/chkconfig yum-updatesd off
+/sbin/chkconfig avahi-dnsconfd off
+/sbin/chkconfig psacct off
+/sbin/chkconfig nfs off
+/sbin/chkconfig irda off
+/sbin/chkconfig rpcsvcgssd off
+/sbin/chkconfig mdmpd off
+/sbin/chkconfig readahead_later off
+/sbin/chkconfig readahead_early off
+/sbin/chkconfig kudzu off
+/sbin/chkconfig apmd off
+/sbin/chkconfig hidd off
+/sbin/chkconfig avahi-daemon off
+/sbin/chkconfig firstboot off
+/sbin/chkconfig smartd off
+
+

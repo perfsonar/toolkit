@@ -110,6 +110,33 @@ Requires:       perl-perfSONAR_PS-SNMPMA
 Requires:       perl-perfSONAR_PS-serviceTest
 Requires:       ndt
 Requires:       npad
+Requires:       coreutils
+
+# Anaconda requires a Requires(post) to ensure that packages are installed
+# before the %post section is run...
+Requires(post):       perl
+Requires(post):       httpd
+Requires(post):       mod_ssl
+Requires(post):       mod_auth_shadow
+Requires(post):       ntp
+Requires(post):       iperf
+Requires(post):       bwctl-server
+Requires(post):       owamp-server
+Requires(post):       bwctl-client
+Requires(post):       owamp-client
+Requires(post):       perl-perfSONAR_PS-LSCacheDaemon
+Requires(post):       perl-perfSONAR_PS-LSRegistrationDaemon
+Requires(post):       perl-perfSONAR_PS-PingER-server
+Requires(post):       perl-perfSONAR_PS-LookupService
+Requires(post):       perl-perfSONAR_PS-perfSONARBUOY-server
+Requires(post):       perl-perfSONAR_PS-perfSONARBUOY-client
+Requires(post):       perl-perfSONAR_PS-perfSONARBUOY-config
+Requires(post):       perl-perfSONAR_PS-SNMPMA
+Requires(post):       perl-perfSONAR_PS-serviceTest
+Requires(post):       ndt
+Requires(post):       npad
+Requires(post):       coreutils
+
 # the following RPMs are needed by cacti
 Requires:       net-snmp-utils
 Requires:       mod_php
@@ -117,6 +144,10 @@ Requires:       php-adodb
 Requires:       php-mysql
 Requires:       php-pdo
 Requires:       php-snmp
+# XXX: The SystemEnvironment should really deepend on this, but for the 3.2.1
+# release we'll need to do the reverse. All future instances should be the
+# reverse.
+Requires:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 
 
 %description
@@ -126,10 +157,34 @@ The pS-Performance Toolkit web gui and associated services.
 Summary:        pS-Performance Toolkit Live CD utilities
 Group:          Applications/Network
 Requires:       perl-perfSONAR_PS-Toolkit
+Requires:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 Requires:       aufs
 
 %description LiveCD
 The scripts and tools needed by the pS-Performance Toolkit's Live CD implementation.
+
+%package SystemEnvironment
+Summary:        pS-Performance Toolkit NetInstall System Configuration
+Group:          Applications/Network
+# XXX: The SystemEnvironment should really deepend on Toolkit not vice versa,
+# but for the 3.2.1 release we'll need to do the reverse. All future instances
+# should be the reverse. Until then, we'll specify all the known dependencies.
+#Requires:       perl-perfSONAR_PS-Toolkit
+Requires(post):       setup
+Requires(post):       bwctl-server
+Requires(post):       owamp-server
+Requires(post):       ntp
+Requires(post):       sysklogd
+Requires(post):       httpd
+Requires(post):       mysql
+Requires(post):       php-common
+Requires(post):       Internet2-repo
+Requires(post):       sudo
+
+%description SystemEnvironment
+Tunes and configures the system according to performance and security best
+practices.
+
 
 %pre
 /usr/sbin/groupadd perfsonar 2> /dev/null || :
@@ -278,6 +333,14 @@ chkconfig %{init_script_8} on
 mkdir -p /mnt/store
 mkdir -p /mnt/temp_root
 
+%post SystemEnvironment
+# XXX: Check if we're a new installation or upgrade installation.  Run scripts
+# to edit/update the system configuration
+for script in %{install_base}/scripts/system_environment/*; do
+    echo "Running $script"
+    $script
+done
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -339,9 +402,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/pinger_toolkit_init.sql
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/reset_pinger.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/reset_psb_bwctl.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/reset_psb_owamp.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/set_default_passwords
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/update_administrative_info.pl
@@ -365,6 +425,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_conman_fix.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_fix_cert_serial.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_fix_permissions.sh
+
+%files SystemEnvironment
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
 
 %changelog
 * Tue Oct 19 2010 aaron@internet2.edu 3.2-6

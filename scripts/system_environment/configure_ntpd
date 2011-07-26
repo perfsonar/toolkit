@@ -1,0 +1,28 @@
+#!/bin/bash
+#######################
+# Override the default ntp.conf with one containing non-'pool' NTP servers.
+# Only replaces the ntp.conf if it finds the 'pool' servers in the ntp.conf so
+# it shouldn't matter if it is an upgrade or a new install.
+#######################
+
+grep pool /etc/ntp.conf &> /dev/null
+if [ $? == 0 ]; then
+cat >/etc/ntp.conf <<EOF
+logfile /var/log/ntpd
+driftfile /var/lib/ntp/ntp.drift
+statsdir  /var/lib/ntp/
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+# You should have at least 4 NTP servers
+
+server owamp.chic.net.internet2.edu iburst
+server owamp.hous.net.internet2.edu iburst
+server owamp.losa.net.internet2.edu iburst
+server owamp.newy.net.internet2.edu iburst
+server chronos.es.net iburst
+server saturn.es.net iburst
+EOF
+fi

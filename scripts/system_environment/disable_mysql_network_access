@@ -1,0 +1,28 @@
+#!/bin/bash
+#######################
+# Disable MySQL network access, and symlink access. Checks to see whether it
+# has run before so does not matter if this is running in an 'upgrade' or 'new
+# install' context.
+#######################
+grep skip-networking /etc/my.cnf &> /dev/null
+if [ $? != 0 ]; then
+cat > /etc/my.cnf <<EOF
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+# Default to using old password format for compatibility with mysql 3.x
+# clients (those using the mysqlclient10 compatibility package).
+old_passwords=1
+skip-networking
+
+# Disabling symbolic-links is recommended to prevent assorted security risks;
+# to do so, uncomment this line:
+symbolic-links=0
+
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+EOF
+
+

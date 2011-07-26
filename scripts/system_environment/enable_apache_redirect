@@ -1,0 +1,29 @@
+#!/bin/bash
+#######################
+# Setup redirects so that if clients go to "http://[host]/" or
+# "https://[host]/", they get redirected to "http://[host]/toolkit" or
+# "https://[host]/toolkit". It writes a toolkit-specific file, and modifies
+# ssl.conf only if it hasn't modified it already so it does not matter if this
+# is running in an 'upgrade' or 'new install' context.
+#######################
+cat > /etc/httpd/conf.d/toolkit_root_redirect.conf <<EOF
+# Redirects requests to "/" to "/toolkit". It's done in this strange way to
+# avoid confusing people who enter an IP address and would get redirected to
+# the hostname, or vice versa.
+RewriteEngine     on
+RewriteCond       %{HTTP_HOST} =""
+RewriteRule       ^/$    http://%{SERVER_ADDR}/toolkit/
+
+RewriteCond       %{HTTP_HOST} !=""
+RewriteRule       ^/$    http://%{HTTP_HOST}/toolkit/
+EOF
+
+#######################
+# Setup a redirect so that if clients go to "https://[host]/", they get
+# redirected to "https://[host]/toolkit". this isn't done in the rpm so that
+# users who just install the rpm don't have their root web url taken away.
+#######################
+grep RewriteEngine /etc/httpd/conf.d/ssl.conf &> /dev/null
+if [ $? != 0 ]; then
+sed -i 's|</VirtualHost>|RewriteEngine on\nRewriteOptions Inherit\n</VirtualHost>|g' /etc/httpd/conf.d/ssl.conf
+fi

@@ -1,0 +1,12 @@
+#!/bin/bash
+#######################
+# Disable zeroconf route. Does not matter if this is running in an
+# 'upgrade' or 'new install' context.
+#######################
+
+grep NOZEROCONF /etc/sysconfig/network &> /dev/null
+if [ $? != 0 ]; then
+cat >> /etc/sysconfig/network <<EOF
+NOZEROCONF=yes
+EOF
+fi

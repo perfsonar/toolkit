@@ -1,0 +1,34 @@
+#!/bin/bash
+#######################
+# Configure's the 'local5' output location to go to
+# /var/log/perfsonar/owamp_bwctl.log so that the owamp and bwctl log output
+# goes to a specific file.
+#######################
+
+# Set 'local5' output location to /var/log/perfsonar/owamp_bwctl.log
+grep ^local5 /etc/syslog.conf &> /dev/null
+if [ $? != 0 ]; then
+cat >>/etc/syslog.conf <<EOF                                          
+# Save bwctl and owamp messages to /var/log/perfsonar/owamp_bwctl.log
+local5.*                                                /var/log/perfsonar/owamp_bwctl.log
+EOF
+fi
+
+# Make sure that the owamp/bwctl log file gets rotated regularly
+grep owamp_bwctl.log /etc/logrotate.d/syslog &> /dev/null
+if [ $? != 0 ]; then
+cat >>/etc/logrotate.d/syslog <<EOF
+/var/log/perfsonar/owamp_bwctl.log {
+    sharedscripts
+    postrotate
+        /bin/kill -HUP `cat /var/run/syslogd.pid 2> /dev/null` 2> /dev/null || true
+        /bin/kill -HUP `cat /var/run/rsyslogd.pid 2> /dev/null` 2> /dev/null || true
+    endscript
+}
+EOF
+fi
+
+# The log file needs to be created initially so that the log file isn't the
+# default of root:root and only readable by root.
+touch /var/log/perfsonar/owamp_bwctl.log
+chown perfsonar:perfsonar /var/log/perfsonar/owamp_bwctl.log

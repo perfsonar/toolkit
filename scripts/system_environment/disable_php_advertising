@@ -1,0 +1,7 @@
+#!/bin/bash
+#######################
+# Disable showing that PHP is installed on the server (see
+# http://seclists.org/webappsec/2004/q4/324 for why). Can be run whether in
+# upgrade or new install mode.
+#######################
+sed -i 's|expose_php *=.*|expose_php = Off|' /etc/php.ini
