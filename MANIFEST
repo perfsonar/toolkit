@@ -189,9 +189,6 @@ scripts/initialize_traceroute_ma_database
 scripts/manage_users
 scripts/nptoolkit-configure.py
 scripts/pinger_toolkit_init.sql
-scripts/reset_pinger.sh
-scripts/reset_psb_bwctl.sh
-scripts/reset_psb_owamp.sh
 scripts/restore_config
 scripts/save_config
 scripts/service_watcher
