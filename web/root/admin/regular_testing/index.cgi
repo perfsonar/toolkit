@@ -1117,7 +1117,7 @@ sub lookup_servers {
                 push @dns_names, $addr;
                 $dns_name = $addr;
                 if ( $cached_dns_info ) {
-                    $ip = $cached_dns_info->[0];
+                    $ip = join ', ', @{ $cached_dns_info };
                 }
             }
 
