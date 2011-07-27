@@ -634,7 +634,7 @@ else {#IPv4 traceroute function
               "for browsers outside the $http_domain domain.<br>\n";
       }
     }
-    push(@Tropts,"-f 3");
+    #push(@Tropts,"-f 3");
   }
   else {#Client/browser & web server are in the same domain
     $start=""; #no need to hide internal routing from insiders
