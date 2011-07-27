@@ -19,7 +19,7 @@
 %define crontab_3     cron-owamp_cleaner
 %define crontab_4     cron-save_config
 
-%define relnum 1
+%define relnum 2
 %define disttag pSPS
 
 Name:           perl-perfSONAR_PS-Toolkit
@@ -421,10 +421,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/restore_config
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/save_config
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/temp_root.img
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_3.1.x.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_conman_fix.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_fix_cert_serial.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_fix_permissions.sh
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/livecd_upgrade
 
 %files SystemEnvironment
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*

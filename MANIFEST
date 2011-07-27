@@ -17,9 +17,8 @@ etc/backingstore.conf.d/perfsonarbuoy.conf
 etc/backingstore.conf.d/pinger.conf
 etc/backingstore.conf.d/snmp_ma.conf
 etc/backingstore.conf.d/toolkit.conf
-etc/backingstore.conf.d/upgrade_3.1.x.conf
-etc/backingstore.conf.d/upgrade_fix_cert_serial.conf
-etc/backingstore.conf.d/upgrade_fix_permissions.conf
+etc/backingstore.conf.d/upgrade_livecd.conf
+etc/backingstore.conf.d/initialize_environment.conf
 etc/config_daemon-logger.conf
 etc/config_daemon.conf
 etc/default_service_configs/hLS.conf
@@ -191,10 +190,10 @@ scripts/service_watcher
 scripts/set_default_passwords
 scripts/temp_root.img
 scripts/update_administrative_info.pl
-scripts/upgrade_3.1.x.sh
-scripts/upgrade_conman_fix.sh
-scripts/upgrade_fix_cert_serial.sh
-scripts/upgrade_fix_permissions.sh
+scripts/livecd_upgrade/upgrade_3.1.x.sh
+scripts/livecd_upgrade/upgrade_conman_fix.sh
+scripts/livecd_upgrade/upgrade_fix_cert_serial.sh
+scripts/livecd_upgrade/upgrade_fix_permissions.sh
 scripts/upgrade_owmesh_traceroute
 scripts/watcher_log_archive
 scripts/watcher_log_archive_cleanup

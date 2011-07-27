@@ -72,21 +72,25 @@ $data_store_version  = "" unless ($data_store_version);
 if ($conf->{restore_pre_run}) {
     $conf->{restore_pre_run} = [ $conf->{restore_pre_run} ] unless (ref $conf->{restore_pre_run});
 
-    foreach my $script (@{ $conf->{restore_pre_run} }) {
-        my @cmd = ();
+    foreach my $pattern (@{ $conf->{restore_pre_run} }) {
+        my @scripts = glob($pattern);
 
-        push @cmd, $script;
-        push @cmd, ("-v", $data_store_version);
-        push @cmd, ("-s", $data_store_location);
-        push @cmd, ("-c", $original_cd_location);
+        foreach my $script (@scripts) {
+            my @cmd = ();
 
-        my $status = system(@cmd);
-        if ($status != 0) {
-            my $exit_value  = $? >> 8;
-            my $signal_num  = $? & 127;
-            my $dumped_core = $? & 128;
+            push @cmd, $script;
+            push @cmd, ("-v", $data_store_version);
+            push @cmd, ("-s", $data_store_location);
+            push @cmd, ("-c", $original_cd_location);
 
-            print "Problem executing: ".join(",", @cmd).": ".$exit_value."\n";
+            my $status = system(@cmd);
+            if ($status != 0) {
+                my $exit_value  = $? >> 8;
+                my $signal_num  = $? & 127;
+                my $dumped_core = $? & 128;
+
+                print "Problem executing: ".join(",", @cmd).": ".$exit_value."\n";
+            }
         }
     }
 }
@@ -167,21 +171,25 @@ if (-e $data_store_location."/NPTools/".$conf->{configuration_tarball}) {
 if ($conf->{restore_post_run}) {
     $conf->{restore_post_run} = [ $conf->{restore_post_run} ] unless (ref $conf->{restore_post_run});
 
-    foreach my $script (@{ $conf->{restore_post_run} }) {
-        my @cmd = ();
+    foreach my $pattern (@{ $conf->{restore_post_run} }) {
+        my @scripts = glob($pattern);
 
-        push @cmd, $script;
-        push @cmd, ("-v", $data_store_version);
-        push @cmd, ("-s", $data_store_location);
-        push @cmd, ("-c", $original_cd_location);
+        foreach my $script (@scripts) {
+            my @cmd = ();
 
-        my $status = system(@cmd);
-        if ($status != 0) {
-            my $exit_value  = $? >> 8;
-            my $signal_num  = $? & 127;
-            my $dumped_core = $? & 128;
+            push @cmd, $script;
+            push @cmd, ("-v", $data_store_version);
+            push @cmd, ("-s", $data_store_location);
+            push @cmd, ("-c", $original_cd_location);
 
-            print "Problem executing: ".join(",", @cmd).": ".$exit_value."\n";
+            my $status = system(@cmd);
+            if ($status != 0) {
+                my $exit_value  = $? >> 8;
+                my $signal_num  = $? & 127;
+                my $dumped_core = $? & 128;
+
+                print "Problem executing: ".join(",", @cmd).": ".$exit_value."\n";
+            }
         }
     }
 }
