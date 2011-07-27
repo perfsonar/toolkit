@@ -24,5 +24,4 @@ symbolic-links=0
 log-error=/var/log/mysqld.log
 pid-file=/var/run/mysqld/mysqld.pid
 EOF
-
-
+fi
