@@ -92,12 +92,20 @@ else {
 
 my $external_interface;
 my $allow_internal_addresses;
+my $disable_ipv4_reverse_lookup;
+my $disable_ipv6_reverse_lookup;
 
 if ($conf{external_interface}) {
     $external_interface = $conf{external_interface};
 }
 if ($conf{allow_internal_addresses}) {
     $allow_internal_addresses = $conf{allow_internal_addresses};
+}
+if ($conf{disable_ipv4_reverse_lookup}) {
+    $disable_ipv4_reverse_lookup = $conf{disable_ipv4_reverse_lookup};
+}
+if ($conf{disable_ipv6_reverse_lookup}) {
+    $disable_ipv6_reverse_lookup = $conf{disable_ipv6_reverse_lookup};
 }
 
 my $ips_by_iface;
@@ -128,7 +136,7 @@ foreach my $iface ( keys %$ips_by_iface ) {
 my $reverse_dns_mapping = reverse_dns_multi({ addresses => \@all_ips, timeout => 10 }); # don't wait more than 10 seconds.
 
 # Try to find an address with an ipv4 address with that resolves to something
-unless ( $chosen_address and $ipv4_address ) {
+unless ( $disable_ipv4_reverse_lookup or ( $chosen_address and $ipv4_address )) {
     foreach my $iface ( keys %$ips_by_iface ) {
         foreach my $ip ( @{ $ips_by_iface->{$iface } } ) {
             my @private_list = ( '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16' );
@@ -158,7 +166,7 @@ unless ( $chosen_address and $ipv4_address ) {
 }
 
 # Try to find an ipv6 address that resolves to something
-unless ( $chosen_address and $ipv6_address ) {
+unless ( $disable_ipv6_reverse_lookup or ( $chosen_address and $ipv6_address )) {
     foreach my $iface ( keys %$ips_by_iface ) {
         foreach my $ip ( @{ $ips_by_iface->{$iface } } ) {
             next unless (Net::IPv6Addr::is_ipv6( $ip ));
