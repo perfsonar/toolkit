@@ -1954,8 +1954,9 @@ sub generate_owmesh_conf {
         }
 
         return ( -1, "No known external ipv4 or ipv6 addresses" ) unless ( $test->{center}->{ipv4_address} or $test->{center}->{ipv6_address} );
-
-        foreach my $ip_type ( "IPV4", "IPV6" ) {
+        
+        my %duplicate_test_map = ();
+        foreach my $ip_type ( "IPV6", "IPV4" ) {
             my %measurement_set = ();
             my %group           = ();
             my %test_spec       = ();
@@ -2047,9 +2048,11 @@ sub generate_owmesh_conf {
             foreach my $member_id ( keys %{ $test->{members} } ) {
                 my $member = $test->{members}->{$member_id};
 
-                # XXX assumes that hostnames and the like resolve to ipv4 addresses.
-                next if ( $ip_type eq "IPV6" and not &Net::IPv6Addr::is_ipv6( $member->{address} ) );
-
+                next if ( $ip_type eq "IPV4" and not $self->determine_ipv4( $member->{address}) );
+                next if ( $ip_type eq "IPV6" and not $self->determine_ipv6( $member->{address}) );
+                next if( $duplicate_test_map{$member_id} );
+                $duplicate_test_map{$member_id} = 1;
+                
                 # The center gets output later
                 next if ( $test->{center}->{ipv4_address} and $member->{address} eq $test->{center}->{ipv4_address} );
                 next if ( $test->{center}->{ipv6_address} and $member->{address} eq $test->{center}->{ipv6_address} );
@@ -2225,6 +2228,66 @@ sub address_to_id {
 
     return $retval;
 }
+
+=head determine_ipv6 ( $address ) 
+    Simple function to test if a host is an IPv6 address or has an AAAA record
+=cut
+sub determine_ipv6 {
+    my ($self, $address) = @_;
+    
+    if( &Net::IPv6Addr::is_ipv6($address) ){
+        return 1;
+    }
+    
+    if( is_ipv4($address) ){
+        return 0;
+    }
+    
+    #lookup IPv6 address
+    my $res = Net::DNS::Resolver->new;
+    my $query = $res->search($address, "AAAA");
+    if($query){
+        foreach my $rr ($query->answer) {
+            if($rr->type eq "AAAA"){
+                my $ipv6addr = $rr->address;
+                return 1 if($ipv6addr);
+            }
+        }
+    }
+    
+    return 0;
+}
+
+=head determine_ipv4 ( $address ) 
+    Simple function to test if a host is an IPv4 address or has an A record
+=cut
+sub determine_ipv4 {
+    my ($self, $address) = @_;
+    
+    if( is_ipv4($address) ){
+        return 1;
+    }
+    
+    if( &Net::IPv6Addr::is_ipv6($address) ){
+        return 0;
+    }
+    
+    #lookup IPv6 address
+    my $res = Net::DNS::Resolver->new;
+    my $query = $res->search($address, "A");
+    if($query){
+        foreach my $rr ($query->answer) {
+            if($rr->type eq "A"){
+                my $ipv4addr = $rr->address;
+                return 1 if($ipv4addr);
+            }
+        }
+    }
+    
+    return 0;
+}
+
+
 
 1;
 
