@@ -28,6 +28,7 @@ use perfSONAR_PS::NPToolkit::Config::BWCTL;
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
 use perfSONAR_PS::NPToolkit::Config::Services;
 use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
+use perfSONAR_PS::NPToolkit::Config::HostsFile;
 use perfSONAR_PS::Common qw(find findvalue extract genuid);
 
 use Data::Validate::IP qw(is_ipv4);
@@ -163,6 +164,7 @@ my $ajax = CGI::Ajax->new(
     'delete_test' => \&delete_test,
 
     'lookup_servers' => \&lookup_servers,
+    'repair_hosts_file' => \&repair_hosts_file,
 );
 
 my ( $header, $footer );
@@ -304,7 +306,7 @@ sub fill_variables_status {
 
     my ($status, $res);
 
-    my ( $psb_owamp_enabled, $psb_bwctl_enabled, $psb_ma_enabled, $pinger_enabled );
+    my ( $psb_owamp_enabled, $psb_bwctl_enabled, $psb_ma_enabled, $pinger_enabled, $hosts_file_matches_dns );
 
     my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
     $res = $services_conf->init( { enabled_services_file => $conf{enabled_services_file} } );
@@ -330,6 +332,12 @@ sub fill_variables_status {
         if ( $service_info and $service_info->{enabled} ) {
             $psb_ma_enabled = 1;
         }
+    }
+    
+    #make sure /etc/hosts matches DNS
+    my $hosts_file_config = perfSONAR_PS::NPToolkit::Config::HostsFile->new();
+    if($hosts_file_config->init() == 0){
+        $hosts_file_matches_dns = $hosts_file_config->compare_to_dns();
     }
 
     # Calculate whether or not they have a "good" configuration
@@ -437,6 +445,7 @@ sub fill_variables_status {
     $vars->{bwctl_ports}          = \%bwctl_ports;
     $vars->{bwctl_port_range}     = $bwctl_port_range;
     $vars->{bwctl_port_usage}     = $bwctl_port_usage;
+    $vars->{hosts_file_matches_dns} = $hosts_file_matches_dns;
     $vars->{owamp_ports}          = \%owamp_ports;
     $vars->{owamp_port_range}     = $owamp_port_range;
     $vars->{owamp_port_usage}     = $owamp_port_usage;
@@ -1361,6 +1370,21 @@ sub lookup_addresses {
     return;
 }
 
+sub repair_hosts_file{
+    my $hosts_file_config = perfSONAR_PS::NPToolkit::Config::HostsFile->new();
+    if($hosts_file_config->init() != 0){
+        $error_msg = "Unable to initialize hosts file manager";
+    }else{
+        my ( $status, $res ) = $hosts_file_config->save( { restart_services => 0 } );
+        if ($status != 0) {
+            $error_msg = "$res";
+        }else{
+            $status_msg="Hosts file successfully repaired";
+        }
+    }
+    
+    return display_body();
+}
 
 1;
 
