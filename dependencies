@@ -51,6 +51,8 @@ Readonly
 Regexp::Common
 Scalar::Util
 Socket
+Socket6
+Socket::GetAddrInfo
 Storable
 Sys::Hostname
 Template

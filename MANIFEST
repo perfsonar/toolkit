@@ -70,6 +70,7 @@ lib/perfSONAR_PS/NPToolkit/Config/AdministrativeInfo.pm
 lib/perfSONAR_PS/NPToolkit/Config/BWCTL.pm
 lib/perfSONAR_PS/NPToolkit/Config/Base.pm
 lib/perfSONAR_PS/NPToolkit/Config/ExternalAddress.pm
+lib/perfSONAR_PS/NPToolkit/Config/HostsFile.pm
 lib/perfSONAR_PS/NPToolkit/Config/LSRegistrationDaemon.pm
 lib/perfSONAR_PS/NPToolkit/Config/NDT.pm
 lib/perfSONAR_PS/NPToolkit/Config/NPAD.pm
