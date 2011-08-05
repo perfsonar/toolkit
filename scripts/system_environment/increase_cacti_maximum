@@ -1,0 +1,9 @@
+#!/bin/bash
+# Ensure that the RRD files have correct traffic_in and traffic_out
+for file in /var/lib/cacti/rra/*rrd; do
+    rrdtool info ${file} | grep traffic_in\].max | grep 4.2949672950e+09 &> /dev/null
+    if [ "$?" = "0" ]; then
+        echo "Updating ${file} traffic_in/traffic_out max to 10G"
+        rrdtool tune ${file} -a traffic_in:1.0000000000e+10 -a traffic_out:1.0000000000e+10 
+    fi
+done

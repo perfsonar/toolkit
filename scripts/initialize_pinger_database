@@ -6,6 +6,24 @@ DB_NAME=pingerMA
 DB_USERNAME=pinger
 DB_PASSWORD=7hckn0p1x
 
-mysql -u root -e "CREATE DATABASE $DB_NAME"
-mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO $DB_USERNAME@localhost IDENTIFIED BY '$DB_PASSWORD'" $DB_NAME
-mysql -u root $DB_NAME < $BINDIR/pinger_toolkit_init.sql
+/etc/init.d/mysqld status
+if [ $? != 0 ]; then
+    /etc/init.d/mysqld start
+    STOP_MYSQL=1
+fi
+
+mysql -e "select 1=1" pingerMA &> /dev/null
+if [ $? != 0 ]; then
+    mysql -u root -e "CREATE DATABASE $DB_NAME"
+    mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO $DB_USERNAME@localhost IDENTIFIED BY '$DB_PASSWORD'" $DB_NAME
+    mysql -u root $DB_NAME < $BINDIR/pinger_toolkit_init.sql
+fi
+
+mysql -e "describe host" pingerMA | grep ip_type &> /dev/null
+if [ $? != 0 ]; then
+    mysql pingerMA < $BINDIR/pinger_toolkit_upgrade.sql
+fi
+
+if [ "${STOP_MYSQL}" = "1" ]; then
+    /etc/init.d/mysqld stop
+fi

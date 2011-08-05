@@ -186,6 +186,7 @@ scripts/initialize_traceroute_ma_database
 scripts/manage_users
 scripts/nptoolkit-configure.py
 scripts/pinger_toolkit_init.sql
+scripts/pinger_toolkit_upgrade.sql
 scripts/restore_config
 scripts/save_config
 scripts/service_watcher
@@ -194,6 +195,7 @@ scripts/temp_root.img
 scripts/update_administrative_info.pl
 scripts/livecd_upgrade/upgrade_3.1.x.sh
 scripts/livecd_upgrade/upgrade_conman_fix.sh
+scripts/livecd_upgrade/upgrade_databases.sh
 scripts/livecd_upgrade/upgrade_fix_cert_serial.sh
 scripts/livecd_upgrade/upgrade_fix_permissions.sh
 scripts/upgrade_owmesh_traceroute
@@ -214,6 +216,7 @@ scripts/system_environment/configure_bwctld_log_location
 scripts/system_environment/disable_weak_ssl_ciphers
 scripts/system_environment/enable_apache_redirect
 scripts/system_environment/increase_owamp_limits
+scripts/system_environment/increase_cacti_maximum
 scripts/system_environment/enable_web100_kernel_repository
 scripts/system_environment/configure_syslog_local5_location
 scripts/system_environment/enable_mysqld
