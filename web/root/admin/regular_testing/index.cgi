@@ -943,6 +943,8 @@ sub add_member_to_test {
     my %hostname;
 
     foreach my $addr(@addressList){
+        $addr = $1 if ($addr =~ /^\[(.*)\]$/);
+
             if ( is_ipv4( $addr ) ) {
                 $hostname{$addr} = reverse_dns( $addr );
          }
@@ -1089,11 +1091,11 @@ sub lookup_servers {
             }
             else {
                 # The addresses here are tcp://ip:port or tcp://[ip]:[port] or similar
-                if ( $contact =~ /^tcp:\/\/[(.*)]:(\d+)$/ ) {
+                if ( $contact =~ /^tcp:\/\/\[(.*)\]:(\d+)$/ ) {
                     $addr = $1;
                     $port = $2;
                 }
-                elsif ( $contact =~ /^tcp:\/\/[(.*)]$/ ) {
+                elsif ( $contact =~ /^tcp:\/\/\[(.*)\]$/ ) {
                     $addr = $1;
                 }
                 elsif ( $contact =~ /^tcp:\/\/(.*):(\d+)$/ ) {
@@ -1129,9 +1131,6 @@ sub lookup_servers {
                     $ip = join ', ', @{ $cached_dns_info };
                 }
             }
-
-            $logger->info("Address(Cache): ".Dumper($dns_cache));
-            $logger->info("Address(post-lookup): ".$addr);
 
             # XXX improve this
 
@@ -1241,8 +1240,6 @@ sub lookup_servers_gls {
 sub lookup_servers_cache {
     my ( $service_type, $keyword ) = @_;
 
-    $logger->debug("lookup_servers_cache()");
-
     my $service_cache_file;
     if ( $service_type eq "pinger" ) {
         $service_cache_file = "list.ping";
@@ -1340,6 +1337,8 @@ sub lookup_addresses {
     my %hostnames_to_lookup = ();
 
     foreach my $addr (@{ $addresses }) {
+            $addr = $1 if ($addr =~ /^\[(.*)\]$/);
+
             next if ($dns_cache->{$addr});
 
             if (is_ipv4($addr) or &Net::IPv6Addr::is_ipv6( $addr ) ) {

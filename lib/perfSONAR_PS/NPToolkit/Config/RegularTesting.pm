@@ -857,6 +857,8 @@ sub add_test_member {
     my $name    = $parameters->{name};
     my $address = $parameters->{address};
 
+    $address = $1 if ($address =~ /^\[(.*)\]$/);
+
     if ( $test->{type} eq "pinger" ) {
 
         # PingER tests are specified using the IP address...
