@@ -721,7 +721,7 @@ function display_add_new_host_dialog(test_id, test_type) {
 	dialog_content += "<table>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Host</td>";
-	dialog_content += "<td><input type='text' dojoType='dijit.form.TextBox' required='true' id='dialog_test_add_host_address'  value=''></input></td>";
+	dialog_content += "<td><input type='text' dojoType='dijit.form.TextBox' required='true' id='dialog_test_add_host_address'  value=''></input><br/>To enter multiple hosts, separate hostnames by comma. (No spaces in between host names)</td>";
 	dialog_content += "</tr>";
 	if (test_type == "pinger") {
 		dialog_content += "<input type='hidden' dojoType='dijit.form.TextBox' id='dialog_test_add_host_port'  value=''></input></td>";
