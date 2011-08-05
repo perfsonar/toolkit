@@ -180,6 +180,20 @@ Requires(post):       mysql
 Requires(post):       php-common
 Requires(post):       Internet2-repo
 Requires(post):       sudo
+Requires(post):       apmd
+Requires(post):       avahi
+Requires(post):       bluez-utils
+Requires(post):       cups
+Requires(post):       firstboot-tui
+Requires(post):       hal
+Requires(post):       irda-utils
+Requires(post):       irqbalance
+Requires(post):       kudzu
+Requires(post):       mdadm
+Requires(post):       nfs-utils
+Requires(post):       pcsc-lite
+Requires(post):       smartmontools
+Requires(post):       yum-updatesd
 
 %description SystemEnvironment
 Tunes and configures the system according to performance and security best
@@ -269,10 +283,10 @@ echo "site_project=pS-NPToolkit-%{version}" >> /opt/perfsonar_ps/toolkit/etc/adm
 mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
 
 #Make sure that the administrator_info file gets reloaded
-/opt/perfsonar_ps/toolkit/scripts/upgrade_owmesh_traceroute
+/opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl
 
 #Make sure that the owmesh file supports default traceroute options
-/opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl
+/opt/perfsonar_ps/toolkit/scripts/upgrade_owmesh_traceroute
 
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
