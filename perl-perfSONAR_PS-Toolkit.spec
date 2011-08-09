@@ -327,14 +327,7 @@ chkconfig %{init_script_5} on
 # apache needs to be on for the toolkit to work
 chkconfig --level 2345 httpd on
 
-echo "-------------------------------------------------------"
-echo "                    IMPORTANT NOTE                     "
-echo "-------------------------------------------------------"
-echo "In order to finish the Toolkit installation run:       "
-echo "/opt/perfsonar_ps/toolkit/scripts/initialize_databases "
-echo "This will initialize the databases so that the         "
-echo "toolkit will function properly                         "
-echo "-------------------------------------------------------"
+/opt/perfsonar_ps/toolkit/scripts/initialize_databases
 
 %post LiveCD
 # The toolkit_config init script is only enabled when the LiveCD is being used
@@ -419,6 +412,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/pinger_toolkit_init.sql
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/pinger_toolkit_upgrade.sql
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/set_default_passwords
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/update_administrative_info.pl
