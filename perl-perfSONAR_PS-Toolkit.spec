@@ -133,6 +133,9 @@ Requires(post):       perl-perfSONAR_PS-perfSONARBUOY-client
 Requires(post):       perl-perfSONAR_PS-perfSONARBUOY-config
 Requires(post):       perl-perfSONAR_PS-SNMPMA
 Requires(post):       perl-perfSONAR_PS-serviceTest
+Requires(post):       perl-perfSONAR_PS-TracerouteMA-config
+Requires(post):       perl-perfSONAR_PS-TracerouteMA-client
+Requires(post):       perl-perfSONAR_PS-TracerouteMA-server
 Requires(post):       ndt
 Requires(post):       npad
 Requires(post):       coreutils
