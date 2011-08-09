@@ -357,7 +357,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
 #%doc %{install_base}/doc/*
-%config %{install_base}/etc/*
+%config(noreplace) %{install_base}/etc/*
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/lib/*
 %{install_base}/python_lib/*
