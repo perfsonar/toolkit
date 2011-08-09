@@ -79,6 +79,7 @@
     [% IF test_info.type == "owamp"; test_info.type_desc = "One-Way Delay Test"; END %]
     [% IF test_info.type == "pinger"; test_info.type_desc = "Ping Test"; END %]
     [% IF test_info.type == "bwctl/throughput"; test_info.type_desc = "Throughput Test"; END %]
+    [% IF test_info.type == "traceroute"; test_info.type_desc = "Traceroute Test"; END %]
     [% IF test_info.id == current_test.id %]
     <td class="selected" style="width: 400px">[% test_info.description %]</td>
     <td class="selected" style="width: 150px">[% test_info.type_desc %]</td>
