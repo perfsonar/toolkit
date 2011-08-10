@@ -58,6 +58,7 @@ Sys::Hostname
 Template
 Time::HiRes
 Time::Local
+URI::Escape
 XML::LibXML
 aliased
 base
