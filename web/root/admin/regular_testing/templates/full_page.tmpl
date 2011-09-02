@@ -671,7 +671,7 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>First Hop to Report</td>";
-	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.NumberTextBox' required='false' invalidMessage='The minimum hop must be 1 or greater' constraints='{min:1}' id='configure_test_first_ttl' size='10' value='"+first_ttl+"''/></td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.NumberTextBox' required='false' invalidMessage='The minimum hop must be 0 or greater' constraints='{min:0}' id='configure_test_first_ttl' size='10' value='"+first_ttl+"''/></td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Maximum Number of Hops</td>";
