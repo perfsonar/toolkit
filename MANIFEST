@@ -14,6 +14,7 @@ etc/backingstore.conf.d/ls_registration_daemon.conf
 etc/backingstore.conf.d/mysql.conf
 etc/backingstore.conf.d/ndt.conf
 etc/backingstore.conf.d/npad.conf
+etc/backingstore.conf.d/owamp.conf
 etc/backingstore.conf.d/perfsonarbuoy.conf
 etc/backingstore.conf.d/pinger.conf
 etc/backingstore.conf.d/snmp_ma.conf
