@@ -457,7 +457,8 @@ sub fill_variables_status {
     $vars->{psb_owamp_enabled}    = $psb_owamp_enabled;
     $vars->{pinger_enabled}       = $pinger_enabled;
     $vars->{traceroute_tests}     = $traceroute_tests;
-
+    $vars->{external_address}     = $external_address ? $external_address : '';
+    
     return 0;
 }
 

@@ -44,6 +44,10 @@
 <br><div style="color:red">The /etc/hosts file appears to have been modified. This may cause unexpected behavior by tools. <a href="#" onclick="repair_hosts_file()">Click here</a> to correct the file.</div>
 [% END %]
 
+[% IF traceroute_tests > 0 && external_address != "" %]
+<br><div style="color:green">If you would like to view the results of your traceroute tests <a href="http://psps.perfsonar.net/toolkit/gui/traceroute.cgi?url=http://[% external_address %]:8086/perfSONAR_PS/services/tracerouteMA&time=3600">click here</a>. A graphical interface to this data will be provided in a future version of the perfSONAR-PS Toolkit.</div>
+[% END %]
+
 [% IF throughput_tests > 0 %]
 [% IF network_percent_used > 100 %]
 [% SET network_percentage_color = "red" %]
