@@ -172,7 +172,7 @@ sub save {
         else {
             $status = stop_service( { name => "perfsonarbuoy_bwctl" } );
         }
-
+        
         if ($psb_owamp_tests) {
             $status = restart_service( { name => "perfsonarbuoy_owamp" } );
             if ( $status != 0 ) {
@@ -181,6 +181,21 @@ sub save {
         }
         else {
             $status = stop_service( { name => "perfsonarbuoy_owamp" } );
+        }
+        
+        if ( $traceroute_tests ) {
+            $status = restart_service( { name => "traceroute_scheduler" } ); 
+            if ( $status != 0 ) {
+                return ( -1, "Couldn't restart traceroute scheduler" );
+            }
+            $status = restart_service( { name => "traceroute_ma" } ); 
+            if ( $status != 0 ) {
+                return ( -1, "Couldn't restart traceroute MA" );
+            }
+        }
+        else {
+            $status = stop_service( { name => "traceroute_scheduler" } );
+            $status = stop_service( { name => "traceroute_ma" } );
         }
 
         $status = restart_service( { name => "perfsonarbuoy_ma" } );
