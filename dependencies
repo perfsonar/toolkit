@@ -37,7 +37,7 @@ Log::Log4perl
 Net::CIDR
 Net::DNS
 Net::IP
-Net::IPv6Addr
+Net::IP
 Net::Interface
 Net::NTP
 Net::Ping
