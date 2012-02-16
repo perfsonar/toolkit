@@ -33,7 +33,7 @@ use perfSONAR_PS::Common qw(find findvalue extract genuid);
 
 use Data::Validate::IP qw(is_ipv4);
 use Data::Validate::Domain qw(is_hostname);
-use Net::IPv6Addr;
+use Net::IP;
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -949,7 +949,7 @@ sub add_member_to_test {
             if ( is_ipv4( $addr ) ) {
                 $hostname{$addr} = reverse_dns( $addr );
          }
-        elsif ( &Net::IPv6Addr::is_ipv6( $addr ) ) {
+        elsif ( &Net::IP::ip_is_ipv6( $addr ) ) {
                  $hostname{$addr} = reverse_dns( $addr );
         }
         elsif ( is_hostname( $addr ) ) {
@@ -1116,7 +1116,7 @@ sub lookup_servers {
 
             $logger->info("Address: ".$addr);
 
-            if (is_ipv4($addr) or &Net::IPv6Addr::is_ipv6( $addr ) ) {
+            if (is_ipv4($addr) or &Net::IP::ip_is_ipv6( $addr ) ) {
                 if ( $cached_dns_info ) {
                     foreach my $dns_name (@$cached_dns_info) {
                         push @dns_names, $dns_name;
@@ -1342,7 +1342,7 @@ sub lookup_addresses {
 
             next if ($dns_cache->{$addr});
 
-            if (is_ipv4($addr) or &Net::IPv6Addr::is_ipv6( $addr ) ) {
+            if (is_ipv4($addr) or &Net::IP::ip_is_ipv6( $addr ) ) {
                 $logger->debug("$addr is an IP");
                 $addresses_to_lookup{$addr} = 1;
             } elsif (is_hostname($addr)) {

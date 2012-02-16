@@ -38,7 +38,7 @@ use File::Basename;
 
 use Data::Validate::IP qw(is_ipv4);
 use Data::Validate::Domain qw(is_hostname);
-use Net::IPv6Addr;
+use Net::IP;
 
 use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::pingertopo::Topology';
 use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::pingertopo::Topology::Domain';
@@ -877,7 +877,7 @@ sub add_test_member {
     if ( $test->{type} eq "pinger" ) {
 
         # PingER tests are specified using the IP address...
-        if ( is_ipv4( $address ) or &Net::IPv6Addr::is_ipv6( $address ) ) {
+        if ( is_ipv4( $address ) or &Net::IP::ip_is_ipv6( $address ) ) {
             my $hostname = reverse_dns( $address );
 
             if ($hostname) {
@@ -907,7 +907,7 @@ sub add_test_member {
         }
     }
     else {
-        unless ( is_hostname( $address ) or is_ipv4( $address ) or &Net::IPv6Addr::is_ipv6( $address ) ) {
+        unless ( is_hostname( $address ) or is_ipv4( $address ) or &Net::IP::ip_is_ipv6( $address ) ) {
             return ( -1, "Unknown address type" );
         }
     }
@@ -1431,7 +1431,7 @@ sub generate_pinger_landmarks_file {
                 if ( is_ipv4( $member->{address} ) ) {
                     $ip_type = "IPv4";
                 }
-                elsif ( &Net::IPv6Addr::is_ipv6( $member->{address} ) ) {
+                elsif ( &Net::IP::ip_is_ipv6( $member->{address} ) ) {
                     $ip_type = "IPv6";
                 }
 
@@ -2140,7 +2140,7 @@ sub generate_owmesh_conf {
                 }
 
                 if ($add) {
-                    my %address = ( address => $member->{address}, address_type => $addr_type, port => $member->{port}, is_ipv6 => &Net::IPv6Addr::is_ipv6( $member->{address} ) );
+                    my %address = ( address => $member->{address}, address_type => $addr_type, port => $member->{port}, is_ipv6 => &Net::IP::ip_is_ipv6( $member->{address} ) );
                     push @{ $new_node->{addresses} }, \%address;
                     $new_node->{contact_address} = $member->{address};
                 }
@@ -2177,7 +2177,7 @@ sub generate_owmesh_conf {
             }
  
             if ($add) {
-                my %address = ( address => $center_address, address_type => $addr_type, is_ipv6 => &Net::IPv6Addr::is_ipv6( $center_address ) );
+                my %address = ( address => $center_address, address_type => $addr_type, is_ipv6 => &Net::IP::ip_is_ipv6( $center_address ) );
                 push @{ $local_node{addresses} }, \%address;
                 $local_node{contact_address} = $center_address;
             }
@@ -2252,7 +2252,7 @@ sub address_to_id {
 sub determine_ipv6 {
     my ($self, $address) = @_;
     
-    if( &Net::IPv6Addr::is_ipv6($address) ){
+    if( &Net::IP::ip_is_ipv6($address) ){
         return 1;
     }
     
@@ -2285,7 +2285,7 @@ sub determine_ipv4 {
         return 1;
     }
     
-    if( &Net::IPv6Addr::is_ipv6($address) ){
+    if( &Net::IP::ip_is_ipv6($address) ){
         return 0;
     }
     

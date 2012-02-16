@@ -24,7 +24,7 @@ use perfSONAR_PS::Utils::NTP qw( ping );
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address );
 
 use Data::Validate::IP qw(is_ipv4);
-use Net::IPv6Addr;
+use Net::IP;
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -135,7 +135,7 @@ sub fill_variables {
         my $ntp_server = $ntp_servers->{$key};
 
         my $display_address = $ntp_server->{address};
-        if ( is_ipv4( $display_address ) or &Net::IPv6Addr::is_ipv6( $display_address ) ) {
+        if ( is_ipv4( $display_address ) or &Net::IP::ip_is_ipv6( $display_address ) ) {
             my $new_addr = reverse_dns( $display_address );
 	    $display_address = $new_addr if ($new_addr);
         }

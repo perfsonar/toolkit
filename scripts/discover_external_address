@@ -24,7 +24,7 @@ use lib "$RealBin/../lib";
 
 use Net::CIDR;
 use Data::Validate::IP qw(is_ipv4);
-use Net::IPv6Addr;
+use Net::IP;
 use Getopt::Long;
 use Data::Dumper;
 
@@ -169,7 +169,7 @@ unless ( $disable_ipv4_reverse_lookup or ( $chosen_address and $ipv4_address )) 
 unless ( $disable_ipv6_reverse_lookup or ( $chosen_address and $ipv6_address )) {
     foreach my $iface ( keys %$ips_by_iface ) {
         foreach my $ip ( @{ $ips_by_iface->{$iface } } ) {
-            next unless (Net::IPv6Addr::is_ipv6( $ip ));
+            next unless (Net::IP::ip_is_ipv6( $ip ));
             $logger->info("$ip is IPv6");
             next unless (defined $reverse_dns_mapping->{$ip} and $reverse_dns_mapping->{$ip}->[0]);
             $logger->info("$ip has a DNS name: ". $reverse_dns_mapping->{$ip}->[0]);
@@ -221,7 +221,7 @@ unless ( $chosen_address and $ipv4_address ) {
 unless ( $chosen_address and $ipv6_address ) {
     foreach my $iface ( keys %$ips_by_iface ) {
         foreach my $ip ( @{ $ips_by_iface->{$iface } } ) {
-            next unless (Net::IPv6Addr::is_ipv6( $ip ));
+            next unless (Net::IP::ip_is_ipv6( $ip ));
             $logger->info("$ip is IPv6");
 
             unless ( $chosen_address ) { 

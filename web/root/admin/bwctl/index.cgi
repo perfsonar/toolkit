@@ -12,7 +12,7 @@ use Config::General;
 use Log::Log4perl qw(get_logger :easy :levels);
 use NetAddr::IP;
 use Data::Validate::IP qw(is_ipv4);
-use Net::IPv6Addr;
+use Net::IP;
 
 use FindBin qw($RealBin);
 
