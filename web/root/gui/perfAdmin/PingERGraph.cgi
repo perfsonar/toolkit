@@ -25,6 +25,7 @@ use Time::Local 'timelocal_nocheck';
 use Config::General;
 use English qw( -no_match_vars );
 use Log::Log4perl qw(get_logger :easy :levels);
+use HTML::Entities;
 
 use FindBin qw($RealBin);
 my $basedir = "$RealBin/";
@@ -134,22 +135,22 @@ if ( $cgi->param( 'key' ) and $cgi->param( 'url' ) ) {
         if ( $cgi->param( 'src' ) and $cgi->param( 'dst' ) ) {
 
             if ( $cgi->param( 'shost' ) and $cgi->param( 'dhost' ) ) {
-                $title = "Source: " . $cgi->param( 'shost' );
-                $title .= " (" . $cgi->param( 'src' ) . ") ";
-                $title .= " -- Destination: " . $cgi->param( 'dhost' );
-                $title .= " (" . $cgi->param( 'dst' ) . ") ";
+                $title = "Source: " . HTML::Entities::encode($cgi->param( 'shost' ));
+                $title .= " (" . HTML::Entities::encode($cgi->param( 'src' )) . ") ";
+                $title .= " -- Destination: " . HTML::Entities::encode($cgi->param( 'dhost' ));
+                $title .= " (" . HTML::Entities::encode($cgi->param( 'dst' )) . ") ";
             }
             else {
-                my $display = $cgi->param( 'src' );
+                my $display = HTML::Entities::encode($cgi->param( 'src' ));
                 my $iaddr   = Socket::inet_aton( $display );
                 my $shost   = gethostbyaddr( $iaddr, Socket::AF_INET );
-                $display = $cgi->param( 'dst' );
+                $display = HTML::Entities::encode($cgi->param( 'dst' ));
                 $iaddr   = Socket::inet_aton( $display );
                 my $dhost = gethostbyaddr( $iaddr, Socket::AF_INET );
                 $title = "Source: " . $shost;
-                $title .= " (" . $cgi->param( 'src' ) . ") " if $shost;
+                $title .= " (" . HTML::Entities::encode($cgi->param( 'src' )) . ") " if $shost;
                 $title .= " -- Destination: " . $dhost;
-                $title .= " (" . $cgi->param( 'dst' ) . ") " if $dhost;
+                $title .= " (" . HTML::Entities::encode($cgi->param( 'dst' )) . ") " if $dhost;
             }
         }
         else {

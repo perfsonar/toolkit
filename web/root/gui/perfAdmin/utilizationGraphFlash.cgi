@@ -26,6 +26,7 @@ use Data::Validate::IP qw(is_ipv4);
 use English qw( -no_match_vars );
 use Config::General;
 use Log::Log4perl qw(get_logger :easy :levels);
+use HTML::Entities;
 
 use FindBin qw($RealBin);
 my $basedir = "$RealBin/";
@@ -198,9 +199,9 @@ if ( ( $cgi->param( 'key1_type' ) or $cgi->param( 'key2_type' ) ) and $cgi->para
                     $host = inet_ntoa( $packed_ip );
                 }
             }
-            $title = "Device: " . $cgi->param( 'host' );
-            $title .= " (" . $host . ") " if $host;
-            $title .= " -- " . $cgi->param( 'interface' );
+            $title = "Device: " . HTML::Entities::encode($cgi->param( 'host' ));
+            $title .= " (" . HTML::Entities::encode($host) . ") " if $host;
+            $title .= " -- " . HTML::Entities::encode($cgi->param( 'interface' ));
         }
         else {
             $title = "Interface Utilization";
