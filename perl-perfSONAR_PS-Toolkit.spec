@@ -19,7 +19,7 @@
 %define crontab_3     cron-owamp_cleaner
 %define crontab_4     cron-save_config
 
-%define relnum 5
+%define relnum 6
 %define disttag pSPS
 
 Name:           perl-perfSONAR_PS-Toolkit
@@ -344,11 +344,14 @@ mkdir -p /mnt/store
 mkdir -p /mnt/temp_root
 
 %post SystemEnvironment
-# XXX: Check if we're a new installation or upgrade installation.  Run scripts
-# to edit/update the system configuration
 for script in %{install_base}/scripts/system_environment/*; do
-    echo "Running $script"
-    $script
+    if [ $1 -eq 1 ] ; then
+        echo "Running: $script new"
+        $script new
+    else
+        echo "Running: $script upgrade"
+        $script upgrade
+    fi
 done
 
 %clean
