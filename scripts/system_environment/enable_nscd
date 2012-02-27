@@ -1,0 +1,7 @@
+#!/bin/bash
+#######################
+# Enable the Name Server Caching Daemon. Does not matter if this is running in
+# an 'upgrade' or 'new install' context.
+#######################
+
+/sbin/chkconfig nscd on
