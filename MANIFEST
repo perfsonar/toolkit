@@ -2,6 +2,7 @@ MANIFEST
 Makefile
 bin/config_daemon.pl
 dependencies
+doc/LICENSE
 etc/administrative_info
 etc/backingstore.conf
 etc/backingstore.conf.d/cacti.conf
