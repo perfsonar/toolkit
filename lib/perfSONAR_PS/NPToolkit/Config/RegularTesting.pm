@@ -2065,8 +2065,31 @@ sub generate_owmesh_conf {
             foreach my $member_id ( keys %{ $test->{members} } ) {
                 my $member = $test->{members}->{$member_id};
 
-                next if ( $ip_type eq "IPV4" and not $self->determine_ipv4( $member->{address}) );
-                next if ( $ip_type eq "IPV6" and not $self->determine_ipv6( $member->{address}) );
+                if ( $ip_type eq "IPV6") {
+                    # Skip if it's an IPv6 Test, and it's not an IPv6 address
+                    unless ( $self->determine_ipv6( $member->{address} ) ) {
+                        $self->{LOGGER}->debug( "Test is ipv6, ".$member->{address}." is not IPv6" );
+                        next;
+                    }
+                }
+                else { # i.e. this is an IPv4 test
+                    unless ( $self->determine_ipv4( $member->{address} ) ) {
+			# To avoid getting rid of hostnames when we can't
+			# lookup addresses (in which case both ipv4 and ipv6
+			# addresses would get thrown away as not being either
+			# ipv4 or ipv6), we put hostnames that don't have AAAA
+			# records into the IPv4 tests.
+                        if ( is_hostname( $member->{address} ) and
+                             not $self->determine_ipv6( $member->{address}) ) {
+                            $self->{LOGGER}->warn( "Test is ipv4, ".$member->{address}." is a hostname, but we can't tell if it's got an IPv4 or IPv6 address. Assuming IPv4.");
+                        }
+                        else {
+                            $self->{LOGGER}->debug( "Test is ipv4, ".$member->{address}." is not IPv4. It is also either not a hostname, or is a hostname, but has an IPv6 address" );
+                            next;
+                        }
+                    }
+                }
+
                 next if( $duplicate_test_map{$member_id} );
                 $duplicate_test_map{$member_id} = 1;
                 
