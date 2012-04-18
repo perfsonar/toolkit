@@ -23,7 +23,7 @@
 %define disttag pSPS
 
 Name:           perl-perfSONAR_PS-Toolkit
-Version:        3.2.1
+Version:        3.2.2
 Release:        %{relnum}.%{disttag}
 Summary:        perfSONAR_PS Toolkit
 License:        distributable, see LICENSE
