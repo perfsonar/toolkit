@@ -1,5 +1,685 @@
-#!/usr/bin/perl -T -w
-#!/bin/env perl  
+#!/usr/bin/perl -wT
+###############################################################################
+use strict;
+$ENV{PATH}='/bin:/usr/bin:/sbin:/usr/local/bin:/usr/local/etc:/usr/sbin:/usr/local/sbin';#For untainting
+
+########################## Testing ##############################################
+# For testing from command line you need to set some environment variables, 
+# e.g. assuming you are using the tcsh shell
+# setenv REQUEST_URI /cgi-wrap/traceroute.pl
+# setenv QUERY_STRING 'target=www.slac.stanford.edu&function=ping'
+#For IPv4
+# setenv QUERY_STRING www.cern.ch;  setenv REMOTE_HOST www.google.com
+# setenv REMOTE_ADDR 72.14.204.105; setenv SERVER_NAME www.slac.stanford.edu
+#For IPv6
+# setenv QUERY_STRING 'target=ipv6.google.com'; setenv REMOTE_HOST ipv6.google.com 
+# setenv REMOTE_ADDR 2a00:1450:8007::6a;        setenv SERVER_NAME ui2-4.dir.garr.it
+# #To find the IPv6 address of a host use
+# #dig ipv6.google.com -t AAAA
+# You will also need to include the -T option in the command line if you want to
+# use the perl -d debug facility, i.e. you need to use:
+# perl -d -T traceroute.pl
+# REMOTE_HOST, REMOTE_ADDR are the name and IP address of the client/browser
+# SERVER_NAME is the name of the web server,
+# QUERY_STRING is the name or IP address of the host to be probed.
+
+################################################################################
+# Put out header right at start to ensure it precedes any errors or bug reports.
+# To enable line-buffered output (more interactive output), change the name
+# of this script to nph-traceroute.pl or use a Unix logical link.
+select(STDOUT);  $| = 1;	# Flush output after each print
+my $msg="";
+if ($0 =~ /nph-/) {
+   $msg="$ENV{SERVER_PROTOCOL} 200 OK\nServer: $ENV{SERVER_SOFTWARE}\n";
+}
+#Get this out first so can get out error messages
+print $msg."Content-type: text/html\n\n";
+my $version="5.71, 2/23/2012, Les Cottrell";
+# used dig to get IPv6 address. Change SLAC logo. Fixed up some links.
+
+################################################################################
+#Understand the local environment
+use Cwd;
+my $AF_INET=2;
+my $debug=0;
+(my $progname = $0) =~ s'^.*/'';
+my $uid=scalar(getpwuid($<));
+#Get fully qualified IP address of the local host
+use Net::Domain qw(hostname hostfqdn hostdomain);
+my $hostname = hostfqdn();
+#my (undef, $aliases, $addrtype, $length, @addrs)=gethostbyname($hostname);
+#my ($a, $b, $c, $d)=unpack('C4',$addrs[0]);
+#my $ipaddr=$a.".".$b.".".$c.".".$d;
+my $ipaddr=gethostbyname6($hostname);
+my $site="";#Allows us to special case SLAC's configuration
+if($hostname=~/\.slac\.stanford\.edu/) {$site="slac";}
+my $archname=$^O;
+
+########################## Get the form action field #########################
+#$form allows one to use a different form action field, e.g.
+#REQUEST_URI is of the form: /cgi-bin/traceroute.pl?choice=yes
+my ($temp, $bin_dir);
+($temp,$bin_dir,$temp)=split /\//,$ENV{'REQUEST_URI'};
+my $form="<form action='/$bin_dir/$progname' method='GET'>";
+if($debug>0) {
+  print "REQUEST_URI=$ENV{'REQUEST_URI'}, bin_dir=$bin_dir, form=$form<br>\n";
+}
+# **********************  tailor first section as required:- *****************
+# Traceroute options can be customized to reduce (or increase) impact
+# There is no need to set @Tropts unless one is using non-defaults.
+my @Tropts=qw(-m 30 -q 3); # equivalent default options for traceroute
+my $start=""; #default value.
+my $max_processes=11;# Maximum # of simultaneously running traceroute processes
+                  # 10 gave no alerts for several weeks in May 2000. Set to a
+                  # large number if you don't care. Extended from 9 to 11 on
+	          # 9/13/00 since getting a few alerts per day (5-6 yesterday,
+	          # though that was a record, I think).
+#$to contains the email address(es) to send the warning of too many processes
+# If you don't want an email warning if too many processes are running then
+# set $to to ""
+my $to=""; # Default, no email will be sent and none of the tailoring
+	   # variables following $to below will be used.
+my $mail="/usr/ucb/mail"; #mail client on this host
+my $mail_help="/u/sf/cottrell/lib/traceroute.list"; #help type information to go
+                  #with email message
+# ************** end of first part of tailoring *********************
+my $Sy;
+my $Tr = 'traceroute'; # Usually works
+################# SLAC site specific ##################################
+if($site eq "slac") {
+  @Tropts = qw(-m 30 -q 1 -w 3);#options for SLAC traceroute, comment if uncertain
+  if($archname eq "solaris") {
+    $Sy="/afs/slac/package/pinger/old/synack/sun4x_56/synack";
+  }
+  else {
+    $Sy ="/afs/slac/package/pinger/old/synack/i386_linux22/synack";
+  }
+  $to="cottrell\@slac.stanford.edu,spiers\@slac.stanford.edu";
+}
+else {$Sy=$Tr;} #Only support synack at SLAC
+#######################################################################
+my $timeout=0.05/24; # Don't send 2nd email item if previous sent in < timeout hrs
+my $err="";
+my $errhead='</pre><font color="magenta"><b><i>';
+my $errtail="</font></i></b>";
+my $warn="";
+my $addr = $ENV{'REMOTE_ADDR'}; $addr=~s/\s+//g;
+my $host = $addr;
+#################################################################################
+# if we're being accessed via a proxy that passes the client's address:
+# For more on this see: http://www.zope.org/Members/TWilson/GettingVisitorsIP
+# Note if using ssl and going through a firewall/NAT then,
+# because of encryption, it may not be
+# possible for the firewall/NAT to add the http header for HTTP_X_FORWARDED_FOR
+if (defined $ENV{'HTTP_X_FORWARDED_FOR'}) {
+  my $oldaddr=$addr;
+  $addr = $ENV{'HTTP_X_FORWARDED_FOR'};
+  $addr =~ s/,.*$//;  # if address1, address2, ... keep only address1
+  if($addr=~/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) {
+    if(private($addr)) { 
+      $warn.="Proxy provided a private IP address for your web client/browser,"
+          . " HTTP_X_FORWARDED_FOR=$ENV{'HTTP_X_FORWARDED_FOR'}<br>\n";
+      $addr=$oldaddr;#Private address restore original address
+    }     
+    $host = gethostbyaddr(pack('C4',split(/\./,$addr)),$AF_INET);
+  }
+  else {
+    $warn.="Proxy provided an invalid IP address for your web client/browser,"
+         . " HTTP_X_FORWARDED_FOR=$ENV{'HTTP_X_FORWARDED_FOR'}<br>\n";
+  }
+}
+###########################################################################
+# Process QUERY_STRING if present. QUERY_STRING may contain the target host.
+my $query="";
+if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
+  unless($ENV{'QUERY_STRING'} eq "choice=yes") {
+    $query = $ENV{'QUERY_STRING'};  # might be an IP address or a name
+    if(length($query)>300) {#sanity check to prevent overflows
+      print "QUERY_STRING is > 300 characters\n";
+      exit 6;
+    }
+    $host = '';  # not so nice, but anyway...
+  }
+}
+############################################################################
+#Get optional information from QUERY_STRING, if supplied
+my $function;#Allows us to either ping or traceroute or tracepath
+if($progname =~ /ping/)          {$function="ping";}
+elsif ($progname =~ /tracepath/) {$function="tracepath";} 
+else                             {$function="traceroute";}
+my @pairs=split(/&/,$query);
+my $ping_size="56";
+my $probe=""; #Can be overwritten (to -I) by probe=ICMP for traceroute
+foreach my $pair (@pairs) {
+  my ($name,$value)=split(/=/,$pair);
+  if($name eq "target") {
+    $addr=$value;
+  }
+  elsif($name eq "function") {
+    if($value eq "ping") {$function=$value;}
+    elsif($value =~ /synack/) {
+      if($site eq "slac") {$function=$value;}
+      else {$err .= "Only SLAC supports synack function.<br>\n";}
+    }
+    elsif($value eq "tracepath") {
+      my $tracepath=`which tracepath`; 
+      chomp $tracepath;
+      if($tracepath eq "") {#Failure looks like alias: no match or tracepath: not found etc.
+        $err .= "tracepath command not found, OS=$archname<br>\n";
+      }
+      $function=$value;
+    }
+    elsif($value eq "traceroute") {;}
+    else {
+      $err .= "Invalid function value, "
+           .   "valid values=ping or tracepath or traceroute<br>\n";
+    }
+  }
+  elsif($name eq "debug") {$debug=$value;}
+  elsif($name eq "size")  {
+    $ping_size=$value;
+    if($ping_size eq "") {$ping_size=56;}
+    if(!($ping_size =~ /\d+/)) {
+      $err .= "Size must be positive integer.<br>\n";
+    }
+    elsif (($ping_size < 56) || ($ping_size > 1400)) {
+      $err .= "Size must be >= 56 & <= 1400.<br>\n";
+    }
+  }
+  elsif($name eq "probe") {
+    if($value=="ICMP")     {$probe="-I";}#OK for Linux & Solaris
+  }
+}
+###########################################################################
+#Add in the ICMP option if requested
+my $ping_npackets="";
+if($function eq "traceroute") {if($probe ne "") {push (@Tropts,$probe);}}
+################################################################################
+# Build the executable function for ping
+elsif($function eq "ping") {
+  $Tr="ping";
+  if($archname eq "solaris")  {
+    $ping_npackets="5"; @Tropts=qw(-s);
+  }
+  else {@Tropts=("-c 5","-s $ping_size");}
+}
+################################################################################
+# Build the executable function for synack
+elsif($function =~ /synack/) {
+  if ($function =~ /synack -p (\d{1,3})/) {
+    @Tropts=("-p ".$1,"-k 5","-S 5");
+  }
+  else {
+    @Tropts=("-p 80","-k 5","-S 5");
+  }
+  $Tr=$Sy;
+}
+#############################################################################
+# Build the executable function for tracepath
+elsif($function eq "tracepath") {
+  $Tr="tracepath";
+  @Tropts="";
+}
+#############################################################################
+#Keep track of last request
+my $last="/tmp/$function".".pl.time"; # file to be 'touched' to note last time email sent.
+################################################################################
+#Clean up the target address.
+$addr =~ s/\%([a-fA-F0-9][a-fA-F0-9])/pack('H2',$1)/eg; #De-webify %xx stuff
+$addr =~ s/\%([a-fA-F0-9][a-fA-F0-9])/pack('H2',$1)/eg; #De-webify %xx stuff
+$addr=~tr/+/ /; #De-webify + signs to spaces
+$addr=~s/^\s+|\s+$//; # Remove extraneous white space at start & finish
+if($addr=~s/^([a-zA-Z]+:\/\/|[a-zA-Z]+:\/\/\/)([\w\.\-_]+)[\w\.\/\-_]*$/$2/) {#Extract host from URL
+  $warn.="Looks like a web URL, I will try and extract the target.<br>\n";
+  my $prot=$1; $prot =~ tr/a-z/A-Z/;
+  if ($prot eq "FILE:///") { #Looks like a local file
+    $addr=$ENV{'REMOTE_ADDR'};
+    $warn.="Target looks like a local file, ".
+           "I will try and $function to your browser at $addr.<br>\n";
+  }
+}
+$addr=~s/\/$//; #Remove trailing slash (/).
+#############################################################
+#Check if it is a probable email address
+if($addr=~/.\@./) {#Looks like an email address, provide guidance
+  $err.="Looks like an email address (i.e. name\@mail_domain),".
+        " needs to be host name or address (e.g. must not include \@).<br>\n";
+}
+##################################################################################
+#Complete the name and address of the target host
+my @target=split(/\./,$addr); my $target_domain;
+my $ipv6=0;
+if(valid_ip($addr) eq "6") { #Check for possible IPv6 addr format
+  $ipv6=1;
+  $Tr = $Tr . "6";#append "6" on end of command name "traceroute" -> "traceroute6", 
+                  #"ping" -> "ping6"
+}
+elsif(valid_ip($addr) eq "n") {#Target is a valid host name
+  $host=$addr;
+  $addr=(gethostbyname6($host));
+  if($addr eq "") {
+    $err.="Can't find address for host name ".
+          "<font color='red'> $host</font>.".
+          " Probably an unknown host.<br>\n";
+  }
+  else {
+    # compare class-C networks correctly.
+    if(valid_ip($addr) eq "4") {
+      $temp=gethostbyname($host);
+      my ($a1, $b1, $c1, $d1)=unpack('C4',$temp);
+      if ($a1>=192) {
+        $target_domain=$a1.".".$b1.".".$c1;
+      }
+      else {
+        $target_domain=$a1.".".$b1;
+      }
+    }
+    else {$ipv6=1; $Tr=$Tr."6";}
+  }
+}
+elsif(valid_ip($addr) eq "4") {#$QUERY_STRING contains an IPv4 target address
+  $target_domain=$target[0].".".$target[1];
+  if(!($host = gethostbyaddr(pack('C4',split(/\./,$addr)),$AF_INET))) {
+    $host=$addr;#Get name if address resolves
+  }
+}
+else {
+  $err.="Invalid character in IP address or name. Valid characters are 'a-zA-Z0-9_.-:'.<br>\n";
+}
+if($err ne "") {
+  print "$errhead $err $errtail";
+  exit 5;
+}
+if($debug>0) {
+  print "<br>\n".scalar(localtime())." $progname: $addr($host), function=$function<br>\n" .
+        " Server=$uid\@$hostname($ipaddr), REMOTE_ADDR=$ENV{'REMOTE_ADDR'}<br>\n".
+        " REQUEST_URI=$ENV{'REQUEST_URI'}<br>\n".
+        " Executing $Tr ($err)\n";
+}
+#################################################################################
+# Temporary kludge to block abusive hosts
+#my @denies=("211.216.50.200","212.91.225.114","135.207.29.241"); #Add by cottrell 3/23/02.
+# re-enabled the above 5/11/04 to see if still a problem.
+#my @denies=("128.194.135.80","irl-crawler.cs.tamu.edu","128.194.135.73","irl-spider.cs.tamu.edu");
+# re-enabled the above 10/22/04 to see if still a problem
+#Added "68.202.115.238 (238-115.202-68.se.rr.com)","218.102.96.95 (pcd565095.netvigator.com" 14134, 5202 hits 10/22/04 Cottrell
+# re-enabled the above 1/4/05 Cottrell
+#Added "63.231.133.192 (63-231-133-192.mpls.qwest.net) 12/5/04 Cottrell (3738 requests/day)
+#Added "203.51.137.39 CPE-203-51-137-39.vic.bigpond.net.au" 1/4/05 Cottrell (2059 requests/day)
+#Added "63.203.98.156 adsl-63-203-98-156.dsl.lsan03.pacbell.net" 1/23/05 Cottrell (3181 requests)
+#Added "68.205.16.194 194.16.205.68.cfl.res.rr.com" 2/23/05 Cottrell (1903 requests/day)
+#Added "24.106.79.234" 6/8/05 Cottrell (28822 requests/day)
+#Added "68.44.148.52 pcp03312553pcs.wchryh01.nj.comcast.net" 11/25/05 Cottrell (2876 requests/day)
+#Added "81.20.6.18 N/A" 545 requests, "203.162.3.153 N/A" 398 requests, 3/18/06 Cottrell"
+#Added "198.174.110.146" 1555 requests 4/23/06 Cottrell
+#Added "198.30.132.8" 4185 requests 6/6/06 Cottrell
+#Removed block on "198.174.110.146", Hallelujah I found someone who fixed their problem!
+#Added "203.162.3.147" proxy03-hcm.vnn.vn 1035 requests 4/26/06 Cottrell
+#Added "198.30.132.8" no name, > 790 requests 5/20/06 Cottrell
+#Added "198.30.132.6" no name, > 4580 requests 6/5/06 Cottrell
+#Added "211.28.103.29 c211-28-103-29.eburwd4.vic.optusnet.com.au" > 3800 requests 9/28/06 Cottrell
+my @denies=("63.231.133.192","203.51.137.39","63.203.98.156","68.205.16.194","24.106.79.234",
+            "68.44.148.52",  "81.20.6.18",   "203.162.3.153","203.162.3.147","198.30.132.8",
+            "198.30.132.6", "211.28.103.29");
+if($addr ne "") {
+  my @remote=split(/\./,$addr);
+  foreach my $deny (@denies) {
+    if(uc($deny) eq uc($addr) || uc($deny) eq uc($host)) {
+      print "Deny access from $host($deny) due to large number of requests,".
+            " contact cottrell\@slac.stanford.edu to re-enable 4/26/06.\n";
+      exit 3;
+    }
+  }
+}
+if($host=~/in-addr\.btopenworld\.com/) {
+  print "There are now over 30 hosts from the btopenworld.com domain ".
+        "automatically requesting 70-140 traceroutes / day from $hostname($ipaddr).".
+        "As of 11/25/05, these requests have been blocked. ".
+        "Please contact cottrell\@slac.stanford.edu to describe the purposes ".
+        "of these requests, so we can justify re-enabling the access for ".
+        "btopenworld.com. Thank you.\n";
+      exit 4;
+}
+#######################################################################################
+# As a security measure we do not allow a remote host in a different
+# domain to do a traceroute to
+# a host within the same domain as the web server. One concern is that
+# allowing such a traceroute would allow an external host to traceroute
+# to a host within the Internet Free Zone that the web server is in.
+# Get domain of web server.
+my ($http_addr, $http_domain, $remote_domain);
+if($function ne 'traceroute') {;}
+#elsif(!( $http_addr=(gethostbyname($ENV{'SERVER_NAME'}))[4] )) {
+elsif(!( $http_addr=(gethostbyname6($ENV{'SERVER_NAME'})))) {
+   $err.="Can't find address of $function SERVER_NAME $ENV{'SERVER_NAME'}:$!$?.<br>\n";
+}
+elsif($ipv6 == 1) {;}#No domain check for IPv6 (add by Cottrell 4/15/2011)
+else {#IPv4 traceroute function
+  my ($a1, $b1, $c1, $d1)=unpack('C4',$http_addr);
+  # compare class-C networks correctly.
+  if ($a1>=192) {
+      $http_domain=$a1.".".$b1.".".$c1;
+  }
+  else {
+    $http_domain=$a1.".".$b1;
+  }
+  # Get domain of remote host.
+  my @remote=split(/\./,$ENV{'REMOTE_ADDR'});
+  $remote_domain=$remote[0].".".$remote[1];
+  @target=split(/\./,$addr);
+  # Client/browser & web server are in different domains.
+  if(!($http_domain eq $remote_domain)) {
+    #Under some error conditions $target_domain is not defined
+    if(defined($target_domain)) {
+      if( ($target_domain eq $http_domain) 
+       && ($http_domain ne "121.52") #Special case PERN
+       && ($http_domain ne "111.68")) {
+        # Client (browser) is outside the web server domain and so is not
+        # allowed to traceroute to a target inside the web server's domain.
+        $err.="$function server does not provide $function"."s to ".
+              "targets such as $addr inside the $http_domain domain, ".
+              "for browsers outside the $http_domain domain.<br>\n";
+      }
+    }
+    #push(@Tropts,"-f 3");
+  }
+  else {#Client/browser & web server are in the same domain
+    $start=""; #no need to hide internal routing from insiders
+  }
+}
+#######################################################
+my $browser;
+unless (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
+  $browser="your web browser at";
+}
+else {$browser="";}
+$msg = "$function from $ipaddr ($ENV{SERVER_NAME}) "
+     . "to $browser $addr ($host) for $ENV{'REMOTE_ADDR'}";
+if($host eq "") {$host="host with no DNS entry";}
+print "<title>$msg</title>\n";# Now put out title and header
+##################################################################################
+# *** Sites may want to tailor the following statement to meet their needs. ******
+if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
+  if($debug>=0) {
+    print "<div align='center'><table border='1'>
+        <tr><td align='center'>",
+      "<a href='http://www.stanford.edu/'>
+        <img src='http://www.slac.stanford.edu/comp/net/wan-mon/stanford-seal.gif'
+           alt='Stanford University seal' title='Stanford University seal'></a>
+        <a href='http://www.slac.stanford.edu/'>
+          <!--
+          <img src='http://www.slac.stanford.edu/icon/slac3.gif'
+          -->
+          <img src='http://www.slac.stanford.edu/icon/newlogo-sm.gif'
+          alt='SLAC logo, click here to learn more about SLAC'
+          title='SLAC logo, click here to learn more about SLAC'
+        ></a>
+      </td>",
+      "<td align='center'><h2>$msg</h2>\n",
+      "CGI script maintainer:
+       <a href='mailto:cottrell\@slac.stanford.edu'><i>
+       Les Cottrell</i></a>, <a href='http://www.slac.stanford.edu/'>SLAC</a>.
+       Script version $version.<br>
+       <a href='http://www.slac.stanford.edu/comp/net/traceroute/traceroute.pl'>
+       Download perl source code</a>.<br>",
+      "<small>To perform a
+       <!-- a href='http://boardwatch.internet.com/mag/96/dec/bwm38.html' -->
+        traceroute/ping/tracepath function
+        from $ENV{SERVER_NAME} to the target,
+        enter the desired target 
+        <a href='http://en.wikipedia.org/wiki/Domain_name'>host.domain</a>
+       (e.g. www.yahoo.com) or
+       <a href='http://en.wikipedia.org/wiki/IP_address'>Internet
+       address</a> (e.g. 137.138.28.228) in the box
+       below. Note the fucntion is performed for the target's
+       resolved Internet address.</small>
+       $form
+       Enter target name or address:
+       <input type='text' size='30' name='target'> then push 'Enter' key.
+       <input type='hidden' name='function' value='$function'>
+       </form>",
+      "Lookup:
+       <a href='http://www.slac.stanford.edu/comp/net/util/nslookup.html'>host name</a> |
+       <a href='http://www.slac.stanford.edu/comp/net/util/mxlookup.html'>mail domain</a> |
+       <a href='http://www.networksolutions.com/cgi-bin/whois/whois'>domain name</a> |
+       <!--
+          <a href='http://cello.cs.uiuc.edu/cgi-bin/slamm/ip2ll/'>latitude & longitude</a> |
+       -->
+       <a href='http://www.geoiptool.com/'>Locating a Host</a> |
+       <a href='http://visualroute.visualware.com/'>visual traceroute</a> |
+       <a href='http://www.ietf.org/rfc/rfc2142.txt'>contacting someone</a>
+       </td>",
+      "<td><b>Related web sites</b><br>",
+      "<a href='http://www.slac.stanford.edu/comp/net/wan-mon/traceroute-srv.html'>
+        <b>Traceroute servers</b></a>,<br>",
+      "<a href='http://www.slac.stanford.edu/comp/net/wan-mon/tutorial.html'>
+        Monitoring tutorial</a>,<br>",
+      "<a href='http://www-iepm.slac.stanford.edu/'>
+        Internet monitoring</a><br>",
+      "<a href='http://www.ipaddressworld.com/'>What is my IP address?</a>",
+      "</tr></table></div>\n";
+  }
+}
+# *** end of second and last part of tailoring ************************************
+if($function ne "ping") {
+  if($debug>=0) {
+    print "<table bgcolor='yellow'><tr><td align='center'><font color=red><b>\n",
+      "Please note that traceroutes can appear similar \n",
+      "to port scans. If you see a suspected port scan alert, \n",
+      "for example from your firewall, with \n",
+      "a series of ports in the range 33434 - 33465, coming \n",
+      "from $ENV{SERVER_NAME} it is probably a reverse traceroute from our \n",
+      "web based reverse traceroute server. Please do NOT report this to \n",
+      "us, it will almost certainly be a waste of both of our times. \n",
+      "For more on this see<br>\n",
+      "<a href='http://www.slac.stanford.edu/comp/net/wan-mon/traceroute-srv.html#security'>\n",
+      "Traceroute security issues</a>.</b></font></td></tr></table>\n";
+  }
+  #No query string, user maybe a novice and needs to be warned that the
+  #traceroute may result in something that appears as a port scan to
+  #some firewalls, so she/he won't later complain about our web server
+  #'attacking' her/his host.
+  unless (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
+    print "<hr><table border=6><tr><td align='center'>\n",
+        "<font color='red' size=+2><b>\n",
+        "You are about to request a traceroute that may be\n",
+        "interpreted as an 'attack' from $ENV{SERVER_NAME}, \n",
+        "by a firewall protecting your browser: $addr ($host). \n",
+        "Have you read the description above and is it OK to proceed?</b></font>\n",
+        "$form\n",
+        "<INPUT type='hidden' name=choice value='yes'>\n",
+        "<INPUT type='submit' value='YES'\n>",
+        "</form></table>\n</body></html>\n",
+        "<div align='center'><font size=+3><b>Your host is: $addr ($host).</b></font></div>\n";
+    exit;
+  }
+}
+###################################################################
+# Let's trample on obvious attempts to trace to a broadcast address
+#    (associated with some denial-of-service attacks based on ICMP)
+if (($ipv6 ne "1") && ($addr =~ /\.(0|255)$/)) {
+  $err.="Broadcast address ($addr) not allowed for IPv4.<br>\n";
+};
+###################################################################
+# Check to ensure there are not already too many traceroute
+# processes running. This is to try and avoid a denial of service
+# attack. If there are too many then send email warning, unless we already
+# sent an email warning less than an hour ago.
+my $processes=grep(/$function/, `ps -o comm -u $>`);
+if($processes > $max_processes) {
+  $err.="$function server busy at the moment. Please try again later.<br>\n";
+  if(!($to eq "" || $mail eq "")) {
+    if (! -e $last || -M _ > $timeout) {# was it > $timeout since last sent email?
+      system('touch', $last); # yes, note new time and send an email warning
+      my $time=scalar localtime;
+      open(MAIL, "| $mail -s 'Warning $function".".pl busy at $time on $hostname.' $to")
+        or die "Unable to send mail to $to warning $function busy at $time: $!";
+      $msg="$time $ENV{'HTTP_REFERER'} found $processes running $function " .
+           "processes in $ENV{'SERVER_NAME'} when doing $function to $addr " .
+           "for $host. Request was received from $ENV{REMOTE_ADDR} " .
+           "($ENV{REMOTE_HOST})\n";
+      $msg.=`cat $mail_help`;
+      print MAIL $msg;
+      close(MAIL);
+    }
+  }
+}
+if(private($addr)) {$err.="$addr is a private address<br>\n";}
+if($debug > 0) {print "debug=$debug<br>\n";}
+if($warn ne "") {
+  print "$errhead $warn $errtail";
+}
+if($err ne "") {
+  printerr($err);
+  exit 2;
+}
+################################################################
+# Finally, we can do something useful...
+print "<pre>\n";
+if($debug > 0)  {
+  if($function ne "ping" or $archname ne "solaris")  {
+    if($function eq "tracepath")  {
+      $temp = "$Tr $addr";
+    }
+    else {
+      $temp = "$Tr @Tropts $addr";
+    }
+  }
+  else {
+    $temp="$Tr @Tropts $addr $ping_size $ping_npackets";
+    system('iptables -L');
+  }
+  print scalar(localtime())." server $uid\@$hostname($ipaddr)\n".
+        " running $archname called: $0\n".
+        " to execute: $temp\n".
+        " with path=$ENV{'PATH'}\n".
+        " from cwd=".cwd()." under shell $ENV{'SHELL'}\n".
+        " for REMOTE_ADDR=$ENV{'REMOTE_ADDR'}\n";
+  system('which ping');
+}
+#################################################################
+# Note that the following exec avoids shell expansions so we do not
+# worry about checking the $addr for shell meta-characters. Note also that
+# SIGALRM is carried across the exec thus allowing the timeout to work.
+open(STDERR, '>&STDOUT');# Redirect stderr onto stdout
+alarm(45);	     # Timeout function in case of problems (used to be 45)
+if(!($addr=~ /^([\w\.:\-]+)$/)) {#Untaint Check for valid characters
+  print "<font color='red'><b>Invalid target = $addr, traceroute aborted!</b></font><br>\n";
+  exit 1;
+}
+$addr=$1; #Untaint $addr.
+#print "Executing '$Tr ",join(' ',@Tropts)," $addr'<br>\n";
+if($function eq "traceroute" and $archname ne "solaris") {
+    $temp="140"; #Added the 140 to tracreoute command
+    #to get round the bug in Redhat's traceroute package in which some
+    #MPLS encapsulation info is incorrectly included in the ICMP checksum.
+    #Notification of by pass from Bryson Lee of SLAC.
+    print "Executing exec($Tr, @Tropts, $addr, $temp)\n"; 
+    exec($Tr, @Tropts, $addr, $temp); 
+}
+elsif($function eq "tracepath") {
+  print "Executing exec($Tr, $addr)\n";
+  exec($Tr, $addr);
+}
+elsif($archname eq "solaris" && $function eq "ping") {
+  print "Executing exec($Tr, @Tropts, $addr, $ping_size, $ping_npackets)\n";
+  exec($Tr, @Tropts, $addr, $ping_size, $ping_npackets);
+}
+#elsif($function eq "traceroute") {
+#  print "Executing exec($Tr, @Tropts, $addr)\n";
+#  exec($Tr, @Tropts, $addr);
+#}
+elsif($function eq "traceroute" || $function eq "ping" || $function eq "synack") {
+  print "Executing exec($Tr, @Tropts, $addr)\n";
+  exec($Tr, @Tropts, $addr);
+}
+else {
+  print "Invalid command $Tr options=@Tropts address=$addr\n";
+}
+######################################################
+sub private {
+   #Returns true if it is a private IPv4 address
+   my $addr=$_[0];
+   if(valid_ip($addr) eq "4") {
+     #Check if address is a private address, there are three ranges:
+     #10.0.0.0 - 10.255.255.255 a single class A net
+     #172.16.0.0 -  172.31.255.255 16 contiguous class Bs
+     #192.168.0.0 - 192.168.255.255 256 contiguous class Cs
+     #127.0.0.0 - 127.255.255.255 local loopback
+     my ($a1, $b1, $c1, $d1)=split(/\./,$addr);
+     if (  ($a1 ==  10) 
+        ||( ($a1 == 172) && (($b1 >= 16) && ($b1 <= 31))                          )
+        ||( ($a1 == 192) &&  ($b1 == 168)                                        )
+        ||( ($a1 == 127) )
+       ){#Is it a private address?
+       return 1;
+     } 
+   }    
+   return 0;
+}
+#############################################################
+sub valid_ip {
+  #Given a string, it checks whether it is a valid IP name (returns "n"),
+  #or valid IPv4 address (returns "4"), or valid IPv6 address returns "6").
+  #If invalid it returns "0";
+  #For IP name see: http://stackoverflow.com/questions/106179/regular-expression-to-match-hostname-or-ip-address
+  #For IPv4 address see: http://answers.oreilly.com/topic/318-how-to-match-ipv4-addresses-with-regular-expressions/
+  #For IPv6 address see: http://forums.dartware.com/viewtopic.php?t=452
+  #Test cases for IPv6 address (we are using aeron) see http://download.dartware.com/thirdparty/test-ipv6-regex.pl
+  #Examples:
+  if(length($_[0])<256) {
+    if($_[0]=~/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/){#IPv4 address
+      return "4";
+    }
+    elsif($_[0]=~/^(((?=(?>.*?::)(?!.*::)))(::)?([0-9A-F]{1,4}::?){0,5}|([0-9A-F]{1,4}:){6})(\2([0-9A-F]{1,4}(::?|$)){0,2}|((25[0-5]|(2[0-4]|1[0-9]|[1-9])?[0-9])(\.|$)){4}|[0-9A-F]{1,4}:[0-9A-F]{1,4})(?<![^:]:)(?<!\.)\z/i) {#IPv6 Address
+      return "6";
+    }
+    elsif($_[0]=~/^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$/) {#Name
+    #if($_[0]=~/(([a-z0-9]+|([a-z0-9]+[-]+[a-z0-9]+))[.])+/) {#Name
+      return "n";
+    }
+  }
+  return "0";
+}
+######################################################################
+sub printerr {
+  my $err=$_[0];
+  print  "<p><hr>$errhead $err",
+       "See <a href='http://www.webteacher.org/winnet/domain/name.html'>",
+       "The Naming System</a> for information on host.domain and ",
+       "<a href='http://www.webteacher.org/winnet/domain/addresses.html'>",
+       "Addresses</a> for information on Internet addresses.<br>",
+       "$errtail\n";
+}
+#############################################################
+sub gethostbyname6 {
+  #gethostbyname6 yields the IPv6 or IPv6 address for a host name
+  # uses dig to get AAAA address for given name
+  # returns IPv6 address if successful else returns ""
+  my $name=$_[0];
+  my $ipaddr="";
+  if(gethostbyname($name)) {
+    $ipaddr=gethostbyname($name);
+    my ($a1, $b1, $c1, $d1)=unpack('C4',$ipaddr);
+    $ipaddr=$a1.".".$b1.".".$c1.".".$d1;
+  }
+  else {
+    my $cmd="dig $name -t AAAA";
+    if(!($cmd=~ /^([\w\.:\-\s]+)$/)) {#Untaint Check for valid characters    
+      print "<font color='red'><b>Invalid (tainted) command = $cmd, traceroute aborted!</b></font><br>\n";
+      exit 1;
+    }
+    $cmd=$1; #Untaint $cmd.
+    my @result=grep(/\s+AAAA\s+/,`$cmd`);
+    foreach my $result(@result) {
+      if($result =~ /^;/) {next;}
+      my @tokens=split(/\s+/,$result);
+      if(defined($tokens[4])) {$ipaddr=$tokens[4]; last;}
+    }
+  }
+  return $ipaddr;
+}
+__END__
 #--------------------------------------------------------------#
 #                                                              #
 #                      DISCLAIMER NOTICE                       #
@@ -22,7 +702,7 @@
 #--------------------------------------------------------------#
 #Copyright (c) 1995, 1996, 1997, 1998, 1999, 2000, 2001,
 #              2002, 2003, 2004, 2005, 2006, 2007, 2008,
-#              2009, 2010
+#              2009, 2010, 2011, 2012
 #  The Board of Trustees of the Leland
 #  Stanford Junior University. All Rights Reserved.
 
@@ -266,626 +946,13 @@
 #my $version="5.2, 04/15/2011, Les Cottrell";
 #Do not check whether client and server are in the same 1st 2 octets if IPv6
 
-my $version="5.3, 05/20/2011, Les Cottrell";
+#my $version="5.3, 05/20/2011, Les Cottrell";
 #Special case PERN nodes at multiple sites having the  same class B 
 #network starting with 111.68 or 121.51
-###############################################################################
-use strict;
-$ENV{PATH}='/bin:/usr/bin:/sbin:/usr/local/bin:/usr/local/etc:/usr/sbin:/usr/local/sbin';#For untainting
 
-##########################Testing ##############################################
-# For testing from command line you need to set some environment variables, e.g.
-# setenv QUERY_STRING www.cern.ch; setenv REMOTE_HOST ns1.slac.stanford.edu
-# setenv REMOTE_ADDR 134.18.188;  setenv SERVER_NAME www.slac.stanford.edu
-# setenv REQUEST_URI /cgi-wrap/traceroute.pl
-# You will also need to include the -T option in the command line if you want to
-# use the perl -d debug facility, i.e. you need to use:
-# perl -d -T traceroute.pl
-# REMOTE_HOST, REMOTE_ADDR are the name and IP address of the client/browser
-# SERVER_NAME is the name of the web server,
-# QUERY_STRING is the name or IP address of the host to be probed.
+#my $version="5.4, 9/17/2011, Les Cottrell";
+#start at first hop.
 
-################################################################################
-# Put out header right at start to ensure it precedes any errors or bug reports.
-# To enable line-buffered output (more interactive output), change the name
-# of this script to nph-traceroute.pl or use a Unix logical link.
-select(STDOUT);  $| = 1;	# Flush output after each print
-my $msg="";
-if ($0 =~ /nph-/) {
-   $msg="$ENV{SERVER_PROTOCOL} 200 OK\nServer: $ENV{SERVER_SOFTWARE}\n";
-}
-#Get this out first so can get out error messages
-print $msg."Content-type: text/html\n\n";
+#my $version="5.5, 12/02/2011, Les Cottrell";
+#Make $hostname work with IPv4 & IPv6
 
-################################################################################
-#Understand the local environment
-use Cwd;
-my $AF_INET=2;
-my $debug=0;
-my $function;#Allows us to either ping or traceroute
-(my $progname = $0) =~ s'^.*/'';
-my $uid=scalar(getpwuid($<));
-#Get fully qualified IP address of the local host
-use Sys::Hostname;
-my $ipaddr=gethostbyname(hostname());
-my ($a, $b, $c, $d)=unpack('C4',$ipaddr);
-my ($hostname,$aliases, $addrtype, $length, @addrs)
-  = gethostbyaddr($ipaddr,$AF_INET);
-$ipaddr=$a.".".$b.".".$c.".".$d;
-my $site="";#Allows us to special case SLAC's configuration
-if($hostname=~/\.slac\.stanford\.edu/) {$site="slac";}
-my $archname=$^O;
-my $Tr = 'traceroute'; # Usually works
-
-########################## Get the form action field #########################
-#$form allows one to use a different form action field, e.g.
-#REQUEST_URI is of the form: /cgi-bin/traceroute.pl?choice=yes
-my ($temp, $bin_dir);
-($temp,$bin_dir,$temp)=split /\//,$ENV{'REQUEST_URI'};
-my $form="<form action='/$bin_dir/gui/$progname' method='GET'>";
-if($debug>0) {
-  print "REQUEST_URI=$ENV{'REQUEST_URI'}, bin_dir=$bin_dir, form=$form<br>\n";
-}
-
-# **********************  tailor first section as required:- *****************
-# Traceroute options can be customized to reduce (or increase) impact
-# There is no need to set @Tropts unless one is using non-defaults.
-my @Tropts=qw(-m 30 -q 3); # equivalent default options for traceroute
-$ENV{PATH} = '/bin:/usr/bin:/usr/local/bin:/usr/sbin/:/sbin/';#Untaint
-my $start=""; #default value.
-my $max_processes=11;# Maximum # of simultaneously running traceroute processes
-                  # 10 gave no alerts for several weeks in May 2000. Set to a
-                  # large number if you don't care. Extended from 9 to 11 on
-	          # 9/13/00 since getting a few alerts per day (5-6 yesterday,
-	          # though that was a record, I think).
-#$to contains the email address(es) to send the warning of too many processes
-# If you don't want an email warning if too many processes are running then
-# set $to to ""
-my $to=""; # Default, no email will be sent and none of the tailoring
-	   # variables following $to below will be used.
-my $mail="/usr/ucb/mail"; #mail client on this host
-my $mail_help="/u/sf/cottrell/lib/traceroute.list"; #help type information to go
-                  #with email message
-# ************** end of first part of tailoring *********************
-
-################# SLAC site specific ##################################
-#if($site eq "slac") {
-my $Sy;
-if($hostname eq "www1.slac.stanford.edu") {
-  @Tropts = qw(-m 30 -q 1 -w 3);#options for SLAC traceroute, comment if uncertain
-  my $Sy = "/afs/slac/package/pinger/old/synack/sun4x_56/synack";
-  $to="cottrell\@slac.stanford.edu,rdc\@slac.stanford.edu";
-}
-else {$Sy=$Tr;} #Only support synack at SLAC
-
-#######################################################################
-my $timeout=0.05/24; # Don't send 2nd email item if previous sent in < timeout hrs
-my $err="";
-my $errhead='</pre><font color="magenta"><b><i>';
-my $errtail="</font></i></b>";
-my $warn="";
-my $addr = $ENV{'REMOTE_ADDR'}; $addr=~s/\s+//g;
-my $host = $addr;
-
-#################################################################################
-# if we're being accessed via a proxy that passes the client's address:
-# For more on this see: http://www.zope.org/Members/TWilson/GettingVisitorsIP
-# Note if using ssl and going through a firewall/NAT then,
-# because of encryption, it may not be
-# possible for the firewall/NAT to add the http header for HTTP_X_FORWARDED_FOR
-if (defined $ENV{'HTTP_X_FORWARDED_FOR'}) {
-  my $oldaddr=$addr;
-  $addr = $ENV{'HTTP_X_FORWARDED_FOR'};
-  $addr =~ s/,.*$//;  # if address1, address2, ... keep only address1
-  if($addr=~/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) {
-    if(private($addr)) { 
-      $warn.="Proxy provided a private IP address for your web client/browser,"
-          . " HTTP_X_FORWARDED_FOR=$ENV{'HTTP_X_FORWARDED_FOR'}<br>\n";
-      $addr=$oldaddr;#Private address restore original address
-    }     
-    $host = gethostbyaddr(pack('C4',split(/\./,$addr)),$AF_INET);
-  }
-  else {
-    $warn.="Proxy provided an invalid IP address for your web client/browser,"
-         . " HTTP_X_FORWARDED_FOR=$ENV{'HTTP_X_FORWARDED_FOR'}<br>\n";
-  }
-}
-
-###########################################################################
-# Process QUERY_STRING if present. QUERY_STRING may contain the target host.
-my $query="";
-if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
-  unless($ENV{'QUERY_STRING'} eq "choice=yes") {
-    $query = $ENV{'QUERY_STRING'};  # might be an IP address or a name
-    if(length($query)>300) {#sanity check to prevent overflows
-      print "QUERY_STRING is > 300 characters\n";
-      exit 6;
-    }
-    $host = '';  # not so nice, but anyway...
-  }
-}
-
-############################################################################
-#Get optional information if supplied
-if($progname =~ /ping/) {$function="ping";} else {$function="traceroute";}
-my @pairs=split(/&/,$query);
-my $ping_size="56";
-my $probe=""; #Can be overwritten (to -I) by probe=ICMP for traceroute
-foreach my $pair (@pairs) {
-  my ($name,$value)=split(/=/,$pair);
-  if($name eq "target") {
-    $addr=$value;
-  }
-  elsif($name eq "function") {
-    if($value eq "ping") {$function=$value;}
-    elsif($value =~ /synack/) {
-      if($hostname eq "www1.slac.stanford.edu") {$function=$value;}
-      else {
-        $err .= "Only SLAC supports synack function.<br>\n";
-      }
-    }
-    elsif($value eq "traceroute") {;}
-    else {
-      $err .= "Invalid function value, valid values=ping or traceroute<br>\n";
-    }
-  }
-  elsif($name eq "debug") {$debug=$value;}
-  elsif($name eq "size")  {
-    $ping_size=$value;
-    if($ping_size eq "") {$ping_size=56;}
-    if(!($ping_size =~ /\d+/)) {
-      $err .= "Size must be positive integer.<br>\n";
-    }
-    elsif (($ping_size < 56) || ($ping_size > 1400)) {
-      $err .= "Size must be >= 56 & <= 1400.<br>\n";
-    }
-  }
-  elsif($name eq "probe") {
-    if($value=="ICMP")     {$probe="-I";}#OK for Linux & Solaris
-  }
-}
-
-###########################################################################
-#Add in the ICMP option if requested
-my $ping_npackets="";
-if($function eq "traceroute") {if($probe ne "") {push (@Tropts,$probe);}}
-  
-################################################################################
-# Build the executable function for ping
-elsif($function eq "ping") {
-  $Tr="ping";
-  if($archname eq "solaris")  {
-    $ping_npackets="5"; @Tropts=qw(-s);
-  }
-  else {@Tropts=("-c 5","-s $ping_size");}
-}
-
-################################################################################
-# Build the executable function for synack
-elsif($function =~ /synack/) {
-  if ($function =~ /synack -p (\d{1,3})/) {
-    @Tropts=("-p ".$1,"-k 2","-S 5");
-  }
-  else {
-    @Tropts=("-p 80","-k 2","-S 5");
-  }
-  $Tr=$Sy;
-}
-
-#############################################################################
-#Keep track of last request
-my $last="/tmp/$function".".pl.time"; # file to be 'touched' to note last time email sent.
-
-################################################################################
-#Clean up the target address.
-$addr =~ s/\%([a-fA-F0-9][a-fA-F0-9])/pack('H2',$1)/eg; #De-webify %xx stuff
-$addr =~ s/\%([a-fA-F0-9][a-fA-F0-9])/pack('H2',$1)/eg; #De-webify %xx stuff
-$addr=~tr/+/ /; #De-webify + signs to spaces
-$addr=~s/^\s+|\s+$//; # Remove extraneous white space at start & finish
-if($addr=~s/^([a-zA-Z]+:\/\/|[a-zA-Z]+:\/\/\/)([\w\.\-_]+)[\w\.\/\-_]*$/$2/) {#Extract host from URL
-  $warn.="Looks like a web URL, I will try and extract the target.<br>\n";
-  my $prot=$1; $prot =~ tr/a-z/A-Z/;
-  if ($prot eq "FILE:///") { #Looks like a local file
-    $addr=$ENV{'REMOTE_ADDR'};
-    $warn.="Target looks like a local file, ".
-           "I will try and $function to your browser at $addr.<br>\n";
-  }
-}
-$addr=~s/\/$//; #Remove trailing slash (/).
-
-#############################################################
-#Check if it is a probable email address
-if($addr=~/.\@./) {#Looks like an email address, provide guidance
-  $err.="Looks like an email address (i.e. name\@mail_domain),".
-        " needs to be host name or address (e.g. must not include \@).<br>\n";
-}
-
-##################################################################################
-#Complete the name and address of the target host
-my @target=split(/\./,$addr); my $target_domain;
-my $ipv6=0;
-if(valid_ip($addr) eq "6") { #Check for possible IPv6 addr format
-  $ipv6=1;
-  $Tr = $Tr . "6";#append "6" on end of command name "traceroute" -> "traceroute6", 
-                  #"ping" -> "ping6"
-}
-elsif(valid_ip($addr) eq "n") {#Target is a valid host name
-  $host=$addr;
-  my $target_addr;
-  if(!( $target_addr=(gethostbyname($host))[4] )) {
-    $err.="Can't find address for host name ".
-          "<font color='red'> $host</font>.".
-          " Probably an unknown host.<br>\n";
-  }
-  else {
-    my ($a, $b, $c, $d)=unpack('C4',$target_addr);
-    $addr=$a.".".$b.".".$c.".".$d;
-    # compare class-C networks correctly.
-    if ($a>=192) {
-      $target_domain=$a.".".$b.".".$c;
-    }
-    else {
-      $target_domain=$a.".".$b;
-    }
-  }
-}
-elsif(valid_ip($addr) eq "4") {#$QUERY_STRING contains an IPv4 target address
-  $target_domain=$target[0].".".$target[1];
-  if(!($host = gethostbyaddr(pack('C4',split(/\./,$addr)),$AF_INET))) {
-    $host=$addr;#Get name if address resolves
-  }
-}
-else {
-  $err.="Invalid character in IP address or name. Valid characters are 'a-zA-Z0-9_.-:'.<br>\n";
-}
-if($err ne "") {
-  print "$errhead $err $errtail";
-  exit 5;
-}
-if($debug>0) {
-  print "<br>\n".scalar(localtime())." $progname: $addr($host), function=$function<br>\n" .
-        " Server=$uid\@$hostname($ipaddr), REMOTE_ADDR=$ENV{'REMOTE_ADDR'}<br>\n".
-        " REQUEST_URI=$ENV{'REQUEST_URI'}<br>\n".
-        " Executing $Tr ($err)\n";
-}
-
-#################################################################################
-# Temporary kludge to block abusive hosts
-#my @denies=("211.216.50.200","212.91.225.114","135.207.29.241"); #Add by cottrell 3/23/02.
-# re-enabled the above 5/11/04 to see if still a problem.
-#my @denies=("128.194.135.80","irl-crawler.cs.tamu.edu","128.194.135.73","irl-spider.cs.tamu.edu");
-# re-enabled the above 10/22/04 to see if still a problem
-#Added "68.202.115.238 (238-115.202-68.se.rr.com)","218.102.96.95 (pcd565095.netvigator.com" 14134, 5202 hits 10/22/04 Cottrell
-# re-enabled the above 1/4/05 Cottrell
-#Added "63.231.133.192 (63-231-133-192.mpls.qwest.net) 12/5/04 Cottrell (3738 requests/day)
-#Added "203.51.137.39 CPE-203-51-137-39.vic.bigpond.net.au" 1/4/05 Cottrell (2059 requests/day)
-#Added "63.203.98.156 adsl-63-203-98-156.dsl.lsan03.pacbell.net" 1/23/05 Cottrell (3181 requests)
-#Added "68.205.16.194 194.16.205.68.cfl.res.rr.com" 2/23/05 Cottrell (1903 requests/day)
-#Added "24.106.79.234" 6/8/05 Cottrell (28822 requests/day)
-#Added "68.44.148.52 pcp03312553pcs.wchryh01.nj.comcast.net" 11/25/05 Cottrell (2876 requests/day)
-#Added "81.20.6.18 N/A" 545 requests, "203.162.3.153 N/A" 398 requests, 3/18/06 Cottrell"
-#Added "198.174.110.146" 1555 requests 4/23/06 Cottrell
-#Added "198.30.132.8" 4185 requests 6/6/06 Cottrell
-#Removed block on "198.174.110.146", Hallelujah I found someone who fixed their problem!
-#Added "203.162.3.147" proxy03-hcm.vnn.vn 1035 requests 4/26/06 Cottrell
-#Added "198.30.132.8" no name, > 790 requests 5/20/06 Cottrell
-#Added "198.30.132.6" no name, > 4580 requests 6/5/06 Cottrell
-#Added "211.28.103.29 c211-28-103-29.eburwd4.vic.optusnet.com.au" > 3800 requests 9/28/06 Cottrell
-my @denies=("63.231.133.192","203.51.137.39","63.203.98.156","68.205.16.194","24.106.79.234",
-            "68.44.148.52",  "81.20.6.18",   "203.162.3.153","203.162.3.147","198.30.132.8",
-            "198.30.132.6", "211.28.103.29");
-if($addr ne "") {
-  my @remote=split(/\./,$addr);
-  foreach my $deny (@denies) {
-    if(uc($deny) eq uc($addr) || uc($deny) eq uc($host)) {
-      print "Deny access from $host($deny) due to large number of requests,".
-            " contact cottrell\@slac.stanford.edu to re-enable 4/26/06.\n";
-      exit 3;
-    }
-  }
-}
-if($host=~/in-addr\.btopenworld\.com/) {
-  print "There are now over 30 hosts from the btopenworld.com domain ".
-        "automatically requesting 70-140 traceroutes / day from $hostname($ipaddr).".
-        "As of 11/25/05, these requests have been blocked. ".
-        "Please contact cottrell\@slac.stanford.edu to describe the purposes ".
-        "of these requests, so we can justify re-enabling the access for ".
-        "btopenworld.com. Thank you.\n";
-      exit 4;
-}
-
-#######################################################################################
-# As a security measure we do not allow a remote host in a different
-# domain to do a traceroute to
-# a host within the same domain as the web server. One concern is that
-# allowing such a traceroute would allow an external host to traceroute
-# to a host within the Internet Free Zone that the web server is in.
-# Get domain of web server.
-my ($http_addr, $http_domain, $remote_domain);
-if($function ne 'traceroute') {;}
-elsif(!( $http_addr=(gethostbyname($ENV{'SERVER_NAME'}))[4] )) {
-   $err.="Can't find address of $function SERVER_NAME $ENV{'SERVER_NAME'}:$!$?.<br>\n";
-}
-elsif($ipv6 == 1) {;}#No domain check for IPv6 (add by Cottrell 4/15/2011)
-else {#IPv4 traceroute function
-  my ($a, $b, $c, $d)=unpack('C4',$http_addr);
-  # compare class-C networks correctly.
-  if ($a>=192) {
-      $http_domain=$a.".".$b.".".$c;
-  }
-  else {
-    $http_domain=$a.".".$b;
-  }
-  # Get domain of remote host.
-  my @remote=split(/\./,$ENV{'REMOTE_ADDR'});
-  $remote_domain=$remote[0].".".$remote[1];
-  @target=split(/\./,$addr);
-  # Client/browser & web server are in different domains.
-  if(!($http_domain eq $remote_domain)) {
-    #Under some error conditions $target_domain is not defined
-    if(defined($target_domain)) {
-      if( ($target_domain eq $http_domain) 
-       && ($http_domain ne "121.52") #Special case PERN
-       && ($http_domain ne "111.68")) {
-        # Client (browser) is outside the web server domain and so is not
-        # allowed to traceroute to a target inside the web server's domain.
-        $err.="$function server does not provide $function"."s to ".
-              "targets such as $addr inside the $http_domain domain, ".
-              "for browsers outside the $http_domain domain.<br>\n";
-      }
-    }
-    #push(@Tropts,"-f 3");
-  }
-  else {#Client/browser & web server are in the same domain
-    $start=""; #no need to hide internal routing from insiders
-  }
-}
-
-#######################################################
-my $browser;
-unless (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
-  $browser="your web browser at";
-}
-else {$browser="";}
-$msg = "$function from $ipaddr ($ENV{SERVER_NAME}) "
-     . "to $browser $addr ($host) for $ENV{'REMOTE_ADDR'}";
-if($host eq "") {$host="host with no DNS entry";}
-print "<title>$msg</title>\n";# Now put out title and header
-
-##################################################################################
-# *** Sites may want to tailor the following statement to meet their needs. ******
-if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
-  if($debug>=0) {
-    print "<div align='center'><table border='1'>
-        <tr><td align='center'>",
-      "<a href='http://www.stanford.edu/'>
-        <img src='http://www.slac.stanford.edu/comp/net/wan-mon/stanford-seal.gif'
-           alt='Stanford University seal' title='Stanford University seal'></a>
-        <a href='/'><img src='http://www.slac.stanford.edu/icon/slac3.gif'
-          alt='SLAC logo, click here to learn more about SLAC'
-          title='SLAC logo, click here to learn more about SLAC'
-        ></a>
-      </td>",
-      "<td align='center'><h2>$msg</h2>\n",
-      "CGI script maintainer:
-       <a href='mailto:cottrell\@slac.stanford.edu'><i>
-       Les Cottrell</i></a>, <a href='http://www.slac.stanford.edu/'>SLAC</a>.
-       Script version $version.<br>
-       <a href='http://www.slac.stanford.edu/comp/net/traceroute/traceroute.pl'>
-       Download perl source code</a>.<br>",
-      "<small>To perform a
-       <!-- a href='http://boardwatch.internet.com/mag/96/dec/bwm38.html' -->
-        traceroute
-        from $ENV{SERVER_NAME},
-        enter the desired target
-       <a href='http://webopedia.internet.com/TERM/d/domain_name.html'>host.domain</a>
-       (e.g. www.yahoo.com) or
-       <a href='http://aol.pcwebopedia.com/TERM/I/IP_address.html'>Internet
-       address</a> (e.g. 137.138.28.228) in the box
-       below:</small>
-       $form
-       Enter target name or address:
-       <input type='text' size='30' name='target'> then push 'Enter' key.
-       <input type='hidden' name='function' value='$function'>
-       </form>",
-      "Lookup:
-       <a href='http://www.slac.stanford.edu/comp/net/util/nslookup.html'>host name</a> |
-       <a href='http://www.slac.stanford.edu/comp/net/util/mxlookup.html'>mail domain</a> |
-       <a href='http://www.networksolutions.com/cgi-bin/whois/whois'>domain name</a> |
-       <!--
-          <a href='http://cello.cs.uiuc.edu/cgi-bin/slamm/ip2ll/'>latitude & longitude</a> |
-       -->
-       <a href='http://www.geoiptool.com/'>Locating a Host</a> |
-       <a href='http://visualroute.visualware.com/'>visual traceroute</a> |
-       <a href='http://www.ietf.org/rfc/rfc2142.txt'>contacting someone</a>
-       </td>",
-      "<td><b>Related web sites</b><br>",
-      "<a href='http://www.slac.stanford.edu/comp/net/wan-mon/traceroute-srv.html'>
-        <b>Traceroute servers</b></a>,<br>",
-      "<a href='http://www.slac.stanford.edu/comp/net/wan-mon/tutorial.html'>
-        Monitoring tutorial</a>,<br>",
-      "<a href='http://www-iepm.slac.stanford.edu/'>
-        Internet monitoring</a><br>",
-      "<a href='http://www.ipaddressworld.com/'>What is my IP address?</a>",
-      "</tr></table></div>\n";
-  }
-}
-# *** end of second and last part of tailoring ************************************
-
-if($function ne "ping") {
-  if($debug>=0) {
-    print "<table bgcolor='yellow'><tr><td align='center'><font color=red><b>\n",
-      "Please note that traceroutes can appear similar \n",
-      "to port scans. If you see a suspected port scan alert, \n",
-      "for example from your firewall, with \n",
-      "a series of ports in the range 33434 - 33465, coming \n",
-      "from $ENV{SERVER_NAME} it is probably a reverse traceroute from our \n",
-      "web based reverse traceroute server. Please do NOT report this to \n",
-      "us, it will almost certainly be a waste of both of our times. \n",
-      "For more on this see<br>\n",
-      "<a href='http://www.slac.stanford.edu/comp/net/wan-mon/traceroute-srv.html#security'>\n",
-      "Traceroute security issues</a>.</b></font></td></tr></table>\n";
-  }
-  #No query string, user maybe a novice and needs to be warned that the
-  #traceroute may result in something that appears as a port scan to
-  #some firewalls, so she/he won't later complain about our web server
-  #'attacking' her/his host.
-  unless (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
-    print "<hr><table border=6><tr><td align='center'>\n",
-        "<font color='red' size=+2><b>\n",
-        "You are about to request a traceroute that may be\n",
-        "interpreted as an 'attack' from $ENV{SERVER_NAME}, \n",
-        "by a firewall protecting your browser: $addr ($host). \n",
-        "Have you read the description above and is it OK to proceed?</b></font>\n",
-        "$form\n",
-        "<INPUT type='hidden' name=choice value='yes'>\n",
-        "<INPUT type='submit' value='YES'\n>",
-        "</form></table>\n</body></html>\n",
-        "<div align='center'><font size=+3><b>Your host is: $addr ($host).</b></font></div>\n";
-    exit;
-  }
-}
-
-###################################################################
-# Let's trample on obvious attempts to trace to a broadcast address
-#    (associated with some denial-of-service attacks based on ICMP)
-if ($addr =~ /\.(0|255)$/) {
-  $err.="Broadcast address ($addr) not allowed.<br>\n";
-};
-
-###################################################################
-# Check to ensure there are not already too many traceroute
-# processes running. This is to try and avoid a denial of service
-# attack. If there are too many then send email warning, unless we already
-# sent an email warning less than an hour ago.
-my $processes=grep(/$function/, `ps -o comm -u $>`);
-if($processes > $max_processes) {
-  $err.="$function server busy at the moment. Please try again later.<br>\n";
-  if(!($to eq "" || $mail eq "")) {
-    if (! -e $last || -M _ > $timeout) {# was it > $timeout since last sent email?
-      system('touch', $last); # yes, note new time and send an email warning
-      my $time=scalar localtime;
-      open(MAIL, "| $mail -s 'Warning $function".".pl busy at $time.' $to")
-        or die "Unable to send mail to $to warning $function busy at $time: $!";
-      $msg="$time $ENV{'HTTP_REFERER'} found $processes running $function " .
-           "processes in $ENV{'SERVER_NAME'} when doing $function to $addr " .
-           "for $host. Request was received from $ENV{REMOTE_ADDR} " .
-           "($ENV{REMOTE_HOST})\n";
-      $msg.=`cat $mail_help`;
-      print MAIL $msg;
-      close(MAIL);
-    }
-  }
-}
-if(private($addr)) {$err.="$addr is a private address<br>\n";}
-if($debug > 0) {print "debug=$debug<br>\n";}
-if($warn ne "") {
-  print "$errhead $warn $errtail";
-}
-if($err ne "") {
-  printerr($err);
-  exit 2;
-}
-
-################################################################
-# Finally, we can do something useful...
-print "<pre>\n";
-if($debug > 0)  {
-  if($function ne "ping" or $archname ne "solaris")  {
-    $temp = "$Tr @Tropts $addr";
-  }
-  else {
-    $temp="$Tr @Tropts $addr $ping_size $ping_npackets";
-    system('iptables -L');
-  }
-  print scalar(localtime())." server $uid\@$hostname($ipaddr)\n".
-        " running $archname called: $0\n".
-        " to execute: $temp\n".
-        " with path=$ENV{'PATH'}\n".
-        " from cwd=".cwd()." under shell $ENV{'SHELL'}\n".
-        " for REMOTE_ADDR=$ENV{'REMOTE_ADDR'}\n";
-  system('which ping');
-}
-
-#################################################################
-# Note that the following exec avoids shell expansions so we do not
-# worry about checking the $addr for shell meta-characters. Note also that
-# SIGALRM is carried across the exec thus allowing the timeout to work.
-open(STDERR, '>&STDOUT');# Redirect stderr onto stdout
-alarm(45);	     # Timeout function in case of problems (used to be 45)
-if(!($addr=~ /^([\w\.:\-]+)$/)) {#Untaint Check for valid characters
-  print "<font color='red'><b>Invalid target = $addr, traceroute aborted!</b></font><br>\n";
-  exit 1;
-}
-$addr=$1; #Untaint $addr.
-#print "Executing '$Tr ",join(' ',@Tropts)," $addr'<br>\n";
-if($function ne "ping" or $archname ne "solaris") {
-  if($function ne "ping") {
-    $temp="140"; #Added the 140 to tracreoute command
-    #to get round the bug in Redhat's traceroute package in which some
-    #MPLS encapulation info is incorrectly included in the ICMP checksum.
-    #Notification of by pass from Bryson lee of SLAC.
-    print "Executing exec($Tr, @Tropts, $addr, $temp)\n"; 
-    exec($Tr, @Tropts, $addr, $temp); 
-  }
-  else {
-    print "Executing exec($Tr, @Tropts, $addr)\n";
-    exec($Tr, @Tropts, $addr);
-  }
-}
-else {
-  exec($Tr, @Tropts, $addr, $ping_size, $ping_npackets);
-}
-
-sub private {
-   #Returns true if it is a private addresso
-   my $addr=$_[0]; 
-   #Check if address is a private address, there are three ranges:
-    #10.0.0.0 - 10.255.255.255 a single class A net
-    #172.16.0.0 -  172.31.255.255 16 contiguous class Bs
-    #192.168.0.0 - 192.168.255.255 256 contiguous class Cs
-    #127.0.0.0 - 127.255.255.255 local loopback
-    ($a, $b, $c, $d)=split(/\./,$addr);
-    if (  ($a ==  10) 
-        ||( ($a == 172) && (($b >= 16) && ($b <= 31))                          )
-        ||( ($a == 192) &&  ($b == 168)                                        )
-        ||( ($a == 127) )
-       ){#Is it a private address?
-      return 1;
-    }     
-  return 0;
-}
-
-sub valid_ip {
-  #Given a string, it checks whether it is a valid IP name (returns "n"),
-  #or valid IPv4 address (returns "4"), or valid IPv6 address returns "6").
-  #If invalid it returns "0";
-  #For IP name see: http://stackoverflow.com/questions/106179/regular-expression-to-match-hostname-or-ip-address
-  #For IPv4 address see: http://answers.oreilly.com/topic/318-how-to-match-ipv4-addresses-with-regular-expressions/
-  #For IPv6 address see: http://forums.dartware.com/viewtopic.php?t=452
-  #Test cases for IPv6 address (we are using aeron) see http://download.dartware.com/thirdparty/test-ipv6-regex.pl
-  #Examples:
-  if(length($_[0])<256) {
-    if($_[0]=~/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/){#IPv4 address
-      return "4";
-    }
-    elsif($_[0]=~/^(((?=(?>.*?::)(?!.*::)))(::)?([0-9A-F]{1,4}::?){0,5}|([0-9A-F]{1,4}:){6})(\2([0-9A-F]{1,4}(::?|$)){0,2}|((25[0-5]|(2[0-4]|1[0-9]|[1-9])?[0-9])(\.|$)){4}|[0-9A-F]{1,4}:[0-9A-F]{1,4})(?<![^:]:)(?<!\.)\z/i) {#IPv6 Address
-      return "6";
-    }
-    elsif($_[0]=~/^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$/) {#Name
-    #if($_[0]=~/(([a-z0-9]+|([a-z0-9]+[-]+[a-z0-9]+))[.])+/) {#Name
-      return "n";
-    }
-  }
-  return "0";
-}
-
-sub printerr {
-  my $err=$_[0];
-  print  "<p><hr>$errhead $err",
-       "See <a href='http://www.webteacher.org/winnet/domain/name.html'>",
-       "The Naming System</a> for information on host.domain and ",
-       "<a href='http://www.webteacher.org/winnet/domain/addresses.html'>",
-       "Addresses</a> for information on Internet addresses.<br>",
-       "$errtail\n";
-}
