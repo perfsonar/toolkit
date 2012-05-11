@@ -58,16 +58,15 @@ my $archname=$^O;
 ########################## Get the form action field #########################
 #$form allows one to use a different form action field, e.g.
 #REQUEST_URI is of the form: /cgi-bin/traceroute.pl?choice=yes
-my ($temp, $bin_dir);
-($temp,$bin_dir,$temp)=split /\//,$ENV{'REQUEST_URI'};
-my $form="<form action='/$bin_dir/$progname' method='GET'>";
+my $temp;
+my $form="<form action='$progname' method='GET'>";
 if($debug>0) {
-  print "REQUEST_URI=$ENV{'REQUEST_URI'}, bin_dir=$bin_dir, form=$form<br>\n";
+  print "REQUEST_URI=$ENV{'REQUEST_URI'}, form=$form<br>\n";
 }
 # **********************  tailor first section as required:- *****************
 # Traceroute options can be customized to reduce (or increase) impact
 # There is no need to set @Tropts unless one is using non-defaults.
-my @Tropts=qw(-m 30 -q 3); # equivalent default options for traceroute
+my @Tropts=qw(-m 30); # equivalent default options for traceroute
 my $start=""; #default value.
 my $max_processes=11;# Maximum # of simultaneously running traceroute processes
                   # 10 gave no alerts for several weeks in May 2000. Set to a
