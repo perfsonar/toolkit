@@ -1850,7 +1850,7 @@ sub parse_owmesh_conf {
                         }
                     }
                     else {
-                        $self->update_test_member( { test_id => $test_id, name => $node, description => $node_desc, address => $addr, port => $port, receiver => $node_set->{receiver}, sender => $node_set->{sender} } );
+                        $self->update_test_member( { test_id => $test_id, member_id => $member_ids{$addr}, description => $node_desc, port => $port, receiver => $node_set->{receiver}, sender => $node_set->{sender} } );
                     }
                 }
             }
