@@ -144,6 +144,13 @@ my @default_known_services = (
         service_name=> "ntpd",
         enabled     => 1,
     },
+    {
+        name        => "maddash",
+        description => "Monitoring and Debugging Dashboard",
+        service_name=> "maddash-server",
+        enabled_services_variable => "maddash_enabled",
+        enabled     => 1,
+    },
 );
 
 =head2 init({ enabled_services_file => 0 })
