@@ -67,7 +67,7 @@ sub mount_data_store {
     # Create the default store location if it doesn't exist
     unless (-d $store_location) {
         mkpath($store_location, { error => \$error });
-        if ($error) {
+        if (scalar(@$error) > 0) {
             return (-1, "Couldn't make data store directory");
         }
     }
@@ -193,7 +193,7 @@ sub load_original_cd {
         my $error;
 
         mkpath($dir, { error => \$error }) unless (-d $dir);
-        if ($error) {
+        if (scalar(@$error) > 0) {
             return (-1, "Couldn't make $dir");
         }
     }
@@ -242,7 +242,7 @@ sub unload_original_cd {
         my $error;
 
         mkpath($dir, { error => \$error }) unless (-d $dir);
-        if ($error) {
+        if (scalar(@$error) > 0) {
             return (-1, "Couldn't make $dir");
         }
     }
@@ -300,7 +300,7 @@ sub make_data_store {
     my $error;
 
     mkpath($new_store_location, { error => \$error }) unless (-d $new_store_location);
-    if ($error) {
+    if (scalar(@$error) > 0) {
         return (-1, "Couldn't create new store location");
     }
 
@@ -310,7 +310,7 @@ sub make_data_store {
     }
 
     mkpath($new_store_location."/NPTools", { error => \$error }) unless (-d $new_store_location."/NPTools");
-    if ($error) {
+    if (scalar(@$error) > 0) {
         return (-1, "Couldn't create new store location");
     }
 
