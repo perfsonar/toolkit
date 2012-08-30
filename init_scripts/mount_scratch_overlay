@@ -120,7 +120,7 @@ start() {
         echo -n $"Recreating /proc, /sys, /dev: "
         mount -t proc proc /proc
         mount -t sysfs sys /sys
-        mkdir /dev/shm
+        mkdir -p /dev/shm
         mount -t tmpfs shm /dev/shm
         rm -f /dev/null
         cp -Ra /old_temp_root/sysroot/dev/* /dev
