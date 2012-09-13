@@ -21,7 +21,17 @@ start() {
     TEMP_ROOT_LOCATION=/mnt/temp_root
     TEMP_ROOT_FILE=/opt/perfsonar_ps/toolkit/scripts/temp_root.img
     SCRATCH_FILE=$STORE_LOCATION/NPTools/scratch
-    
+    NUM_LOOPS=16
+	
+    echo -n $"Making more loop devices available... "
+    /sbin/MAKEDEV -m $NUM_LOOPS loop &> /dev/null
+    if [ -e "/dev/loop$(($NUM_LOOPS-1))" ]; then
+        success && echo
+    else
+        failure
+        echo
+    fi
+
     echo -n $"Looking for backing store... "
     # Find any configured block device
     for dev in `blkid -o device -t TYPE='ext3'`; do
@@ -61,7 +71,7 @@ start() {
     	success && echo
     else
     	failure
-	echo
+        echo
     fi
     
     if [ -d $STORE_LOCATION/NPTools ]; then
@@ -136,6 +146,8 @@ start() {
         umount $TEMP_ROOT_LOCATION/scratch &> /dev/null
         umount $TEMP_ROOT_LOCATION &> /dev/null
         umount $STORE_LOCATION &> /dev/null
+        umount -l /old_temp_root &> /dev/null
+        rmdir /old_temp_root &> /dev/null
         success && echo
     fi
 }
