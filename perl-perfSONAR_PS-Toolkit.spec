@@ -19,11 +19,11 @@
 %define crontab_3     cron-owamp_cleaner
 %define crontab_4     cron-save_config
 
-%define relnum 6
+%define relnum 1
 %define disttag pSPS
 
 Name:           perl-perfSONAR_PS-Toolkit
-Version:        3.2.2
+Version:        3.3
 Release:        %{relnum}.%{disttag}
 Summary:        perfSONAR_PS Toolkit
 License:        distributable, see LICENSE
