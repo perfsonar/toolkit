@@ -1,41 +1,43 @@
 #!/bin/bash
 #######################
-# Make sure some unused services are disabled. Does not matter if this is
-# running in an 'upgrade' or 'new install' context.
+# Make sure some unused services are disabled.
+# Dependent on running in an 'upgrade' or 'new install' context.
 #######################
 
 if [ "$1" == "new" ]; then
-    /sbin/chkconfig cups off
-    /sbin/chkconfig gpm off
-    /sbin/chkconfig portmap off
-    /sbin/chkconfig iptables off
-    /sbin/chkconfig ip6tables off
-    /sbin/chkconfig irqbalance off
-    /sbin/chkconfig bluetooth off
-    /sbin/chkconfig haldaemon off
-    /sbin/chkconfig cpuspeed off
-    /sbin/chkconfig pcscd off
-    /sbin/chkconfig nfslock off
-    /sbin/chkconfig ypbind off
-    /sbin/chkconfig mdmonitor off
-    /sbin/chkconfig rpcidmapd off
-    /sbin/chkconfig rpcgssd off
-    /sbin/chkconfig netfs off
-    /sbin/chkconfig autofs off
-    /sbin/chkconfig yum-updatesd off
-    /sbin/chkconfig avahi-dnsconfd off
-    /sbin/chkconfig psacct off
-    /sbin/chkconfig nfs off
-    /sbin/chkconfig irda off
-    /sbin/chkconfig rpcsvcgssd off
-    /sbin/chkconfig mdmpd off
-    /sbin/chkconfig readahead_later off
-    /sbin/chkconfig readahead_early off
-    /sbin/chkconfig kudzu off
-    /sbin/chkconfig apmd off
-    /sbin/chkconfig hidd off
-    /sbin/chkconfig avahi-daemon off
-    /sbin/chkconfig firstboot off
-    /sbin/chkconfig smartd off
+	/sbin/chkconfig apmd off 2> /dev/null || :
+	/sbin/chkconfig acpid off 2> /dev/null || :
+	/sbin/chkconfig autofs off 2> /dev/null || :
+	/sbin/chkconfig avahi-daemon off 2> /dev/null || :
+	/sbin/chkconfig avahi-dnsconfd off 2> /dev/null || :
+	/sbin/chkconfig bluetooth off 2> /dev/null || :
+	/sbin/chkconfig cpuspeed off 2> /dev/null || :
+	/sbin/chkconfig cups off 2> /dev/null || :
+	/sbin/chkconfig firstboot off 2> /dev/null || :
+	/sbin/chkconfig gpm off 2> /dev/null || :
+	/sbin/chkconfig haldaemon off 2> /dev/null || :
+	/sbin/chkconfig hidd off 2> /dev/null || :
+	/sbin/chkconfig ip6tables off 2> /dev/null || :
+	/sbin/chkconfig iptables off 2> /dev/null || :
+	/sbin/chkconfig irda off 2> /dev/null || :
+	/sbin/chkconfig irqbalance off 2> /dev/null || :
+	/sbin/chkconfig iscsi off 2> /dev/null || :
+	/sbin/chkconfig iscsid off 2> /dev/null || :
+	/sbin/chkconfig kudzu off 2> /dev/null || :
+	/sbin/chkconfig mdmonitor off 2> /dev/null || :
+	/sbin/chkconfig mdmpd off 2> /dev/null || :
+	/sbin/chkconfig netfs off 2> /dev/null || :
+	/sbin/chkconfig nfs off 2> /dev/null || :
+	/sbin/chkconfig nfslock off 2> /dev/null || :
+	/sbin/chkconfig pcscd off 2> /dev/null || :
+	/sbin/chkconfig portmap off 2> /dev/null || :
+	/sbin/chkconfig psacct off 2> /dev/null || :
+	/sbin/chkconfig readahead_early off 2> /dev/null || :
+	/sbin/chkconfig readahead_later off 2> /dev/null || :
+	/sbin/chkconfig rpcgssd off 2> /dev/null || :
+	/sbin/chkconfig rpcidmapd off 2> /dev/null || :
+	/sbin/chkconfig rpcsvcgssd off 2> /dev/null || :
+	/sbin/chkconfig smartd off 2> /dev/null || :
+	/sbin/chkconfig ypbind off 2> /dev/null || :
+	/sbin/chkconfig yum-updatesd off 2> /dev/null || :
 fi
-
