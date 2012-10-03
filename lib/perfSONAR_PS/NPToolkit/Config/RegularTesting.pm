@@ -1257,6 +1257,8 @@ sub parse_pinger_landmarks_file {
             # Now, all the domains available should be one of our "test"
             # domains.
 
+            my @mesh_added_domains = ();
+
             foreach my $domain ( @{ $topology->get_domain } ) {
                 my $test_id;
 
@@ -1265,6 +1267,10 @@ sub parse_pinger_landmarks_file {
                 if ( $domain->get_node ) {
                     my $is_mesh_added;
                     $is_mesh_added = 1 if ($domain->get_id =~ /domain=mesh_agent_/);
+
+                    if ($is_mesh_added) {
+                        push @mesh_added_domains, $domain;
+                    }
 
                     my $test_description;
 
@@ -1362,6 +1368,8 @@ sub parse_pinger_landmarks_file {
                     }
                 }
             }
+
+            $self->{OPAQUE_PINGER_DOMAINS} = \@mesh_added_domains;
         }
     };
     if ( $@ ) {
@@ -1386,6 +1394,11 @@ sub generate_pinger_landmarks_file {
 
     eval {
         my $topology = Topology->new();
+
+        foreach my $domain (@{ $self->{OPAQUE_PINGER_DOMAINS} }) {
+            $topology->addDomain($domain);
+        }
+
         foreach my $test ( @{ $parameters->{tests} } ) {
             $self->{LOGGER}->debug( "Handling: " . $test->{id} );
             my $domain_urn = "urn:ogf:network:domain=" . $test->{id};
