@@ -411,6 +411,7 @@ sub add_test_owamp {
             sample_count     => 1,
             packet_padding   => 1,
             bucket_width     => 1,
+            added_by_mesh    => 0,
         }
     );
 
@@ -427,6 +428,7 @@ sub add_test_owamp {
     $test{mesh_type}   = $parameters->{mesh_type};
     $test{name}        = $parameters->{name};
     $test{description} = $parameters->{description} if ( defined $parameters->{description} );
+    $test{added_by_mesh} = $parameters->{added_by_mesh};
 
     my %test_parameters = ();
     $test_parameters{packet_interval}  = $parameters->{packet_interval}  if ( defined $parameters->{packet_interval} );
@@ -477,6 +479,7 @@ sub update_test_owamp {
 
     return ( -1, "Test does not exist" ) unless ( $test );
     return ( -1, "Test is not owamp" ) unless ( $test->{type} eq "owamp" );
+    return ( -1, "Test was added by the mesh configuration agent. It can't be updated.") if ($test->{added_by_mesh});
 
     $test->{name}                           = $parameters->{name}             if ( defined $parameters->{name} );
     $test->{description}                    = $parameters->{description}      if ( defined $parameters->{description} );
@@ -517,6 +520,7 @@ sub add_test_bwctl_throughput {
             window_size               => 0,
             report_interval           => 0,
             test_interval_start_alpha => 0,
+            added_by_mesh             => 0,
         }
     );
 
@@ -533,6 +537,7 @@ sub add_test_bwctl_throughput {
     $test{description} = $parameters->{description};
     $test{type}        = "bwctl/throughput";
     $test{mesh_type}   = $parameters->{mesh_type};
+    $test{added_by_mesh} = $parameters->{added_by_mesh};
 
     my %test_parameters = ();
     $test_parameters{tool}                      = $parameters->{tool}                      if ( defined $parameters->{tool} );
@@ -589,6 +594,7 @@ sub update_test_bwctl_throughput {
 
     return ( -1, "Test does not exist" ) unless ( $test );
     return ( -1, "Test is not bwctl/throughput" ) unless ( $test->{type} eq "bwctl/throughput" );
+    return ( -1, "Test was added by the mesh configuration agent. It can't be updated.") if ($test->{added_by_mesh});
 
     $test->{name}                                    = $parameters->{name}                      if ( defined $parameters->{name} );
     $test->{description}                             = $parameters->{description}               if ( defined $parameters->{description} );
@@ -626,6 +632,7 @@ sub add_test_pinger {
             test_interval   => 1,
             test_offset     => 1,
             ttl             => 1,
+            added_to_mesh   => 0,
         }
     );
 
@@ -650,6 +657,7 @@ sub add_test_pinger {
         type        => "pinger",
         mesh_type   => "star",
         description => $description,
+        added_by_mesh => $parameters->{added_by_mesh},
         parameters  => {
             packet_interval => $packet_interval,
             packet_count    => $packet_count,
@@ -707,6 +715,7 @@ sub update_test_pinger {
     my $test = $self->{TESTS}->{$test_id};
 
     return ( -1, "Invalid test specified" ) unless ( $test );
+    return ( -1, "Test was added by the mesh configuration agent. It can't be updated.") if ($test->{added_by_mesh});
 
     $test->{description} = $parameters->{description} if ( defined $parameters->{description} );
 
@@ -741,6 +750,7 @@ sub add_test_traceroute {
             max_ttl       => 0,
             pause         => 0,
             protocol      => 0,
+            added_by_mesh => 0,
         }
     );
 
@@ -757,6 +767,7 @@ sub add_test_traceroute {
     $test{description} = $parameters->{description};
     $test{type}        = "traceroute";
     $test{mesh_type}   = $parameters->{mesh_type};
+    $test{added_by_mesh} = $parameters->{added_by_mesh};
 
     my %test_parameters = ();
     $test_parameters{test_interval}             = $parameters->{test_interval}             if ( defined $parameters->{test_interval} );
@@ -810,6 +821,7 @@ sub update_test_traceroute {
 
     return ( -1, "Test does not exist" ) unless ( $test );
     return ( -1, "Test is not traceroute" ) unless ( $test->{type} eq "traceroute" );
+    return ( -1, "Test was added by the mesh configuration agent. It can't be updated.") if ($test->{added_by_mesh});
 
     $test->{name}                                    = $parameters->{name}                      if ( defined $parameters->{name} );
     $test->{description}                             = $parameters->{description}               if ( defined $parameters->{description} );
@@ -833,6 +845,10 @@ sub update_test_traceroute {
 sub delete_test {
     my ( $self, @params ) = @_;
     my $parameters = validate( @params, { test_id => 1, } );
+
+    my $test = $self->{TESTS}->{ $parameters->{test_id} };
+
+    return ( -1, "Test was added by the mesh configuration agent. It can't be deleted") if ($test->{added_by_mesh});
 
     delete( $self->{TESTS}->{ $parameters->{test_id} } );
 
@@ -860,6 +876,7 @@ sub add_test_member {
             description => 0,
             sender      => 0,
             receiver    => 0,
+            added_by_mesh => 0,
         }
     );
 
@@ -868,6 +885,8 @@ sub add_test_member {
     my $test = $self->{TESTS}->{ $parameters->{test_id} };
 
     return ( -1, "Test does not exist" ) unless ( $test );
+
+    return ( -1, "Test was added by the mesh configuration agent. It can't be updated.") if ($test->{added_by_mesh} and not $parameters->{added_by_mesh});
 
     my $name    = $parameters->{name};
     my $address = $parameters->{address};
@@ -966,6 +985,8 @@ sub update_test_member {
 
     return ( -1, "Test member does not exist" ) unless ( $member );
 
+    return ( -1, "Test was added by the mesh configuration agent. It can't be updated.") if ($test->{added_by_mesh});
+
     $member->{port}        = $parameters->{port}        if ( defined $parameters->{port} );
     $member->{description} = $parameters->{description} if ( defined $parameters->{description} );
     $member->{sender}      = $parameters->{sender}      if ( defined $parameters->{sender} );
@@ -996,6 +1017,8 @@ sub remove_test_member {
 
     return ( -1, "Test does not exist" ) unless ( $test );
 
+    return ( -1, "Test was added by the mesh configuration agent. It can't be updated.") if ($test->{added_by_mesh});
+
     delete( $test->{members}->{ $parameters->{member_id} } );
 
     return ( 0, "" );
@@ -1021,6 +1044,8 @@ sub set_test_center {
     my $test = $self->{TESTS}->{ $parameters->{test_id} };
 
     return ( -1, "Test does not exist" ) unless ( $test );
+
+    return ( -1, "Test was added by the mesh configuration agent. It can't be updated.") if ($test->{added_by_mesh});
 
     $test->{center}->{ipv4_address} = $parameters->{ipv4_address} if ( exists $parameters->{ipv4_address} );
     $test->{center}->{ipv6_address} = $parameters->{ipv6_address} if ( exists $parameters->{ipv6_address} );
