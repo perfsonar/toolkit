@@ -26,7 +26,7 @@ center is always the local host.
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'LOCAL_ADDRS', 'LOCAL_PORT_RANGES', 'TESTS', 'PERFSONARBUOY_CONF_TEMPLATE', 'PERFSONARBUOY_CONF_FILE', 'PINGER_LANDMARKS_CONF_FILE', 'OWMESH_PARAMETERS';
+use fields 'LOCAL_ADDRS', 'LOCAL_PORT_RANGES', 'TESTS', 'PERFSONARBUOY_CONF_TEMPLATE', 'PERFSONARBUOY_CONF_FILE', 'PINGER_LANDMARKS_CONF_FILE', 'OWMESH_PARAMETERS', 'OPAQUE_PINGER_DOMAINS';
 
 use POSIX;
 use File::Basename qw(dirname basename);
@@ -632,7 +632,7 @@ sub add_test_pinger {
             test_interval   => 1,
             test_offset     => 1,
             ttl             => 1,
-            added_to_mesh   => 0,
+            added_by_mesh   => 0,
         }
     );
 
@@ -1135,6 +1135,7 @@ sub parse_pinger_landmarks_file {
         close FH;
 
         my %new_domains = ();
+        my %opaque_domains = ();
 
         if ( $topology->get_domain ) {
             # Handle the backward compatibility case where someone has simply
@@ -1145,6 +1146,7 @@ sub parse_pinger_landmarks_file {
 
                 # Skip if it's one of ours
                 next if ( $domain->get_id =~ /domain=(group.)?test.[0-9]+$/ );
+                next if ( $domain->get_id =~ /domain=mesh_agent_/ );
 
                 $self->{LOGGER}->debug( "Handling domain: " . $domain->get_id );
 
@@ -1261,12 +1263,10 @@ sub parse_pinger_landmarks_file {
                 my @members = ();
 
                 if ( $domain->get_node ) {
-                    my $test_description;
+                    my $is_mesh_added;
+                    $is_mesh_added = 1 if ($domain->get_id =~ /domain=mesh_agent_/);
 
-                    # maxim forced me to write an address, so now we have two
-                    # separate ways that the test parameters might be defined.
-                    # If there is no profile node, then the comments in the
-                    # Domain field have the description. So search for both.
+                    my $test_description;
 
                     my $profile_node = $domain->getNodeById( $domain->get_id . ":node=profile_node" );
                     if ($profile_node) {
@@ -1324,6 +1324,7 @@ sub parse_pinger_landmarks_file {
                                     test_interval   => $test_interval,
                                     test_offset     => $test_offset,
                                     ttl             => $ttl,
+                                    added_by_mesh   => $is_mesh_added,
                                 }
                             );
 
@@ -1355,7 +1356,7 @@ sub parse_pinger_landmarks_file {
                         $self->{LOGGER}->debug( "Member: " . $node->asString );
                         $self->{LOGGER}->debug( "Parsed: $description/$name" );
 
-                        my ( $status, $res ) = $self->add_test_member( { test_id => $test_id, name => $name, description => $description, address => $node->get_port->get_ipAddress->get_text, receiver => 1, sender => 1 } );
+                        my ( $status, $res ) = $self->add_test_member( { test_id => $test_id, name => $name, description => $description, address => $node->get_port->get_ipAddress->get_text, receiver => 1, sender => 1, added_by_mesh => $is_mesh_added } );
 
                         die( "Couldn't add host to PingER test: $res" ) unless ( $status == 0 );
                     }
