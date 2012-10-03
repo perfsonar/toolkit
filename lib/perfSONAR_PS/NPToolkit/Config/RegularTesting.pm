@@ -1062,6 +1062,12 @@ sub save_state {
     my ( $self, @params ) = @_;
     my $parameters = validate( @params, {} );
 
+    my @opaque_domains = ();
+    foreach my $domain (@{ $self->{OPAQUE_PINGER_DOMAINS} }) {
+        $self->{LOGGER}->debug("Saving domain: ".$domain->asString);
+        push @opaque_domains, $domain->asString;
+    }
+
     my %state = (
         tests                       => $self->{TESTS},
         local_addrs                 => $self->{LOCAL_ADDRS},
@@ -1070,6 +1076,7 @@ sub save_state {
         perfsonarbuoy_conf_file     => $self->{PERFSONARBUOY_CONF_FILE},
         pinger_landmarks_file       => $self->{PINGER_LANDMARKS_CONF_FILE},
         owmesh_parameters           => $self->{OWMESH_PARAMETERS},
+        opaque_pinger_domains       => \@opaque_domains,
     );
 
     my $str = freeze( \%state );
@@ -1095,6 +1102,14 @@ sub restore_state {
     $self->{PERFSONARBUOY_CONF_FILE}     = $state->{perfsonarbuoy_conf_file};
     $self->{PINGER_LANDMARKS_CONF_FILE}  = $state->{pinger_landmarks_file};
     $self->{OWMESH_PARAMETERS}           = $state->{owmesh_parameters};
+
+    my @opaque_domains = ();
+    foreach my $domain (@{ $state->{opaque_pinger_domains} }) {
+        $self->{LOGGER}->debug("Saved domain: ".$domain);
+        push @opaque_domains, Domain->new({ xml => $domain });
+    }
+
+    $self->{OPAQUE_PINGER_DOMAINS} = \@opaque_domains;
 
     return;
 }
@@ -1264,14 +1279,17 @@ sub parse_pinger_landmarks_file {
 
                 my @members = ();
 
+                my $is_mesh_added;
+                $is_mesh_added = 1 if ($domain->get_id =~ /domain=mesh_agent_/);
+
+                $self->{LOGGER}->debug("Domain id: ".$domain->get_id);
+
+                if ($is_mesh_added) {
+                    $self->{LOGGER}->debug("Adding domain: ".$domain->get_id." to opaque list");
+                    push @mesh_added_domains, $domain;
+                }
+
                 if ( $domain->get_node ) {
-                    my $is_mesh_added;
-                    $is_mesh_added = 1 if ($domain->get_id =~ /domain=mesh_agent_/);
-
-                    if ($is_mesh_added) {
-                        push @mesh_added_domains, $domain;
-                    }
-
                     my $test_description;
 
                     my $profile_node = $domain->getNodeById( $domain->get_id . ":node=profile_node" );
@@ -1400,6 +1418,8 @@ sub generate_pinger_landmarks_file {
         }
 
         foreach my $test ( @{ $parameters->{tests} } ) {
+            next if ($test->{added_by_mesh});
+
             $self->{LOGGER}->debug( "Handling: " . $test->{id} );
             my $domain_urn = "urn:ogf:network:domain=" . $test->{id};
 
@@ -1503,7 +1523,9 @@ sub generate_pinger_landmarks_file {
         $content = $topology->asString;
     };
     if ( $@ ) {
-        return ( -1, "Failed to create landmarks file: $@" );
+        my $msg = "Failed to create landmarks file: $@";
+        $self->{LOGGER}->error($msg);
+        return ( -1, $msg);
     }
 
     return ( 0, $content );
