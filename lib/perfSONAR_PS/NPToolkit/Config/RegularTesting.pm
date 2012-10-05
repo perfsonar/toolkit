@@ -26,7 +26,7 @@ center is always the local host.
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'LOCAL_ADDRS', 'LOCAL_PORT_RANGES', 'TESTS', 'PERFSONARBUOY_CONF_TEMPLATE', 'PERFSONARBUOY_CONF_FILE', 'PINGER_LANDMARKS_CONF_FILE', 'OWMESH_PARAMETERS', 'OPAQUE_PINGER_DOMAINS';
+use fields 'LOCAL_ADDRS', 'LOCAL_PORT_RANGES', 'TESTS', 'PERFSONARBUOY_CONF_TEMPLATE', 'PERFSONARBUOY_CONF_FILE', 'PINGER_LANDMARKS_CONF_FILE', 'RAW_OWMESH_CONF', 'OPAQUE_PINGER_DOMAINS';
 
 use POSIX;
 use File::Basename qw(dirname basename);
@@ -151,8 +151,11 @@ sub save {
         return ( -1, "Couldn't save PingER configuration" );
     }
 
-    ($status, $res) = $self->generate_owmesh_conf( { tests => \@psb_tests, owmesh_parameters => $self->{OWMESH_PARAMETERS} } );
+    $self->{LOGGER}->debug("Generating owmesh.conf");
+
+    ($status, $res) = $self->generate_owmesh_conf( { tests => \@psb_tests, raw_owmesh_conf => $self->{RAW_OWMESH_CONF} } );
     if ( $status != 0 ) {
+        $self->{LOGGER}->debug("Couldn't save perfSONAR-BUOY configuration: ".$res);
         return ( -1, "Couldn't save perfSONAR-BUOY configuration" );
     }
     my $perfsonarbuoy_conf_output = $res;
@@ -347,6 +350,8 @@ sub get_tests {
 
     my @tests = ();
     foreach my $key ( sort keys %{ $self->{TESTS} } ) {
+        use Data::Dumper;
+        $self->{LOGGER}->debug("lookup up test: ".$key.": ".Dumper($self->{TESTS}));
         my ( $status, $res ) = $self->lookup_test( { test_id => $key } );
 
         push @tests, $res;
@@ -981,7 +986,7 @@ sub update_test_member {
 
     return ( -1, "Test does not exist" ) unless ( $test );
 
-    my $member = $self->{TESTS}->{members}->{ $parameters->{member_id} };
+    my $member = $test->{members}->{ $parameters->{member_id} };
 
     return ( -1, "Test member does not exist" ) unless ( $member );
 
@@ -1075,7 +1080,7 @@ sub save_state {
         perfsonarbuoy_conf_template => $self->{PERFSONARBUOY_CONF_TEMPLATE},
         perfsonarbuoy_conf_file     => $self->{PERFSONARBUOY_CONF_FILE},
         pinger_landmarks_file       => $self->{PINGER_LANDMARKS_CONF_FILE},
-        owmesh_parameters           => $self->{OWMESH_PARAMETERS},
+        raw_owmesh_conf           => $self->{RAW_OWMESH_CONF},
         opaque_pinger_domains       => \@opaque_domains,
     );
 
@@ -1101,7 +1106,7 @@ sub restore_state {
     $self->{PERFSONARBUOY_CONF_TEMPLATE} = $state->{perfsonarbuoy_conf_template};
     $self->{PERFSONARBUOY_CONF_FILE}     = $state->{perfsonarbuoy_conf_file};
     $self->{PINGER_LANDMARKS_CONF_FILE}  = $state->{pinger_landmarks_file};
-    $self->{OWMESH_PARAMETERS}           = $state->{owmesh_parameters};
+    $self->{RAW_OWMESH_CONF}           = $state->{raw_owmesh_conf};
 
     my @opaque_domains = ();
     foreach my $domain (@{ $state->{opaque_pinger_domains} }) {
@@ -1553,40 +1558,6 @@ sub parse_owmesh_conf {
 
     return ( 0, "" ) unless ( -e $parameters->{file} );
 
-    my @known_prefixes = ( "OWP", "BW", "TRACE" );
-
-    my @known_parameters = (
-                        "SessionSuffix",
-                        "SummarySuffix",
-                        "Cmd",
-                        "SessionSumCmd",
-                        "DevNull",
-                        "ConfigVersion",
-                        "SecretNames",   # XXX Special case...
-                        "SecretName",
-                        "Debug",
-                        "Verbose",
-                        "SyslogFacility",
-                        "BinDir",
-                        "DataDir",
-                        "OwampdVarDir",
-                        "UserName",
-                        "GroupName",
-                        "VerifyPeerAddr",
-                        "CentralHost",
-                        "CentralHostTimeout",
-                        "CentralDataDir",
-                        "CentralArchDir",
-                        "CentralDBHost",
-                        "CentralDBType",
-                        "CentralDBUser",
-                        "CentralDBPass",
-                        "CentralDBName",
-                        "CGIDBUser",
-                        "CGIDBPass",
-                        "SendTimeout",
-                );
-
     eval {
         $self->{LOGGER}->debug( "Parsing: " . $parameters->{file} );
 
@@ -1595,74 +1566,13 @@ sub parse_owmesh_conf {
 
         my $conf = OWP::Conf->new( CONFDIR => $confdir );
 
-        my %owmesh_config_opts = ();
+        my $owmesh_conf = $self->__parse_owmesh_conf({ existing_configuration => $conf });
 
-        foreach my $parameter (@known_parameters) {
-            my $value;
-            eval {
-                 # use must_get_val so we get whether or not they've been set. If not, it will 'die'.
-                 $value = $conf->must_get_val( ATTR => $parameter );
-            };
+        my %localnodes = map { $_ => 1 } @{ $owmesh_conf->{LOCALNODES} };
 
-            next if ($@);
+        use Data::Dumper;
 
-            # Things like !Debug default to undefined so we can just leave them
-            # out.
-            $owmesh_config_opts{$parameter} = $value if (defined $value);
-
-            # The SecretName parameters are special because they tell us other
-            # parameters that might exist.
-            if ($parameter eq "SecretName") {
-                push @known_parameters, $value if ($value);
-            }
-            elsif ($parameter eq "SecretNames") {
-                if ($value) {
-                     my @names = split(" ", $value);
-                     push @known_parameters, @names;
-                }
-            }
-        }
-
-        foreach my $prefix (@known_prefixes) {
-            foreach my $parameter (@known_parameters) {
-                my $value;
-                eval {
-                     # use must_get_val so we get whether or not they've been set. If not, it will 'die'.
-                     $value = $conf->must_get_val( ATTR => $parameter, TYPE => $prefix );
-                };
-
-                next if ($@);
-
-                next unless (defined $value);
-
-                
-
-                next if (defined $owmesh_config_opts{$parameter} and $owmesh_config_opts{$parameter} eq $value);
-
-                $owmesh_config_opts{$prefix.$parameter} = $value;
-            }
-        }
-
-        $self->{OWMESH_PARAMETERS} = \%owmesh_config_opts;
-
-        my @measurement_sets = $conf->get_sublist( LIST => 'MEASUREMENTSET' );
-
-        my @localnodes = $conf->get_val( ATTR => 'LOCALNODES' );
-
-        unless ( scalar( @localnodes ) > 0 ) {
-            my $me = $conf->get_val( ATTR => 'NODE' );
-            @localnodes = ( $me ) if ($me);
-        }
-
-        # nothing local...
-        unless ( scalar( @localnodes ) > 0 ) {
-            @localnodes = ();
-        }
-
-        my %localnodes = ();
-        foreach my $node ( @localnodes ) {
-            $localnodes{$node} = 1;
-        }
+        $self->{LOGGER}->debug("owmesh.conf before removing all the GUI measurement sets: ".Dumper($owmesh_conf));
 
         # For star configurations, we allow ipv4 and ipv6 sites to co-exist in
         # a single schedule-able test. Since that doesn't work with the owmesh
@@ -1671,15 +1581,17 @@ sub parse_owmesh_conf {
         # test mapping so that we don't add multiple tests for that case.
         my %test_mapping = ();
 
-        foreach my $measurement_set ( @measurement_sets ) {
-            my $group_name = $conf->must_get_val( MEASUREMENTSET => $measurement_set, ATTR => 'GROUP' );
-            my $test       = $conf->must_get_val( MEASUREMENTSET => $measurement_set, ATTR => 'TESTSPEC' );
-            my $addr_type  = $conf->must_get_val( MEASUREMENTSET => $measurement_set, ATTR => 'ADDRTYPE' );
+        foreach my $measurement_set (keys %{ $owmesh_conf->{MEASUREMENTSET} }) {
+            my $measurement_set_desc = $owmesh_conf->{MEASUREMENTSET}->{$measurement_set};
+
+            my $group_name = $measurement_set_desc->{GROUP};
+            my $test       = $measurement_set_desc->{TESTSPEC};
+            my $addr_type  = $measurement_set_desc->{ADDRTYPE};
 
             my $test_id;
             my $test_name;
 
-            $self->{LOGGER}->debug( "Measuremnet Set Name: $measurement_set" );
+            $self->{LOGGER}->debug( "Measurement Set Name: $measurement_set" );
 
             # Handle the test
             if ( $measurement_set =~ /(.*).IPV[46]/ ) {
@@ -1694,16 +1606,16 @@ sub parse_owmesh_conf {
             $self->{LOGGER}->debug("Read in tests name: ".$test_name);
 
             unless ( $test_id ) {
-                my $tool = $conf->must_get_val( TESTSPEC => $test, ATTR => 'TOOL' );
+                my $tool = $owmesh_conf->{TESTSPEC}->{$test}->{'TOOL' };
                 if ( $tool eq "powstream" ) {
-                    my $packet_interval           = $conf->must_get_val( TESTSPEC => $test, ATTR => 'OWPINTERVAL' );
-                    my $loss_threshold            = $conf->must_get_val( TESTSPEC => $test, ATTR => 'OWPLOSSTHRESH' );
-                    my $session_count             = $conf->must_get_val( TESTSPEC => $test, ATTR => 'OWPSESSIONCOUNT' );
-                    my $sample_count              = $conf->must_get_val( TESTSPEC => $test, ATTR => 'OWPSAMPLECOUNT' );
-                    my $packet_padding            = $conf->get_val( TESTSPEC => $test, ATTR => 'OWPPACKETPADDING' );
-                    my $bucket_width              = $conf->must_get_val( TESTSPEC => $test, ATTR => 'OWPBUCKETWIDTH' );
+                    my $packet_interval           = $owmesh_conf->{TESTSPEC}->{$test}->{'OWPINTERVAL' };
+                    my $loss_threshold            = $owmesh_conf->{TESTSPEC}->{$test}->{'OWPLOSSTHRESH' };
+                    my $session_count             = $owmesh_conf->{TESTSPEC}->{$test}->{'OWPSESSIONCOUNT' };
+                    my $sample_count              = $owmesh_conf->{TESTSPEC}->{$test}->{'OWPSAMPLECOUNT' };
+                    my $packet_padding            = $owmesh_conf->{TESTSPEC}->{$test}->{'OWPPACKETPADDING' };
+                    my $bucket_width              = $owmesh_conf->{TESTSPEC}->{$test}->{'OWPBUCKETWIDTH' };
 
-                    my $description = $conf->get_val( TESTSPEC => $test, ATTR => 'DESCRIPTION' );
+                    my $description = $owmesh_conf->{TESTSPEC}->{$test}->{'DESCRIPTION' };
                     $description = $group_name unless ( $description );
 
                     my ( $status, $res ) = $self->add_test_owamp(
@@ -1717,6 +1629,7 @@ sub parse_owmesh_conf {
                             sample_count              => $sample_count,
                             packet_padding            => $packet_padding,
                             bucket_width              => $bucket_width,
+                            added_by_mesh             => $measurement_set_desc->{ADDED_BY_MESH},
                         }
                     );
 
@@ -1724,15 +1637,15 @@ sub parse_owmesh_conf {
 
                     $test_id = $res;
                 }elsif ( $tool eq "traceroute" ) {
-                    my $test_interval = $conf->must_get_val( TESTSPEC => $test, ATTR => 'TRACETESTINTERVAL' );
-                    my $packet_size = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEPACKETSIZE' );
-                    my $timeout     = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACETIMEOUT' );
-                    my $waittime    = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEWAITTIME' );
-                    my $first_ttl   = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEFIRSTTTL' );
-                    my $max_ttl     = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEMAXTTL' );
-                    my $pause       = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEPAUSE' );
-                    my $icmp        = $conf->get_val( TESTSPEC => $test, ATTR => 'TRACEICMP' );
-                    my $description = $conf->get_val( TESTSPEC => $test, ATTR => 'DESCRIPTION' );
+                    my $test_interval = $owmesh_conf->{TESTSPEC}->{$test}->{'TRACETESTINTERVAL' };
+                    my $packet_size = $owmesh_conf->{TESTSPEC}->{$test}->{'TRACEPACKETSIZE' };
+                    my $timeout     = $owmesh_conf->{TESTSPEC}->{$test}->{'TRACETIMEOUT' };
+                    my $waittime    = $owmesh_conf->{TESTSPEC}->{$test}->{'TRACEWAITTIME' };
+                    my $first_ttl   = $owmesh_conf->{TESTSPEC}->{$test}->{'TRACEFIRSTTTL' };
+                    my $max_ttl     = $owmesh_conf->{TESTSPEC}->{$test}->{'TRACEMAXTTL' };
+                    my $pause       = $owmesh_conf->{TESTSPEC}->{$test}->{'TRACEPAUSE' };
+                    my $icmp        = $owmesh_conf->{TESTSPEC}->{$test}->{'TRACEICMP' };
+                    my $description = $owmesh_conf->{TESTSPEC}->{$test}->{'DESCRIPTION' };
                     $description = $group_name unless ( $description );
 
                     my ( $status, $res ) = $self->add_test_traceroute(
@@ -1747,7 +1660,8 @@ sub parse_owmesh_conf {
                             first_ttl     => $first_ttl,
                             max_ttl       => $max_ttl,
                             pause         => $pause,
-                            protocol      => ($icmp ? 'icmp' : 'udp')
+                            protocol      => ($icmp ? 'icmp' : 'udp'),
+                            added_by_mesh => $measurement_set_desc->{ADDED_BY_MESH},
                         }
                     );
 
@@ -1767,15 +1681,15 @@ sub parse_owmesh_conf {
                         die( "No protocol specified" );
                     }
 
-                    my $test_interval             = $conf->must_get_val( TESTSPEC => $test, ATTR => 'BWTestInterval' );
-                    my $duration                  = $conf->must_get_val( TESTSPEC => $test, ATTR => 'BWTestDuration' );
-                    my $window_size               = $conf->get_val( TESTSPEC      => $test, ATTR => 'BWWindowSize' );
-                    my $report_interval           = $conf->get_val( TESTSPEC      => $test, ATTR => 'BWReportInterval' );
-                    my $udp_bandwidth             = $conf->get_val( TESTSPEC      => $test, ATTR => 'BWUDPBandwidthLimit' );
-                    my $buffer_length             = $conf->get_val( TESTSPEC      => $test, ATTR => 'BWBufferLen' );
-                    my $test_interval_start_alpha = $conf->get_val( TESTSPEC      => $test, ATTR => 'BWTestIntervalStartAlpha' );
+                    my $test_interval             = $owmesh_conf->{TESTSPEC}->{$test}->{'BWTestInterval' };
+                    my $duration                  = $owmesh_conf->{TESTSPEC}->{$test}->{'BWTestDuration' };
+                    my $window_size               = $owmesh_conf->{TESTSPEC}->{$test}->{'BWWindowSize' };
+                    my $report_interval           = $owmesh_conf->{TESTSPEC}->{$test}->{'BWReportInterval' };
+                    my $udp_bandwidth             = $owmesh_conf->{TESTSPEC}->{$test}->{'BWUDPBandwidthLimit' };
+                    my $buffer_length             = $owmesh_conf->{TESTSPEC}->{$test}->{'BWBufferLen' };
+                    my $test_interval_start_alpha = $owmesh_conf->{TESTSPEC}->{$test}->{'BWTestIntervalStartAlpha' };
 
-                    my $description = $conf->get_val( TESTSPEC => $test, ATTR => 'DESCRIPTION' );
+                    my $description = $owmesh_conf->{TESTSPEC}->{$test}->{DESCRIPTION};
                     $description = $group_name unless ( $description );
 
                     # Convert window size to megabytes and UDP bandwidth to Mbps
@@ -1823,6 +1737,7 @@ sub parse_owmesh_conf {
                             udp_bandwidth             => $udp_bandwidth,
                             buffer_length             => $buffer_length,
                             test_interval_start_alpha => $test_interval_start_alpha,
+                            added_by_mesh             => $measurement_set_desc->{ADDED_BY_MESH},
                         }
                     );
 
@@ -1841,8 +1756,10 @@ sub parse_owmesh_conf {
                 }
             }
 
+            my $group_desc = $owmesh_conf->{GROUP}->{$group_name};
+
             # Handle the group
-            my $group_type = $conf->must_get_val( GROUP => $group_name, ATTR => 'GROUPTYPE' );
+            my $group_type = $group_desc->{GROUPTYPE};
 
             if ( $group_type ne "STAR" ) {
                 die( "Can only handle 'star' groups currently" );
@@ -1850,16 +1767,11 @@ sub parse_owmesh_conf {
 
             my @node_sets = ();
 
-            my @nodes = $conf->get_val( GROUP => $group_name, ATTR => 'NODES' );
-            push @node_sets, { type => "include", nodes => \@nodes, sender => 1, receiver => 1 };
-            my @include_receivers = $conf->get_val( GROUP => $group_name, ATTR => 'INCLUDE_RECEIVERS' );
-            push @node_sets, { type => "include", nodes => \@include_receivers, sender => 0, receiver => 1 };
-            my @exclude_receivers = $conf->get_val( GROUP => $group_name, ATTR => 'EXCLUDE_RECEIVERS' );
-            push @node_sets, { type => "exclude", nodes => \@exclude_receivers, receiver => 0 };
-            my @include_senders = $conf->get_val( GROUP => $group_name, ATTR => 'INCLUDE_SENDERS' );
-            push @node_sets, { type => "include", nodes => \@include_senders, sender => 1, receiver => 0 };
-            my @exclude_senders = $conf->get_val( GROUP => $group_name, ATTR => 'EXCLUDE_SENDERS' );
-            push @node_sets, { type => "exclude", nodes => \@exclude_senders, sender => 0 };
+            push @node_sets, { type => "include", nodes => $group_desc->{NODES}, sender => 1, receiver => 1 };
+            push @node_sets, { type => "include", nodes => $group_desc->{INCLUDE_RECEIVERS}, sender => 0, receiver => 1 };
+            push @node_sets, { type => "exclude", nodes => $group_desc->{EXCLUDE_RECEIVERS}, receiver => 0 };
+            push @node_sets, { type => "include", nodes => $group_desc->{INCLUDE_SENDERS}, sender => 1, receiver => 0 };
+            push @node_sets, { type => "exclude", nodes => $group_desc->{EXCLUDE_SENDERS}, sender => 0 };
 
             my %senders   = ();
             my %receivers = ();
@@ -1868,13 +1780,15 @@ sub parse_owmesh_conf {
 
             foreach my $node_set ( @node_sets ) {
                 foreach my $node ( @{ $node_set->{nodes} } ) {
-                    my $node_addr = $conf->get_val( NODE => $node, TYPE => $addr_type, ATTR => 'ADDR' );
+                    my $node_desc = $owmesh_conf->{NODE}->{$node};
+                    my $node_addr = $node_desc->{$addr_type.'ADDR'};
+
                     next unless ( $node_addr );
 
-                    my $node_desc = $conf->get_val( NODE => $node, TYPE => $addr_type, ATTR => 'LONGNAME' );
-                    $node_desc = $node unless ( $node_desc );
+                    my $node_description = $node_desc->{LONGNAME};
+                    $node_description = $node unless ( $node_description );
 
-                    my $node_owp_test_ports = $conf->get_val( NODE => $node, ATTR => "OWPTESTPORTS" );
+                    my $node_owp_test_ports = $node_desc->{OWPTESTPORTS};
 
                     $self->{LOGGER}->debug( "Parsing: $node -> $node_addr" );
                     my ( $addr, $port );
@@ -1905,7 +1819,7 @@ sub parse_owmesh_conf {
                     }
 
                     if ( $node_set->{type} eq "include" ) {
-                        my ($status, $res) = $self->add_test_member( { test_id => $test_id, name => $node, description => $node_desc, address => $addr, port => $port, receiver => $node_set->{receiver}, sender => $node_set->{sender} } );
+                        my ($status, $res) = $self->add_test_member( { test_id => $test_id, name => $node, description => $node_description, address => $addr, port => $port, receiver => $node_set->{receiver}, sender => $node_set->{sender}, added_by_mesh => $measurement_set_desc->{ADDED_BY_MESH} } );
                         if ($status == 0) {
                             $member_ids{$addr} = $res;
                         }
@@ -1925,8 +1839,8 @@ sub parse_owmesh_conf {
             }
 
             if ( $group_type eq "STAR" ) {
-                my $center = $conf->must_get_val( GROUP => $group_name, ATTR => 'HAUPTNODE' );
-                my $node_addr = $conf->get_val( NODE => $center, TYPE => $addr_type, ATTR => 'ADDR' );
+                my $center = $owmesh_conf->{GROUP}->{$group_name}->{HAUPTNODE};
+                my $node_addr = $owmesh_conf->{NODE}->{$center}->{$addr_type.'ADDR'};
 
                 die( "Couldn't find address for center node" ) unless ( $node_addr );
 
@@ -1943,7 +1857,15 @@ sub parse_owmesh_conf {
             }
 
             $self->{LOGGER}->debug( "Test id: " . $test_id );
+
+            unless ($measurement_set_desc->{ADDED_BY_MESH}) {
+                $self->__owmesh_conf_delete_measurement_set({ measurement_set => $measurement_set, owmesh_conf => $owmesh_conf });
+            }
         }
+
+        $self->{LOGGER}->debug("owmesh.conf after removing all the GUI measurement sets: ".Dumper($owmesh_conf));
+
+        $self->{RAW_OWMESH_CONF} = $owmesh_conf;
     };
     if ( $@ ) {
         return ( -1, $@ );
@@ -1959,28 +1881,44 @@ sub parse_owmesh_conf {
     representations into the representation expected by the template, and
     passes it to Template Toolkit to render.
 =cut
-
 sub generate_owmesh_conf {
     my ( $self, @params ) = @_;
-    my $parameters = validate( @params, { tests => 1, owmesh_parameters => 1 } );
+    my $parameters = validate( @params, { tests => 1, raw_owmesh_conf => 1 } );
+    my $tests       = $parameters->{tests};
+    my $raw_owmesh_conf = $parameters->{raw_owmesh_conf};
 
-    my $tests             = $parameters->{tests};
-    my $owmesh_parameters = $parameters->{owmesh_parameters};
+    $self->{LOGGER}->debug("Generating owmesh.conf");
+    my ($status, $res) = $self->__add_tests_to_owmesh_conf({ tests => $tests, owmesh_conf => $raw_owmesh_conf });
+
+    unless ($status == 0) {
+        my $msg = "Couldn't add tests to owmesh.conf: ".$res;
+        $self->{LOGGER}->error($msg);
+        return $res;
+    }
+
+    $self->{LOGGER}->debug("Added tests to owmesh.conf: ".Dumper($raw_owmesh_conf));
+
+    my $content = $self->__build_owmesh_conf($raw_owmesh_conf);
+
+    $self->{LOGGER}->debug("Built new owmesh.conf: $content");
+
+    return (0, $content);
+}
+
+sub __add_tests_to_owmesh_conf {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { tests => 1, owmesh_conf => 1 } );
+    my $tests           = $parameters->{tests};
+    my $owmesh_conf = $parameters->{owmesh_conf};
 
     # Convert the internal representation into owmesh concepts.
-
-    my @measurement_sets = ();
-    my @groups           = ();
-    my @test_specs       = ();
-    my @addr_types       = ( "BW4", "BW6", "LAT4", "LAT6", "TRACE4", "TRACE6");
-    my %nodes            = ();
-    my @localnodes       = ();
-    my %local_node       = ();
 
     my %used_nodenames = ();
     my %node_names_by_addrdesc = ();
 
     foreach my $test ( @{$tests} ) {
+        next if ($test->{added_by_mesh});
+
         foreach my $member_id ( keys %{ $test->{members} } ) {
             my $member = $test->{members}->{$member_id};
 
@@ -1994,21 +1932,18 @@ sub generate_owmesh_conf {
         }
     }
 
-    $local_node{id}          = "KNOPPIX";      # Backward compatibility....
-    $local_node{description} = "local host";
-    $local_node{addresses}   = ();
-
-    use Data::Dumper;
-
-    $self->{LOGGER}->info("Port ranges: ".Dumper($self->{LOCAL_PORT_RANGES}));
+    my $local_node = $self->__owmesh_conf_get_node({ owmesh_conf => $owmesh_conf, id => "KNOPPIX" });
+    unless ($local_node) {
+        $local_node = $self->__owmesh_conf_add_node({ owmesh_conf => $owmesh_conf, id => "KNOPPIX" });
+    }
+    $local_node->{description} = "local host";
 
     if ($self->{LOCAL_PORT_RANGES}->{owamp}) {
         $self->{LOGGER}->info("Saving owamp port range");
-        $local_node{owamp_port_range} = $self->{LOCAL_PORT_RANGES}->{owamp}->{min_port}."-".$self->{LOCAL_PORT_RANGES}->{owamp}->{max_port}
+        $local_node->{owamp_port_range} = $self->{LOCAL_PORT_RANGES}->{owamp}->{min_port}."-".$self->{LOCAL_PORT_RANGES}->{owamp}->{max_port}
     }
 
-    $nodes{$local_node{id}} = \%local_node;
-    push @localnodes, $local_node{id};
+    $self->__owmesh_conf_add_localnode({ owmesh_conf => $owmesh_conf, node => "KNOPPIX" });
 
     foreach my $test ( @{$tests} ) {
         my $test_name;
@@ -2044,48 +1979,50 @@ sub generate_owmesh_conf {
             next if ( $ip_type eq "IPV6" and not $test->{center}->{ipv6_address} );
 
             # At minimum, test_spec has to be upper-case
-            $group{id}              = $test_name . "." . $ip_type;
-            $measurement_set{id}    = $test_name . "." . $ip_type;
-            $test_spec{id}          = $test_name . "." . $ip_type;
-            $test_spec{description} = $test->{description};
+            my $group           = $self->__owmesh_conf_add_group({ owmesh_conf => $owmesh_conf, id => $test_name . "." . $ip_type });
+            my $measurement_set = $self->__owmesh_conf_add_measurement_set({ owmesh_conf => $owmesh_conf, id => $test_name . "." . $ip_type });
+            my $test_spec       = $self->__owmesh_conf_add_testspec({ owmesh_conf => $owmesh_conf, id => $test_name . "." . $ip_type });
+
+            $test_spec->{DESCRIPTION} = $test->{description};
 
             $self->{LOGGER}->debug( "Doing " . Dumper( $test ) );
 
             if ( $test->{type} eq "bwctl/throughput" ) {
-                $test_spec{type}                      = "bwctl/throughput";
-                $test_spec{tool}                      = "bwctl/".$test->{parameters}->{tool};
-                $test_spec{protocol}                  = $test->{parameters}->{protocol};
-                $test_spec{test_interval}             = $test->{parameters}->{test_interval};
-                $test_spec{test_duration}             = $test->{parameters}->{duration};
-                $test_spec{window_size}               = $test->{parameters}->{window_size} . "m" if ( $test->{parameters}->{window_size} );                    # Add the 'm' on since it's in Megabytes
-                $test_spec{report_interval}           = $test->{parameters}->{report_interval};
-                $test_spec{udp_bandwidth}             = $test->{parameters}->{udp_bandwidth} . "m" if ( $test->{parameters}->{udp_bandwidth} );    # Add the 'm' on since it's in Mbps
-                $test_spec{buffer_len}                = $test->{parameters}->{buffer_length};
-                $test_spec{test_interval_start_alpha} = $test->{parameters}->{test_interval_start_alpha};
-                $measurement_set{exclude_self} = 1;
+                $test_spec{TYPE}                      = "bwctl/throughput";
+                $test_spec{TOOL}                      = "bwctl/".$test->{parameters}->{tool};
+                $test_spec{BWUDP}                     = 1 if $test->{parameters}->{protocol} eq "udp";
+                $test_spec{BWTCP}                     = 1 if $test->{parameters}->{protocol} eq "tcp";
+                $test_spec{BWTestInterval}            = $test->{parameters}->{test_interval};
+                $test_spec{BWTestDuration}            = $test->{parameters}->{duration};
+                $test_spec{BWWindowSize}              = $test->{parameters}->{window_size} . "m" if ( $test->{parameters}->{window_size} );                    # Add the 'm' on since it's in Megabytes
+                $test_spec{BWReportInterval}          = $test->{parameters}->{report_interval};
+                $test_spec{BWUDPBandwidthLimit}       = $test->{parameters}->{udp_bandwidth} . "m" if ( $test->{parameters}->{udp_bandwidth} );    # Add the 'm' on since it's in Mbps
+                $test_spec{BWBufferLen}               = $test->{parameters}->{buffer_length};
+                $test_spec{BWTestIntervalStartAlpha}  = $test->{parameters}->{test_interval_start_alpha};
+                $measurement_set{EXCLUDE_SELF} = 1;
             } elsif ($test->{type} eq "owamp") {
-                $test_spec{type}                      = "owamp";
-                $test_spec{tool}                      = "powstream";
-                $test_spec{packet_interval}  = $test->{parameters}->{packet_interval}  if ( defined $test->{parameters}->{packet_interval} );
-                $test_spec{loss_threshold}   = $test->{parameters}->{loss_threshold}   if ( defined $test->{parameters}->{loss_threshold} );
-                $test_spec{session_count}    = $test->{parameters}->{session_count}    if ( defined $test->{parameters}->{session_count} );
-                $test_spec{sample_count}     = $test->{parameters}->{sample_count}     if ( defined $test->{parameters}->{sample_count} );
-                $test_spec{packet_padding}   = $test->{parameters}->{packet_padding}   if ( defined $test->{parameters}->{packet_padding} );
-                $test_spec{bucket_width}     = $test->{parameters}->{bucket_width}     if ( defined $test->{parameters}->{bucket_width} );
-                $measurement_set{exclude_self} = 0;
+                $test_spec{TYPE}                      = "owamp";
+                $test_spec{TOOL}                      = "powstream";
+                $test_spec{OWPINTERVAL}      = $test->{parameters}->{packet_interval}  if ( defined $test->{parameters}->{packet_interval} );
+                $test_spec{OWPLOSSTHRESH}    = $test->{parameters}->{loss_threshold}   if ( defined $test->{parameters}->{loss_threshold} );
+                $test_spec{OWPSESSIONCOUNT}  = $test->{parameters}->{session_count}    if ( defined $test->{parameters}->{session_count} );
+                $test_spec{OWPSAMPLECOUNT}   = $test->{parameters}->{sample_count}     if ( defined $test->{parameters}->{sample_count} );
+                $test_spec{OWPPACKETPADDING} = $test->{parameters}->{packet_padding}   if ( defined $test->{parameters}->{packet_padding} );
+                $test_spec{OWPBUCKETWIDTH}   = $test->{parameters}->{bucket_width}     if ( defined $test->{parameters}->{bucket_width} );
+                $measurement_set{EXCLUDE_SELF} = 0;
             } elsif ($test->{type} eq "traceroute") {
-                $test_spec{type}                      = "traceroute";
-                $test_spec{tool}                      = "traceroute";
-                $test_spec{test_interval}             = $test->{parameters}{test_interval}             if ( defined $test->{parameters}{test_interval} );
-                $test_spec{packet_size}               = $test->{parameters}{packet_size}               if ( defined $test->{parameters}{packet_size} );
-                $test_spec{timeout}                   = $test->{parameters}{timeout}                   if ( defined $test->{parameters}{timeout} );
-                $test_spec{waittime}                  = $test->{parameters}{waittime}                  if ( defined $test->{parameters}{waittime} );
-                $test_spec{first_ttl}                 = $test->{parameters}{first_ttl}                 if ( defined $test->{parameters}{first_ttl} );
-                $test_spec{max_ttl}                   = $test->{parameters}{max_ttl}                   if ( defined $test->{parameters}{max_ttl} );
-                $test_spec{pause}                     = $test->{parameters}{pause}                     if ( defined $test->{parameters}{pause} );
-                $test_spec{protocol}                  = $test->{parameters}{protocol}                  if ( defined $test->{parameters}{protocol} );
+                $test_spec{TYPE}                      = "traceroute";
+                $test_spec{TOOL}                      = "traceroute";
+                $test_spec{TRACETESTINTERVAL}         = $test->{parameters}{test_interval}             if ( defined $test->{parameters}{test_interval} );
+                $test_spec{TRACEPACKETSIZE}           = $test->{parameters}{packet_size}               if ( defined $test->{parameters}{packet_size} );
+                $test_spec{TRACETIMEOUT}              = $test->{parameters}{timeout}                   if ( defined $test->{parameters}{timeout} );
+                $test_spec{TRACEWAITTIME}             = $test->{parameters}{waittime}                  if ( defined $test->{parameters}{waittime} );
+                $test_spec{TRACEFIRSTTTL}             = $test->{parameters}{first_ttl}                 if ( defined $test->{parameters}{first_ttl} );
+                $test_spec{TRACEMAXTTL}               = $test->{parameters}{max_ttl}                   if ( defined $test->{parameters}{max_ttl} );
+                $test_spec{TRACEPAUSE}                = $test->{parameters}{pause}                     if ( defined $test->{parameters}{pause} );
+                $test_spec{TRACEICMP}                 = 1 if ($test->{parameters}{protocol} eq "icmp");
     
-                $measurement_set{exclude_self} = 0;
+                $measurement_set{EXCLUDE_SELF} = 0;
             }
 
             my $addr_type;
@@ -2109,14 +2046,15 @@ sub generate_owmesh_conf {
                 }
             }
 
+            $self->__owmesh_conf_add_addrtype({ owmesh_conf => $owmesh_conf, addrtype => $addr_type });
 
-            $measurement_set{description}  = $test->{description};
-            $measurement_set{address_type} = $addr_type;
-            $measurement_set{group}        = $group{id};
-            $measurement_set{test_spec}    = $test_spec{id};
+            $measurement_set->{DESCRIPTION}  = $test->{description};
+            $measurement_set->{ADDRTYPE}     = $addr_type;
+            $measurement_set->{GROUP}        = $group->{ID};
+            $measurement_set->{TESTSPEC}     = $test_spec->{ID};
             
-            $group{type}        = "STAR";
-            $group{description} = $test->{group}->{description};
+            $group->{TYPE}        = "STAR";
+            $group->{DESCRIPTION} = $test->{group}->{description};
 
             $self->{LOGGER}->debug( "Outputing group: " . Dumper( $test->{group} ) );
 
@@ -2135,11 +2073,11 @@ sub generate_owmesh_conf {
                 }
                 else { # i.e. this is an IPv4 test
                     unless ( $self->determine_ipv4( $member->{address} ) ) {
-			# To avoid getting rid of hostnames when we can't
-			# lookup addresses (in which case both ipv4 and ipv6
-			# addresses would get thrown away as not being either
-			# ipv4 or ipv6), we put hostnames that don't have AAAA
-			# records into the IPv4 tests.
+                        # To avoid getting rid of hostnames when we can't
+                        # lookup addresses (in which case both ipv4 and ipv6
+                        # addresses would get thrown away as not being either
+                        # ipv4 or ipv6), we put hostnames that don't have AAAA
+                        # records into the IPv4 tests.
                         if ( is_hostname( $member->{address} ) and
                              not $self->determine_ipv6( $member->{address}) ) {
                             $self->{LOGGER}->warn( "Test is ipv4, ".$member->{address}." is a hostname, but we can't tell if it's got an IPv4 or IPv6 address. Assuming IPv4.");
@@ -2159,11 +2097,9 @@ sub generate_owmesh_conf {
                 next if ( $test->{center}->{ipv6_address} and $member->{address} eq $test->{center}->{ipv6_address} );
 
                 my $new_node;
-               
-                unless ($new_node) {
-                    if ( $member->{name} ) {
-                        $new_node = $nodes{$member->{name}};
-                    }
+
+                if ( $member->{name} ) {
+                    $new_node = $self->__owmesh_conf_get_node({ owmesh_conf => $owmesh_conf, id => $member->{name} });
                 }
 
                 unless ($new_node) {
@@ -2176,142 +2112,77 @@ sub generate_owmesh_conf {
 
                     my $node_name = $node_names_by_addrdesc{$key};
 
-                    $new_node = $nodes{$node_name} if ($node_name);
+                    $new_node = $self->__owmesh_conf_get_node({ owmesh_conf => $owmesh_conf, id => $node_name });
                 }
 
                 unless ($new_node) {
-                    my %tmp = ();
-                    $new_node = \%tmp;
-
                     my $key = "";
                     $key .= $member->{address} if ($member->{address});
                     $key .= "|";
                     $key .= $member->{description} if ($member->{description});
 
+                    my $node_id;
+
                     if ($member->{name}) {
-                        $new_node->{id} = $member->{name};
+                        $node_id = $member->{name};
                     }
                     elsif ($node_names_by_addrdesc{$key}) {
-                        $new_node->{id} = $node_names_by_addrdesc{$key};
+                        $node_id = $node_names_by_addrdesc{$key};
                     }
                     else {
 
-                        my $new_id = address_to_id( $member->{address} );
+                        $node_id = address_to_id( $member->{address} );
                         my $i = 0;
-                        while ($used_nodenames{$new_id}) {
-                            $new_id = address_to_id( $member->{address} );
-                            $new_id .= "-".$i;
+                        while (__owmesh_conf_get_node({ owmesh_conf => $owmesh_conf, id => $node_id })) {
+                            $node_id = address_to_id( $member->{address} );
+                            $node_id .= "-".$i;
                             $i++;
                         }
-                        $new_node->{id} = $new_id;
-                        $used_nodenames{$new_id} = 1;
                     }
+
+                    $new_node = $self->__owmesh_conf_add_node({ owmesh_conf => $owmesh_conf, id => $node_id });
                 }
 
-                $new_node->{description} = $member->{description};
+                $new_node->{DESCRIPTION} = $member->{DESCRIPTION};
 
-                unless ($new_node->{addresses}) {
-                    my @addresses = ();
-                    $new_node->{addresses} = \@addresses;
-                }
+                my $addr = $member->{address};
+                $addr = "[".$addr."]" if &Net::IP::ip_is_ipv6( $addr ) and not $addr =~ /\[/;
 
-                my $add = 1;
-                foreach my $addr (@{ $new_node->{addresses} }) {
-                    if ($addr->{address_type} eq $addr_type) {
-                        $add = 0;
-                        last;
-                    }
-                }
+                $new_node->{$addr_type."ADDR"} = $addr;
+                $new_node->{CONTACTADDR} = $member->{address} unless ($new_node->{CONTACTADDR});
+                $new_node->{NO_AGENT}    = 1 unless ( $self->{LOCAL_ADDRS}->{ $member->{address} } );
 
-                if ($add) {
-                    my %address = ( address => $member->{address}, address_type => $addr_type, port => $member->{port}, is_ipv6 => &Net::IP::ip_is_ipv6( $member->{address} ) );
-                    push @{ $new_node->{addresses} }, \%address;
-                    $new_node->{contact_address} = $member->{address};
-                }
-
-                $new_node->{noagent} = 1 unless ( $self->{LOCAL_ADDRS}->{ $member->{address} } );
-
-                $group_nodes{ $new_node->{id} }       = 1;
-                $exclude_senders{ $new_node->{id} }   = 1 unless ( $member->{sender} );
-                $exclude_receivers{ $new_node->{id} } = 1 unless ( $member->{receiver} );
+                $self->__owmesh_conf_group_add_node({ owmesh_conf => $owmesh_conf, group => $group->{ID}, node => $new_node->{ID} });
+                $self->__owmesh_conf_group_add_exclude_senders({ owmesh_conf => $owmesh_conf, group => $group->{ID}, node => $new_node->{ID} }) unless ($member->{sender});
+                $self->__owmesh_conf_group_add_exclude_receivers({ owmesh_conf => $owmesh_conf, group => $group->{ID}, node => $new_node->{ID} }) unless ($member->{receiver});
 
                 if ( $self->{LOCAL_ADDRS}->{ $member->{address} } ) {
-                    push @localnodes, $new_node->{id};
+                    $self->__owmesh_conf_add_localnode({ owmesh_conf => $owmesh_conf, node => $new_node->{ID} });
                 }
-
-                $nodes{$new_node->{id}} = $new_node;
 
                 my $key = "";
                 $key .= $member->{address} if ($member->{address});
                 $key .= "|";
                 $key .= $member->{description} if ($member->{description});
-                $node_names_by_addrdesc{$key} = $new_node->{id};
+                $node_names_by_addrdesc{$key} = $new_node->{ID};
                 $self->{LOGGER}->debug("Saving node as key: $key");
             }
+
             # Center Address
             my $center_address = $test->{center}->{ipv4_address};
             $center_address = $test->{center}->{ipv6_address} if ( $ip_type eq "IPV6" );
 
-            my $add = 1;
-            foreach my $addr (@{ $local_node{addresses} }) {
-                if ($addr->{address_type} eq $addr_type) {
-                    $add = 0;
-                    last;
-                }
-            }
- 
-            if ($add) {
-                my %address = ( address => $center_address, address_type => $addr_type, is_ipv6 => &Net::IP::ip_is_ipv6( $center_address ) );
-                push @{ $local_node{addresses} }, \%address;
-                $local_node{contact_address} = $center_address;
-            }
+            my $addr = $center_address;
+            $addr = "[".$addr."]" if &Net::IP::ip_is_ipv6( $addr ) and not $addr =~ /\[/;
 
-            $group_nodes{ $local_node{id} } = 1;
+            $local_node->{$addr_type."ADDR"} = $addr;
+            $local_node->{CONTACTADDR}       = $center_address;
 
-            my @group_nodes             = keys %group_nodes;
-            my @group_exclude_senders   = keys %exclude_senders;
-            my @group_exclude_receivers = keys %exclude_receivers;
-
-            $group{center}            = $local_node{id};
-            $group{nodes}             = \@group_nodes;
-            $group{exclude_senders}   = \@group_exclude_senders;
-            $group{exclude_receivers} = \@group_exclude_receivers;
-
-            push @measurement_sets, \%measurement_set;
-            push @groups,           \%group;
-            push @test_specs,       \%test_spec;
+            $group{HAUPTNODE}         = $local_node->{ID};
         }
     }
 
-    my @nodes = values %nodes;
-
-    @groups           = sort { $a->{id} cmp $b->{id} } @groups;
-    @test_specs       = sort { $a->{id} cmp $b->{id} } @test_specs;
-    @measurement_sets = sort { $a->{id} cmp $b->{id} } @measurement_sets;
-    @nodes            = sort { $a->{id} cmp $b->{id} } @nodes;
-
-    my $template_directory = dirname( $self->{PERFSONARBUOY_CONF_TEMPLATE} );
-    my $template_name      = basename( $self->{PERFSONARBUOY_CONF_TEMPLATE} );
-
-    my $tt = Template->new( INCLUDE_PATH => $template_directory ) or die( "Couldn't initialize template toolkit" );
-
-    my %vars = (
-        address_types     => \@addr_types,
-        measurement_sets  => \@measurement_sets,
-        groups            => \@groups,
-        test_specs        => \@test_specs,
-        nodes             => \@nodes,
-        localnodes        => \@localnodes,
-        owmesh_parameters => $owmesh_parameters,
-    );
-
-    $self->{LOGGER}->debug( "Adding vars to $self->{PERFSONARBUOY_CONF_TEMPLATE}: " . Dumper( \%vars ) );
-
-    my $output;
-
-    $tt->process( $template_name, \%vars, \$output ) or die $tt->error();
-
-    return (0, $output);
+    return (0, "");
 }
 
 =head address_to_id ( $address, $address_type ) 
@@ -2388,7 +2259,432 @@ sub determine_ipv4 {
     return 0;
 }
 
+sub __parse_owmesh_conf {
+    my ($self, @args) = @_;
+    my $parameters = validate( @args, { existing_configuration => 1, } );
+    my $existing_configuration = $parameters->{existing_configuration};
 
+    my @top_level_prefixes = ("", "BW", "OWP", "TRACE");
+    my @top_level_variables = (
+           "ConfigVersion", "SyslogFacility", "GroupName", "UserName", "DevNull", # Generic variables applicable to everything
+           "CentralDBName", "CentralDBPass", "CentralDBType", "CentralDBUser",  # We don't autogenerate a collector configuration so copy all those variables over
+           "SessionSumCmd", "CentralDataDir", "CentralArchDir", # We don't autogenerate a collector configuration so copy all those variables over
+           "CentralHostTimeout", "SendTimeout", # Copy this over since we don't have a better use for it.
+           "SecretName", # Copy the SecretName for now, but we need to figure out how to impart this in the future
+           "DataDir", "SessionSuffix", "SummarySuffix", "BinDir", "Cmd" # Used by the master, but generic, or specific to the host it's running on.
+    );
+    my @measurementset_attrs = ('TESTSPEC', 'ADDRTYPE', 'GROUP', 'DESCRIPTION', 'EXCLUDE_SELF', 'ADDED_BY_MESH');
+    my @group_attrs = ('GROUPTYPE','NODES','SENDERS','RECEIVERS','INCLUDE_RECEIVERS','EXCLUDE_RECEIVERS','INCLUDE_SENDERS','EXCLUDE_SENDERS','HAUPTNODE');
+    my @node_attrs  = ('ADDR', 'LONGNAME', 'OWPTESTPORTS');
+    my @testspec_attrs  = (
+        'TOOL', 'DESCRIPTION',
+        'OWPINTERVAL', 'OWPLOSSTHRESH', 'OWPSESSIONCOUNT', 'OWPSAMPLECOUNT', 'OWPPACKETPADDING', 'OWPBUCKETWIDTH',
+        'TRACETESTINTERVAL', 'TRACEPACKETSIZE', 'TRACETIMEOUT', 'TRACEWAITTIME', 'TRACEFIRSTTTL', 'TRACEMAXTTL', 'TRACEPAUSE', 'TRACEICMP',
+        'BWTCP', 'BWUDP', 'BWTestInterval', 'BWTestDuration', 'BWWindowSize', 'BWReportInterval', 'BWUDPBandwidthLimit', 'BWBufferLen', 'BWTestIntervalStartAlpha',
+    );
+
+    my %top_level_variables = ();
+    my %nodes            = ();
+    my %groups           = ();
+    my %testspecs        = ();
+    my %measurement_sets = ();
+    my @addrtypes        = ();
+    my @localnodes       = ();
+
+    eval {
+        foreach my $variable_prefix (@top_level_prefixes) {
+            my @variables = @top_level_variables;
+
+            foreach my $variable (@variables) {
+                $self->{LOGGER}->debug("Checking ".$variable_prefix.$variable);
+
+                my $value = $existing_configuration->get_val(ATTR => $variable, TYPE => $variable_prefix);
+
+                $self->{LOGGER}->debug($variable." is defined: ".$value) if defined $value;
+    
+                if ($variable_prefix ne "") {
+                    my $higher_value = $existing_configuration->get_val(ATTR => $variable);
+
+                    if ($higher_value and $value eq $higher_value) {
+                        $self->{LOGGER}->debug("Existing higher value $higher_value for $variable is the same");
+                        next;
+                    }
+                }
+    
+                # Pull the existing owmesh configuration
+                $top_level_variables{$variable_prefix.$variable} = $value if defined $value;
+
+                # SecretName is a special case...
+                if ($variable_prefix.$variable eq "SecretName" and $value) {
+                    push @variables, $value;
+                }
+            }
+        }
+
+        my %addrtypes        = ();
+
+        # Only include the local nodes that were for tests that we didn't add.
+        my @measurement_sets = $existing_configuration->get_sublist( LIST => 'MEASUREMENTSET' );
+
+        foreach my $measurement_set ( @measurement_sets ) {
+            next if ($measurement_sets{$measurement_set});
+
+            $measurement_sets{$measurement_set} = {};
+
+            my $measurement_set_desc = $measurement_sets{$measurement_set};
+
+            foreach my $attr (@measurementset_attrs) {
+                __get_ref( $existing_configuration, $measurement_set_desc, $attr, { MEASUREMENTSET => $measurement_set });
+            }
+
+            my $addrtype = $measurement_set_desc->{ADDRTYPE};
+
+            $addrtypes{$addrtype} = 1;
+
+            my $group    = $measurement_set_desc->{GROUP};
+
+            unless ($groups{$group}) {
+                $groups{$group} = {};
+
+                my $group_desc = $groups{$group};
+
+                foreach my $attr (@group_attrs) {
+                    __get_ref($existing_configuration, $group_desc, $attr, { GROUP => $group });
+                }
+
+                foreach my $node ( @{ $group_desc->{NODES} } ) {
+                    $nodes{$node} = {} unless $nodes{$node};
+
+                    my $node_desc = $nodes{$node};
+
+                    foreach my $attr (@node_attrs) {
+                        __get_ref($existing_configuration, $node_desc, $attr, { NODE => $node });
+                        __get_ref($existing_configuration, $node_desc, $measurement_set_desc->{ADDRTYPE}.$attr, { NODE => $node });
+                    }
+                }
+            }
+
+            my $testspec = $measurement_set_desc->{TESTSPEC};
+            unless ($testspecs{$testspec}) {
+                $testspecs{$testspec} = {};
+
+                my $testspec_desc = $testspecs{$testspec};
+
+                foreach my $attr (@testspec_attrs) {
+                    __get_ref($existing_configuration, $testspec_desc, $attr, { TESTSPEC => $testspec });
+                }
+            }
+        }
+
+        # Only include the local nodes that were for tests that we didn't add.
+        my @temp_local_nodes = $existing_configuration->get_val(  ATTR => 'LOCALNODES'  );
+        foreach my $node (@temp_local_nodes) {
+            push @localnodes, $node if ($nodes{$node});
+        }
+
+        @addrtypes = keys %addrtypes;
+    };
+    if ( $@ ) {
+        return ( -1, $@ );
+    }
+
+    my %owmesh_config = ();
+    %owmesh_config = %top_level_variables; # Copy the top-level variables over
+
+    $owmesh_config{MEASUREMENTSET} = \%measurement_sets;
+    $owmesh_config{NODE}           = \%nodes;
+    $owmesh_config{GROUP}          = \%groups;
+    $owmesh_config{TESTSPEC}       = \%testspecs;
+    $owmesh_config{ADDRTYPES}      = \@addrtypes;
+    $owmesh_config{LOCALNODES}     = \@localnodes;
+
+    return ( 0, \%owmesh_config );
+}
+
+sub __get_ref {
+    my ( $conf, $hash, $attr, $params ) = @_;
+
+    my %params = %$params;
+    $params{ATTR} = $attr;
+
+    eval {
+        my $val = $conf->get_ref( %params );
+        $hash->{$attr} = $val if defined ($val);
+    };
+
+    return;
+}
+
+sub __owmesh_conf_delete_measurement_set {
+    my ($self, @params) = @_;
+    my $parameters = validate( @params, { measurement_set => 1, owmesh_conf => 1 });
+    my $measurement_set = $parameters->{measurement_set};
+    my $owmesh_conf     = $parameters->{owmesh_conf};
+
+    my $addrtype = $owmesh_conf->{MEASUREMENTSET}->{$measurement_set}->{ADDRTYPE};
+    my $group    = $owmesh_conf->{MEASUREMENTSET}->{$measurement_set}->{GROUP};
+    my $testspec = $owmesh_conf->{MEASUREMENTSET}->{$measurement_set}->{TESTSPEC};
+
+    delete($owmesh_conf->{MEASUREMENTSET}->{$measurement_set});
+
+    my ($delete_group, $delete_testspec, $delete_addrtype) = (1, 1, 1);
+
+    foreach my $curr_measurement_set (values %{ $owmesh_conf->{MEASUREMENTSET} }) {
+        $delete_addrtype = 0 if ($curr_measurement_set->{ADDRTYPE} eq $addrtype);
+        $delete_group    = 0 if ($curr_measurement_set->{GROUP} eq $group);
+        $delete_testspec = 0 if ($curr_measurement_set->{TESTSPEC} eq $testspec);
+    }
+
+    $self->__owmesh_conf_delete_group({ group => $group, owmesh_conf => $owmesh_conf }) if $delete_group;
+    $self->__owmesh_conf_delete_testspec({ testspec => $testspec, owmesh_conf => $owmesh_conf }) if $delete_testspec;
+    $self->__owmesh_conf_delete_addrtype({ addrtype => $addrtype, owmesh_conf => $owmesh_conf }) if $delete_addrtype;
+
+    return;
+}
+
+sub __owmesh_conf_get_node {
+    my ($self, @params) = @_;
+    my $parameters  = validate( @params, { id => 1, owmesh_conf => 1 });
+    my $id          = $parameters->{id};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    return $owmesh_conf->{NODE}->{$id};
+}
+
+sub __owmesh_conf_get_group_members {
+    my ($self, @params) = @_;
+    my $parameters  = validate( @params, { group => 1, owmesh_conf => 1 });
+    my $group       = $parameters->{group};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    my @referenced_nodes = @{ $owmesh_conf->{GROUP}->{$group}->{NODES} };
+
+    my $hauptnode = $owmesh_conf->{GROUP}->{$group}->{HAUPTNODE};
+    push @referenced_nodes, $hauptnode if ($hauptnode);
+
+    return \@referenced_nodes;
+}
+
+sub __owmesh_conf_group_add_node {
+    my ($self, @params) = @_;
+    my $parameters  = validate( @params, { group => 1, node => 1, owmesh_conf => 1 });
+    my $group       = $parameters->{group};
+    my $node        = $parameters->{node};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    my $group_desc = $owmesh_conf->{GROUP}->{$group};
+    $group_desc->{NODES} = [] unless $group_desc->{NODES};
+
+    my %existing = map { $_ => 1 } @{ $group_desc->{NODES} };
+
+    push @{ $group_desc->{NODES} }, $node unless $existing{$node};
+
+    return;
+}
+
+sub __owmesh_conf_group_add_exclude_senders {
+    my ($self, @params) = @_;
+    my $parameters  = validate( @params, { group => 1, node => 1, owmesh_conf => 1 });
+    my $group       = $parameters->{group};
+    my $node        = $parameters->{node};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    my $group_desc = $owmesh_conf->{GROUP}->{$group};
+    $group_desc->{EXCLUDE_SENDERS} = [] unless $group_desc->{EXCLUDE_SENDERS};
+
+    my %existing = map { $_ => 1 } @{ $group_desc->{EXCLUDE_SENDERS} };
+
+    push @{ $group_desc->{EXCLUDE_SENDERS} }, $node unless $existing{$node};
+
+    return;
+}
+
+sub __owmesh_conf_group_add_exclude_receivers {
+    my ($self, @params) = @_;
+    my $parameters  = validate( @params, { group => 1, node => 1, owmesh_conf => 1 });
+    my $group       = $parameters->{group};
+    my $node        = $parameters->{node};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    my $group_desc = $owmesh_conf->{GROUP}->{$group};
+    $group_desc->{EXCLUDE_RECEIVERS} = [] unless $group_desc->{EXCLUDE_RECEIVERS};
+
+    my %existing = map { $_ => 1 } @{ $group_desc->{EXCLUDE_RECEIVERS} };
+
+    push @{ $group_desc->{EXCLUDE_RECEIVERS} }, $node unless $existing{$node};
+
+    return;
+}
+
+
+sub __owmesh_conf_delete_group {
+    my ($self, @params) = @_;
+    my $parameters  = validate( @params, { group => 1, owmesh_conf => 1 });
+    my $group       = $parameters->{group};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    my $referenced_nodes = $self->__owmesh_conf_get_group_members({ group => $group, owmesh_conf => $owmesh_conf });
+
+    my %nodes_to_delete = map { $_ => 1 } @$referenced_nodes;
+
+    delete($owmesh_conf->{GROUP}->{$group});
+
+    foreach my $curr_group (keys %{ $owmesh_conf->{GROUP} }) {
+        my $curr_group_nodes = $self->__owmesh_conf_get_group_members({ group => $curr_group, owmesh_conf => $owmesh_conf });
+        foreach my $node (@$curr_group_nodes) {
+            delete($nodes_to_delete{$node});
+        }
+    }
+
+    foreach my $node (keys %nodes_to_delete) {
+        delete($owmesh_conf->{NODE}->{$node});
+    }
+
+    my @new_local_nodes = ();
+    foreach my $node (@{ $owmesh_conf->{LOCALNODES} }) {
+        push @new_local_nodes, $node unless ($nodes_to_delete{$node});
+    }
+
+    $owmesh_conf->{LOCALNODES} = \@new_local_nodes;
+
+    return;
+}
+
+sub __owmesh_conf_add_node {
+    my ($self, @params) = @_;
+    my $parameters = validate( @params, { id => 1, owmesh_conf => 1 });
+    my $id         = $parameters->{id};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    $owmesh_conf->{NODE}->{$id} = { ID => $id };
+
+    return $owmesh_conf->{NODE}->{$id};
+}
+
+sub __owmesh_conf_add_group {
+    my ($self, @params) = @_;
+    my $parameters = validate( @params, { id => 1, owmesh_conf => 1 });
+    my $id         = $parameters->{id};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    $owmesh_conf->{GROUP}->{$id} = { ID => $id };
+
+    return $owmesh_conf->{GROUP}->{$id};
+}
+
+sub __owmesh_conf_add_measurement_set {
+    my ($self, @params) = @_;
+    my $parameters = validate( @params, { id => 1, owmesh_conf => 1 });
+    my $id         = $parameters->{id};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    $owmesh_conf->{MEASUREMENTSET}->{$id} = { ID => $id };
+
+    return $owmesh_conf->{MEASUREMENTSET}->{$id};
+}
+
+sub __owmesh_conf_add_testspec {
+    my ($self, @params) = @_;
+    my $parameters = validate( @params, { id => 1, owmesh_conf => 1 });
+    my $id         = $parameters->{id};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    $owmesh_conf->{TESTSPEC}->{$id} = { ID => $id };
+
+    return $owmesh_conf->{TESTSPEC}->{$id};
+}
+
+sub __owmesh_conf_add_localnode {
+    my ($self, @params) = @_;
+    my $parameters = validate( @params, { node => 1, owmesh_conf => 1 });
+    my $node       = $parameters->{node};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    my %existing = map { $_ => 1 } @{ $owmesh_conf->{LOCALNODES} };
+
+    push @{ $owmesh_conf->{LOCALNODES} }, $node unless $existing{$node};
+
+    return;
+}
+
+sub __owmesh_conf_delete_addrtype {
+    my ($self, @params) = @_;
+    my $parameters = validate( @params, { addrtype => 1, owmesh_conf => 1 });
+    my $addrtype   = $parameters->{addrtype};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    my @new_addrtypes = ();
+
+    foreach my $existing_addrtype (@{ $owmesh_conf->{ADDRTYPES} }) {
+        push @new_addrtypes, $existing_addrtype if ($existing_addrtype ne $addrtype);
+    }
+
+    $owmesh_conf->{ADDRTYPES} = \@new_addrtypes;
+
+    # Get rid of the addresses associated with that addrtype
+    foreach my $node (values %{ $owmesh_conf->{NODE} }) {
+        delete($node->{$addrtype."ADDR"});
+    }
+
+    return;
+}
+
+sub __owmesh_conf_delete_testspec {
+    my ($self, @params) = @_;
+    my $parameters = validate( @params, { testspec => 1, owmesh_conf => 1 });
+    my $testspec   = $parameters->{testspec};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    delete($owmesh_conf->{TESTSPEC}->{$testspec});
+
+    return;
+}
+
+
+sub __owmesh_conf_add_addrtype {
+    my ($self, @params) = @_;
+    my $parameters = validate( @params, { addrtype => 1, owmesh_conf => 1 });
+    my $addrtype   = $parameters->{addrtype};
+    my $owmesh_conf = $parameters->{owmesh_conf};
+
+    my %addrtypes = map { $_ => 1 } @{ $owmesh_conf->{ADDRTYPES} };
+
+    push @{ $owmesh_conf->{ADDRTYPES} }, $addrtype unless $addrtypes{$addrtype};
+
+    return;
+}
+
+sub __build_owmesh_conf {
+    my ($self, $owmesh_desc) = @_;
+
+    my $text = "";
+
+    foreach my $key (sort keys %$owmesh_desc) {
+        if (ref($owmesh_desc->{$key}) eq "ARRAY") {
+            $text .= $key."\t";
+            $text .= "[[ ".join("  ", @{ $owmesh_desc->{$key} })." ]]";
+        }
+        elsif (ref($owmesh_desc->{$key}) eq "HASH") {
+            foreach my $subkey (keys %{ $owmesh_desc->{$key} }) {
+                $text .= "<$key=$subkey>\n";
+                $text .= $self->__build_owmesh_conf($owmesh_desc->{$key}->{$subkey});
+                $text .= "</$key>\n";
+            }
+        }
+        else {
+            if (defined $owmesh_desc->{$key}) {
+                $text .= $key."\t".$owmesh_desc->{$key};
+            }
+            else {
+                $text .= "!".$key;
+            }
+        }
+
+        $text .= "\n";
+    }
+
+    return $text;
+}
 
 1;
 
