@@ -127,6 +127,14 @@ def getDriveList():
         for line in lines:
             ext3_devs.append(line.rsplit('\n')[0])
 
+    live_devs = []
+    (status, output) = commands.getstatusoutput("readlink -m /dev/live")
+    if status == 0:
+        lines = output.split("\n");
+        for line in lines:
+            live_devs.append(line.rsplit('\n')[0])
+            live_devs.append(line.rsplit('\n')[0][:-1])
+
     devs_types = {}
     (status, output) = commands.getstatusoutput("blkid -o full")
     if status == 0:
@@ -145,11 +153,15 @@ def getDriveList():
 
         # Exclude devices being used for LVM, if users really want to use them, it's not up to us to blow them away.
         if drive["name"] in lvm_devs:
-	    continue
+	        continue
 
-#        is_ext3 = False
-#        if drive["name"] in ext3_devs:
-#	    is_ext3 = True
+        # Exclude any Live devices (eg. the LiveUSB itself)
+        if drive["name"] in live_devs:
+            continue
+
+        # is_ext3 = False
+        # if drive["name"] in ext3_devs:
+            # is_ext3 = True
 
         type = "unknown"
         try:

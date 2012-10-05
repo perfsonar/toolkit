@@ -25,12 +25,12 @@ use Config::General qw(SaveConfigString ParseConfig);
 
 use base 'Exporter';
 
-our @EXPORT_OK = qw( mount_data_store load_original_cd unload_original_cd );
+our @EXPORT_OK = qw( mount_data_store load_live_device unload_live_device );
 
 our $store_info_location = "/var/run/toolkit/backing_store.info";
 our $store_location      = "/mnt/store";
 our $new_store_location  = "/mnt/store.new";
-our $cdrom_dir           = "/mnt/cdrom";
+our $live_dir            = "/mnt/live";
 our $squashfs_dir        = "/mnt/squashfs";
 our $toolkit_dir         = "/mnt/toolkit";
 
@@ -186,10 +186,10 @@ sub mount_data_store {
     return (0, { directory => $store_location, device => $mounted_dev, version => $version });
 }
 
-sub load_original_cd {
+sub load_live_device {
     my $parameters = validate( @_, { });
 
-    for my $dir ($cdrom_dir, $squashfs_dir, $toolkit_dir) {
+    for my $dir ($live_dir, $squashfs_dir, $toolkit_dir) {
         my $error;
 
         mkpath($dir, { error => \$error }) unless (-d $dir);
@@ -198,20 +198,20 @@ sub load_original_cd {
         }
     }
 
-    unless ( -f "$cdrom_dir/squashfs.img" or -f "$cdrom_dir/LiveOS/squashfs.img" ) {
-        `mount -t iso9660 /dev/cdrom $cdrom_dir &> /dev/null`
+    unless ( -f "$live_dir/squashfs.img" or -f "$live_dir/LiveOS/squashfs.img" ) {
+        `mount -o ro /dev/live $live_dir &> /dev/null`
     }
 
-    unless ( -f "$cdrom_dir/squashfs.img" or -f "$cdrom_dir/LiveOS/squashfs.img" ) {
-        return (-1, "Couldn't mount cdrom");
+    unless ( -f "$live_dir/squashfs.img" or -f "$live_dir/LiveOS/squashfs.img" ) {
+        return (-1, "Couldn't find live device");
     }
 
     unless ( -f "$squashfs_dir/os.img" or -f "$squashfs_dir/LiveOS/ext3fs.img" ) {
-        if (-f "$cdrom_dir/squashfs.img") {
-            `mount -t squashfs -o loop $cdrom_dir/squashfs.img $squashfs_dir &> /dev/null`;
+        if (-f "$live_dir/squashfs.img") {
+            `mount -t squashfs -o loop $live_dir/squashfs.img $squashfs_dir &> /dev/null`;
         }
         else {
-            `mount -t squashfs -o loop $cdrom_dir/LiveOS/squashfs.img $squashfs_dir &> /dev/null`;
+            `mount -t squashfs -o loop $live_dir/LiveOS/squashfs.img $squashfs_dir &> /dev/null`;
         }
     }
 
@@ -235,10 +235,10 @@ sub load_original_cd {
     return (0, { directory => $toolkit_dir });
 }
 
-sub unload_original_cd {
+sub unload_live_device {
     my $parameters = validate( @_, { });
 
-    for my $dir ($cdrom_dir, $squashfs_dir, $toolkit_dir) {
+    for my $dir ($live_dir, $squashfs_dir, $toolkit_dir) {
         my $error;
 
         mkpath($dir, { error => \$error }) unless (-d $dir);
@@ -263,12 +263,12 @@ sub unload_original_cd {
         return (-1, "Couldn't unmount squashfs image");
     }
 
-    if ( -f "$cdrom_dir/squashfs.img" or -f "$cdrom_dir/LiveOS/squashfs.img" ) {
-        `umount $cdrom_dir &> /dev/null`
+    if ( -f "$live_dir/squashfs.img" or -f "$live_dir/LiveOS/squashfs.img" ) {
+        `umount $live_dir &> /dev/null`
     }
 
-    if ( -f "$cdrom_dir/squashfs.img" or -f "$cdrom_dir/LiveOS/squashfs.img" ) {
-        return (-1, "Couldn't unmount cdrom");
+    if ( -f "$live_dir/squashfs.img" or -f "$live_dir/LiveOS/squashfs.img" ) {
+        return (-1, "Couldn't unmount live device");
     }
 
 
