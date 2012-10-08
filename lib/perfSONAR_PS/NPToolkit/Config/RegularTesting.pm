@@ -1936,7 +1936,7 @@ sub __add_tests_to_owmesh_conf {
     unless ($local_node) {
         $local_node = $self->__owmesh_conf_add_node({ owmesh_conf => $owmesh_conf, id => "KNOPPIX" });
     }
-    $local_node->{description} = "local host";
+    $local_node->{LONGNAME} = "local host";
 
     if ($self->{LOCAL_PORT_RANGES}->{owamp}) {
         $self->{LOGGER}->info("Saving owamp port range");
@@ -1946,6 +1946,8 @@ sub __add_tests_to_owmesh_conf {
     $self->__owmesh_conf_add_localnode({ owmesh_conf => $owmesh_conf, node => "KNOPPIX" });
 
     foreach my $test ( @{$tests} ) {
+        next if ($test->{added_by_mesh});
+
         my $test_name;
         if ( $test->{name} ) {
             $test_name = $test->{name};
@@ -1970,11 +1972,6 @@ sub __add_tests_to_owmesh_conf {
         
         my %duplicate_test_map = ();
         foreach my $ip_type ( "IPV6", "IPV4" ) {
-            my %measurement_set = ();
-            my %group           = ();
-            my %test_spec       = ();
-            my %group_nodes     = ();
-
             next if ( $ip_type eq "IPV4" and not $test->{center}->{ipv4_address} );
             next if ( $ip_type eq "IPV6" and not $test->{center}->{ipv6_address} );
 
@@ -1988,41 +1985,37 @@ sub __add_tests_to_owmesh_conf {
             $self->{LOGGER}->debug( "Doing " . Dumper( $test ) );
 
             if ( $test->{type} eq "bwctl/throughput" ) {
-                $test_spec{TYPE}                      = "bwctl/throughput";
-                $test_spec{TOOL}                      = "bwctl/".$test->{parameters}->{tool};
-                $test_spec{BWUDP}                     = 1 if $test->{parameters}->{protocol} eq "udp";
-                $test_spec{BWTCP}                     = 1 if $test->{parameters}->{protocol} eq "tcp";
-                $test_spec{BWTestInterval}            = $test->{parameters}->{test_interval};
-                $test_spec{BWTestDuration}            = $test->{parameters}->{duration};
-                $test_spec{BWWindowSize}              = $test->{parameters}->{window_size} . "m" if ( $test->{parameters}->{window_size} );                    # Add the 'm' on since it's in Megabytes
-                $test_spec{BWReportInterval}          = $test->{parameters}->{report_interval};
-                $test_spec{BWUDPBandwidthLimit}       = $test->{parameters}->{udp_bandwidth} . "m" if ( $test->{parameters}->{udp_bandwidth} );    # Add the 'm' on since it's in Mbps
-                $test_spec{BWBufferLen}               = $test->{parameters}->{buffer_length};
-                $test_spec{BWTestIntervalStartAlpha}  = $test->{parameters}->{test_interval_start_alpha};
-                $measurement_set{EXCLUDE_SELF} = 1;
+                $test_spec->{TOOL}                      = "bwctl/".$test->{parameters}->{tool};
+                $test_spec->{BWUDP}                     = 1 if $test->{parameters}->{protocol} eq "udp";
+                $test_spec->{BWTCP}                     = 1 if $test->{parameters}->{protocol} eq "tcp";
+                $test_spec->{BWTestInterval}            = $test->{parameters}->{test_interval};
+                $test_spec->{BWTestDuration}            = $test->{parameters}->{duration};
+                $test_spec->{BWWindowSize}              = $test->{parameters}->{window_size} . "m" if ( $test->{parameters}->{window_size} );                    # Add the 'm' on since it's in Megabytes
+                $test_spec->{BWReportInterval}          = $test->{parameters}->{report_interval};
+                $test_spec->{BWUDPBandwidthLimit}       = $test->{parameters}->{udp_bandwidth} . "m" if ( $test->{parameters}->{udp_bandwidth} );    # Add the 'm' on since it's in Mbps
+                $test_spec->{BWBufferLen}               = $test->{parameters}->{buffer_length};
+                $test_spec->{BWTestIntervalStartAlpha}  = $test->{parameters}->{test_interval_start_alpha};
+                $measurement_set->{EXCLUDE_SELF} = 1;
             } elsif ($test->{type} eq "owamp") {
-                $test_spec{TYPE}                      = "owamp";
-                $test_spec{TOOL}                      = "powstream";
-                $test_spec{OWPINTERVAL}      = $test->{parameters}->{packet_interval}  if ( defined $test->{parameters}->{packet_interval} );
-                $test_spec{OWPLOSSTHRESH}    = $test->{parameters}->{loss_threshold}   if ( defined $test->{parameters}->{loss_threshold} );
-                $test_spec{OWPSESSIONCOUNT}  = $test->{parameters}->{session_count}    if ( defined $test->{parameters}->{session_count} );
-                $test_spec{OWPSAMPLECOUNT}   = $test->{parameters}->{sample_count}     if ( defined $test->{parameters}->{sample_count} );
-                $test_spec{OWPPACKETPADDING} = $test->{parameters}->{packet_padding}   if ( defined $test->{parameters}->{packet_padding} );
-                $test_spec{OWPBUCKETWIDTH}   = $test->{parameters}->{bucket_width}     if ( defined $test->{parameters}->{bucket_width} );
-                $measurement_set{EXCLUDE_SELF} = 0;
+                $test_spec->{TOOL}                      = "powstream";
+                $test_spec->{OWPINTERVAL}      = $test->{parameters}->{packet_interval}  if ( defined $test->{parameters}->{packet_interval} );
+                $test_spec->{OWPLOSSTHRESH}    = $test->{parameters}->{loss_threshold}   if ( defined $test->{parameters}->{loss_threshold} );
+                $test_spec->{OWPSESSIONCOUNT}  = $test->{parameters}->{session_count}    if ( defined $test->{parameters}->{session_count} );
+                $test_spec->{OWPSAMPLECOUNT}   = $test->{parameters}->{sample_count}     if ( defined $test->{parameters}->{sample_count} );
+                $test_spec->{OWPPACKETPADDING} = $test->{parameters}->{packet_padding}   if ( defined $test->{parameters}->{packet_padding} );
+                $test_spec->{OWPBUCKETWIDTH}   = $test->{parameters}->{bucket_width}     if ( defined $test->{parameters}->{bucket_width} );
+                $measurement_set->{EXCLUDE_SELF} = 0;
             } elsif ($test->{type} eq "traceroute") {
-                $test_spec{TYPE}                      = "traceroute";
-                $test_spec{TOOL}                      = "traceroute";
-                $test_spec{TRACETESTINTERVAL}         = $test->{parameters}{test_interval}             if ( defined $test->{parameters}{test_interval} );
-                $test_spec{TRACEPACKETSIZE}           = $test->{parameters}{packet_size}               if ( defined $test->{parameters}{packet_size} );
-                $test_spec{TRACETIMEOUT}              = $test->{parameters}{timeout}                   if ( defined $test->{parameters}{timeout} );
-                $test_spec{TRACEWAITTIME}             = $test->{parameters}{waittime}                  if ( defined $test->{parameters}{waittime} );
-                $test_spec{TRACEFIRSTTTL}             = $test->{parameters}{first_ttl}                 if ( defined $test->{parameters}{first_ttl} );
-                $test_spec{TRACEMAXTTL}               = $test->{parameters}{max_ttl}                   if ( defined $test->{parameters}{max_ttl} );
-                $test_spec{TRACEPAUSE}                = $test->{parameters}{pause}                     if ( defined $test->{parameters}{pause} );
-                $test_spec{TRACEICMP}                 = 1 if ($test->{parameters}{protocol} eq "icmp");
-    
-                $measurement_set{EXCLUDE_SELF} = 0;
+                $test_spec->{TOOL}                      = "traceroute";
+                $test_spec->{TRACETESTINTERVAL}         = $test->{parameters}{test_interval}             if ( defined $test->{parameters}{test_interval} );
+                $test_spec->{TRACEPACKETSIZE}           = $test->{parameters}{packet_size}               if ( defined $test->{parameters}{packet_size} );
+                $test_spec->{TRACETIMEOUT}              = $test->{parameters}{timeout}                   if ( defined $test->{parameters}{timeout} );
+                $test_spec->{TRACEWAITTIME}             = $test->{parameters}{waittime}                  if ( defined $test->{parameters}{waittime} );
+                $test_spec->{TRACEFIRSTTTL}             = $test->{parameters}{first_ttl}                 if ( defined $test->{parameters}{first_ttl} );
+                $test_spec->{TRACEMAXTTL}               = $test->{parameters}{max_ttl}                   if ( defined $test->{parameters}{max_ttl} );
+                $test_spec->{TRACEPAUSE}                = $test->{parameters}{pause}                     if ( defined $test->{parameters}{pause} );
+                $test_spec->{TRACEICMP}                 = 1 if ($test->{parameters}{protocol} eq "icmp");
+                $measurement_set->{EXCLUDE_SELF} = 0;
             }
 
             my $addr_type;
@@ -2053,8 +2046,7 @@ sub __add_tests_to_owmesh_conf {
             $measurement_set->{GROUP}        = $group->{ID};
             $measurement_set->{TESTSPEC}     = $test_spec->{ID};
             
-            $group->{TYPE}        = "STAR";
-            $group->{DESCRIPTION} = $test->{group}->{description};
+            $group->{GROUPTYPE}   = "STAR";
 
             $self->{LOGGER}->debug( "Outputing group: " . Dumper( $test->{group} ) );
 
@@ -2143,14 +2135,15 @@ sub __add_tests_to_owmesh_conf {
                     $new_node = $self->__owmesh_conf_add_node({ owmesh_conf => $owmesh_conf, id => $node_id });
                 }
 
-                $new_node->{DESCRIPTION} = $member->{DESCRIPTION};
+                $new_node->{LONGNAME} = $member->{description};
 
                 my $addr = $member->{address};
                 $addr = "[".$addr."]" if &Net::IP::ip_is_ipv6( $addr ) and not $addr =~ /\[/;
+                $addr .= ":".$member->{port} if ($member->{port});
 
                 $new_node->{$addr_type."ADDR"} = $addr;
                 $new_node->{CONTACTADDR} = $member->{address} unless ($new_node->{CONTACTADDR});
-                $new_node->{NO_AGENT}    = 1 unless ( $self->{LOCAL_ADDRS}->{ $member->{address} } );
+                $new_node->{NOAGENT}    = 1 unless ( $self->{LOCAL_ADDRS}->{ $member->{address} } );
 
                 $self->__owmesh_conf_group_add_node({ owmesh_conf => $owmesh_conf, group => $group->{ID}, node => $new_node->{ID} });
                 $self->__owmesh_conf_group_add_exclude_senders({ owmesh_conf => $owmesh_conf, group => $group->{ID}, node => $new_node->{ID} }) unless ($member->{sender});
@@ -2178,7 +2171,8 @@ sub __add_tests_to_owmesh_conf {
             $local_node->{$addr_type."ADDR"} = $addr;
             $local_node->{CONTACTADDR}       = $center_address;
 
-            $group{HAUPTNODE}         = $local_node->{ID};
+            $group->{HAUPTNODE}         = $local_node->{ID};
+            $self->__owmesh_conf_group_add_node({ owmesh_conf => $owmesh_conf, group => $group->{ID}, node => $local_node->{ID} });
         }
     }
 
@@ -2269,13 +2263,13 @@ sub __parse_owmesh_conf {
            "ConfigVersion", "SyslogFacility", "GroupName", "UserName", "DevNull", # Generic variables applicable to everything
            "CentralDBName", "CentralDBPass", "CentralDBType", "CentralDBUser",  # We don't autogenerate a collector configuration so copy all those variables over
            "SessionSumCmd", "CentralDataDir", "CentralArchDir", # We don't autogenerate a collector configuration so copy all those variables over
-           "CentralHostTimeout", "SendTimeout", # Copy this over since we don't have a better use for it.
+           "CentralHost", "CentralHostTimeout", "SendTimeout", # Copy this over since we don't have a better use for it.
            "SecretName", # Copy the SecretName for now, but we need to figure out how to impart this in the future
            "DataDir", "SessionSuffix", "SummarySuffix", "BinDir", "Cmd" # Used by the master, but generic, or specific to the host it's running on.
     );
     my @measurementset_attrs = ('TESTSPEC', 'ADDRTYPE', 'GROUP', 'DESCRIPTION', 'EXCLUDE_SELF', 'ADDED_BY_MESH');
     my @group_attrs = ('GROUPTYPE','NODES','SENDERS','RECEIVERS','INCLUDE_RECEIVERS','EXCLUDE_RECEIVERS','INCLUDE_SENDERS','EXCLUDE_SENDERS','HAUPTNODE');
-    my @node_attrs  = ('ADDR', 'LONGNAME', 'OWPTESTPORTS');
+    my @node_attrs  = ('ADDR', 'LONGNAME', 'OWPTESTPORTS', 'NOAGENT', 'CONTACTADDR');
     my @testspec_attrs  = (
         'TOOL', 'DESCRIPTION',
         'OWPINTERVAL', 'OWPLOSSTHRESH', 'OWPSESSIONCOUNT', 'OWPSAMPLECOUNT', 'OWPPACKETPADDING', 'OWPBUCKETWIDTH',
@@ -2665,7 +2659,7 @@ sub __build_owmesh_conf {
             $text .= "[[ ".join("  ", @{ $owmesh_desc->{$key} })." ]]";
         }
         elsif (ref($owmesh_desc->{$key}) eq "HASH") {
-            foreach my $subkey (keys %{ $owmesh_desc->{$key} }) {
+            foreach my $subkey (sort keys %{ $owmesh_desc->{$key} }) {
                 $text .= "<$key=$subkey>\n";
                 $text .= $self->__build_owmesh_conf($owmesh_desc->{$key}->{$subkey});
                 $text .= "</$key>\n";
