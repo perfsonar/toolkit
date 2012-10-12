@@ -17,7 +17,9 @@ result) graph using the Dygraphs API.
 
 use FindBin qw($RealBin);
 my $basedir = "$RealBin/";
-use lib ("$RealBin/../lib");
+
+use lib "$RealBin/lib";
+use lib "$RealBin/../../../../lib";
 
 use CGI qw(:standard);
 use perfSONAR_PS::Client::MA;
@@ -42,7 +44,7 @@ my $dst         = $cgi->param('dst');
 my $srcIP       = $cgi->param('srcIP');
 my $dstIP       = $cgi->param('dstIP');
 my $domparam    = $cgi->param('DOMloaded');
-my $basetmpldir = "$RealBin/../templates";
+my $basetmpldir = "$RealBin/templates";
 
 if ( !defined $ma_url || !defined $key ) {
 
@@ -186,13 +188,13 @@ else {
     my $htmlfile =
       HTML::Template->new( filename => "$basetmpldir/bw_pageDisplay.tmpl" );
     $htmlfile->param(
-        STARTTIME => HTML::Entities::encode($start),
-        ENDTIME   => HTML::Entities::encode($end),
-        MA_URL    => HTML::Entities::encode($ma_url),
-        TESTKEY   => HTML::Entities::encode($key),
-        TESTKEYR  => HTML::Entities::encode($keyR),
-        REVERSE   => HTML::Entities::encode($reverse),
-        FULLURL   => HTML::Entities::encode($queryparameters)
+        #STARTTIME => HTML::Entities::encode($start),
+        #ENDTIME   => HTML::Entities::encode($end),
+        #MA_URL    => HTML::Entities::encode($ma_url),
+        #TESTKEY   => HTML::Entities::encode($key),
+        #TESTKEYR  => HTML::Entities::encode($keyR),
+        #REVERSE   => HTML::Entities::encode($reverse),
+        #FULLURL   => HTML::Entities::encode($queryparameters)
     );
     print $htmlfile->output;
     my $jsfile = HTML::Template->new(
@@ -200,7 +202,6 @@ else {
         loop_context_vars => "true"
     );
     $jsfile->param(
-        TESTHOSTS => HTML::Entities::encode($pageHeading),
         GRAPHDATA => \@sortedResult,
         REVERSE   => HTML::Entities::encode($reverse),
         STATS     => HTML::Entities::encode($stats)

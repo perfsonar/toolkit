@@ -1,12 +1,4 @@
 <script type="text/javascript">
-var date = new Date();
-var tmzdiv = document.getElementById("timezone");
-var d=new Date();
-var myString = d.toString();
-var splitDateString = myString.split(' ');
-tmzdiv.innerHTML= '<b> Timezone: '+ splitDateString[splitDateString.length-2]+' '+splitDateString[splitDateString.length-1]+ '</b>';
-var keyArray = new Array();
-
 function init(){
 
 	var sTime = document.getElementById("startParam").value*1000;
@@ -35,10 +27,10 @@ function init(){
 	keyArray["maxr"]=3;
 	keyArray["minr"]=4;
 	keyArray["lossr"]=5;
-        keyArray["thirdq"]=6;
+        keyArray["ninetyfifthpercentile"]=6;
         keyArray["median"]=7;
         keyArray["firstq"]=8;
-        keyArray["thirdqr"]=9;
+        keyArray["ninetyfifthpercentiler"]=9;
         keyArray["medianr"]=10;
         keyArray["firstqr"]=11;
 	
@@ -62,10 +54,10 @@ function getChartData() {
                  data[ctr][4] = <TMPL_VAR NAME=maxr>;
                  data[ctr][5] = <TMPL_VAR NAME=minr>;
                  data[ctr][6] = <TMPL_VAR NAME=lossr>;
-         	 data[ctr][7] = <TMPL_VAR NAME=thirdq>;
+         	 data[ctr][7] = <TMPL_VAR NAME=ninetyfifthpercentile>;
         	 data[ctr][8] = <TMPL_VAR NAME=median>;
         	 data[ctr][9] = <TMPL_VAR NAME=firstq>;
-		 data[ctr][10] = <TMPL_VAR NAME=thirdqr>;
+		 data[ctr][10] = <TMPL_VAR NAME=ninetyfifthpercentiler>;
                  data[ctr][11] = <TMPL_VAR NAME=medianr>;
                  data[ctr][12] = <TMPL_VAR NAME=firstqr>;
 
@@ -128,11 +120,11 @@ var chtdata = getChartData();
      var chart = new Dygraph(document.getElementById("chart_div"),chtdata, 
 						{        yAxisLabelFormatter: function(x) {return Math.round(x*1000)/1000+' ms'},
 							labelsSeparateLines: true,
-							labels: ['Date','max(ms)','min(ms)','loss', 'maxr(ms)','minr(ms)','lossr','thirdq(ms)','median(ms)','firstq(ms)','thirdqr(ms)','medianr(ms)','firstqr(ms)'],
-							'loss': {   strokeWidth:0.0, drawPoints:true, pointSize:3, highlightCircleSize:4, ylabel: 'Loss', 
+							labels: ['Date','max(ms)','Minimum (ms)','Loss', 'maxr(ms)','minr(ms)','lossr','95th Percentile (ms)','Median (ms)','firstq(ms)','ninetyfifthpercentiler(ms)','medianr(ms)','firstqr(ms)'],
+							'Loss': {   strokeWidth:0.0, drawPoints:true, pointSize:3, highlightCircleSize:4, ylabel: 'Loss', 
 										axis: {  yAxisLabelFormatter: function(x) {return Math.round(x*100)/100+'%'}}},
-							'lossr': {strokeWidth:0.0, drawPoints:true, pointSize:3, highlightCircleSize:4, axis: 'loss'},
-							visibility: [false, true, true, false, false, false, false, false,false,false,false,false], 
+							'lossr': {strokeWidth:0.0, drawPoints:true, pointSize:3, highlightCircleSize:4, axis: 'Loss'},
+							visibility: [false, true, true, false, false, false, true,true,false,false,false], 
 							includeZero: true,
 							connectSeparatedPoints: true,
 							xlabel:'Time',
@@ -148,7 +140,7 @@ var chtdata = getChartData();
 							'loss': {   strokeWidth:0.0, drawPoints:true, pointSize:3, highlightCircleSize:4,  
 										axis: {  ylabel: 'Loss', yAxisLabelFormatter: function(x) {return Math.round(x*100)/100+'%'}}},
 							'lossr': {strokeWidth:0.0, drawPoints:true, pointSize:3, highlightCircleSize:4,axis: 'loss'},
-							visibility: [false, true, true, false, false,false], 
+							visibility: [false, true, true, true, true,true], 
 							connectSeparatedLines: true,
 							includeZero: true,
 							xlabel:'Time',
@@ -284,7 +276,7 @@ function toggleReverseDirectionOptions(value){
 	var bucket = document.getElementById("buckets").value;
 	console.log(bucket);
 	if(bucket=="1"){
-		 checkbox = document.getElementById("thirdqr");
+		 checkbox = document.getElementById("ninetyfifthpercentiler");
         	 checkbox.disabled = notVal;
 		 checkbox.checked = false;
         	 checkbox1 =  document.getElementById("medianr");
@@ -303,7 +295,7 @@ function toggleForwardDirectionOptions(value){
         var bucket = document.getElementById("buckets").value;
         console.log(bucket);
         if(bucket=="1"){
-                 checkbox = document.getElementById("thirdq");
+                 checkbox = document.getElementById("ninetyfifthpercentile");
                  checkbox.checked = false;
                  checkbox1 =  document.getElementById("median");
                  checkbox1.checked = false;
@@ -340,7 +332,7 @@ function updateDirectionData(chkbox){
 			document.getElementById("max").checked = false;
 			var bucket = document.getElementById("buckets");
 			if(bucket == "1"){
-				document.getElementById("thirdq").checked = false;
+				document.getElementById("ninetyfifthpercentile").checked = false;
 				document.getElementById("median").checked = false;
 				document.getElementById("firstq").checked = false;
 			}
@@ -359,7 +351,7 @@ function updateDirectionData(chkbox){
 		chart.setVisibility(lineId, false);
 		var bucket = document.getElementById("buckets");
 		if(bucket==true){
-			lineId = keyArray["thirdqr"];
+			lineId = keyArray["ninetyfifthpercentiler"];
 			chart.setVisibility(lineId, false);
                 	lineId = keyArray["medianr"];
                 	chart.setVisibility(lineId, false);
@@ -414,10 +406,10 @@ function retrieveData(fullurl,direction){
                           		chtdata[i].push(dataJson[i]["minr"]);
 					chtdata[i].push(dataJson[i]["lossr"]);
 					if(bucket == 1){
-                          			chtdata[i].push(dataJson[i]["thirdq"]);
+                          			chtdata[i].push(dataJson[i]["ninetyfifthpercentile"]);
                                 		chtdata[i].push(dataJson[i]["median"]);
                                 		chtdata[i].push(dataJson[i]["firstq"]);
-                                		chtdata[i].push(dataJson[i]["thirdqr"]);
+                                		chtdata[i].push(dataJson[i]["ninetyfifthpercentiler"]);
                                 		chtdata[i].push(dataJson[i]["medianr"]);
                                 		chtdata[i].push(dataJson[i]["firstqr"]);
 					}

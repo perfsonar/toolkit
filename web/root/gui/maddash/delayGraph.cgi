@@ -17,7 +17,9 @@ result) graph using the Dygraphs API.
 
 use FindBin qw($RealBin);
 my $basedir = "$RealBin/";
-use lib ("$RealBin/../lib");
+
+use lib "$RealBin/lib";
+use lib "$RealBin/../../../../lib";
 
 use CGI qw(:standard);
 use perfSONAR_PS::Client::MA;
@@ -44,7 +46,7 @@ my $domparam = $cgi->param('DOMloaded');
 my $bucketVal = $cgi->param('bucket_width');
 
 
-my $basetmpldir = "$RealBin/../templates";
+my $basetmpldir = "$RealBin/templates";
 
 if ( !defined $ma_url and !defined $key ) {
 
@@ -120,7 +122,7 @@ while ( my ( $k, $v ) = each %$res ) {
         $v->{"lossr"} = undef;
         $v->{"maxr"}  = undef;
         if ( $bucketsFlag == 1 ) {
-            $v->{"thirdqr"} = undef;
+            $v->{"ninetyfifthpercentiler"} = undef;
             $v->{"medianr"} = undef;
             $v->{"firstqr"} = undef;
         }
@@ -132,7 +134,7 @@ while ( my ( $k, $v ) = each %$res ) {
         $v->{"lossr"} = "null";
         $v->{"maxr"}  = "null";
         if ( $bucketsFlag == 1 ) {
-            $v->{"thirdqr"} = "null";
+            $v->{"ninetyfifthpercentiler"} = "null";
             $v->{"medianr"} = "null";
             $v->{"firstqr"} = "null";
 
@@ -160,8 +162,8 @@ if ( $domparam eq "yes" && defined $keyR ) {
             $v->{"maxr"}  = $v->{"max"};
             $v->{"max"}   = undef;
             if ( $bucketsFlag == 1 ) {
-                $v->{"thirdqr"} = $v->{"thirdq"};
-                $v->{"thirdq"}  = undef;
+                $v->{"ninetyfifthpercentiler"} = $v->{"ninetyfifthpercentile"};
+                $v->{"ninetyfifthpercentile"}  = undef;
                 $v->{"medianr"} = $v->{"median"};
                 $v->{"median"}  = undef;
                 $v->{"firstqr"} = $v->{"firstq"};
@@ -213,13 +215,13 @@ else {
       HTML::Template->new( filename => "$basetmpldir/pageDisplay.tmpl" );
     $htmlfile->param(
         BUCKETS    => HTML::Entities::encode($bucketsFlag),
-        STARTTIME  => HTML::Entities::encode($start),
-        ENDTIME    => HTML::Entities::encode($end),
-        MA_URL     => HTML::Entities::encode($ma_url),
-        TESTKEY    => HTML::Entities::encode($key),
-        FULLURL    => HTML::Entities::encode($queryparameters),
-        TESTHOSTS  => HTML::Entities::encode($pageHeading),
-        TESTKEYREV => HTML::Entities::encode($keyR),
+        #STARTTIME  => HTML::Entities::encode($start),
+        #ENDTIME    => HTML::Entities::encode($end),
+        #MA_URL     => HTML::Entities::encode($ma_url),
+        #TESTKEY    => HTML::Entities::encode($key),
+        #FULLURL    => HTML::Entities::encode($queryparameters),
+        #TESTHOSTS  => HTML::Entities::encode($pageHeading),
+        #TESTKEYREV => HTML::Entities::encode($keyR),
     );
     print $htmlfile->output;
     my $jsfile = HTML::Template->new(
@@ -277,7 +279,7 @@ sub getData() {
     	
     	eval { $doc = $parser->parse_string( @{ $result->{data} } ); };
     	my $root       = $doc->getDocumentElement;
-    	
+
     	my @childnodes = $root->findnodes("./*[local-name()='datum']");
 
     	if ($@) {
@@ -347,13 +349,13 @@ sub getData() {
             		}
             		my $median;
             		my $firstq;
-            		my $thirdq;
+            		my $ninetyfifthpercentile;
 
             		if ( scalar @summaryBuckets > 0 ) {
             			if($bucketVal > 0){
             				$median = getPercentile( $sent_packets, 50, \%histogram ) * ($bucketVal/0.001);
                 			$firstq = getPercentile( $sent_packets, 25, \%histogram ) * ($bucketVal/0.001);
-                			$thirdq = getPercentile( $sent_packets, 75, \%histogram ) * ($bucketVal/0.001);
+                			$ninetyfifthpercentile = getPercentile( $sent_packets, 95, \%histogram ) * ($bucketVal/0.001);
                 			$tsresult{"buckets"} = "true";
             			}else{
             				$tsresult{"buckets"} = "false";
@@ -376,10 +378,10 @@ sub getData() {
                 		$tsresult{"median"} = "null";
             		}
 
-            		if ( defined $thirdq ) {
-                		$tsresult{"thirdq"} = $thirdq;
+            		if ( defined $ninetyfifthpercentile ) {
+                		$tsresult{"ninetyfifthpercentile"} = $ninetyfifthpercentile;
             		}else {
-                		$tsresult{"thirdq"} = "null";
+                		$tsresult{"ninetyfifthpercentile"} = "null";
             		}
             		$finalResult{$etimestamp} = \%tsresult;
         	}

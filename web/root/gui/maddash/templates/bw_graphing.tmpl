@@ -1,11 +1,4 @@
 <script type="text/javascript">
-var date = new Date();
-var tmzdiv = document.getElementById("timezone");
-var d=new Date();
-var myString = d.toString();
-var splitDateString = myString.split(' ');
-tmzdiv.innerHTML= '<b> Timezone: '+ splitDateString[splitDateString.length-2]+' '+splitDateString[splitDateString.length-1]+ '</b>';
-
 function getChartData() {
 	var data = new Array();
 	var msts;
@@ -94,7 +87,6 @@ function updateStats(initial,statistics){
 }
 
 var chtdata = getChartData();
-var chttitle="Throughput test between "+"<TMPL_VAR NAME=TESTHOSTS>";
    <TMPL_IF NAME=REVERSE>
      var chart = new Dygraph(document.getElementById("chart_div"),chtdata, 
 						{       yAxisLabelFormatter: function(x) {return formatValue(x);},
@@ -105,7 +97,7 @@ var chttitle="Throughput test between "+"<TMPL_VAR NAME=TESTHOSTS>";
 							connectSeparatedPoints: 1, 
 							labelsDiv: 'labelsDiv',colors: ['#0000FF','#00FF00'],
 						        gridLineWidth: 0.1,
-                                                        xlabel:'Time', ylabel:'Throughput (bps)', title:chttitle, titleHeight: 24
+                                                        xlabel:'Time', ylabel:'Throughput (bps)'
                                                 }
 			);
    <TMPL_ELSE>
@@ -119,11 +111,11 @@ var chttitle="Throughput test between "+"<TMPL_VAR NAME=TESTHOSTS>";
 							labelsDiv: 'labelsDiv',
 							colors: ['#0000FF'],
                                                         gridLineWidth: 0.1,
-                                                        xlabel:'Time', ylabel:'Throughput (bps)', title:chttitle, titleHeight: 24
+                                                        xlabel:'Time', ylabel:'Throughput (bps)'
 						}
 			);
    </TMPL_IF>
-  updateStats(true,null);
+  //updateStats(true,null);
    
 function formatValue(x){
 	if (x < 1000 ) {
@@ -180,7 +172,7 @@ function retrieveData(fullurl){
 				}
 			 	chart.updateOptions({'file': chtdata});
 				chart.updateOptions({connectSeparatedPoints: true});                                 
-				updateStats(false,dataJson["statistics"]);
+				//updateStats(false,dataJson["statistics"]);
 				return 0;
 			}else{
 				return -1;

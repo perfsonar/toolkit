@@ -1,162 +1,43 @@
-<html>
-<head>
-        <title>perfSONAR-PS delay graph</title>
-    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    <script type="text/javascript" src="JS/dygraph-combined.js"></script>
-    <style type="text/css">#chart_maindiv {
-                       border: 1px solid black;
-       }
-    </style>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript" src="js/dygraph-combined.js"></script>
 
+<style type="text/css">#chart_div {
+                   border: 1px solid black;
+   }
+</style>
 </head>
-<body onload="init()">
-        <input type="hidden" id="startParam" name="startParam" value="<TMPL_VAR NAME=STARTTIME>"/>
-        <input type="hidden" id="endParam" name="endParam" value="<TMPL_VAR NAME=ENDTIME>"/>
-        <input type="hidden" id="ma_url" name="ma_url" value="<TMPL_VAR NAME=MA_URL>"/>
-        <input type="hidden" id="testkey" name="testkey" value="<TMPL_VAR NAME=TESTKEY>"/>
-        <input type="hidden" id="testkeyR" name="testkeyR" value="<TMPL_VAR NAME=TESTKEYREV>"/>
-        <input type="hidden" id="buckets" name="buckets" value="<TMPL_VAR NAME=BUCKETS>"/>
-        <table>
-           <tr><td></td><td><h4 align="center">perfSONAR One Way Latency </h4></td><td></td></tr>
-           <tr></tr>
-           <tr>
-               <td valign="top" align="center"><div style="width: 225px; height: 50px;" id="logodiv"><img src="images/header.gif" height="35px" width="140px" align='top' alt="perfsonar logo"></img></div>
-                <br/><br/>
-                        <div id="keyDiv" style="width: 225px;">
-                           <p> <br/><b> Graph Key (Src-Dst) </b>
-                           <br/>
-                             <table title="Graph key (Src-Dst)" id="keytable1" border="0" cellspacing="5">
-                                <tr>
-                                        <td class="key" style="background-color: #804000; width: 20px;"></td>
-                                        <td><input type="checkbox" id="max"  onClick="changeVisibility(this)"/></td>
-                                        <td><label for="max">Max delay</label></td>
-                                 </tr>
-                                 <tr>
-                                                                                <td class="key" style="background-color: #2554C7; width: 20px;"></td>
-                                        <td><input type="checkbox" id="min" checked disabled="disabled" onClick="changeVisibility(this)"/></td>
-                                        <td><label for="min">Min delay</label></td>
-                                 </tr>
-                                        <td class="key" style="background-color: #000000; width: 20px;"></td>
-                                        <td><input type="checkbox" id="loss"  checked disabled="disabled" onClick="changeVisibility(this)"/></td>
-                                        <td><label for="loss">Loss</label></td>
-                                 <tr>
-                  <TMPL_IF NAME=BUCKETS>
-                                 </tr>
-                                        <td class="key" style="background-color: #FBB117; width: 20px;"></td>
-                                        <td><input type="checkbox" id="thirdq"  onClick="changeVisibility(this)"/></td>
-                                        <td><label for="thirdq">Third Quartile</label></td>
-                                                                 </tr>
-                                <tr>
-                                        <td class="key" style="background-color: #FF0080; width: 20px;"></td>
-                                        <td><input type="checkbox" id="median"  onClick="changeVisibility(this)"/></td>
-                                        <td><label for="median">Median</label></td>
-                                </tr>
-                                <tr>
-                                        <td class="key" style="background-color: #00FF00; width: 20px;"></td>
-                                        <td><input type="checkbox" id="firstq"  onClick="changeVisibility(this)"/></td>
-                                        <td><label for="firstq">First Quartile</label></td>
-                                </tr>
-              </TMPL_IF>
 
-                              </table>
+<input type="hidden" id="buckets" name="buckets" value="<TMPL_VAR NAME=BUCKETS>"/>
 
-                        </div>
-			</td>
-                      <td valign='top' width="750px" > <br/>
-                      <div id="axisOptions" style="width: 750px; height: 20px;">
-                        <table>
-                        <tr><td align="left"><input type="checkbox" id="scaleYaxis" checked onClick="changeYaxis(this)"/><label for="scaleYaxis">Scale Y axis from 0</label></td>
-                        <td align="right"><input type="checkbox" class="directionseries" id="bothdir"  onclick="updateDirectionData(this)"/> <label align="center" for="bothdir">Show Reverse Direction Data </label></td>
-                        </tr>                        </table>
-                        </div>
-                        <div id="dirMessageDiv" style="width: 250px; height: 20px;display:'none';"></div>
-                      <div id="chart_maindiv" style="width: 750px; height: 465px;">
-                        <div id="progressDiv" style="width: 750px; height: 20px; background-color: #804000; visibility: hidden; color: #FFFFFF">
-				<p>Loading...			
-                        </div>
-			<div id="negLatMsgDiv" style="width: 750px; height: 20px; visibility: hidden; color: #FF0000">
-				<p> There are negative latency results in the data. Please check the clocks at each of the endpoints
-			</div>
-			<div id="chart_axislabeldiv" style="width: 750px; height: 50px;">
-                        <table width="100%">
-                        <tr><td valign="bottom" align="left" width="20%"><br/>One Way Latency (ms)</td>
-			<td align="center" valign="top"><b><TMPL_VAR NAME=TESTHOSTS></b></td>
-                        <td align="right" valign="bottom" width="20%"><br/>Loss(%)</td>
-                        </tr> </table>
-			</div>
-                        <div id="chart_div" style="width: 750px; height: 300px;"> </div>
-                        <div id="XaxisRange" style="width: 750px; height: 50px;">
-                        <table width="100%">
-                        <tr><td valign="bottom" align="left" width="50%" id="x_lower_range"></td>
-                        <td align="right" valign="bottom" width="50%" id="x_higher_range"></td>
-                        </tr> </table>
-                        </div>
-		      </div>
-			</td>
-                        <td valign='top' align="center">
-                        <div id="labelsDiv" style="width: 225px; height: 50px; visibility:hidden"></div><br/><br/>
-               <div id="keyDivR" style="width: 225px; visibility: hidden">
-                <p/><b> Graph Key (Dst-Src)</b><br/>
-                    <table width="225px" title="Graph key(Dst-Src)" align="right" id="keytable2" border="0" cellspacing="5">
-                  <tr>
-                      <td class="key" style="background-color: #41A317; width: 20px;"></td>
-                      <td><input type="checkbox" id="maxr"  disabled="disabled" onClick="changeVisibility(this)"/></td>
-                      <td ><label for="maxr">Max delay</label></td>
-                </tr>
-                  <tr>
-                       <td class="key" style="background-color: #FF8040; width: 20px;"></td>
-                       <td><input type="checkbox" id="minr"  disabled="disabled" onClick="changeVisibility(this)"/></td>
-                       <td><label for="minr">Min delay</label></td>
-                   </tr>
-                   <tr>
-                        <td class="key" style="background-color: #C11B17; width: 20px;"></td>
-                        <td><input type="checkbox" id="lossr"  disabled="disabled" onClick="changeVisibility(this)"/></td>
-                        <td><label for="lossr">Loss</label></td>
-                   </tr>
-                          <TMPL_IF NAME=BUCKETS>
-                              <tr>
-                                     <td class="key" style="background-color: #461B7E; width: 20px;"></td>
-                     <td><input type="checkbox" id="thirdqr"  disabled="disabled" onClick="changeVisibility(this)"/></td>
-                     <td ><label for="thirdqr">Third Quartile</label></td>
-                  </tr>
-                          <tr>
-                                        <td class="key" style="background-color: #617C58; width: 20px;"></td>
-                    <td><input type="checkbox" id="medianr"  disabled="disabled" onClick="changeVisibility(this)"/></td>                    <td><label for="medianr">Median</label></td>
-                  </tr>
-                  <tr>
-                                <td class="key" style="background-color: #7D0541; width: 20px;"></td>
-                    <td><input type="checkbox" id="firstqr"  disabled="disabled" onClick="changeVisibility(this)"/></td>
-                    <td><label for="firstqr">First Quartile</label></td>
-                  </tr>
-                                  </TMPL_IF>
-                    </table>
-                </div>
-
-	 </td>
-         <td width="10%" valign="top" align="left">
+<body>
+    <table>
+       <tr>
+           <td><h4 align="center">One-Way Latency/Loss</h4></td>
+       </tr>
+       <tr>
+           <td><div id="chart_div" style="width: 500px; height: 300px;"></div></td>
+       </tr>
+       <tr>
+         <td align="center">
+            <table border="0" cellspacing="5">
+               <tr>
+                 <td class="key" style="background-color: #2554C7; width: 20px;"></td>
+                 <td><label>Miniumum Latency</label></td>
+                 <TMPL_IF NAME=BUCKETS>
+                 <td class="key" style="background-color: #FF0080; width: 20px;"></td>
+                 <td><label>Median Latency</label></td>
+                 <td class="key" style="background-color: #FBB117; width: 20px;"></td>
+                 <td><label>95th Percentile Latency</label></td>
+                 </TMPL_IF>
+                 <td class="key" style="background-color: #000000; width: 20px;"></td>
+                 <td><label>Loss</label></td>
+               </tr>
+            </table>
          </td>
-        </tr>
-        <tr id="timeseries">
-                               <td style="white-space:nowrap;" align="right"><a href="" class="timeseries" id="past" onclick="updateTimeSeriesData(this);return false;"> &lt;- 4 hours </a> <div id="pastTimeError" style="width: 50px; height: 50px;"></div></td>
-                               <td align="center"><div id="timezone"><b> Timezone: </b></div></td>
-                               <td style="white-space:nowrap;" align="left"><a href="" class="timeseries" id="future" onclick="updateTimeSeriesData(this); return false;"> 4 hours -&gt; </a> <div id="futureTimeError" style="width: 50px; height: 50px;" ></div></td>
- 
-	</tr>
-	<tr>
-	<td></td>
-	<td align="left">
-            <button id="urllink" value="Show" onclick="showURL();" style="background-color: transparent;text-decoration: underline;border: none; cursor: pointer; cursor: hand; font-size: 12px;">Show/Hide Link</button><div id="url_div" style="visibility:hidden">Copy and Paste Link in IM or Email<textarea cols="20" rows="1" id="urltext"><TMPL_VAR NAME=FULLURL></textarea></div>
-        </td>
-	<td></td>
-	</tr>
-	<tr>
-	<td></td>
-	<td align="left">
-	<p> For help on how to zoom in, zoom out, use the menu options and interact with the graph, <a href="html/help.html" target="_blank">click here </a>
-	</td>
-	<td></td>
-	</tr>
-     </table>   
+       </tr>
+       <tr>
+           <td><div id="labelsDiv" style="width: 500px; height: 100px;"></div></td>
+       </tr>
 
-  </div>
-
+   </table>
+</body>
