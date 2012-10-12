@@ -1,0 +1,85 @@
+<html>
+<head>
+        <title>perfSONAR-PS bandwidth graph</title>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="JS/dygraph-combined.js"></script>
+    <style type="text/css">#chart_div {
+                       border: 1px solid black;
+       }
+    </style>
+</head>
+<body>
+        <input type="hidden" id="startParam" name="startParam" value="<TMPL_VAR NAME=STARTTIME>"/>
+        <input type="hidden" id="endParam" name="endParam" value="<TMPL_VAR NAME=ENDTIME>"/>
+        <input type="hidden" id="ma_url" name="ma_url" value="<TMPL_VAR NAME=MA_URL>"/>
+        <input type="hidden" id="testkey" name="testkey" value="<TMPL_VAR NAME=TESTKEY>"/>
+        <input type="hidden" id="testkeyR" name="testkeyR" value="<TMPL_VAR NAME=TESTKEYR>"/>
+        <table>
+           <tr><td></td><td><h4 align="center"> perfSONAR BWCTL Graph </h4></td><td></td></tr>
+           <tr></tr>
+           <tr>
+               <td valign="top" align="right"><img src="images/header.gif" height="35px" width="140px" alt="perfsonar logo"></img></td>
+                   <td>
+                       <table cellpadding="15">
+                           <tr>
+                               <td></td>
+                               <td><br/><br/><br/><div id="chart_div" style="width: 750px; height: 300px;"></div></td>
+                               <td></td>
+                           </tr>
+                           <tr id="timeseries">
+                               <td></td>
+                               <td>
+                               	  <table width="750px">
+                               	      <tr>
+                                          <td style="white-space:nowrap;" align="center"><a href="" class="timeseries" id="past" onclick=" updateTimeSeriesData(this); return false;"> &lt;- 1 month </a> <div id="pastTimeError" style="width: 50px; height: 50px;"></div></td>
+                                          <td align="center"><div id="timezone"><b> Timezone: </b></div></td>
+                                          <td style="white-space:nowrap;" align="left"><a href="" class="timeseries" id="future" onclick="updateTimeSeriesData(this); return false;"> 1 month -&gt; </a> <div id="futureTimeError" style="width: 50px; height: 50px;" ></div></td>
+                           	          </tr>
+                           	      </table>
+                           	   </td>
+                           	   <td></td>
+                           </tr>
+                           <tr>
+                              <td></td>
+                              <td align="center"><div id="stats" align="center" style="width: 750px; height: 100px;"></div></td>
+                              <td></td>
+                           </tr>
+                       </table>
+                   </td>
+                  <td valign="top" align="left">
+                      <div id="labelsDiv" style="width: 200px; height: 50px;"></div>
+                      <div id="keyDiv" style="width: 200px; height: 100px;">
+                      <p> <b> Graph Key </b>
+                      <p>
+                      <table title="Graph key" id="keytable" border="0" cellspacing="5" style="font-size: 14px">
+                           <tr>
+                                <td class="key" style="background-color: #0000FF; width: 20px;"></td>
+                                <td><label for="0">Src-Dst throughput</label></td>
+                           </tr>
+                            <TMPL_IF NAME=REVERSE>
+                            <tr>
+                                 <td class="key" style="background-color: #00FF00; width: 20px;"></td>
+                                 <td><label for="1">Dst-Src throughput</label></td>
+                            </tr>
+                            </TMPL_IF>
+                      </table>
+                      </div>
+				</td>
+            </tr>
+            <tr>
+                 <td></td>
+                 <td align="left"><button id="urllink" value="Show" onclick="showURL();" style="background-color: transparent;text-decoration: underline;border: none; cursor: pointer; cursor: hand; font-size: 12px;">Show/Hide Link</button><div id="url_div" style="visibility:hidden">Copy and Paste Link in IM or Email<textarea cols="20" rows="1" id="urltext"><TMPL_VAR NAME=FULLURL></textarea></div>
+
+                </td>
+                <td></td>
+            </tr>
+        <tr>
+        <td></td>
+        <td align="left">
+        <p> For help on how to zoom in, zoom out, use the menu options and interact with the graph, <a target="_blank" href="html/help.html">click here </a>
+        </td>
+        <td></td>
+        </tr>
+
+    </table>
+

@@ -1,0 +1,255 @@
+<script type="text/javascript">
+var date = new Date();
+var tmzdiv = document.getElementById("timezone");
+var d=new Date();
+var myString = d.toString();
+var splitDateString = myString.split(' ');
+tmzdiv.innerHTML= '<b> Timezone: '+ splitDateString[splitDateString.length-2]+' '+splitDateString[splitDateString.length-1]+ '</b>';
+
+function getChartData() {
+	var data = new Array();
+	var msts;
+	<TMPL_IF REVERSE>
+		<TMPL_LOOP NAME=GRAPHDATA>
+	 		var ctr = <TMPL_VAR NAME="__counter__"> - 1;
+	    	data[ctr] = new Array(3);
+   
+	   		 msts = <TMPL_VAR NAME=timestamp>;
+       		 data[ctr][0] = new Date(parseInt(msts)*1000);
+        	 data[ctr][1] = <TMPL_VAR NAME=throughput>;
+        	 data[ctr][2] = <TMPL_VAR NAME=throughputr>;
+    	</TMPL_LOOP>	
+   <TMPL_ELSE>
+		<TMPL_LOOP NAME=GRAPHDATA>
+	 		 var ctr = <TMPL_VAR NAME="__counter__"> - 1;
+	    	 data[ctr] = new Array(2);
+	   		 msts = <TMPL_VAR NAME=timestamp>;
+       		 data[ctr][0] = new Date(parseInt(msts)*1000);
+        	 data[ctr][1] = <TMPL_VAR NAME=throughput>;
+        </TMPL_LOOP>
+   </TMPL_IF>
+   
+    return data;
+}
+
+
+function showURL(){
+	var link = document.getElementById("urllink");
+	if(link.value == "Show"){
+		var urldiv = document.getElementById("url_div");
+                var urltext = urldiv.getElementsByTagName("textArea");
+		urldiv.style.visibility = "visible";
+                selectText(urltext[0].id);
+		link.value = "Hide";
+	}else{
+		var urldiv = document.getElementById("url_div");
+		urldiv.style.visibility = "hidden";
+		link.value = "Show"; 
+	}      
+}
+
+function selectText(id){
+     document.getElementById(id).focus();
+     document.getElementById(id).select();
+}
+
+function updateUrl(url){
+	var urldiv = document.getElementById("url_div");
+	urldiv.innerHTML=url;
+}
+
+
+function changeVisibility(el){
+	chart.setVisibility(parseInt(el.id), el.checked);
+}
+
+function updateStats(initial,statistics){
+	var statsdiv = document.getElementById("stats");
+	var divcontent;
+	divcontent = "<table cellpadding=\"10\" style=\"font-size: 14px\" border=\"1\"> <tr><th>Direction</th> <th> Max throughput(bps) </th> <th> Mean throughput(bps) </th> <th> Min throughput(bps) </th> </tr>";
+	if(initial == true){
+		<TMPL_LOOP NAME="STATS">
+			divcontent += "<tr>";
+			divcontent += "<td>"+'<TMPL_VAR NAME=DIR>'+"</td>";
+			divcontent += "<td>"+formatValue(<TMPL_VAR NAME=MAX>)+"</td>";
+			divcontent += "<td>"+formatValue(<TMPL_VAR NAME=MEAN>)+"</td>";
+			divcontent += "<td>"+formatValue(<TMPL_VAR NAME=MIN>)+"</td>";
+			divcontent += "</tr>";
+		</TMPL_LOOP>
+	}else{
+		if(statistics != null){
+			for (var i=0; i<statistics.length; i++){
+				console.log("updateStats:"+statistics[i]);
+				divcontent += "<tr>";
+	                        divcontent += "<td>"+statistics[i]["dir"]+"</td>";
+	                        divcontent += "<td>"+formatValue(statistics[i]["max"])+"</td>";
+        	                divcontent += "<td>"+formatValue(statistics[i]["mean"])+"</td>";
+                	        divcontent += "<td>"+formatValue(statistics[i]["min"])+"</td>";
+                        	divcontent += "</tr>";
+			}
+		}
+	}
+	statsdiv.innerHTML = divcontent;
+	statsdiv.style.visibility = "block";
+}
+
+var chtdata = getChartData();
+var chttitle="Throughput test between "+"<TMPL_VAR NAME=TESTHOSTS>";
+   <TMPL_IF NAME=REVERSE>
+     var chart = new Dygraph(document.getElementById("chart_div"),chtdata, 
+						{       yAxisLabelFormatter: function(x) {return formatValue(x);},
+							yValueFormatter: function(x) {return formatValue(x)+"bps";},
+							labelsSeparateLines: true,
+							labels: ['Date','Throughput(Src-Dst)','Throughput(Dst-Src)'],
+							visibility: [true, true],
+							connectSeparatedPoints: 1, 
+							labelsDiv: 'labelsDiv',colors: ['#0000FF','#00FF00'],
+						        gridLineWidth: 0.1,
+                                                        xlabel:'Time', ylabel:'Throughput (bps)', title:chttitle, titleHeight: 24
+                                                }
+			);
+   <TMPL_ELSE>
+          var chart = new Dygraph(document.getElementById("chart_div"),chtdata, 
+						{    
+							yAxisLabelFormatter: function(x) {return formatValue(x);},
+							yValueFormatter: function(x) {return formatValue(x)+"bps";},
+							labelsSeparateLines: true,
+							labels: ['Date','Throughput'],
+							visibility: [true], 
+							labelsDiv: 'labelsDiv',
+							colors: ['#0000FF'],
+                                                        gridLineWidth: 0.1,
+                                                        xlabel:'Time', ylabel:'Throughput (bps)', title:chttitle, titleHeight: 24
+						}
+			);
+   </TMPL_IF>
+  updateStats(true,null);
+   
+function formatValue(x){
+	if (x < 1000 ) {
+		x  = Math.round(x*100)/100;
+    		return x;
+	}else if ( x < 1000000 ) {
+    		x = Math.round(x/1000*100)/100;
+		return x+'K';
+	}
+    	else if ( x < 1000000000 ) {
+       		x = Math.round(x / 1000000 *100)/100;
+    		return x+'M';
+	}
+    	else if ( x < 1000000000000 ) {
+        	x= Math.round (x / 1000000000 *100)/100;
+    		return x+'G';
+	}
+}
+
+function createRequestObject() { 
+  	var req; 
+  	if (window.XMLHttpRequest) { // Firefox, Safari, Opera... 
+    		req = new XMLHttpRequest(); 
+  	} else if (window.ActiveXObject) { // Internet Explorer 5+ 
+    		req = new ActiveXObject("Microsoft.XMLHTTP"); 
+  	} else { 
+    		alert('There was a problem creating the XMLHttpRequest object'); 
+    		req = '';
+  	}		
+  	return req; 
+}  
+
+
+function retrieveData(fullurl){
+	var httpreq = createRequestObject();
+	if(fullurl != null){
+		httpreq.open("GET", fullurl, false);
+		httpreq.send(null);
+		if(httpreq.status == 200){
+			var httpResponse = httpreq.responseText;
+		 	var errchk = httpResponse.indexOf("Error");
+			if(errchk != -1){
+				return -1;
+			}
+                        var dataJson = eval("(" + httpResponse + ")");
+			if(dataJson != null){
+				chtdata = new Array(dataJson["data"].length);
+				console.log("retrieveData: array length="+dataJson["data"].length);
+				for (i=0;i<dataJson["data"].length;i++){
+					chtdata[i] = new Array();
+				  	chtdata[i].push(new Date(dataJson["data"][i]["timestamp"]*1000));
+					chtdata[i].push(dataJson["data"][i]["throughput"]);
+					chtdata[i].push(dataJson["data"][i]["throughputr"]);
+				}
+			 	chart.updateOptions({'file': chtdata});
+				chart.updateOptions({connectSeparatedPoints: true});                                 
+				updateStats(false,dataJson["statistics"]);
+				return 0;
+			}else{
+				return -1;
+			}
+			
+		}else{
+			return -1;
+		}	
+	}else{
+		return -1;
+	}
+}
+
+ function updateTimeSeriesData(button){
+         var bId = button.id;
+         var pastTimeErrorDiv = document.getElementById("pastTimeError");
+         pastTimeErrorDiv.innerHTML = "";
+         var futureTimeErrorDiv = document.getElementById("futureTimeError");
+         futureTimeErrorDiv.innerHTML = "";
+         button.disabled= "disabled";
+         var maurl = document.getElementById("ma_url").value;
+         var testkey = document.getElementById("testkey").value;
+         var sparam = document.getElementById("startParam");
+         var eparam = document.getElementById("endParam");
+	 var testkeyR = document.getElementById("testkeyR").value;
+
+         if(bId == "past"){
+                var eTime = parseInt(sparam.value)+(24*60*60);
+                var sTime = eTime - (30*24*60*60);
+                sparam.value = sTime;
+                eparam.value = eTime;
+                var fullurl = "bandwidthGraph.cgi?url="+maurl+"&key="+testkey+"&keyR="+testkeyR+"&sTime="+sTime+"&eTime="+eTime+"&DOMloaded=yes";
+                document.getElementById("future").disabled=false;
+                var success = retrieveData(fullurl);
+                if(success != 0){
+                        pastTimeErrorDiv.innerHTML = "Error retrieving data!!";
+                        button.disabled="disabled";
+                }else{
+                        button.disabled = false;
+                }
+        }else if(bId == "future"){
+            var sTime = parseInt(eparam.value)-(24*60*60);
+                var eTime = sTime + (30*24*60*60);
+                var jsTime = sTime*1000; //js needs in milliseconds
+                var jeTime = eTime*1000;
+                var currentTime = new Date();
+                document.getElementById("past").disabled=false;
+                if(jsTime < currentTime.getTime()){
+                        if (jeTime > currentTime.getTime()){
+                                jeTime = currentTime.getTime();
+                                eTime = jeTime/1000;
+                                futureTimeErrorDiv.innerHTML = "Rounded end time!!";
+                        }
+                        sparam.value = sTime;
+                        eparam.value = eTime;
+                        var fullurl = "bandwidthGraph.cgi?url="+maurl+"&key="+testkey+"&keyR="+testkeyR+"&sTime="+sTime+"&eTime="+eTime+"&DOMloaded=yes";
+                        var success = retrieveData(fullurl);
+                        if(success != 0){
+                                futureTimeErrorDiv.innerHTML = "Error retrieving data!!";
+                                button.disabled="disabled";
+                        }else{
+                                button.disabled = false;
+                        }
+                }else{
+                        futureTimeErrorDiv.innerHTML = "Cannot retrieve data! Time range in future!!";
+                        button.disabled="disabled";
+                }
+        }
+ }
+
+</script>
+
