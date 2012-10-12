@@ -1,0 +1,34 @@
+.grid-container{float:none;overflow:hidden;margin-right:10px;}
+.grid{float:left;}
+.gcol{position:absolute;top:0px;}
+.gactive{background:#3c3c3c; fill:#3c3c3c}
+.grow{overflow:hidden;clear:both;z-index:1;position:relative;}
+.grow-heading{float:left;margin:1px 0px;}
+.gtext{font-family:verdana;font-size:10px;fill:#242424}
+.gactive .gtext {fill:#fff;font-size:11px;}
+.gcell{float:left;cursor:pointer;background:none;}
+.shadow {
+/*        -moz-box-shadow: 0 0 30px 5px #000;
+      -webkit-box-shadow: 0 0 30px 5px #000;
+*/          border:1px solid #fff;
+}
+.ggrid{float:left;position:relative;}
+.gleft{float:left;clear:both}
+.gtop{}
+.gsubcell{float:left;}
+rect{fill:none;}
+.tooltip{text-align:left;font-size:12px;}
+.tooltip .top-tip{padding-bottom:2px;border-bottom:1px solid #fff}
+.tooltip .bottom-tip{padding-top:2px;}  
+.legends{
+        background-color:#fff7fb;
+        border:1px solid #d0d1e6;
+        margin: 5px 5px 5px 5px;
+        font-size:11px;
+        float: left;
+        min-width: 97%;
+        
+}
+.legend{float:none;margin: 4px 10px 4px 10px;}
+.lsymbol{float:left;width:13px;height:13px;margin-right:3px;}
+.ltext{float:none;line-height:13px;font-style:normal;color:#252525}
