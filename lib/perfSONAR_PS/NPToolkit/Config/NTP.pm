@@ -22,7 +22,7 @@ the ntp.conf file.
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'NTP_SERVERS', 'NTP_CONF_FILE', 'NTP_CONF_TEMPLATE_FILE', 'KNOWN_SERVERS_FILE';
+use fields 'NTP_SERVERS', 'NTP_CONF_FILE', 'NTP_CONF_TEMPLATE_FILE', 'KNOWN_SERVERS_FILE', 'STEP_TICKERS_FILE';
 
 use Template;
 use Data::Dumper;
@@ -37,6 +37,7 @@ my %defaults = (
     ntp_conf          => "/etc/ntp.conf",
     known_servers     => "/opt/perfsonar_ps/toolkit/etc/ntp_known_servers",
     ntp_conf_template => "/opt/perfsonar_ps/toolkit/templates/config/ntp_conf.tmpl",
+    step_tickers_file => "/etc/ntp/step-tickers",
 );
 
 =head2 init({ ntp_conf_template => 0, known_servers => 0, ntp_conf => 0 })
@@ -56,6 +57,7 @@ sub init {
             ntp_conf_template => 0,
             known_servers     => 0,
             ntp_conf          => 0,
+            step_tickers_file => 0,
         }
     );
 
@@ -63,17 +65,18 @@ sub init {
     $self->{NTP_CONF_TEMPLATE_FILE} = $defaults{ntp_conf_template};
     $self->{NTP_CONF_FILE}          = $defaults{ntp_conf};
     $self->{KNOWN_SERVERS_FILE}     = $defaults{known_servers};
+    $self->{STEP_TICKERS_FILE}      = $defaults{step_tickers_file};
 
     # Override any
     $self->{NTP_CONF_TEMPLATE_FILE} = $parameters->{ntp_conf_template} if ( $parameters->{ntp_conf_template} );
     $self->{NTP_CONF_FILE}          = $parameters->{ntp_conf}          if ( $parameters->{ntp_conf} );
     $self->{KNOWN_SERVERS_FILE}     = $parameters->{known_servers}     if ( $parameters->{known_servers} );
+    $self->{STEP_TICKERS_FILE}      = $parameters->{step_tickers_file} if ( $parameters->{step_tickers_file} );
 
     my $res = $self->reset_state();
     if ( $res != 0 ) {
         return $res;
     }
-
     return 0;
 }
 
@@ -88,11 +91,13 @@ sub save {
 
     my $ntp_conf_output          = $self->generate_ntp_conf();
     my $ntp_known_servers_output = $self->generate_ntp_server_list();
+    my $ntp_step_tickers         = $self->generate_step_tickers_list();
 
     my $res;
 
     return (-1, "Problem generating NTP configuration") unless ( $ntp_conf_output );
     return (-1, "Problem generating list of known servers") unless ( $ntp_known_servers_output );
+    return (-1, "Problem generating list of selected servers") unless ($ntp_step_tickers);
 
     $res = save_file( { file => $self->{NTP_CONF_FILE}, content => $ntp_conf_output } );
     if ( $res == -1 ) {
@@ -106,6 +111,12 @@ sub save {
         return (-1, "Problem saving list of known NTP servers");
     }
 
+    $res = save_file( { file => $self->{STEP_TICKERS_FILE}, content => $ntp_step_tickers} );
+    if ( $res == -1 ) {
+        $self->{LOGGER}->error( "File save failed: " . $self->{STEP_TICKERS_FILE} );
+        return (-1, "Problem saving NTP configuration");
+    }
+
     if ( $parameters->{restart_services} ) {
         $res = restart_service( { name => "ntp" } );
         if ( $res == -1 ) {
@@ -115,6 +126,55 @@ sub save {
     }
 
     return 0;
+}
+
+=head2 generate_step_tickers_list({})
+    Returns a list of selected servers for the step tickers.
+=cut
+
+sub generate_step_tickers_list {
+    my $self = shift();
+    my $servers                  = $self->get_selected_servers();
+    my $selected_server_list     = $self->generate_server_list( servers => $servers );
+    return $selected_server_list;
+}
+
+=head2
+    Takes an array of NTP servers and returns a string of host names seperated by newlines.
+=cut
+
+sub generate_server_list {
+    my ( $self, @params ) = @_;
+    my $parameters = validate(
+        @params,
+        {
+            servers => 1
+        }
+    );
+    my $servers = $parameters->{servers};
+    my $ret;
+
+    foreach (@{$servers}) {
+        $ret .= $_->{address} . "\n";
+    }
+    return $ret;
+}
+
+=head2 get_selected_servers ({})
+    Returns an array of user selected NTP servers.
+=cut
+
+sub get_selected_servers {
+    my $self = shift();
+    my @servers = ();
+
+    foreach my $key ( keys %{ $self->{NTP_SERVERS} } ) {
+        my $ntp_server = $self->{NTP_SERVERS}->{$key};
+        if ( $ntp_server->{selected} ) {
+            push(@servers, $ntp_server);
+        }
+    }
+    return \@servers;
 }
 
 =head2 add_server({ address => 1, description => 1, selected => 1 })
@@ -418,6 +478,7 @@ sub save_state {
         ntp_conf           => $self->{NTP_CONF_FILE},
         ntp_conf_template  => $self->{NTP_CONF_TEMPLATE_FILE},
         known_servers_file => $self->{KNOWN_SERVERS_FILE},
+        step_tickers_file  => $self->{STEP_TICKERS_FILE},
     );
 
     my $str = freeze( \%state );
@@ -440,6 +501,7 @@ sub restore_state {
     $self->{NTP_CONF_FILE}          = $state->{ntp_conf};
     $self->{NTP_CONF_TEMPLATE_FILE} = $state->{ntp_conf_template};
     $self->{KNOWN_SERVERS_FILE}     = $state->{known_servers_file};
+    $self->{STEP_TICKERS_FILE}      = $state->{step_tickers_file};
 
     return;
 }
