@@ -2125,7 +2125,7 @@ sub __add_tests_to_owmesh_conf {
 
                         $node_id = address_to_id( $member->{address} );
                         my $i = 0;
-                        while (__owmesh_conf_get_node({ owmesh_conf => $owmesh_conf, id => $node_id })) {
+                        while ($self->__owmesh_conf_get_node({ owmesh_conf => $owmesh_conf, id => $node_id })) {
                             $node_id = address_to_id( $member->{address} );
                             $node_id .= "-".$i;
                             $i++;
