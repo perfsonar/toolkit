@@ -191,22 +191,11 @@ sub save {
             if ( $status != 0 ) {
                 return ( -1, "Couldn't restart traceroute scheduler" );
             }
-# njacobson - ma doesn't need to be restarted during save
-#            $status = restart_service( { name => "traceroute_ma" } ); 
-#            if ( $status != 0 ) {
-#                return ( -1, "Couldn't restart traceroute MA" );
-#            }
         }
         else {
             $status = stop_service( { name => "traceroute_scheduler" } );
             $status = stop_service( { name => "traceroute_ma" } );
         }
-
-# njacobson - ma doesn't need to be restarted during save
-#        $status = restart_service( { name => "perfsonarbuoy_ma" } );
-#        if ( $status != 0 ) {
-#            return ( -1, "Couldn't restart perfSONAR-BUOY Measurement Archive" );
-#        }
 
         # PingER is both the collector and the MA, so we have to restart it, even if there are no tests.
         $status = restart_service( { name => "pinger" } );
