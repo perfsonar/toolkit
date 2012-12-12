@@ -1931,7 +1931,7 @@ sub __add_tests_to_owmesh_conf {
 
     if ($self->{LOCAL_PORT_RANGES}->{owamp}) {
         $self->{LOGGER}->info("Saving owamp port range");
-        $local_node->{owamp_port_range} = $self->{LOCAL_PORT_RANGES}->{owamp}->{min_port}."-".$self->{LOCAL_PORT_RANGES}->{owamp}->{max_port}
+        $local_node->{OWPTESTPORTS} = $self->{LOCAL_PORT_RANGES}->{owamp}->{min_port}."-".$self->{LOCAL_PORT_RANGES}->{owamp}->{max_port}
     }
 
     $self->__owmesh_conf_add_localnode({ owmesh_conf => $owmesh_conf, node => "KNOPPIX" });
