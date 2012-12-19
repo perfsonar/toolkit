@@ -1,8 +1,1 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-//>>built
-define("dojo/cldr/nls/el/currency",{"AUD_displayName":"Δολάριο Αυστραλίας","CAD_displayName":"Δολάριο Καναδά","CHF_displayName":"Φράγκο Ελβετίας","CNY_displayName":"Γιουάν Ρενμίμπι Κίνας","EUR_displayName":"Ευρώ","GBP_displayName":"Λίρα Στερλίνα Βρετανίας","HKD_displayName":"Δολάριο Χονγκ Κονγκ","JPY_displayName":"Γιεν Ιαπωνίας","USD_displayName":"Δολάριο ΗΠΑ","USD_symbol":"$"});
+({"HKD_displayName":"Δολάριο Χονγκ Κονγκ","CHF_displayName":"Φράγκο Ελβετίας","CHF_symbol":"SwF","HKD_symbol":"HK$","CAD_displayName":"Δολάριο Καναδά","CNY_displayName":"Γιουάν Ρενμίμπι Κίνας","AUD_displayName":"Δολάριο Αυστραλίας","JPY_displayName":"Γιεν Ιαπωνίας","CAD_symbol":"Can$","USD_displayName":"Δολάριο ΗΠΑ","CNY_symbol":"Y","GBP_displayName":"Λίρα Στερλίνα Βρετανίας","GBP_symbol":"GBP","AUD_symbol":"$A","EUR_displayName":"Ευρώ","USD_symbol":"US$","JPY_symbol":"JP¥","EUR_symbol":"€"})

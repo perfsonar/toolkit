@@ -1,2 +1,1 @@
-//>>built
-define("dojox/atom/widget/nls/sk/FeedEntryViewer",({displayOptions:"[voľby zobrazenia]",title:"Nadpis",authors:"Autori",contributors:"Prispievatelia",id:"ID",close:"[zatvoriť]",updated:"Aktualizované",summary:"Zhrnutie",content:"Obsah"}));
+({"close":"[zatvoriť]","title":"Nadpis","authors":"Autori","summary":"Súhrn","content":"Obsah","contributors":"Prispievatelia","updated":"Aktualizovaný","displayOptions":"[zobraziť voľby]","id":"ID"})

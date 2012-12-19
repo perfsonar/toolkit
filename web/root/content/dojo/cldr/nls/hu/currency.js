@@ -1,8 +1,1 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-//>>built
-define("dojo/cldr/nls/hu/currency",{"AUD_displayName":"Ausztrál dollár","CAD_displayName":"Kanadai dollár","CHF_displayName":"Svájci frank","CNY_displayName":"Kínai jüan renminbi","EUR_displayName":"Euro","GBP_displayName":"Brit font sterling","HKD_displayName":"Hongkongi dollár","JPY_displayName":"Japán jen","JPY_symbol":"¥","USD_displayName":"USA dollár","USD_symbol":"$"});
+({"HKD_displayName":"Hongkongi dollár","CHF_displayName":"Svájci frank","CHF_symbol":"SwF","HKD_symbol":"HK$","CAD_displayName":"Kanadai dollár","CNY_displayName":"Kínai jüan renminbi","USD_symbol":"USD","AUD_displayName":"Ausztrál dollár","JPY_displayName":"Japán jen","CAD_symbol":"Can$","USD_displayName":"USA dollár","CNY_symbol":"Y","GBP_displayName":"Brit font sterling","AUD_symbol":"$A","EUR_displayName":"Euro","GBP_symbol":"UK£","JPY_symbol":"JP¥","EUR_symbol":"€"})

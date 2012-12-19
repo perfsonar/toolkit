@@ -1,3 +1,4 @@
+/* dojox.image.SlideShow */
 
 .slideShowWrapper { 
 	position:relative; 
@@ -6,6 +7,7 @@
 	border:1px solid #333;	
 	padding-bottom:20px;
 	overflow:hidden;
+	text-align: center;
 	-moz-border-radius:3pt;
 	-webkit-border-radius:4pt;
 	-webkit-drop-shadow:#ccc 4pt; 
@@ -47,7 +49,7 @@
 	background-color: red;
 	width: 100px;
 	height: 5px;
-	font-size: 1%;
+	font-size: 1%;/*IE hack to get around the Empty-Div bug*/
 }
 .slideShowSlideShow {
 	position:absolute;
@@ -59,6 +61,10 @@
 }
 .slideShowLoading { background-color: #fad66a; }
 .slideShowLoaded { background-color: transparent; }
+/*
+.sprite-arrowbottom { background-position: 0 -30px; } 
+.sprite-arrowtop { background-position: 0 -430px; } 
+*/
 .slideShowCtrlPrev {
 	background-position: -96px 0px; 
 	float: left;
@@ -79,6 +85,7 @@
 	background-image: url("../../../dojo/resources/blank.gif");
 	cursor: auto;
 }
+
 .slideShowCtrl {
 	height: 50px;
 	width: 100%;
@@ -95,9 +102,11 @@
 .dj_ie .slideShowCtrl span {
 	background-image: url("images/buttons.gif");
 }
+
 .dj_ie6 .slideShowPager li.currentpage,
 .dj_ie6 .pagination li.disablepage{
-    
+    /*IE 6 and below. Adjust non linked LIs slightly to account for bugs*/
     margin-right: 5px;
     padding-right: 0;
 }
+

@@ -1,4 +1,20 @@
-//>>built
-define("dojox/form/RadioStack",["./CheckedMultiSelect","./_SelectStackMixin","dojo/_base/declare"],function(_1,_2,_3){
-return _3("dojox.form.RadioStack",[_1,_2]);
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.form.RadioStack"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.form.RadioStack"] = true;
+dojo.provide("dojox.form.RadioStack");
+
+dojo.require("dojox.form.CheckedMultiSelect");
+dojo.require("dojox.form._SelectStackMixin");
+
+dojo.declare("dojox.form.RadioStack",
+	[ dojox.form.CheckedMultiSelect, dojox.form._SelectStackMixin ], {
+	// summary: A radio-based select stack.
 });
+
+}

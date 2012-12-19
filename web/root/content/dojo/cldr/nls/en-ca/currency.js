@@ -1,8 +1,1 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-//>>built
-define("dojo/cldr/nls/en-ca/currency",{"CAD_symbol":"$","USD_symbol":"US$"});
+({"CAD_symbol":"$","USD_symbol":"US$","HKD_displayName":"Hong Kong Dollar","CHF_displayName":"Swiss Franc","CHF_symbol":"Fr.","JPY_symbol":"¥","HKD_symbol":"HK$","CAD_displayName":"Canadian Dollar","CNY_displayName":"Chinese Yuan Renminbi","AUD_displayName":"Australian Dollar","JPY_displayName":"Japanese Yen","USD_displayName":"US Dollar","CNY_symbol":"RMB","GBP_displayName":"British Pound Sterling","GBP_symbol":"£","AUD_symbol":"A$","EUR_displayName":"Euro","EUR_symbol":"€"})

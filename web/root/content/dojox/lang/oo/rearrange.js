@@ -1,42 +1,46 @@
-//>>built
-define("dojox/lang/oo/rearrange",["dijit","dojo","dojox"],function(_1,_2,_3){
-_2.provide("dojox.lang.oo.rearrange");
-(function(){
-var _4=_2._extraNames,_5=_4.length,_6=Object.prototype.toString,_7={};
-_3.lang.oo.rearrange=function(_8,_9){
-var _a,_b,_c,i,t;
-for(_a in _9){
-_b=_9[_a];
-if(!_b||_6.call(_b)=="[object String]"){
-_c=_8[_a];
-if(!(_a in _7)||_7[_a]!==_c){
-if(!(delete _8[_a])){
-_8[_a]=undefined;
-}
-if(_b){
-_8[_b]=_c;
-}
-}
-}
-}
-if(_5){
-for(i=0;i<_5;++i){
-_a=_4[i];
-_b=_9[_a];
-if(!_b||_6.call(_b)=="[object String]"){
-_c=_8[_a];
-if(!(_a in _7)||_7[_a]!==_c){
-if(!(delete _8[_a])){
-_8[_a]=undefined;
-}
-if(_b){
-_8[_b]=_c;
-}
-}
-}
-}
-}
-return _8;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.lang.oo.rearrange"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.lang.oo.rearrange"] = true;
+dojo.provide("dojox.lang.oo.rearrange");
+
+dojox.lang.oo.rearrange = function(bag, map){
+	//	summary:
+	//		Process properties in place by removing and renaming them.
+	//	description:
+	//		Properties of an object are to be renamed or removed specified
+	//		by "map" argument. Only own properties of "map" are processed.
+	//	example:
+	//	|	oo.rearrange(bag, {
+	//	|		abc: "def",	// rename "abc" attribute to "def"
+	//	|		ghi: null	// remove/hide "ghi" attribute
+	//	|	});
+	//	bag: Object:
+	//		the object to be processed
+	//	map: Object:
+	//		the dictionary for renaming (false value indicates removal of the named property)
+	//	returns: Object:
+	//		the original object
+
+	for(var name in map){
+		if(map.hasOwnProperty(name) && name in bag){
+			var newName = map[name], temp = bag[name];
+			if(!(delete bag[name])){
+				// can't delete => hide it
+				bag[name] = undefined;
+			}
+			if(newName){
+				bag[newName] = temp;
+			}
+		}
+	}
+
+	return bag;	// Object
 };
-})();
-});
+
+}

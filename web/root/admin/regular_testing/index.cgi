@@ -1025,11 +1025,7 @@ sub remove_member_from_test {
 sub delete_test {
     my ( $test_id ) = @_;
 
-    my ($status, $res) = $testing_conf->delete_test( { test_id => $test_id } );
-    if ( $status != 0 ) {
-        $error_msg = "Problem deleting test: $res";
-        return display_body();
-    }
+    $testing_conf->delete_test( { test_id => $test_id } );
 
     $is_modified = 1;
 

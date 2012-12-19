@@ -1,2 +1,1 @@
-//>>built
-define("dojox/widget/nls/sk/Wizard",({next:"Nasledujúci",previous:"Predchádzajúci",done:"Hotovo"}));
+({"next":"Ďalej","done":"Hotovo","previous":"Späť"})

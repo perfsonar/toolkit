@@ -1,22 +1,40 @@
-//>>built
-define("dojox/dtl/ext-dojo/NodeList",["dojo/_base/lang","dojo/query","../_base"],function(_1,_2,dd){
-var nl=_1.getObject("dojox.dtl.ext-dojo.NodeList",true);
-var _3=_2.NodeList;
-_1.extend(_3,{dtl:function(_4,_5){
-var d=dd,_6=this;
-var _7=function(_8,_9){
-var _a=_8.render(new d._Context(_9));
-_6.forEach(function(_b){
-_b.innerHTML=_a;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.dtl.ext-dojo.NodeList"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.dtl.ext-dojo.NodeList"] = true;
+dojo.provide("dojox.dtl.ext-dojo.NodeList");
+dojo.require("dojox.dtl._base");
+
+dojo.extend(dojo.NodeList, {
+	dtl: function(template, context){
+		// template: dojox.dtl.__StringArgs|String
+		//		The template string or location
+		// context: dojox.dtl.__ObjectArgs|Object
+		//		The context object or location
+		var d = dojox.dtl;
+
+		var self = this;
+		var render = function(template, context){
+			var content = template.render(new d._Context(context));
+			self.forEach(function(node){
+				node.innerHTML = content;
+			});
+		}
+
+		d.text._resolveTemplateArg(template).addCallback(function(templateString){
+			template = new d.Template(templateString);
+			d.text._resolveContextArg(context).addCallback(function(context){
+				render(template, context);
+			});
+		});
+
+		return this;
+	}
 });
-};
-d.text._resolveTemplateArg(_4).addCallback(function(_c){
-_4=new d.Template(_c);
-d.text._resolveContextArg(_5).addCallback(function(_d){
-_7(_4,_d);
-});
-});
-return this;
-}});
-return _3;
-});
+
+}

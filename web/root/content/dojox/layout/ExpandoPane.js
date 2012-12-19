@@ -1,156 +1,242 @@
-//>>built
-require({cache:{"url:dojox/layout/resources/ExpandoPane.html":"<div class=\"dojoxExpandoPane\">\n\t<div dojoAttachPoint=\"titleWrapper\" class=\"dojoxExpandoTitle\">\n\t\t<div class=\"dojoxExpandoIcon\" dojoAttachPoint=\"iconNode\" dojoAttachEvent=\"ondijitclick:toggle\"><span class=\"a11yNode\">X</span></div>\n\t\t<span class=\"dojoxExpandoTitleNode\" dojoAttachPoint=\"titleNode\">${title}</span>\n\t</div>\n\t<div class=\"dojoxExpandoWrapper\" dojoAttachPoint=\"cwrapper\" dojoAttachEvent=\"ondblclick:_trap\">\n\t\t<div class=\"dojoxExpandoContent\" dojoAttachPoint=\"containerNode\"></div>\n\t</div>\n</div>\n"}});
-define("dojox/layout/ExpandoPane",["dojo/_base/kernel","dojo/_base/lang","dojo/_base/declare","dojo/_base/array","dojo/_base/connect","dojo/_base/event","dojo/_base/fx","dojo/dom-style","dojo/dom-class","dojo/dom-geometry","dojo/text!./resources/ExpandoPane.html","dijit/layout/ContentPane","dijit/_TemplatedMixin","dijit/_Contained","dijit/_Container"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c,_d,_e,_f){
-_1.experimental("dojox.layout.ExpandoPane");
-return _3("dojox.layout.ExpandoPane",[_c,_d,_e,_f],{attributeMap:_2.delegate(_c.prototype.attributeMap,{title:{node:"titleNode",type:"innerHTML"}}),templateString:_b,easeOut:"dojo._DefaultEasing",easeIn:"dojo._DefaultEasing",duration:420,startExpanded:true,previewOpacity:0.75,previewOnDblClick:false,tabIndex:"0",_setTabIndexAttr:"iconNode",baseClass:"dijitExpandoPane",postCreate:function(){
-this.inherited(arguments);
-this._animConnects=[];
-this._isHorizontal=true;
-if(_2.isString(this.easeOut)){
-this.easeOut=_2.getObject(this.easeOut);
-}
-if(_2.isString(this.easeIn)){
-this.easeIn=_2.getObject(this.easeIn);
-}
-var _10="",rtl=!this.isLeftToRight();
-if(this.region){
-switch(this.region){
-case "trailing":
-case "right":
-_10=rtl?"Left":"Right";
-this._needsPosition="left";
-break;
-case "leading":
-case "left":
-_10=rtl?"Right":"Left";
-break;
-case "top":
-_10="Top";
-break;
-case "bottom":
-this._needsPosition="top";
-_10="Bottom";
-break;
-}
-_9.add(this.domNode,"dojoxExpando"+_10);
-_9.add(this.iconNode,"dojoxExpandoIcon"+_10);
-this._isHorizontal=/top|bottom/.test(this.region);
-}
-_8.set(this.domNode,{overflow:"hidden",padding:0});
-this.connect(this.domNode,"ondblclick",this.previewOnDblClick?"preview":"toggle");
-this.iconNode.setAttribute("aria-controls",this.id);
-if(this.previewOnDblClick){
-this.connect(this.getParent(),"_layoutChildren",_2.hitch(this,function(){
-this._isonlypreview=false;
-}));
-}
-},_startupSizes:function(){
-this._container=this.getParent();
-this._closedSize=this._titleHeight=_a.getMarginBox(this.titleWrapper).h;
-if(this.splitter){
-var _11=this.id;
-_4.forEach(dijit.registry.toArray(),function(w){
-if(w&&w.child&&w.child.id==_11){
-this.connect(w,"_stopDrag","_afterResize");
-}
-},this);
-}
-this._currentSize=_a.getContentBox(this.domNode);
-this._showSize=this._currentSize[(this._isHorizontal?"h":"w")];
-this._setupAnims();
-if(this.startExpanded){
-this._showing=true;
-}else{
-this._showing=false;
-this._hideWrapper();
-this._hideAnim.gotoPercent(99,true);
-}
-this.domNode.setAttribute("aria-expanded",this._showing);
-this._hasSizes=true;
-},_afterResize:function(e){
-var tmp=this._currentSize;
-this._currentSize=_a.getMarginBox(this.domNode);
-var n=this._currentSize[(this._isHorizontal?"h":"w")];
-if(n>this._titleHeight){
-if(!this._showing){
-this._showing=!this._showing;
-this._showEnd();
-}
-this._showSize=n;
-this._setupAnims();
-}else{
-this._showSize=tmp[(this._isHorizontal?"h":"w")];
-this._showing=false;
-this._hideWrapper();
-this._hideAnim.gotoPercent(89,true);
-}
-},_setupAnims:function(){
-_4.forEach(this._animConnects,_5.disconnect);
-var _12={node:this.domNode,duration:this.duration},_13=this._isHorizontal,_14={},_15=this._showSize,_16=this._closedSize,_17={},_18=_13?"height":"width",_19=this._needsPosition;
-_14[_18]={end:_15};
-_17[_18]={end:_16};
-if(_19){
-_14[_19]={end:function(n){
-var c=parseInt(n.style[_19],10);
-return c-_15+_16;
-}};
-_17[_19]={end:function(n){
-var c=parseInt(n.style[_19],10);
-return c+_15-_16;
-}};
-}
-this._showAnim=_7.animateProperty(_2.mixin(_12,{easing:this.easeIn,properties:_14}));
-this._hideAnim=_7.animateProperty(_2.mixin(_12,{easing:this.easeOut,properties:_17}));
-this._animConnects=[_5.connect(this._showAnim,"onEnd",this,"_showEnd"),_5.connect(this._hideAnim,"onEnd",this,"_hideEnd")];
-},preview:function(){
-if(!this._showing){
-this._isonlypreview=!this._isonlypreview;
-}
-this.toggle();
-},toggle:function(){
-if(this._showing){
-this._hideWrapper();
-this._showAnim&&this._showAnim.stop();
-this._hideAnim.play();
-}else{
-this._hideAnim&&this._hideAnim.stop();
-this._showAnim.play();
-}
-this._showing=!this._showing;
-this.domNode.setAttribute("aria-expanded",this._showing);
-},_hideWrapper:function(){
-_9.add(this.domNode,"dojoxExpandoClosed");
-_8.set(this.cwrapper,{visibility:"hidden",opacity:"0",overflow:"hidden"});
-},_showEnd:function(){
-_8.set(this.cwrapper,{opacity:0,visibility:"visible"});
-_7.anim(this.cwrapper,{opacity:this._isonlypreview?this.previewOpacity:1},227);
-_9.remove(this.domNode,"dojoxExpandoClosed");
-if(!this._isonlypreview){
-setTimeout(_2.hitch(this._container,"layout"),15);
-}else{
-this._previewShowing=true;
-this.resize();
-}
-},_hideEnd:function(){
-if(!this._isonlypreview){
-setTimeout(_2.hitch(this._container,"layout"),25);
-}else{
-this._previewShowing=false;
-}
-this._isonlypreview=false;
-},resize:function(_1a){
-if(!this._hasSizes){
-this._startupSizes(_1a);
-}
-var _1b=_a.getMarginBox(this.domNode);
-this._contentBox={w:_1a&&"w" in _1a?_1a.w:_1b.w,h:(_1a&&"h" in _1a?_1a.h:_1b.h)-this._titleHeight};
-_8.set(this.containerNode,"height",this._contentBox.h+"px");
-if(_1a){
-_a.setMarginBox(this.domNode,_1a);
-}
-this._layoutChildren();
-this._setupAnims();
-},_trap:function(e){
-_6.stop(e);
-}});
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.layout.ExpandoPane"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.layout.ExpandoPane"] = true;
+dojo.provide("dojox.layout.ExpandoPane");
+dojo.experimental("dojox.layout.ExpandoPane"); // just to show it can be done?
+
+dojo.require("dijit.layout.ContentPane");
+dojo.require("dijit._Templated");
+dojo.require("dijit._Container");
+
+dojo.declare("dojox.layout.ExpandoPane",
+	[dijit.layout.ContentPane, dijit._Templated, dijit._Contained],
+	{
+	// summary: An experimental collapsing-pane for dijit.layout.BorderContainer
+	//
+	// description:
+	//		Works just like a ContentPane inside of a borderContainer. Will expand/collapse on
+	//		command, and supports having Layout Children as direct descendants
+	//	
+
+	maxHeight: "",
+	maxWidth: "",
+	splitter: "",
+	
+	templateString:"<div class=\"dojoxExpandoPane\" dojoAttachEvent=\"ondblclick:toggle\" >\n\t<div dojoAttachPoint=\"titleWrapper\" class=\"dojoxExpandoTitle\">\n\t\t<div class=\"dojoxExpandoIcon\" dojoAttachPoint=\"iconNode\" dojoAttachEvent=\"onclick:toggle\"><span class=\"a11yNode\">X</span></div>\t\t\t\n\t\t<span class=\"dojoxExpandoTitleNode\" dojoAttachPoint=\"titleNode\">${title}</span>\n\t</div>\n\t<div class=\"dojoxExpandoWrapper\" dojoAttachPoint=\"cwrapper\" dojoAttachEvent=\"ondblclick:_trap\">\n\t\t<div class=\"dojoxExpandoContent\" dojoAttachPoint=\"containerNode\"></div>\n\t</div>\n</div>\n",
+
+	// easeOut: String|Function
+	//		easing function used to hide pane
+	easeOut: "dojo._DefaultEasing",
+	
+	// easeIn: String|Function
+	//		easing function use to show pane
+	easeIn: "dojo._DefaultEasing",
+	
+	// duration: Integer
+	//		duration to run show/hide animations
+	duration: 420,
+
+	// startExpanded: Boolean
+	//		Does this widget start in an open (true) or closed (false) state
+	startExpanded: true, 
+
+	baseClass: "dijitExpandoPane",
+
+	postCreate: function(){
+		this.inherited(arguments);
+		this._animConnects = [];
+
+		this._isHorizontal = true;
+		
+		if(dojo.isString(this.easeOut)){
+			this.easeOut = dojo.getObject(this.easeOut);
+		}
+		if(dojo.isString(this.easeIn)){
+			this.easeIn = dojo.getObject(this.easeIn); 
+		}
+	
+		var thisClass = "", rtl = !this.isLeftToRight();
+		if(this.region){
+			switch(this.region){
+				case "trailing" : 
+				case "right" :
+					thisClass = rtl ? "Left" : "Right";
+					break;
+				case "leading" : 
+				case "left" :
+					thisClass = rtl ? "Right" : "Left";
+					break;
+				case "top" :
+					thisClass = "Top";
+					break;
+				case "bottom" :
+					thisClass = "Bottom"; 
+					break;
+			}
+			dojo.addClass(this.domNode, "dojoxExpando" + thisClass);
+			this._isHorizontal = /top|bottom/.test(this.region);
+		}
+		dojo.style(this.domNode, {
+			overflow: "hidden",
+			padding:0
+		});
+	},
+	
+	_startupSizes: function(){
+		
+		this._container = this.getParent();
+		this._closedSize = this._titleHeight = dojo.marginBox(this.titleWrapper).h;
+		
+		if(this.splitter){
+			// find our splitter and tie into it's drag logic
+			var myid = this.id;
+			dijit.registry.filter(function(w){
+				return w && w.child && w.child.id == myid;
+			}).forEach(dojo.hitch(this,function(w){
+				this.connect(w,"_stopDrag","_afterResize");
+			}));
+		}
+		
+		this._currentSize = dojo.contentBox(this.domNode);	// TODO: can compute this from passed in value to resize(), see _LayoutWidget for example
+		this._showSize = this._currentSize[(this._isHorizontal ? "h" : "w")];
+		this._setupAnims();
+
+		if(this.startExpanded){
+			this._showing = true;
+		}else{
+			this._showing = false;
+			this._hideWrapper();
+			this._hideAnim.gotoPercent(99,true);
+		}
+		
+		this._hasSizes = true;
+	},
+	
+	_afterResize: function(e){
+		var tmp = this._currentSize;						// the old size
+		this._currentSize = dojo.marginBox(this.domNode);	// the new size
+		var n = this._currentSize[(this._isHorizontal ? "h" : "w")] 
+		if(n > this._titleHeight){
+			if(!this._showing){	
+				this._showing = !this._showing; 
+				this._showEnd();
+			}
+			this._showSize = n;
+			this._setupAnims();
+		}else{
+			this._showSize = tmp[(this._isHorizontal ? "h" : "w")];
+			this._showing = false;
+			this._hideWrapper();
+			this._hideAnim.gotoPercent(89,true);
+		}
+		
+	},
+	
+	_setupAnims: function(){
+		// summary: Create the show and hide animations
+		dojo.forEach(this._animConnects, dojo.disconnect);
+		
+		var _common = {
+				node:this.domNode,
+				duration:this.duration
+			},
+			isHorizontal = this._isHorizontal,
+			showProps = {},
+			hideProps = {},
+			dimension = isHorizontal ? "height" : "width"
+		;
+
+		showProps[dimension] = { 
+			end: this._showSize, 
+			unit:"px" 
+		};
+		hideProps[dimension] = { 
+			end: this._closedSize, 
+			unit:"px"
+		};
+		
+		this._showAnim = dojo.animateProperty(dojo.mixin(_common,{
+			easing:this.easeIn,
+			properties: showProps 
+		}));
+		this._hideAnim = dojo.animateProperty(dojo.mixin(_common,{
+			easing:this.easeOut,
+			properties: hideProps
+		}));
+
+		this._animConnects = [
+			dojo.connect(this._showAnim, "onEnd", this, "_showEnd"),
+			dojo.connect(this._hideAnim, "onEnd", this, "_hideEnd")
+		];
+	},
+	
+	toggle: function(){
+		// summary: Toggle this pane's visibility
+		if(this._showing){
+			this._hideWrapper();
+			this._showAnim && this._showAnim.stop();
+			this._hideAnim.play();
+		}else{
+			this._hideAnim && this._hideAnim.stop();
+			this._showAnim.play();
+		}
+		this._showing = !this._showing;
+	},
+	
+	_hideWrapper: function(){
+		// summary: Set the Expando state to "closed"
+		dojo.addClass(this.domNode, "dojoxExpandoClosed");
+		dojo.style(this.cwrapper,{
+			visibility: "hidden",
+			opacity: "0",
+			overflow: "hidden"
+		});
+	},
+	
+	_showEnd: function(){
+		// summary: Common animation onEnd code - "unclose"
+		dojo.style(this.cwrapper, { opacity: 0, visibility:"visible" });
+		dojo.fadeIn({ node:this.cwrapper, duration:227 }).play(1);
+		dojo.removeClass(this.domNode, "dojoxExpandoClosed");
+		setTimeout(dojo.hitch(this._container, "layout"), 15);
+	},
+	
+	_hideEnd: function(){
+		// summary: Callback for the hide animation - "close"
+		setTimeout(dojo.hitch(this._container, "layout"), 15);
+	},
+	
+	resize: function(/* Object? */psize){
+		// summary: we aren't a layout widget, but need to act like one:
+		//
+		// psize: Object
+		//		The size object optionally passed to us by our parent. 
+		
+		if(!this._hasSizes){ this._startupSizes(psize); }
+
+		// compute size of container (ie, size left over after title bar)
+		// it looks like two marginBox calls, but sometimes psize comes in with only one member
+		var	size = (psize && psize.h) ? psize : dojo.marginBox(this.domNode);
+		this._contentBox = {
+			w: size.w || dojo.marginBox(this.domNode).w,
+			h: size.h - this._titleHeight
+		};
+					
+		dojo.style(this.containerNode, "height", this._contentBox.h + "px");
+		this._layoutChildren();
+	},
+	
+	_trap: function(e){
+		// summary: Trap stray events
+		dojo.stopEvent(e);
+	}
+
 });
+
+}

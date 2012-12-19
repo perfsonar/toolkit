@@ -1,165 +1,365 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/html",["./_base/kernel","./_base/lang","./_base/array","./_base/declare","./dom","./dom-construct","./parser"],function(_1,_2,_3,_4,_5,_6,_7){
-var _8={};
-_2.setObject("dojo.html",_8);
-var _9=0;
-_8._secureForInnerHtml=function(_a){
-return _a.replace(/(?:\s*<!DOCTYPE\s[^>]+>|<title[^>]*>[\s\S]*?<\/title>)/ig,"");
-};
-_8._emptyNode=_6.empty;
-_8._setNodeContent=function(_b,_c){
-_6.empty(_b);
-if(_c){
-if(typeof _c=="string"){
-_c=_6.toDom(_c,_b.ownerDocument);
+
+if(!dojo._hasResource["dojo.html"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojo.html"] = true;
+dojo.provide("dojo.html");
+
+// the parser might be needed..
+dojo.require("dojo.parser"); 
+
+(function(){ // private scope, sort of a namespace
+
+	// idCounter is incremented with each instantiation to allow asignment of a unique id for tracking, logging purposes
+	var idCounter = 0; 
+
+	dojo.html._secureForInnerHtml = function(/*String*/ cont){
+		// summary:
+		//		removes !DOCTYPE and title elements from the html string.
+		// 
+		//		khtml is picky about dom faults, you can't attach a style or <title> node as child of body
+		//		must go into head, so we need to cut out those tags
+		//	cont:
+		//		An html string for insertion into the dom
+		//	
+		return cont.replace(/(?:\s*<!DOCTYPE\s[^>]+>|<title[^>]*>[\s\S]*?<\/title>)/ig, ""); // String
+	};
+
+/*====
+	dojo.html._emptyNode = function(node){
+		// summary:
+		//		removes all child nodes from the given node
+		//	node: DOMNode
+		//		the parent element
+	};
+=====*/
+	dojo.html._emptyNode = dojo.empty;
+
+	dojo.html._setNodeContent = function(/* DomNode */ node, /* String|DomNode|NodeList */ cont, /* Boolean? */ shouldEmptyFirst){
+		// summary:
+		//		inserts the given content into the given node
+		//		overlaps similiar functionality in dijit.layout.ContentPane._setContent
+		//	node:
+		//		the parent element
+		//	content:
+		//		the content to be set on the parent element. 
+		//		This can be an html string, a node reference or a NodeList, dojo.NodeList, Array or other enumerable list of nodes
+		// shouldEmptyFirst
+		//		if shouldEmptyFirst is true, the node will first be emptied of all content before the new content is inserted
+		//		defaults to false
+		if(shouldEmptyFirst){
+			dojo.html._emptyNode(node); 
+		}
+
+		if(typeof cont == "string"){
+			// there's some hoops to jump through before we can set innerHTML on the would-be parent element. 
+	
+			// rationale for this block:
+			// if node is a table derivate tag, some browsers dont allow innerHTML on those
+			// TODO: <select>, <dl>? what other elements will give surprises if you naively set innerHTML?
+			
+			var pre = '', post = '', walk = 0, name = node.nodeName.toLowerCase();
+			switch(name){
+				case 'tr':
+					pre = '<tr>'; post = '</tr>';
+					walk += 1;//fallthrough
+				case 'tbody': case 'thead':// children of THEAD is of same type as TBODY
+					pre = '<tbody>' + pre; post += '</tbody>';
+					walk += 1;// falltrough
+				case 'table':
+					pre = '<table>' + pre; post += '</table>';
+					walk += 1;
+					break;
+			}
+			if(walk){
+				var n = node.ownerDocument.createElement('div');
+				n.innerHTML = pre + cont + post;
+				do{
+					n = n.firstChild;
+				}while(--walk);
+				// now we can safely add the child nodes...
+				dojo.forEach(n.childNodes, function(n){
+					node.appendChild(n.cloneNode(true));
+				});
+			}else{
+				// innerHTML the content as-is into the node (element)
+				// should we ever support setting content on non-element node types? 
+				// e.g. text nodes, comments, etc.?
+				node.innerHTML = cont;
+			}
+
+		}else{
+			// DomNode or NodeList
+			if(cont.nodeType){ // domNode (htmlNode 1 or textNode 3)
+				node.appendChild(cont);
+			}else{// nodelist or array such as dojo.Nodelist
+				dojo.forEach(cont, function(n){
+					node.appendChild(n.cloneNode(true));
+				});
+			}
+		}
+		// return DomNode
+		return node;
+	};
+
+	// we wrap up the content-setting operation in a object
+	dojo.declare("dojo.html._ContentSetter", null, 
+		{
+			// node: DomNode|String
+			//		An node which will be the parent element that we set content into
+			node: "",
+
+			// content: String|DomNode|DomNode[]
+			//		The content to be placed in the node. Can be an HTML string, a node reference, or a enumerable list of nodes
+			content: "",
+			
+			// id: String?
+			//		Usually only used internally, and auto-generated with each instance 
+			id: "",
+
+			// cleanContent: Boolean
+			//		Should the content be treated as a full html document, 
+			//		and the real content stripped of <html>, <body> wrapper before injection
+			cleanContent: false,
+			
+			// extractContent: Boolean
+			//		Should the content be treated as a full html document, and the real content stripped of <html>, <body> wrapper before injection
+			extractContent: false,
+
+			// parseContent: Boolean
+			//		Should the node by passed to the parser after the new content is set
+			parseContent: false,
+			
+			// lifecyle methods
+			constructor: function(/* Object */params, /* String|DomNode */node){
+				//	summary:
+				//		Provides a configurable, extensible object to wrap the setting on content on a node
+				//		call the set() method to actually set the content..
+ 
+				// the original params are mixed directly into the instance "this"
+				dojo.mixin(this, params || {});
+
+				// give precedence to params.node vs. the node argument
+				// and ensure its a node, not an id string
+				node = this.node = dojo.byId( this.node || node );
+	
+				if(!this.id){
+					this.id = [
+						"Setter",
+						(node) ? node.id || node.tagName : "", 
+						idCounter++
+					].join("_");
+				}
+
+				if(! (this.node || node)){
+					new Error(this.declaredClass + ": no node provided to " + this.id);
+				}
+			},
+			set: function(/* String|DomNode|NodeList? */ cont, /* Object? */ params){
+				// summary:
+				//		front-end to the set-content sequence 
+				//	cont:
+				//		An html string, node or enumerable list of nodes for insertion into the dom
+				//		If not provided, the object's content property will be used
+				if(undefined !== cont){
+					this.content = cont;
+				}
+				// in the re-use scenario, set needs to be able to mixin new configuration
+				if(params){
+					this._mixin(params);
+				}
+
+				this.onBegin();
+				this.setContent();
+				this.onEnd();
+
+				return this.node;
+			},
+			setContent: function(){
+				// summary:
+				//		sets the content on the node 
+
+				var node = this.node; 
+				if(!node) {
+					console.error("setContent given no node");
+				}
+				try{
+					node = dojo.html._setNodeContent(node, this.content);
+				}catch(e){
+					// check if a domfault occurs when we are appending this.errorMessage
+					// like for instance if domNode is a UL and we try append a DIV
+	
+					// FIXME: need to allow the user to provide a content error message string
+					var errMess = this.onContentError(e); 
+					try{
+						node.innerHTML = errMess;
+					}catch(e){
+						console.error('Fatal ' + this.declaredClass + '.setContent could not change content due to '+e.message, e);
+					}
+				}
+				// always put back the node for the next method
+				this.node = node; // DomNode
+			},
+			
+			empty: function() {
+				// summary
+				//	cleanly empty out existing content
+
+				// destroy any widgets from a previous run
+				// NOTE: if you dont want this you'll need to empty 
+				// the parseResults array property yourself to avoid bad things happenning
+				if(this.parseResults && this.parseResults.length) {
+					dojo.forEach(this.parseResults, function(w) {
+						if(w.destroy){
+							w.destroy();
+						}
+					});
+					delete this.parseResults;
+				}
+				// this is fast, but if you know its already empty or safe, you could 
+				// override empty to skip this step
+				dojo.html._emptyNode(this.node);
+			},
+	
+			onBegin: function(){
+				// summary
+				//		Called after instantiation, but before set(); 
+				//		It allows modification of any of the object properties 
+				//		- including the node and content provided - before the set operation actually takes place
+				//		This default implementation checks for cleanContent and extractContent flags to 
+				//		optionally pre-process html string content
+				var cont = this.content;
+	
+				if(dojo.isString(cont)){
+					if(this.cleanContent){
+						cont = dojo.html._secureForInnerHtml(cont);
+					}
+  
+					if(this.extractContent){
+						var match = cont.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
+						if(match){ cont = match[1]; }
+					}
+				}
+
+				// clean out the node and any cruft associated with it - like widgets
+				this.empty();
+				
+				this.content = cont;
+				return this.node; /* DomNode */
+			},
+	
+			onEnd: function(){
+				// summary
+				//		Called after set(), when the new content has been pushed into the node
+				//		It provides an opportunity for post-processing before handing back the node to the caller
+				//		This default implementation checks a parseContent flag to optionally run the dojo parser over the new content
+				if(this.parseContent){
+					// populates this.parseResults if you need those..
+					this._parse();
+				}
+				return this.node; /* DomNode */
+			},
+	
+			tearDown: function(){
+				// summary
+				//		manually reset the Setter instance if its being re-used for example for another set()
+				// description
+				//		tearDown() is not called automatically. 
+				//		In normal use, the Setter instance properties are simply allowed to fall out of scope
+				//		but the tearDown method can be called to explicitly reset this instance.
+				delete this.parseResults; 
+				delete this.node; 
+				delete this.content; 
+			},
+  
+			onContentError: function(err){
+				return "Error occured setting content: " + err; 
+			},
+			
+			_mixin: function(params){
+				// mix properties/methods into the instance
+				// TODO: the intention with tearDown is to put the Setter's state 
+				// back to that of the original constructor (vs. deleting/resetting everything regardless of ctor params)
+				// so we could do something here to move the original properties aside for later restoration
+				var empty = {}, key;
+				for(key in params){
+					if(key in empty){ continue; }
+					// TODO: here's our opportunity to mask the properties we dont consider configurable/overridable
+					// .. but history shows we'll almost always guess wrong
+					this[key] = params[key]; 
+				}
+			},
+			_parse: function(){
+				// summary: 
+				//		runs the dojo parser over the node contents, storing any results in this.parseResults
+				//		Any errors resulting from parsing are passed to _onError for handling
+
+				var rootNode = this.node;
+				try{
+					// store the results (widgets, whatever) for potential retrieval
+					this.parseResults = dojo.parser.parse(rootNode, true);
+				}catch(e){
+					this._onError('Content', e, "Error parsing in _ContentSetter#"+this.id);
+				}
+			},
+  
+			_onError: function(type, err, consoleText){
+				// summary:
+				//		shows user the string that is returned by on[type]Error
+				//		overide/implement on[type]Error and return your own string to customize
+				var errText = this['on' + type + 'Error'].call(this, err);
+				if(consoleText){
+					console.error(consoleText, err);
+				}else if(errText){ // a empty string won't change current content
+					dojo.html._setNodeContent(this.node, errText, true);
+				}
+			}
+	}); // end dojo.declare()
+
+	dojo.html.set = function(/* DomNode */ node, /* String|DomNode|NodeList */ cont, /* Object? */ params){
+			// summary:
+			//		inserts (replaces) the given content into the given node. dojo.place(cont, node, "only")
+			//		may be a better choice for simple HTML insertion.
+			// description:
+			//		Unless you need to use the params capabilities of this method, you should use
+			//		dojo.place(cont, node, "only"). dojo.place() has more robust support for injecting
+			//		an HTML string into the DOM, but it only handles inserting an HTML string as DOM
+			//		elements, or inserting a DOM node. dojo.place does not handle NodeList insertions
+			//		or the other capabilities as defined by the params object for this method.
+			//	node:
+			//		the parent element that will receive the content
+			//	cont:
+			//		the content to be set on the parent element. 
+			//		This can be an html string, a node reference or a NodeList, dojo.NodeList, Array or other enumerable list of nodes
+			//	params: 
+			//		Optional flags/properties to configure the content-setting. See dojo.html._ContentSetter
+			//	example:
+			//		A safe string/node/nodelist content replacement/injection with hooks for extension
+			//		Example Usage: 
+			//		dojo.html.set(node, "some string"); 
+			//		dojo.html.set(node, contentNode, {options}); 
+			//		dojo.html.set(node, myNode.childNodes, {options}); 
+		if(undefined == cont){
+			console.warn("dojo.html.set: no cont argument provided, using empty string");
+			cont = "";
+		}	
+		if(!params){
+			// simple and fast
+			return dojo.html._setNodeContent(node, cont, true);
+		}else{ 
+			// more options but slower
+			// note the arguments are reversed in order, to match the convention for instantiation via the parser
+			var op = new dojo.html._ContentSetter(dojo.mixin( 
+					params, 
+					{ content: cont, node: node } 
+			));
+			return op.set();
+		}
+	};
+})();
+
 }
-if(!_c.nodeType&&_2.isArrayLike(_c)){
-for(var _d=_c.length,i=0;i<_c.length;i=_d==_c.length?i+1:0){
-_6.place(_c[i],_b,"last");
-}
-}else{
-_6.place(_c,_b,"last");
-}
-}
-return _b;
-};
-_8._ContentSetter=_4("dojo.html._ContentSetter",null,{node:"",content:"",id:"",cleanContent:false,extractContent:false,parseContent:false,parserScope:_1._scopeName,startup:true,constructor:function(_e,_f){
-_2.mixin(this,_e||{});
-_f=this.node=_5.byId(this.node||_f);
-if(!this.id){
-this.id=["Setter",(_f)?_f.id||_f.tagName:"",_9++].join("_");
-}
-},set:function(_10,_11){
-if(undefined!==_10){
-this.content=_10;
-}
-if(_11){
-this._mixin(_11);
-}
-this.onBegin();
-this.setContent();
-var ret=this.onEnd();
-if(ret&&ret.then){
-return ret;
-}else{
-return this.node;
-}
-},setContent:function(){
-var _12=this.node;
-if(!_12){
-throw new Error(this.declaredClass+": setContent given no node");
-}
-try{
-_12=_8._setNodeContent(_12,this.content);
-}
-catch(e){
-var _13=this.onContentError(e);
-try{
-_12.innerHTML=_13;
-}
-catch(e){
-console.error("Fatal "+this.declaredClass+".setContent could not change content due to "+e.message,e);
-}
-}
-this.node=_12;
-},empty:function(){
-if(this.parseDeferred){
-if(!this.parseDeferred.isResolved()){
-this.parseDeferred.cancel();
-}
-delete this.parseDeferred;
-}
-if(this.parseResults&&this.parseResults.length){
-_3.forEach(this.parseResults,function(w){
-if(w.destroy){
-w.destroy();
-}
-});
-delete this.parseResults;
-}
-_8._emptyNode(this.node);
-},onBegin:function(){
-var _14=this.content;
-if(_2.isString(_14)){
-if(this.cleanContent){
-_14=_8._secureForInnerHtml(_14);
-}
-if(this.extractContent){
-var _15=_14.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
-if(_15){
-_14=_15[1];
-}
-}
-}
-this.empty();
-this.content=_14;
-return this.node;
-},onEnd:function(){
-if(this.parseContent){
-this._parse();
-}
-return this.node;
-},tearDown:function(){
-delete this.parseResults;
-delete this.parseDeferred;
-delete this.node;
-delete this.content;
-},onContentError:function(err){
-return "Error occurred setting content: "+err;
-},onExecError:function(err){
-return "Error occurred executing scripts: "+err;
-},_mixin:function(_16){
-var _17={},key;
-for(key in _16){
-if(key in _17){
-continue;
-}
-this[key]=_16[key];
-}
-},_parse:function(){
-var _18=this.node;
-try{
-var _19={};
-_3.forEach(["dir","lang","textDir"],function(_1a){
-if(this[_1a]){
-_19[_1a]=this[_1a];
-}
-},this);
-var _1b=this;
-this.parseDeferred=_7.parse({rootNode:_18,noStart:!this.startup,inherited:_19,scope:this.parserScope}).then(function(_1c){
-return _1b.parseResults=_1c;
-});
-}
-catch(e){
-this._onError("Content",e,"Error parsing in _ContentSetter#"+this.id);
-}
-},_onError:function(_1d,err,_1e){
-var _1f=this["on"+_1d+"Error"].call(this,err);
-if(_1e){
-console.error(_1e,err);
-}else{
-if(_1f){
-_8._setNodeContent(this.node,_1f,true);
-}
-}
-}});
-_8.set=function(_20,_21,_22){
-if(undefined==_21){
-console.warn("dojo.html.set: no cont argument provided, using empty string");
-_21="";
-}
-if(!_22){
-return _8._setNodeContent(_20,_21,true);
-}else{
-var op=new _8._ContentSetter(_2.mixin(_22,{content:_21,node:_20}));
-return op.set();
-}
-};
-return _8;
-});

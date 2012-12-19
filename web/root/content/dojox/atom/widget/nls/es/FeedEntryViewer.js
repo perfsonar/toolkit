@@ -1,2 +1,1 @@
-//>>built
-define("dojox/atom/widget/nls/es/FeedEntryViewer",({displayOptions:"[opciones de visualización]",title:"Título",authors:"Autores",contributors:"Colaboradores",id:"ID",close:"[cerrar]",updated:"Actualizado",summary:"Resumen",content:"Contenido"}));
+({"close":"[cerrar]","title":"Título","authors":"Autores","summary":"Resumen","content":"Contenido","contributors":"Colaboradores","updated":"Actualizado","displayOptions":"[opciones de visualización]","id":"ID"})

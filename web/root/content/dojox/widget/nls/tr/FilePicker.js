@@ -1,2 +1,1 @@
-//>>built
-define("dojox/widget/nls/tr/FilePicker",({name:"Ad",path:"Yol",size:"Boyut (bayt cinsinden)"}));
+({"name":"Ad","size":"Boyut (bayt cinsinden)","path":"Yol"})

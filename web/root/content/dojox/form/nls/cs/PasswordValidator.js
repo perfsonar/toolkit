@@ -1,2 +1,1 @@
-//>>built
-define("dojox/form/nls/cs/PasswordValidator",({nomatchMessage:"Hesla se neshodují.",badPasswordMessage:"Neplatné heslo."}));
+({"badPasswordMessage":"Neplatné heslo.","nomatchMessage":"Hesla se neshodují."})

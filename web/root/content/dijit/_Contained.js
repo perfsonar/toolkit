@@ -1,20 +1,84 @@
-//>>built
-define("dijit/_Contained",["dojo/_base/declare","./registry"],function(_1,_2){
-return _1("dijit._Contained",null,{_getSibling:function(_3){
-var _4=this.domNode;
-do{
-_4=_4[_3+"Sibling"];
-}while(_4&&_4.nodeType!=1);
-return _4&&_2.byNode(_4);
-},getPreviousSibling:function(){
-return this._getSibling("previous");
-},getNextSibling:function(){
-return this._getSibling("next");
-},getIndexInParent:function(){
-var p=this.getParent();
-if(!p||!p.getIndexOfChild){
-return -1;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dijit._Contained"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dijit._Contained"] = true;
+dojo.provide("dijit._Contained");
+
+dojo.declare("dijit._Contained",
+		null,
+		{
+			// summary
+			//		Mixin for widgets that are children of a container widget
+			//
+			// example:
+			// | 	// make a basic custom widget that knows about it's parents
+			// |	dojo.declare("my.customClass",[dijit._Widget,dijit._Contained],{});
+			// 
+			getParent: function(){
+				// summary:
+				//		Returns the parent widget of this widget, assuming the parent
+				//		implements dijit._Container
+				for(var p=this.domNode.parentNode; p; p=p.parentNode){
+					var id = p.getAttribute && p.getAttribute("widgetId");
+					if(id){
+						var parent = dijit.byId(id);
+						return parent.isContainer ? parent : null;
+					}
+				}
+				return null;
+			},
+
+			_getSibling: function(which){
+				// summary:
+				//      Returns next or previous sibling
+				// which:
+				//      Either "next" or "previous"
+				// tags:
+				//      private
+				var node = this.domNode;
+				do{
+					node = node[which+"Sibling"];
+				}while(node && node.nodeType != 1);
+				if(!node){ return null; } // null
+				var id = node.getAttribute("widgetId");
+				return dijit.byId(id);
+			},
+
+			getPreviousSibling: function(){
+				// summary:
+				//		Returns null if this is the first child of the parent,
+				//		otherwise returns the next element sibling to the "left".
+
+				return this._getSibling("previous"); // Mixed
+			},
+
+			getNextSibling: function(){
+				// summary:
+				//		Returns null if this is the last child of the parent,
+				//		otherwise returns the next element sibling to the "right".
+
+				return this._getSibling("next"); // Mixed
+			},
+			
+			getIndexInParent: function(){
+				// summary:
+				//		Returns the index of this widget within its container parent.
+				//		It returns -1 if the parent does not exist, or if the parent
+				//		is not a dijit._Container
+				
+				var p = this.getParent();
+				if(!p || !p.getIndexOfChild){
+					return -1; // int
+				}
+				return p.getIndexOfChild(this); // int
+			}
+		}
+	);
+
+
 }
-return p.getIndexOfChild(this);
-}});
-});

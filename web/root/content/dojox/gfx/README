@@ -5,17 +5,13 @@ Version 1.100
 Release date: 08/01/2006
 -------------------------------------------------------------------------------
 Project state:
-SVG renderer: production
-VML renderer: production
-Silverlight renderer: beta
-HTMLCanvas renderer: beta
-SVGWeb integration: experimental
+beta
+HTMLCanvas renderer: experimental
 -------------------------------------------------------------------------------
 Credits
 	Eugene Lazutkin (eugene.lazutkin@gmail.com)
 	Kun Xi (bookstack@gmail.com)
 	Chris Mitchell (ccmitchellusa@gmail.com) HTML Canvas
-	Yang Li () SVGWeb integration
 -------------------------------------------------------------------------------
 Project description
 
@@ -91,9 +87,6 @@ Known Bugs:
    track skew matrix with Shape, and perform other trans/rot/scale transformations without
    using canvas transform functions.
 
-SVGWeb Integration Status
-
-See README-svgweb.
 
 -------------------------------------------------------------------------------
 Installation instructions

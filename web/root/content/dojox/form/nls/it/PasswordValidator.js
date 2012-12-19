@@ -1,2 +1,1 @@
-//>>built
-define("dojox/form/nls/it/PasswordValidator",({nomatchMessage:"Le password non corrispondono.",badPasswordMessage:"Password non valida."}));
+({"badPasswordMessage":"Password non valida.","nomatchMessage":"Le password non corrispondono."})

@@ -1,129 +1,203 @@
-//>>built
-define("dojox/xmpp/util",["dijit","dojo","dojox","dojo/require!dojox/string/Builder,dojox/encoding/base64"],function(_1,_2,_3){
-_2.provide("dojox.xmpp.util");
-_2.require("dojox.string.Builder");
-_2.require("dojox.encoding.base64");
-_3.xmpp.util.xmlEncode=function(_4){
-if(_4){
-_4=_4.replace("&","&amp;").replace(">","&gt;").replace("<","&lt;").replace("'","&apos;").replace("\"","&quot;");
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.xmpp.util"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.xmpp.util"] = true;
+dojo.provide("dojox.xmpp.util");
+dojo.require("dojox.string.Builder");
+
+dojox.xmpp.util.xmlEncode = function(str) {
+	if(str) {
+		str = str.replace("&", "&amp;").replace(">", "&gt;").replace("<", "&lt;").replace("'", "&apos;").replace('"', "&quot;");
+	}
+	return str;
 }
-return _4;
-};
-_3.xmpp.util.encodeJid=function(_5){
-var _6=new _3.string.Builder();
-for(var i=0;i<_5.length;i++){
-var ch=_5.charAt(i);
-var _7=ch;
-switch(ch){
-case " ":
-_7="\\20";
-break;
-case "\"":
-_7="\\22";
-break;
-case "#":
-_7="\\23";
-break;
-case "&":
-_7="\\26";
-break;
-case "'":
-_7="\\27";
-break;
-case "/":
-_7="\\2f";
-break;
-case ":":
-_7="\\3a";
-break;
-case "<":
-_7="\\3c";
-break;
-case ">":
-_7="\\3e";
-break;
+
+dojox.xmpp.util.encodeJid = function(jid) {
+		var buffer = new dojox.string.Builder();
+		for(var i =0; i < jid.length; i++) {
+			var ch = jid.charAt(i);
+			var rep = ch;
+			switch(ch){
+				case ' ' : 
+					rep = "\\20";
+				break;
+				case '"' :
+					rep = "\\22"; 
+				break;
+				case '#' :
+					rep = "\\23"; 
+				break;
+				case '&' :
+					rep = "\\26"; 
+				break;
+				case "'" :
+					rep = "\\27"; 
+				break;
+				case '/' :
+					rep = "\\2f"; 
+				break;
+				case ':' :
+					rep = "\\3a"; 
+				break;
+				case '<' :
+					rep = "\\3c"; 
+				break;
+				case '>' :
+					rep = "\\3e"; 
+				break;			
+			}
+			buffer.append(rep);
+		}
+		return buffer.toString();
+	}
+
+dojox.xmpp.util.decodeJid = function(jid) {
+	
+	jid = jid.replace(/\\([23][02367acef])/g, function(match) {
+			switch(match){
+				case "\\20" : 
+					return  ' ';
+				case "\\22"  :
+					return '"'; 
+				case "\\23" :
+					return '#' ; 
+				case "\\26" :
+					return  '&'; 
+				case "\\27" :
+					return   "'"; 
+				case "\\2f" :
+					return  '/'; 
+				case "\\3a" :
+					return ':' ; 
+				case "\\3c" :
+					return  '<'; 
+				case "\\3e" :
+					return  '>'; 
+			}
+			return "ARG";
+	});
+	
+	return jid;
 }
-_6.append(_7);
+
+
+dojox.xmpp.util.createElement = function(tag, attributes, terminal){
+	var elem = new dojox.string.Builder("<");
+	elem.append(tag + " ");
+
+	for (var attr in attributes){
+		elem.append(attr + '="');
+		elem.append(attributes[attr]);
+		elem.append('" ');
+	}	
+	
+	if (terminal){
+		elem.append("/>");		
+	}else{
+		elem.append(">");
+	}
+
+	return elem.toString();
 }
-return _6.toString();
-};
-_3.xmpp.util.decodeJid=function(_8){
-_8=_8.replace(/\\([23][02367acef])/g,function(_9){
-switch(_9){
-case "\\20":
-return " ";
-case "\\22":
-return "\"";
-case "\\23":
-return "#";
-case "\\26":
-return "&";
-case "\\27":
-return "'";
-case "\\2f":
-return "/";
-case "\\3a":
-return ":";
-case "\\3c":
-return "<";
-case "\\3e":
-return ">";
+
+dojox.xmpp.util.stripHtml = function(str){
+	// summary
+	//		Strips all HTML, including attributes and brackets
+	//		| <div onmouse="doBadThing()">Click <b>Me</b></div>
+	//		| becomes: Click Me
+	var re=/<[^>]*?>/gi;
+	for (var i=0; i<arguments.length; i++) {}
+	return str.replace(re, "");
 }
-return "ARG";
-});
-return _8;
-};
-_3.xmpp.util.createElement=function(_a,_b,_c){
-var _d=new _3.string.Builder("<");
-_d.append(_a+" ");
-for(var _e in _b){
-_d.append(_e+"=\"");
-_d.append(_b[_e]);
-_d.append("\" ");
+
+dojox.xmpp.util.decodeHtmlEntities = function(str){
+	// Summary: decodes HTML entities to js characters so the string can be 
+	// fed to a textarea.value
+	var ta = dojo.doc.createElement("textarea");
+	ta.innerHTML = str.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+	return ta.value;
 }
-if(_c){
-_d.append("/>");
-}else{
-_d.append(">");
+
+dojox.xmpp.util.htmlToPlain = function(str){
+	str = dojox.xmpp.util.decodeHtmlEntities(str);
+	str = str.replace(/<br\s*[i\/]{0,1}>/gi,"\n");
+	str = dojox.xmpp.util.stripHtml(str);
+	return str;
 }
-return _d.toString();
-};
-_3.xmpp.util.stripHtml=function(_f){
-var re=/<[^>]*?>/gi;
-for(var i=0;i<arguments.length;i++){
+
+dojox.xmpp.util.Base64 = {};
+dojox.xmpp.util.Base64.keylist = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+dojox.xmpp.util.Base64.encode = function(input){
+	var output = "";
+	var c1, c2, c3;
+	var encoded1, encoded2, encoded3, encoded4;
+	var i = 0;
+
+	do {
+		c1 = c2 = c3 = "";
+		encoded1 = encoded2 = encoded3 = encoded4 = "";
+
+		c1 = input.charCodeAt(i++);
+		c2 = input.charCodeAt(i++);
+		c3 = input.charCodeAt(i++);
+
+		encoded1 = c1 >> 2;
+		encoded2 = ((c1 & 3) << 4) | (c2 >> 4);
+		encoded3 = ((c2 & 15) << 2) | (c3 >> 6);
+		encoded4 = c3 & 63;
+
+		if (isNaN(c2)) {
+			encoded3 = encoded4 = 64;
+		} else if (isNaN(c3)) {
+			encoded4 = 64;
+		}
+
+		output = output + dojox.xmpp.util.Base64.keylist.charAt(encoded1) + dojox.xmpp.util.Base64.keylist.charAt(encoded2) +
+		dojox.xmpp.util.Base64.keylist.charAt(encoded3) + dojox.xmpp.util.Base64.keylist.charAt(encoded4);
+
+	} while (i < input.length);
+
+	return output;
 }
-return _f.replace(re,"");
-};
-_3.xmpp.util.decodeHtmlEntities=function(str){
-var ta=_2.doc.createElement("textarea");
-ta.innerHTML=str.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-return ta.value;
-};
-_3.xmpp.util.htmlToPlain=function(str){
-str=_3.xmpp.util.decodeHtmlEntities(str);
-str=str.replace(/<br\s*[i\/]{0,1}>/gi,"\n");
-str=_3.xmpp.util.stripHtml(str);
-return str;
-};
-_3.xmpp.util.Base64={};
-_3.xmpp.util.Base64.encode=function(_10){
-var s2b=function(s){
-var b=[];
-for(var i=0;i<s.length;++i){
-b.push(s.charCodeAt(i));
+
+
+dojox.xmpp.util.Base64.decode = function(input){
+	var output = "";
+	var c1, c2, c3;
+	var encoded1, encoded2, encoded3, encoded4 = "";
+	var i = 0;
+
+	do {
+		c1 = c2 = c3 = "";
+		encoded1 = encoded2 = encoded3 = encoded4 = "";
+
+		encoded1 = dojox.xmpp.util.Base64.keylist.indexOf(input.charAt(i++));
+		encoded2 = dojox.xmpp.util.Base64.keylist.indexOf(input.charAt(i++));
+		encoded3 = dojox.xmpp.util.Base64.keylist.indexOf(input.charAt(i++));
+		encoded4 = dojox.xmpp.util.Base64.keylist.indexOf(input.charAt(i++));
+
+		c1 = (encoded1 << 2) | (encoded2 >> 4);
+		c2 = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+		c3 = ((encoded3 & 3) << 6) | encoded4;
+
+		output = output + String.fromCharCode(c1);
+
+		if (encoded3 != 64) {
+			output = output + String.fromCharCode(c2);
+		}
+
+		if (encoded4 != 64) {
+			output = output + String.fromCharCode(c3);
+		}
+	} while (i < input.length);
+
+	return output;
 }
-return b;
-};
-return _3.encoding.base64.encode(s2b(_10));
-};
-_3.xmpp.util.Base64.decode=function(_11){
-var b2s=function(b){
-var s=[];
-_2.forEach(b,function(c){
-s.push(String.fromCharCode(c));
-});
-return s.join("");
-};
-return b2s(_3.encoding.base64.decode(_11));
-};
-});
+
+}

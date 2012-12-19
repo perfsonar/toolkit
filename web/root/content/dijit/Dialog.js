@@ -1,274 +1,446 @@
-//>>built
-require({cache:{"url:dijit/templates/Dialog.html":"<div class=\"dijitDialog\" role=\"dialog\" aria-labelledby=\"${id}_title\">\n\t<div data-dojo-attach-point=\"titleBar\" class=\"dijitDialogTitleBar\">\n\t\t<span data-dojo-attach-point=\"titleNode\" class=\"dijitDialogTitle\" id=\"${id}_title\"\n\t\t\t\trole=\"header\" level=\"1\"></span>\n\t\t<span data-dojo-attach-point=\"closeButtonNode\" class=\"dijitDialogCloseIcon\" data-dojo-attach-event=\"ondijitclick: onCancel\" title=\"${buttonCancel}\" role=\"button\" tabIndex=\"-1\">\n\t\t\t<span data-dojo-attach-point=\"closeText\" class=\"closeText\" title=\"${buttonCancel}\">x</span>\n\t\t</span>\n\t</div>\n\t<div data-dojo-attach-point=\"containerNode\" class=\"dijitDialogPaneContent\"></div>\n</div>\n"}});
-define("dijit/Dialog",["require","dojo/_base/array","dojo/_base/connect","dojo/_base/declare","dojo/_base/Deferred","dojo/dom","dojo/dom-class","dojo/dom-geometry","dojo/dom-style","dojo/_base/event","dojo/_base/fx","dojo/i18n","dojo/keys","dojo/_base/lang","dojo/on","dojo/ready","dojo/sniff","dojo/window","dojo/dnd/Moveable","dojo/dnd/TimedMoveable","./focus","./_base/manager","./_Widget","./_TemplatedMixin","./_CssStateMixin","./form/_FormMixin","./_DialogMixin","./DialogUnderlay","./layout/ContentPane","dojo/text!./templates/Dialog.html","./main","dojo/i18n!./nls/common"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,fx,_b,_c,_d,on,_e,_f,_10,_11,_12,_13,_14,_15,_16,_17,_18,_19,_1a,_1b,_1c,_1d){
-var _1e=_4("dijit._DialogBase",[_16,_18,_19,_17],{templateString:_1c,baseClass:"dijitDialog",cssStateNodes:{closeButtonNode:"dijitDialogCloseIcon"},_setTitleAttr:[{node:"titleNode",type:"innerHTML"},{node:"titleBar",type:"attribute"}],open:false,duration:_14.defaultDuration,refocus:true,autofocus:true,_firstFocusItem:null,_lastFocusItem:null,doLayout:false,draggable:true,_setDraggableAttr:function(val){
-this._set("draggable",val);
-},"aria-describedby":"",maxRatio:0.9,postMixInProperties:function(){
-var _1f=_b.getLocalization("dijit","common");
-_d.mixin(this,_1f);
-this.inherited(arguments);
-},postCreate:function(){
-_9.set(this.domNode,{display:"none",position:"absolute"});
-this.ownerDocumentBody.appendChild(this.domNode);
-this.inherited(arguments);
-this.connect(this,"onExecute","hide");
-this.connect(this,"onCancel","hide");
-this._modalconnects=[];
-},onLoad:function(){
-this._position();
-if(this.autofocus&&_20.isTop(this)){
-this._getFocusItems(this.domNode);
-_13.focus(this._firstFocusItem);
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dijit.Dialog"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dijit.Dialog"] = true;
+dojo.provide("dijit.Dialog");
+
+dojo.require("dojo.dnd.move");
+dojo.require("dojo.dnd.TimedMoveable");
+dojo.require("dojo.fx");
+
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
+dojo.require("dijit.form._FormMixin");
+dojo.require("dijit._DialogMixin");
+dojo.require("dijit.DialogUnderlay");
+dojo.require("dijit.layout.ContentPane");
+dojo.requireLocalization("dijit", "common", null, "ROOT,ar,ca,cs,da,de,el,es,fi,fr,he,hu,it,ja,ko,nb,nl,pl,pt,pt-pt,ru,sk,sl,sv,th,tr,zh,zh-tw");
+
+/*=====
+dijit._underlay = function(kwArgs){
+	// summary:
+	//		A shared instance of a `dijit.DialogUnderlay`
+	//
+	// description: 
+	//		A shared instance of a `dijit.DialogUnderlay` created and
+	//		used by `dijit.Dialog`, though never created until some Dialog
+	//		or subclass thereof is shown.
+};
+=====*/
+
+dojo.declare(
+	"dijit.Dialog",
+	[dijit.layout.ContentPane, dijit._Templated, dijit.form._FormMixin, dijit._DialogMixin],
+	{
+		// summary:
+		//		A modal dialog Widget
+		//
+		// description:
+		//		Pops up a modal dialog window, blocking access to the screen
+		//		and also graying out the screen Dialog is extended from
+		//		ContentPane so it supports all the same parameters (href, etc.)
+		//
+		// example:
+		// |	<div dojoType="dijit.Dialog" href="test.html"></div>
+		//
+		// example:
+		// |	var foo = new dijit.Dialog({ title: "test dialog", content: "test content" };
+		// |	dojo.body().appendChild(foo.domNode);
+		// |	foo.startup();
+		
+		templateString: null,
+		templateString:"<div class=\"dijitDialog\" tabindex=\"-1\" waiRole=\"dialog\" waiState=\"labelledby-${id}_title\">\n\t<div dojoAttachPoint=\"titleBar\" class=\"dijitDialogTitleBar\">\n\t<span dojoAttachPoint=\"titleNode\" class=\"dijitDialogTitle\" id=\"${id}_title\"></span>\n\t<span dojoAttachPoint=\"closeButtonNode\" class=\"dijitDialogCloseIcon\" dojoAttachEvent=\"onclick: onCancel, onmouseenter: _onCloseEnter, onmouseleave: _onCloseLeave\" title=\"${buttonCancel}\">\n\t\t<span dojoAttachPoint=\"closeText\" class=\"closeText\" title=\"${buttonCancel}\">x</span>\n\t</span>\n\t</div>\n\t\t<div dojoAttachPoint=\"containerNode\" class=\"dijitDialogPaneContent\"></div>\n</div>\n",
+		attributeMap: dojo.delegate(dijit._Widget.prototype.attributeMap, {
+			title: [
+				{ node: "titleNode", type: "innerHTML" }, 
+				{ node: "titleBar", type: "attribute" }
+			]
+		}),
+
+		// open: Boolean
+		//		True if Dialog is currently displayed on screen.
+		open: false,
+
+		// duration: Integer
+		//		The time in milliseconds it takes the dialog to fade in and out
+		duration: dijit.defaultDuration,
+
+		// refocus: Boolean
+		// 		A Toggle to modify the default focus behavior of a Dialog, which
+		// 		is to re-focus the element which had focus before being opened.
+		//		False will disable refocusing. Default: true
+		refocus: true,
+		
+		// autofocus: Boolean
+		// 		A Toggle to modify the default focus behavior of a Dialog, which
+		// 		is to focus on the first dialog element after opening the dialog.
+		//		False will disable autofocusing. Default: true
+		autofocus: true,
+
+		// _firstFocusItem: [private] [readonly] DomNode
+		//		The pointer to the first focusable node in the dialog.
+		//		Set by `dijit._DialogMixin._getFocusItems`.
+		_firstFocusItem: null,
+		
+		// _lastFocusItem: [private] [readonly] DomNode
+		//		The pointer to which node has focus prior to our dialog.
+		//		Set by `dijit._DialogMixin._getFocusItems`.
+		_lastFocusItem: null,
+
+		// doLayout: [protected] Boolean
+		//		Don't change this parameter from the default value.
+		//		This ContentPane parameter doesn't make sense for Dialog, since Dialog
+		//		is never a child of a layout container, nor can you specify the size of
+		//		Dialog in order to control the size of an inner widget. 
+		doLayout: false,
+
+		// draggable: Boolean
+		//		Toggles the moveable aspect of the Dialog. If true, Dialog
+		//		can be dragged by it's title. If false it will remain centered
+		//		in the viewport.
+		draggable: true,
+
+		// _fixSizes: Boolean
+		//		Does this Dialog attempt to restore the width and height after becoming too small?
+		_fixSizes: true,
+
+		postMixInProperties: function(){
+			var _nlsResources = dojo.i18n.getLocalization("dijit", "common");
+			dojo.mixin(this, _nlsResources);
+			this.inherited(arguments);
+		},
+
+		postCreate: function(){
+			dojo.style(this.domNode, {
+				visibility:"hidden",
+				position:"absolute",
+				display:"",
+				top:"-9999px"
+			});
+			dojo.body().appendChild(this.domNode);
+
+			this.inherited(arguments);
+
+			this.connect(this, "onExecute", "hide");
+			this.connect(this, "onCancel", "hide");
+			this._modalconnects = [];
+		},
+
+		onLoad: function(){
+			// summary:
+			//		Called when data has been loaded from an href.
+			//		Unlike most other callbacks, this function can be connected to (via `dojo.connect`)
+			//		but should *not* be overriden.
+			// tags:
+			//		callback
+			
+			// when href is specified we need to reposition the dialog after the data is loaded
+			this._position();
+			this.inherited(arguments);
+		},
+
+		_endDrag: function(e){
+			// summary:
+			//		Called after dragging the Dialog. Calculates the relative offset
+			//		of the Dialog in relation to the viewport.
+			// tags:
+			//		private
+			if(e && e.node && e.node === this.domNode){
+				var vp = dijit.getViewport(); 
+				var p = e._leftTop || dojo.coords(e.node,true);
+				this._relativePosition = {
+					t: p.t - vp.t,
+					l: p.l - vp.l
+				}			
+			}
+		},
+		
+		_setup: function(){
+			// summary: 
+			//		Stuff we need to do before showing the Dialog for the first
+			//		time (but we defer it until right beforehand, for
+			//		performance reasons).
+			// tags:
+			//		private
+
+			var node = this.domNode;
+
+			if(this.titleBar && this.draggable){
+				this._moveable = (dojo.isIE == 6) ?
+					new dojo.dnd.TimedMoveable(node, { handle: this.titleBar }) :	// prevent overload, see #5285
+					new dojo.dnd.Moveable(node, { handle: this.titleBar, timeout: 0 });
+				dojo.subscribe("/dnd/move/stop",this,"_endDrag");
+			}else{
+				dojo.addClass(node,"dijitDialogFixed"); 
+			}
+			
+			var underlayAttrs = {
+				dialogId: this.id,
+				"class": dojo.map(this["class"].split(/\s/), function(s){ return s+"_underlay"; }).join(" ")
+			};
+			
+			var underlay = dijit._underlay;
+			if(!underlay){ 
+				underlay = dijit._underlay = new dijit.DialogUnderlay(underlayAttrs); 
+			}
+			
+			this._fadeIn = dojo.fadeIn({
+				node: node,
+				duration: this.duration,
+				beforeBegin: function(){
+					underlay.attr(underlayAttrs);
+					underlay.show();
+				},
+				onEnd:	dojo.hitch(this, function(){
+					if(this.autofocus){
+						// find focusable Items each time dialog is shown since if dialog contains a widget the 
+						// first focusable items can change
+						this._getFocusItems(this.domNode);
+						dijit.focus(this._firstFocusItem);
+					}
+				})
+			 });
+
+			this._fadeOut = dojo.fadeOut({
+				node: node,
+				duration: this.duration,
+				onEnd: function(){
+					node.style.visibility="hidden";
+					node.style.top = "-9999px";
+					dijit._underlay.hide();
+				}
+			 });
+		},
+
+		uninitialize: function(){
+			var wasPlaying = false;
+			if(this._fadeIn && this._fadeIn.status() == "playing"){
+				wasPlaying = true;
+				this._fadeIn.stop();
+			}
+			if(this._fadeOut && this._fadeOut.status() == "playing"){
+				wasPlaying = true;
+				this._fadeOut.stop();
+			}
+			if(this.open || wasPlaying){
+				dijit._underlay.hide();
+			}
+			if(this._moveable){
+				this._moveable.destroy();
+			}
+		},
+
+		_size: function(){
+			// summary:
+			// 		Make sure the dialog is small enough to fit in viewport.
+			// tags:
+			//		private
+
+			var mb = dojo.marginBox(this.domNode);
+			var viewport = dijit.getViewport();
+			if(mb.w >= viewport.w || mb.h >= viewport.h){
+				dojo.style(this.containerNode, {
+					width: Math.min(mb.w, Math.floor(viewport.w * 0.75))+"px",
+					height: Math.min(mb.h, Math.floor(viewport.h * 0.75))+"px",
+					overflow: "auto",
+					position: "relative"	// workaround IE bug moving scrollbar or dragging dialog
+				});
+			}
+		},
+
+		_position: function(){
+			// summary:
+			//		Position modal dialog in the viewport. If no relative offset
+			//		in the viewport has been determined (by dragging, for instance),
+			//		center the node. Otherwise, use the Dialog's stored relative offset,
+			//		and position the node to top: left: values based on the viewport.
+			// tags:
+			//		private
+			if(!dojo.hasClass(dojo.body(),"dojoMove")){
+				var node = this.domNode;
+				var viewport = dijit.getViewport();
+					var p = this._relativePosition;
+					var mb = p ? null : dojo.marginBox(node);
+					dojo.style(node,{
+						left: Math.floor(viewport.l + (p ? p.l : (viewport.w - mb.w) / 2)) + "px",
+						top: Math.floor(viewport.t + (p ? p.t : (viewport.h - mb.h) / 2)) + "px"
+					});
+				}
+
+		},
+
+		_onKey: function(/*Event*/ evt){
+			// summary:
+			//		Handles the keyboard events for accessibility reasons
+			// tags:
+			//		private
+			if(evt.charOrCode){
+				var dk = dojo.keys;
+				var node = evt.target;
+				if (evt.charOrCode === dk.TAB){
+					this._getFocusItems(this.domNode);
+				}
+				var singleFocusItem = (this._firstFocusItem == this._lastFocusItem);
+				// see if we are shift-tabbing from first focusable item on dialog
+				if(node == this._firstFocusItem && evt.shiftKey && evt.charOrCode === dk.TAB){
+					if(!singleFocusItem){
+						dijit.focus(this._lastFocusItem); // send focus to last item in dialog
+					}
+					dojo.stopEvent(evt);
+				}else if(node == this._lastFocusItem && evt.charOrCode === dk.TAB && !evt.shiftKey){
+					if (!singleFocusItem){
+						dijit.focus(this._firstFocusItem); // send focus to first item in dialog
+					}
+					dojo.stopEvent(evt);
+				}else{
+					// see if the key is for the dialog
+					while(node){
+						if(node == this.domNode){
+							if(evt.charOrCode == dk.ESCAPE){
+								this.onCancel(); 
+							}else{
+								return; // just let it go
+							}
+						}
+						node = node.parentNode;
+					}
+					// this key is for the disabled document window
+					if(evt.charOrCode !== dk.TAB){ // allow tabbing into the dialog for a11y
+						dojo.stopEvent(evt);
+					// opera won't tab to a div
+					}else if(!dojo.isOpera){
+						try{
+							this._firstFocusItem.focus();
+						}catch(e){ /*squelch*/ }
+					}
+				}
+			}
+		},
+
+		show: function(){
+			// summary:
+			//		Display the dialog
+			if(this.open){ return; }
+			
+			// first time we show the dialog, there's some initialization stuff to do			
+			if(!this._alreadyInitialized){
+				this._setup();
+				this._alreadyInitialized=true;
+			}
+
+			if(this._fadeOut.status() == "playing"){
+				this._fadeOut.stop();
+			}
+
+			this._modalconnects.push(dojo.connect(window, "onscroll", this, "layout"));
+			this._modalconnects.push(dojo.connect(window, "onresize", this, function(){
+				// IE gives spurious resize events and can actually get stuck
+				// in an infinite loop if we don't ignore them
+				var viewport = dijit.getViewport();
+				if(!this._oldViewport ||
+						viewport.h != this._oldViewport.h ||
+						viewport.w != this._oldViewport.w){
+					this.layout();
+					this._oldViewport = viewport;
+				}
+			}));
+			this._modalconnects.push(dojo.connect(dojo.doc.documentElement, "onkeypress", this, "_onKey"));
+
+			dojo.style(this.domNode, {
+				opacity:0,
+				visibility:""
+			});
+			
+			if(this._fixSizes){
+				dojo.style(this.containerNode, { // reset width and height so that _size():marginBox works correctly
+					width:"auto",
+					height:"auto"
+				});
+			}
+			
+			this.open = true;
+			this._onShow(); // lazy load trigger
+
+			this._size();
+			this._position();
+
+			this._fadeIn.play();
+
+			this._savedFocus = dijit.getFocus(this);
+		},
+
+		hide: function(){
+			// summary:
+			//		Hide the dialog
+
+			// if we haven't been initialized yet then we aren't showing and we can just return		
+			if(!this._alreadyInitialized){
+				return;
+			}
+
+			if(this._fadeIn.status() == "playing"){
+				this._fadeIn.stop();
+			}
+			this._fadeOut.play();
+
+			if (this._scrollConnected){
+				this._scrollConnected = false;
+			}
+			dojo.forEach(this._modalconnects, dojo.disconnect);
+			this._modalconnects = [];
+			if(this.refocus){
+				this.connect(this._fadeOut,"onEnd",dojo.hitch(dijit,"focus",this._savedFocus));
+			}
+			if(this._relativePosition){
+				delete this._relativePosition;	
+			}
+			this.open = false;
+		},
+
+		layout: function() {
+			// summary:
+			//		Position the Dialog and the underlay
+			// tags:
+			//		private
+			if(this.domNode.style.visibility != "hidden"){
+				dijit._underlay.layout();
+				this._position();
+			}
+		},
+		
+		destroy: function(){
+			dojo.forEach(this._modalconnects, dojo.disconnect);
+			if(this.refocus && this.open){
+				setTimeout(dojo.hitch(dijit,"focus",this._savedFocus), 25);
+			}
+			this.inherited(arguments);			
+		},
+
+		_onCloseEnter: function(){
+			// summary:
+			//		Called when user hovers over close icon
+			// tags:
+			//		private
+			dojo.addClass(this.closeButtonNode, "dijitDialogCloseIcon-hover");
+		},
+
+		_onCloseLeave: function(){
+			// summary:
+			//		Called when user stops hovering over close icon
+			// tags:
+			//		private
+			dojo.removeClass(this.closeButtonNode, "dijitDialogCloseIcon-hover");
+		}
+	}
+);
+
+// For back-compat.  TODO: remove in 2.0
+dojo.require("dijit.TooltipDialog");
+
+
 }
-this.inherited(arguments);
-},_endDrag:function(){
-var _21=_8.position(this.domNode),_22=_10.getBox(this.ownerDocument);
-_21.y=Math.min(Math.max(_21.y,0),(_22.h-_21.h));
-_21.x=Math.min(Math.max(_21.x,0),(_22.w-_21.w));
-this._relativePosition=_21;
-this._position();
-},_setup:function(){
-var _23=this.domNode;
-if(this.titleBar&&this.draggable){
-this._moveable=new ((_f("ie")==6)?_12:_11)(_23,{handle:this.titleBar});
-this.connect(this._moveable,"onMoveStop","_endDrag");
-}else{
-_7.add(_23,"dijitDialogFixed");
-}
-this.underlayAttrs={dialogId:this.id,"class":_2.map(this["class"].split(/\s/),function(s){
-return s+"_underlay";
-}).join(" "),ownerDocument:this.ownerDocument};
-},_size:function(){
-this._checkIfSingleChild();
-if(this._singleChild){
-if(typeof this._singleChildOriginalStyle!="undefined"){
-this._singleChild.domNode.style.cssText=this._singleChildOriginalStyle;
-delete this._singleChildOriginalStyle;
-}
-}else{
-_9.set(this.containerNode,{width:"auto",height:"auto"});
-}
-var bb=_8.position(this.domNode);
-var _24=_10.getBox(this.ownerDocument);
-_24.w*=this.maxRatio;
-_24.h*=this.maxRatio;
-if(bb.w>=_24.w||bb.h>=_24.h){
-var _25=_8.position(this.containerNode),w=Math.min(bb.w,_24.w)-(bb.w-_25.w),h=Math.min(bb.h,_24.h)-(bb.h-_25.h);
-if(this._singleChild&&this._singleChild.resize){
-if(typeof this._singleChildOriginalStyle=="undefined"){
-this._singleChildOriginalStyle=this._singleChild.domNode.style.cssText;
-}
-this._singleChild.resize({w:w,h:h});
-}else{
-_9.set(this.containerNode,{width:w+"px",height:h+"px",overflow:"auto",position:"relative"});
-}
-}else{
-if(this._singleChild&&this._singleChild.resize){
-this._singleChild.resize();
-}
-}
-},_position:function(){
-if(!_7.contains(this.ownerDocumentBody,"dojoMove")){
-var _26=this.domNode,_27=_10.getBox(this.ownerDocument),p=this._relativePosition,bb=p?null:_8.position(_26),l=Math.floor(_27.l+(p?p.x:(_27.w-bb.w)/2)),t=Math.floor(_27.t+(p?p.y:(_27.h-bb.h)/2));
-_9.set(_26,{left:l+"px",top:t+"px"});
-}
-},_onKey:function(evt){
-if(evt.charOrCode){
-var _28=evt.target;
-if(evt.charOrCode===_c.TAB){
-this._getFocusItems(this.domNode);
-}
-var _29=(this._firstFocusItem==this._lastFocusItem);
-if(_28==this._firstFocusItem&&evt.shiftKey&&evt.charOrCode===_c.TAB){
-if(!_29){
-_13.focus(this._lastFocusItem);
-}
-_a.stop(evt);
-}else{
-if(_28==this._lastFocusItem&&evt.charOrCode===_c.TAB&&!evt.shiftKey){
-if(!_29){
-_13.focus(this._firstFocusItem);
-}
-_a.stop(evt);
-}else{
-while(_28){
-if(_28==this.domNode||_7.contains(_28,"dijitPopup")){
-if(evt.charOrCode==_c.ESCAPE){
-this.onCancel();
-}else{
-return;
-}
-}
-_28=_28.parentNode;
-}
-if(evt.charOrCode!==_c.TAB){
-_a.stop(evt);
-}else{
-if(!_f("opera")){
-try{
-this._firstFocusItem.focus();
-}
-catch(e){
-}
-}
-}
-}
-}
-}
-},show:function(){
-if(this.open){
-return;
-}
-if(!this._started){
-this.startup();
-}
-if(!this._alreadyInitialized){
-this._setup();
-this._alreadyInitialized=true;
-}
-if(this._fadeOutDeferred){
-this._fadeOutDeferred.cancel();
-}
-var win=_10.get(this.ownerDocument);
-this._modalconnects.push(on(win,"scroll",_d.hitch(this,"resize")));
-this._modalconnects.push(on(this.domNode,_3._keypress,_d.hitch(this,"_onKey")));
-_9.set(this.domNode,{opacity:0,display:""});
-this._set("open",true);
-this._onShow();
-this._size();
-this._position();
-var _2a;
-this._fadeInDeferred=new _5(_d.hitch(this,function(){
-_2a.stop();
-delete this._fadeInDeferred;
-}));
-_2a=fx.fadeIn({node:this.domNode,duration:this.duration,beforeBegin:_d.hitch(this,function(){
-_20.show(this,this.underlayAttrs);
-}),onEnd:_d.hitch(this,function(){
-if(this.autofocus&&_20.isTop(this)){
-this._getFocusItems(this.domNode);
-_13.focus(this._firstFocusItem);
-}
-this._fadeInDeferred.resolve(true);
-delete this._fadeInDeferred;
-})}).play();
-return this._fadeInDeferred;
-},hide:function(){
-if(!this._alreadyInitialized||!this.open){
-return;
-}
-if(this._fadeInDeferred){
-this._fadeInDeferred.cancel();
-}
-var _2b;
-this._fadeOutDeferred=new _5(_d.hitch(this,function(){
-_2b.stop();
-delete this._fadeOutDeferred;
-}));
-this._fadeOutDeferred.then(_d.hitch(this,"onHide"));
-_2b=fx.fadeOut({node:this.domNode,duration:this.duration,onEnd:_d.hitch(this,function(){
-this.domNode.style.display="none";
-_20.hide(this);
-this._fadeOutDeferred.resolve(true);
-delete this._fadeOutDeferred;
-})}).play();
-if(this._scrollConnected){
-this._scrollConnected=false;
-}
-var h;
-while(h=this._modalconnects.pop()){
-h.remove();
-}
-if(this._relativePosition){
-delete this._relativePosition;
-}
-this._set("open",false);
-return this._fadeOutDeferred;
-},resize:function(){
-if(this.domNode.style.display!="none"){
-if(_1a._singleton){
-_1a._singleton.layout();
-}
-this._position();
-this._size();
-}
-},destroy:function(){
-if(this._fadeInDeferred){
-this._fadeInDeferred.cancel();
-}
-if(this._fadeOutDeferred){
-this._fadeOutDeferred.cancel();
-}
-if(this._moveable){
-this._moveable.destroy();
-}
-var h;
-while(h=this._modalconnects.pop()){
-h.remove();
-}
-_20.hide(this);
-this.inherited(arguments);
-}});
-var _2c=_4("dijit.Dialog",[_1b,_1e],{});
-_2c._DialogBase=_1e;
-var _20=_2c._DialogLevelManager={_beginZIndex:950,show:function(_2d,_2e){
-ds[ds.length-1].focus=_13.curNode;
-var _2f=_1a._singleton;
-if(!_2f||_2f._destroyed){
-_2f=_1d._underlay=_1a._singleton=new _1a(_2e);
-}else{
-_2f.set(_2d.underlayAttrs);
-}
-var _30=ds[ds.length-1].dialog?ds[ds.length-1].zIndex+2:_2c._DialogLevelManager._beginZIndex;
-if(ds.length==1){
-_2f.show();
-}
-_9.set(_1a._singleton.domNode,"zIndex",_30-1);
-_9.set(_2d.domNode,"zIndex",_30);
-ds.push({dialog:_2d,underlayAttrs:_2e,zIndex:_30});
-},hide:function(_31){
-if(ds[ds.length-1].dialog==_31){
-ds.pop();
-var pd=ds[ds.length-1];
-if(!_1a._singleton._destroyed){
-if(ds.length==1){
-_1a._singleton.hide();
-}else{
-_9.set(_1a._singleton.domNode,"zIndex",pd.zIndex-1);
-_1a._singleton.set(pd.underlayAttrs);
-}
-}
-if(_31.refocus){
-var _32=pd.focus;
-if(pd.dialog&&(!_32||!_6.isDescendant(_32,pd.dialog.domNode))){
-pd.dialog._getFocusItems(pd.dialog.domNode);
-_32=pd.dialog._firstFocusItem;
-}
-if(_32){
-try{
-_32.focus();
-}
-catch(e){
-}
-}
-}
-}else{
-var idx=_2.indexOf(_2.map(ds,function(_33){
-return _33.dialog;
-}),_31);
-if(idx!=-1){
-ds.splice(idx,1);
-}
-}
-},isTop:function(_34){
-return ds[ds.length-1].dialog==_34;
-}};
-var ds=_2c._dialogStack=[{dialog:null,focus:null,underlayAttrs:null}];
-if(_f("dijit-legacy-requires")){
-_e(0,function(){
-var _35=["dijit/TooltipDialog"];
-_1(_35);
-});
-}
-return _2c;
-});

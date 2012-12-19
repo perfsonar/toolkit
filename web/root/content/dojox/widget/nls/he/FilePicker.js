@@ -1,2 +1,1 @@
-//>>built
-define("dojox/widget/nls/he/FilePicker",({name:"שם",path:"נתיב",size:"גודל (בבתים)"}));
+({"name":"שם","size":"גודל (בבתים)","path":"נתיב"})

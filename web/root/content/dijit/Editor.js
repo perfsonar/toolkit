@@ -1,462 +1,596 @@
-//>>built
-define("dijit/Editor",["dojo/_base/array","dojo/_base/declare","dojo/_base/Deferred","dojo/i18n","dojo/dom-attr","dojo/dom-class","dojo/dom-geometry","dojo/dom-style","dojo/_base/event","dojo/keys","dojo/_base/lang","dojo/sniff","dojo/string","dojo/topic","dojo/_base/window","./_base/focus","./_Container","./Toolbar","./ToolbarSeparator","./layout/_LayoutWidget","./form/ToggleButton","./_editor/_Plugin","./_editor/plugins/EnterKeyHandling","./_editor/html","./_editor/range","./_editor/RichText","./main","dojo/i18n!./_editor/nls/commands"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c,_d,_e,_f,_10,_11,_12,_13,_14,_15,_16,_17,_18,_19,_1a,_1b){
-var _1c=_2("dijit.Editor",_1a,{plugins:null,extraPlugins:null,constructor:function(){
-if(!_b.isArray(this.plugins)){
-this.plugins=["undo","redo","|","cut","copy","paste","|","bold","italic","underline","strikethrough","|","insertOrderedList","insertUnorderedList","indent","outdent","|","justifyLeft","justifyRight","justifyCenter","justifyFull",_17];
-}
-this._plugins=[];
-this._editInterval=this.editActionInterval*1000;
-if(_c("ie")){
-this.events.push("onBeforeDeactivate");
-this.events.push("onBeforeActivate");
-}
-},postMixInProperties:function(){
-this.setValueDeferred=new _3();
-this.inherited(arguments);
-},postCreate:function(){
-this._steps=this._steps.slice(0);
-this._undoedSteps=this._undoedSteps.slice(0);
-if(_b.isArray(this.extraPlugins)){
-this.plugins=this.plugins.concat(this.extraPlugins);
-}
-this.inherited(arguments);
-this.commands=_4.getLocalization("dijit._editor","commands",this.lang);
-if(!this.toolbar){
-this.toolbar=new _12({ownerDocument:this.ownerDocument,dir:this.dir,lang:this.lang});
-this.header.appendChild(this.toolbar.domNode);
-}
-_1.forEach(this.plugins,this.addPlugin,this);
-this.setValueDeferred.resolve(true);
-_6.add(this.iframe.parentNode,"dijitEditorIFrameContainer");
-_6.add(this.iframe,"dijitEditorIFrame");
-_5.set(this.iframe,"allowTransparency",true);
-if(_c("webkit")){
-_8.set(this.domNode,"KhtmlUserSelect","none");
-}
-this.toolbar.startup();
-this.onNormalizedDisplayChanged();
-},destroy:function(){
-_1.forEach(this._plugins,function(p){
-if(p&&p.destroy){
-p.destroy();
-}
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dijit.Editor"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dijit.Editor"] = true;
+dojo.provide("dijit.Editor");
+dojo.require("dijit._editor.RichText");
+dojo.require("dijit.Toolbar");
+dojo.require("dijit.ToolbarSeparator");
+dojo.require("dijit._editor._Plugin");
+dojo.require("dijit._editor.plugins.EnterKeyHandling");
+dojo.require("dijit._editor.range");
+dojo.require("dijit._Container");
+dojo.require("dojo.i18n");
+dojo.requireLocalization("dijit._editor", "commands", null, "ROOT,ar,ca,cs,da,de,el,es,fi,fr,he,hu,it,ja,ko,nb,nl,pl,pt,pt-pt,ru,sk,sl,sv,th,tr,zh,zh-tw");
+
+dojo.declare(
+	"dijit.Editor",
+	dijit._editor.RichText,
+	{
+		// summary:
+		//		A rich text Editing widget
+		//
+		// description:
+		//		This widget provides basic WYSIWYG editing features, based on the browser's
+		//		underlying rich text editing capability, accompanied by a toolbar (dijit.Toolbar).
+		//		A plugin model is available to extend the editor's capabilities as well as the
+		//		the options available in the toolbar.  Content generation may vary across
+		//		browsers, and clipboard operations may have different results, to name
+		//		a few limitations.  Note: this widget should not be used with the HTML
+		//		&lt;TEXTAREA&gt; tag -- see dijit._editor.RichText for details.
+
+		// plugins: String[]
+		//		A list of plugin names (as strings) or instances (as objects)
+		//		for this widget.
+		plugins: null,
+
+		// extraPlugins: String[]
+		//		A list of extra plugin names which will be appended to plugins array
+		extraPlugins: null,
+
+		constructor: function(){
+			// summary:
+			//		Runs on widget initialization to setup arrays etc.
+			// tags:
+			//		private
+
+			if(!dojo.isArray(this.plugins)){
+				this.plugins=["undo","redo","|","cut","copy","paste","|","bold","italic","underline","strikethrough","|",
+				"insertOrderedList","insertUnorderedList","indent","outdent","|","justifyLeft","justifyRight","justifyCenter","justifyFull",
+				"dijit._editor.plugins.EnterKeyHandling" /*, "createLink"*/];
+			}
+
+			this._plugins=[];
+			this._editInterval = this.editActionInterval * 1000;
+
+			//IE will always lose focus when other element gets focus, while for FF and safari,
+			//when no iframe is used, focus will be lost whenever another element gets focus.
+			//For IE, we can connect to onBeforeDeactivate, which will be called right before
+			//the focus is lost, so we can obtain the selected range. For other browsers,
+			//no equivelent of onBeforeDeactivate, so we need to do two things to make sure 
+			//selection is properly saved before focus is lost: 1) when user clicks another 
+			//element in the page, in which case we listen to mousedown on the entire page and
+			//see whether user clicks out of a focus editor, if so, save selection (focus will
+			//only lost after onmousedown event is fired, so we can obtain correct caret pos.)
+			//2) when user tabs away from the editor, which is handled in onKeyDown below.
+			if(dojo.isIE){
+				this.events.push("onBeforeDeactivate");
+			}
+		},
+
+		postCreate: function(){
+			//for custom undo/redo
+			if(this.customUndo){
+				dojo['require']("dijit._editor.range");
+				this._steps=this._steps.slice(0);
+				this._undoedSteps=this._undoedSteps.slice(0);
+//				this.addKeyHandler('z',this.KEY_CTRL,this.undo);
+//				this.addKeyHandler('y',this.KEY_CTRL,this.redo);
+			}
+			if(dojo.isArray(this.extraPlugins)){
+				this.plugins=this.plugins.concat(this.extraPlugins);
+			}
+
+//			try{
+			this.inherited(arguments);
+//			dijit.Editor.superclass.postCreate.apply(this, arguments);
+
+			this.commands = dojo.i18n.getLocalization("dijit._editor", "commands", this.lang);
+
+			if(!this.toolbar){
+				// if we haven't been assigned a toolbar, create one
+				this.toolbar = new dijit.Toolbar({});
+				dojo.place(this.toolbar.domNode, this.editingArea, "before");
+			}
+
+			dojo.forEach(this.plugins, this.addPlugin, this);
+			this.onNormalizedDisplayChanged(); //update toolbar button status
+//			}catch(e){ console.debug(e); }
+
+			this.toolbar.startup();
+		},
+		destroy: function(){
+			dojo.forEach(this._plugins, function(p){
+				if(p && p.destroy){
+					p.destroy();
+				}
+			});
+			this._plugins=[];
+			this.toolbar.destroyRecursive();
+			delete this.toolbar;
+			this.inherited(arguments);
+		},
+		addPlugin: function(/*String||Object*/plugin, /*Integer?*/index){
+			// summary:
+			//		takes a plugin name as a string or a plugin instance and
+			//		adds it to the toolbar and associates it with this editor
+			//		instance. The resulting plugin is added to the Editor's
+			//		plugins array. If index is passed, it's placed in the plugins
+			//		array at that index. No big magic, but a nice helper for
+			//		passing in plugin names via markup.
+			//
+			// plugin: String, args object or plugin instance
+			//
+			// args:
+			//		This object will be passed to the plugin constructor
+			//
+			// index: Integer
+			//		Used when creating an instance from
+			//		something already in this.plugins. Ensures that the new
+			//		instance is assigned to this.plugins at that index.
+			var args=dojo.isString(plugin)?{name:plugin}:plugin;
+			if(!args.setEditor){
+				var o={"args":args,"plugin":null,"editor":this};
+				dojo.publish(dijit._scopeName + ".Editor.getPlugin",[o]);
+				if(!o.plugin){
+					var pc = dojo.getObject(args.name);
+					if(pc){
+						o.plugin=new pc(args);
+					}
+				}
+				if(!o.plugin){
+					console.warn('Cannot find plugin',plugin);
+					return;
+				}
+				plugin=o.plugin;
+			}
+			if(arguments.length > 1){
+				this._plugins[index] = plugin;
+			}else{
+				this._plugins.push(plugin);
+			}
+			plugin.setEditor(this);
+			if(dojo.isFunction(plugin.setToolbar)){
+				plugin.setToolbar(this.toolbar);
+			}
+		},
+		//the following 3 functions are required to make the editor play nice under a layout widget, see #4070
+		startup: function(){
+			// summary:
+			//		Exists to make Editor work as a child of a layout widget.
+			//		Developers don't need to call this method.
+			// tags:
+			//		protected
+			//console.log('startup',arguments);
+		},
+		resize: function(size){
+			// summary:
+			//		Resize the editor to the specified size, see `dijit.layout._LayoutWidget.resize`
+			dijit.layout._LayoutWidget.prototype.resize.apply(this,arguments);
+		},
+		layout: function(){
+			// summary:
+			//		Called from `dijit.layout._LayoutWidget.resize`.  This shouldn't be called directly
+			// tags:
+			//		protected
+			this.editingArea.style.height=(this._contentBox.h - dojo.marginBox(this.toolbar.domNode).h)+"px";
+			if(this.iframe){
+				this.iframe.style.height="100%";
+			}
+			this._layoutMode = true;
+		},
+		_onIEMouseDown: function(/*Event*/ e){
+			// summary:
+			//		IE only to prevent 2 clicks to focus
+			// tags:
+			//		private
+			delete this._savedSelection; // new mouse position overrides old selection
+			if(e.target.tagName == "BODY"){
+				setTimeout(dojo.hitch(this, "placeCursorAtEnd"), 0);
+			}
+			this.inherited(arguments);
+		},
+		onBeforeDeactivate: function(e){
+			// summary:
+			//		Called on IE right before focus is lost.   Saves the selected range.
+			// tags:
+			//		private
+			if(this.customUndo){
+				this.endEditing(true);
+			}
+			//in IE, the selection will be lost when other elements get focus,
+			//let's save focus before the editor is deactivated
+			this._saveSelection();
+	        //console.log('onBeforeDeactivate',this);
+		},
+
+		/* beginning of custom undo/redo support */
+
+		// customUndo: Boolean
+		//		Whether we shall use custom undo/redo support instead of the native
+		//		browser support. By default, we only enable customUndo for IE, as it
+		//		has broken native undo/redo support. Note: the implementation does
+		//		support other browsers which have W3C DOM2 Range API implemented.
+		customUndo: dojo.isIE,
+
+		// editActionInterval: Integer
+		//		When using customUndo, not every keystroke will be saved as a step.
+		//		Instead typing (including delete) will be grouped together: after
+		//		a user stops typing for editActionInterval seconds, a step will be
+		//		saved; if a user resume typing within editActionInterval seconds,
+		//		the timeout will be restarted. By default, editActionInterval is 3
+		//		seconds.
+		editActionInterval: 3,
+
+		beginEditing: function(cmd){
+			// summary:
+			//		Called to note that the user has started typing alphanumeric characters, if it's not already noted.
+			//		Deals with saving undo; see editActionInterval parameter.
+			// tags:
+			//		private
+			if(!this._inEditing){
+				this._inEditing=true;
+				this._beginEditing(cmd);
+			}
+			if(this.editActionInterval>0){
+				if(this._editTimer){
+					clearTimeout(this._editTimer);
+				}
+				this._editTimer = setTimeout(dojo.hitch(this, this.endEditing), this._editInterval);
+			}
+		},
+		_steps:[],
+		_undoedSteps:[],
+		execCommand: function(cmd){
+			// summary:
+			//		Main handler for executing any commands to the editor, like paste, bold, etc.
+			//      Called by plugins, but not meant to be called by end users.
+			// tags:
+			//		protected
+			if(this.customUndo && (cmd=='undo' || cmd=='redo')){
+				return this[cmd]();
+			}else{
+				if(this.customUndo){
+					this.endEditing();
+					this._beginEditing();
+				}
+				try{
+					var r = this.inherited('execCommand', arguments);
+                    if(dojo.isWebKit && cmd=='paste' && !r){ //see #4598: safari does not support invoking paste from js
+						throw { code: 1011 }; // throw an object like Mozilla's error
+                    }
+				}catch(e){
+					//TODO: when else might we get an exception?  Do we need the Mozilla test below?
+					if(e.code == 1011 /* Mozilla: service denied */ && /copy|cut|paste/.test(cmd)){
+						// Warn user of platform limitation.  Cannot programmatically access clipboard. See ticket #4136
+						var sub = dojo.string.substitute,
+							accel = {cut:'X', copy:'C', paste:'V'},
+							isMac = navigator.userAgent.indexOf("Macintosh") != -1;
+						alert(sub(this.commands.systemShortcut,
+							[this.commands[cmd], sub(this.commands[isMac ? 'appleKey' : 'ctrlKey'], [accel[cmd]])]));
+					}
+					r = false;
+				}
+				if(this.customUndo){
+					this._endEditing();
+				}
+				return r;
+			}
+		},
+		queryCommandEnabled: function(cmd){
+			// summary:
+			//		Returns true if specified editor command is enabled.
+			//      Used by the plugins to know when to highlight/not highlight buttons.
+			// tags:
+			//		protected
+			if(this.customUndo && (cmd=='undo' || cmd=='redo')){
+				return cmd=='undo'?(this._steps.length>1):(this._undoedSteps.length>0);
+			}else{
+				return this.inherited('queryCommandEnabled',arguments);
+			}
+		},
+
+		focus: function(){
+			// summary:
+			//		Set focus inside the editor
+			var restore=0;
+			//console.log('focus',dijit._curFocus==this.editNode)
+			if(this._savedSelection && dojo.isIE){
+				restore = dijit._curFocus!=this.editNode;
+			}
+		    this.inherited(arguments);
+		    if(restore){
+		    	this._restoreSelection();
+		    }
+		},
+		_moveToBookmark: function(b){
+			// summary:
+			//		Selects the text specified in bookmark b
+			// tags:
+			//		private
+			var bookmark=b;
+			if(dojo.isIE){
+				if(dojo.isArray(b)){//IE CONTROL
+					bookmark=[];
+					dojo.forEach(b,function(n){
+						bookmark.push(dijit.range.getNode(n,this.editNode));
+					},this);
+				}
+			}else{//w3c range
+				var r=dijit.range.create();
+				r.setStart(dijit.range.getNode(b.startContainer,this.editNode),b.startOffset);
+				r.setEnd(dijit.range.getNode(b.endContainer,this.editNode),b.endOffset);
+				bookmark=r;
+			}
+			dojo.withGlobal(this.window,'moveToBookmark',dijit,[bookmark]);
+		},
+		_changeToStep: function(from, to){
+			// summary:
+			//		Reverts editor to "to" setting, from the undo stack.
+			// tags:
+			//		private
+			this.setValue(to.text);
+			var b=to.bookmark;
+			if(!b){ return; }
+			this._moveToBookmark(b);
+		},
+		undo: function(){
+			// summary:
+			//		Handler for editor undo (ex: ctrl-z) operation
+			// tags:
+			//		private
+//			console.log('undo');
+			this.endEditing(true);
+			var s=this._steps.pop();
+			if(this._steps.length>0){
+				this.focus();
+				this._changeToStep(s,this._steps[this._steps.length-1]);
+				this._undoedSteps.push(s);
+				this.onDisplayChanged();
+				return true;
+			}
+			return false;
+		},
+		redo: function(){
+			// summary:
+			//		Handler for editor redo (ex: ctrl-y) operation
+			// tags:
+			//		private
+
+//			console.log('redo');
+			this.endEditing(true);
+			var s=this._undoedSteps.pop();
+			if(s && this._steps.length>0){
+				this.focus();
+				this._changeToStep(this._steps[this._steps.length-1],s);
+				this._steps.push(s);
+				this.onDisplayChanged();
+				return true;
+			}
+			return false;
+		},
+		endEditing: function(ignore_caret){
+			// summary:
+			//		Called to note that the user has stopped typing alphanumeric characters, if it's not already noted.
+			//		Deals with saving undo; see editActionInterval parameter.
+			// tags:
+			//		private
+			if(this._editTimer){
+				clearTimeout(this._editTimer);
+			}
+			if(this._inEditing){
+				this._endEditing(ignore_caret);
+				this._inEditing=false;
+			}
+		},
+		_getBookmark: function(){
+			// summary:
+			//		Get the currently selected text
+			// tags:
+			//		protected
+			var b=dojo.withGlobal(this.window,dijit.getBookmark);
+			var tmp=[];
+			if(dojo.isIE){
+				if(dojo.isArray(b)){//CONTROL
+					dojo.forEach(b,function(n){
+						tmp.push(dijit.range.getIndex(n,this.editNode).o);
+					},this);
+					b=tmp;
+				}
+			}else{//w3c range
+				tmp=dijit.range.getIndex(b.startContainer,this.editNode).o;
+				b={startContainer:tmp,
+					startOffset:b.startOffset,
+					endContainer:b.endContainer===b.startContainer?tmp:dijit.range.getIndex(b.endContainer,this.editNode).o,
+					endOffset:b.endOffset};
+			}
+			return b;
+		},
+		_beginEditing: function(cmd){
+			// summary:
+			//		Called when the user starts typing alphanumeric characters.
+			//		Deals with saving undo; see editActionInterval parameter.
+			// tags:
+			//		private
+			if(this._steps.length===0){
+				this._steps.push({'text':this.savedContent,'bookmark':this._getBookmark()});
+			}
+		},
+		_endEditing: function(ignore_caret){
+			// summary:
+			//		Called when the user stops typing alphanumeric characters.
+			//		Deals with saving undo; see editActionInterval parameter.
+			// tags:
+			//		private
+			var v=this.getValue(true);
+
+			this._undoedSteps=[];//clear undoed steps
+			this._steps.push({text: v, bookmark: this._getBookmark()});
+		},
+		onKeyDown: function(e){
+			// summary:
+			//		Handler for onkeydown event.
+			// tags:
+			//		private
+
+			//We need to save selection if the user TAB away from this editor
+			//no need to call _saveSelection for IE, as that will be taken care of in onBeforeDeactivate
+			if(!dojo.isIE && !this.iframe && e.keyCode==dojo.keys.TAB && !this.tabIndent){
+				this._saveSelection();
+			}
+			if(!this.customUndo){
+				this.inherited(arguments);
+				return;
+			}
+			var k = e.keyCode, ks = dojo.keys;
+			if(e.ctrlKey && !e.altKey){//undo and redo only if the special right Alt + z/y are not pressed #5892
+				if(k == 90 || k == 122){ //z
+					dojo.stopEvent(e);
+					this.undo();
+					return;
+				}else if(k == 89 || k == 121){ //y
+					dojo.stopEvent(e);
+					this.redo();
+					return;
+				}
+			}
+			this.inherited(arguments);
+
+			switch(k){
+					case ks.ENTER:
+					case ks.BACKSPACE:
+					case ks.DELETE:
+						this.beginEditing();
+						break;
+					case 88: //x
+					case 86: //v
+						if(e.ctrlKey && !e.altKey && !e.metaKey){
+							this.endEditing();//end current typing step if any
+							if(e.keyCode == 88){
+								this.beginEditing('cut');
+								//use timeout to trigger after the cut is complete
+								setTimeout(dojo.hitch(this, this.endEditing), 1);
+							}else{
+								this.beginEditing('paste');
+								//use timeout to trigger after the paste is complete
+								setTimeout(dojo.hitch(this, this.endEditing), 1);
+							}
+							break;
+						}
+						//pass through
+					default:
+						if(!e.ctrlKey && !e.altKey && !e.metaKey && (e.keyCode<dojo.keys.F1 || e.keyCode>dojo.keys.F15)){
+							this.beginEditing();
+							break;
+						}
+						//pass through
+					case ks.ALT:
+						this.endEditing();
+						break;
+					case ks.UP_ARROW:
+					case ks.DOWN_ARROW:
+					case ks.LEFT_ARROW:
+					case ks.RIGHT_ARROW:
+					case ks.HOME:
+					case ks.END:
+					case ks.PAGE_UP:
+					case ks.PAGE_DOWN:
+						this.endEditing(true);
+						break;
+					//maybe ctrl+backspace/delete, so don't endEditing when ctrl is pressed
+					case ks.CTRL:
+					case ks.SHIFT:
+					case ks.TAB:
+						break;
+				}
+		},
+		_onBlur: function(){
+			// summary:
+			//		Called from focus manager when focus has moved away from this editor
+			// tags:
+			//		protected
+
+			//this._saveSelection();
+			this.inherited('_onBlur',arguments);
+			this.endEditing(true);
+		},
+		_saveSelection: function(){
+			// summary:
+			//		Save the currently selected text in _savedSelection attribute
+			// tags:
+			//		private
+			this._savedSelection=this._getBookmark();
+			//console.log('save selection',this._savedSelection,this);
+		},
+		_restoreSelection: function(){
+			// summary:
+			//		Re-select the text specified in _savedSelection attribute;
+			//		see _saveSelection().
+			// tags:
+			//		private
+			if(this._savedSelection){
+				//only restore the selection if the current range is collapsed
+    				//if not collapsed, then it means the editor does not lose 
+    				//selection and there is no need to restore it
+    				if(dojo.withGlobal(this.window,'isCollapsed',dijit)){
+    					//console.log('_restoreSelection true')
+					this._moveToBookmark(this._savedSelection);
+				}
+				delete this._savedSelection;
+			}
+		},
+		_onFocus: function(){
+			// summary:
+			//		Called from focus manager when focus has moved into this editor
+			// tags:
+			//		protected
+
+			//console.log('_onFocus');
+			setTimeout(dojo.hitch(this, "_restoreSelection"), 0); // needs input caret first
+			this.inherited(arguments);
+		},
+
+		onClick: function(){
+			// summary:
+			//		Handler for when editor is clicked
+			// tags:
+			//		protected
+			this.endEditing(true);
+			this.inherited(arguments);
+		}
+		/* end of custom undo/redo support */
+	}
+);
+
+// Register the "default plugins", ie, the built-in editor commands
+dojo.subscribe(dijit._scopeName + ".Editor.getPlugin",null,function(o){
+	if(o.plugin){ return; }
+	var args = o.args, p;
+	var _p = dijit._editor._Plugin;
+	var name = args.name;
+	switch(name){
+		case "undo": case "redo": case "cut": case "copy": case "paste": case "insertOrderedList":
+		case "insertUnorderedList": case "indent": case "outdent": case "justifyCenter":
+		case "justifyFull": case "justifyLeft": case "justifyRight": case "delete":
+		case "selectAll": case "removeFormat": case "unlink":
+		case "insertHorizontalRule":
+			p = new _p({ command: name });
+			break;
+
+		case "bold": case "italic": case "underline": case "strikethrough":
+		case "subscript": case "superscript":
+			p = new _p({ buttonClass: dijit.form.ToggleButton, command: name });
+			break;
+		case "|":
+			p = new _p({ button: new dijit.ToolbarSeparator() });
+	}
+//	console.log('name',name,p);
+	o.plugin=p;
 });
-this._plugins=[];
-this.toolbar.destroyRecursive();
-delete this.toolbar;
-this.inherited(arguments);
-},addPlugin:function(_1d,_1e){
-var _1f=_b.isString(_1d)?{name:_1d}:_b.isFunction(_1d)?{ctor:_1d}:_1d;
-if(!_1f.setEditor){
-var o={"args":_1f,"plugin":null,"editor":this};
-if(_1f.name){
-if(_16.registry[_1f.name]){
-o.plugin=_16.registry[_1f.name](_1f);
-}else{
-_e.publish(_1b._scopeName+".Editor.getPlugin",o);
+
 }
-}
-if(!o.plugin){
-try{
-var pc=_1f.ctor||_b.getObject(_1f.name)||require(_1f.name);
-if(pc){
-o.plugin=new pc(_1f);
-}
-}
-catch(e){
-throw new Error(this.id+": cannot find plugin ["+_1f.name+"]");
-}
-}
-if(!o.plugin){
-throw new Error(this.id+": cannot find plugin ["+_1f.name+"]");
-}
-_1d=o.plugin;
-}
-if(arguments.length>1){
-this._plugins[_1e]=_1d;
-}else{
-this._plugins.push(_1d);
-}
-_1d.setEditor(this);
-if(_b.isFunction(_1d.setToolbar)){
-_1d.setToolbar(this.toolbar);
-}
-},resize:function(_20){
-if(_20){
-_14.prototype.resize.apply(this,arguments);
-}
-},layout:function(){
-var _21=(this._contentBox.h-(this.getHeaderHeight()+this.getFooterHeight()+_7.getPadBorderExtents(this.iframe.parentNode).h+_7.getMarginExtents(this.iframe.parentNode).h));
-this.editingArea.style.height=_21+"px";
-if(this.iframe){
-this.iframe.style.height="100%";
-}
-this._layoutMode=true;
-},_onIEMouseDown:function(e){
-var _22;
-var b=this.document.body;
-var _23=b.clientWidth;
-var _24=b.clientHeight;
-var _25=b.clientLeft;
-var _26=b.offsetWidth;
-var _27=b.offsetHeight;
-var _28=b.offsetLeft;
-if(/^rtl$/i.test(b.dir||"")){
-if(_23<_26&&e.x>_23&&e.x<_26){
-_22=true;
-}
-}else{
-if(e.x<_25&&e.x>_28){
-_22=true;
-}
-}
-if(!_22){
-if(_24<_27&&e.y>_24&&e.y<_27){
-_22=true;
-}
-}
-if(!_22){
-delete this._cursorToStart;
-delete this._savedSelection;
-if(e.target.tagName=="BODY"){
-this.defer("placeCursorAtEnd");
-}
-this.inherited(arguments);
-}
-},onBeforeActivate:function(){
-this._restoreSelection();
-},onBeforeDeactivate:function(e){
-if(this.customUndo){
-this.endEditing(true);
-}
-if(e.target.tagName!="BODY"){
-this._saveSelection();
-}
-},customUndo:true,editActionInterval:3,beginEditing:function(cmd){
-if(!this._inEditing){
-this._inEditing=true;
-this._beginEditing(cmd);
-}
-if(this.editActionInterval>0){
-if(this._editTimer){
-this._editTimer.remove();
-}
-this._editTimer=this.defer("endEditing",this._editInterval);
-}
-},_steps:[],_undoedSteps:[],execCommand:function(cmd){
-if(this.customUndo&&(cmd=="undo"||cmd=="redo")){
-return this[cmd]();
-}else{
-if(this.customUndo){
-this.endEditing();
-this._beginEditing();
-}
-var r=this.inherited(arguments);
-if(this.customUndo){
-this._endEditing();
-}
-return r;
-}
-},_pasteImpl:function(){
-return this._clipboardCommand("paste");
-},_cutImpl:function(){
-return this._clipboardCommand("cut");
-},_copyImpl:function(){
-return this._clipboardCommand("copy");
-},_clipboardCommand:function(cmd){
-var r;
-try{
-r=this.document.execCommand(cmd,false,null);
-if(_c("webkit")&&!r){
-throw {code:1011};
-}
-}
-catch(e){
-if(e.code==1011||(e.code==9&&_c("opera"))){
-var sub=_d.substitute,_29={cut:"X",copy:"C",paste:"V"};
-alert(sub(this.commands.systemShortcut,[this.commands[cmd],sub(this.commands[_c("mac")?"appleKey":"ctrlKey"],[_29[cmd]])]));
-}
-r=false;
-}
-return r;
-},queryCommandEnabled:function(cmd){
-if(this.customUndo&&(cmd=="undo"||cmd=="redo")){
-return cmd=="undo"?(this._steps.length>1):(this._undoedSteps.length>0);
-}else{
-return this.inherited(arguments);
-}
-},_moveToBookmark:function(b){
-var _2a=b.mark;
-var _2b=b.mark;
-var col=b.isCollapsed;
-var r,_2c,_2d,sel;
-if(_2b){
-if(_c("ie")<9){
-if(_b.isArray(_2b)){
-_2a=[];
-_1.forEach(_2b,function(n){
-_2a.push(_19.getNode(n,this.editNode));
-},this);
-_f.withGlobal(this.window,"moveToBookmark",_10,[{mark:_2a,isCollapsed:col}]);
-}else{
-if(_2b.startContainer&&_2b.endContainer){
-sel=_19.getSelection(this.window);
-if(sel&&sel.removeAllRanges){
-sel.removeAllRanges();
-r=_19.create(this.window);
-_2c=_19.getNode(_2b.startContainer,this.editNode);
-_2d=_19.getNode(_2b.endContainer,this.editNode);
-if(_2c&&_2d){
-r.setStart(_2c,_2b.startOffset);
-r.setEnd(_2d,_2b.endOffset);
-sel.addRange(r);
-}
-}
-}
-}
-}else{
-sel=_19.getSelection(this.window);
-if(sel&&sel.removeAllRanges){
-sel.removeAllRanges();
-r=_19.create(this.window);
-_2c=_19.getNode(_2b.startContainer,this.editNode);
-_2d=_19.getNode(_2b.endContainer,this.editNode);
-if(_2c&&_2d){
-r.setStart(_2c,_2b.startOffset);
-r.setEnd(_2d,_2b.endOffset);
-sel.addRange(r);
-}
-}
-}
-}
-},_changeToStep:function(_2e,to){
-this.setValue(to.text);
-var b=to.bookmark;
-if(!b){
-return;
-}
-this._moveToBookmark(b);
-},undo:function(){
-var ret=false;
-if(!this._undoRedoActive){
-this._undoRedoActive=true;
-this.endEditing(true);
-var s=this._steps.pop();
-if(s&&this._steps.length>0){
-this.focus();
-this._changeToStep(s,this._steps[this._steps.length-1]);
-this._undoedSteps.push(s);
-this.onDisplayChanged();
-delete this._undoRedoActive;
-ret=true;
-}
-delete this._undoRedoActive;
-}
-return ret;
-},redo:function(){
-var ret=false;
-if(!this._undoRedoActive){
-this._undoRedoActive=true;
-this.endEditing(true);
-var s=this._undoedSteps.pop();
-if(s&&this._steps.length>0){
-this.focus();
-this._changeToStep(this._steps[this._steps.length-1],s);
-this._steps.push(s);
-this.onDisplayChanged();
-ret=true;
-}
-delete this._undoRedoActive;
-}
-return ret;
-},endEditing:function(_2f){
-if(this._editTimer){
-this._editTimer=this._editTimer.remove();
-}
-if(this._inEditing){
-this._endEditing(_2f);
-this._inEditing=false;
-}
-},_getBookmark:function(){
-var b=_f.withGlobal(this.window,_10.getBookmark);
-var tmp=[];
-if(b&&b.mark){
-var _30=b.mark;
-if(_c("ie")<9){
-var sel=_19.getSelection(this.window);
-if(!_b.isArray(_30)){
-if(sel){
-var _31;
-if(sel.rangeCount){
-_31=sel.getRangeAt(0);
-}
-if(_31){
-b.mark=_31.cloneRange();
-}else{
-b.mark=_f.withGlobal(this.window,_10.getBookmark);
-}
-}
-}else{
-_1.forEach(b.mark,function(n){
-tmp.push(_19.getIndex(n,this.editNode).o);
-},this);
-b.mark=tmp;
-}
-}
-try{
-if(b.mark&&b.mark.startContainer){
-tmp=_19.getIndex(b.mark.startContainer,this.editNode).o;
-b.mark={startContainer:tmp,startOffset:b.mark.startOffset,endContainer:b.mark.endContainer===b.mark.startContainer?tmp:_19.getIndex(b.mark.endContainer,this.editNode).o,endOffset:b.mark.endOffset};
-}
-}
-catch(e){
-b.mark=null;
-}
-}
-return b;
-},_beginEditing:function(){
-if(this._steps.length===0){
-this._steps.push({"text":_18.getChildrenHtml(this.editNode),"bookmark":this._getBookmark()});
-}
-},_endEditing:function(){
-var v=_18.getChildrenHtml(this.editNode);
-this._undoedSteps=[];
-this._steps.push({text:v,bookmark:this._getBookmark()});
-},onKeyDown:function(e){
-if(!_c("ie")&&!this.iframe&&e.keyCode==_a.TAB&&!this.tabIndent){
-this._saveSelection();
-}
-if(!this.customUndo){
-this.inherited(arguments);
-return;
-}
-var k=e.keyCode;
-if(e.ctrlKey&&!e.altKey){
-if(k==90||k==122){
-_9.stop(e);
-this.undo();
-return;
-}else{
-if(k==89||k==121){
-_9.stop(e);
-this.redo();
-return;
-}
-}
-}
-this.inherited(arguments);
-switch(k){
-case _a.ENTER:
-case _a.BACKSPACE:
-case _a.DELETE:
-this.beginEditing();
-break;
-case 88:
-case 86:
-if(e.ctrlKey&&!e.altKey&&!e.metaKey){
-this.endEditing();
-if(e.keyCode==88){
-this.beginEditing("cut");
-}else{
-this.beginEditing("paste");
-}
-this.defer("endEditing",1);
-break;
-}
-default:
-if(!e.ctrlKey&&!e.altKey&&!e.metaKey&&(e.keyCode<_a.F1||e.keyCode>_a.F15)){
-this.beginEditing();
-break;
-}
-case _a.ALT:
-this.endEditing();
-break;
-case _a.UP_ARROW:
-case _a.DOWN_ARROW:
-case _a.LEFT_ARROW:
-case _a.RIGHT_ARROW:
-case _a.HOME:
-case _a.END:
-case _a.PAGE_UP:
-case _a.PAGE_DOWN:
-this.endEditing(true);
-break;
-case _a.CTRL:
-case _a.SHIFT:
-case _a.TAB:
-break;
-}
-},_onBlur:function(){
-this.inherited(arguments);
-this.endEditing(true);
-},_saveSelection:function(){
-try{
-this._savedSelection=this._getBookmark();
-}
-catch(e){
-}
-},_restoreSelection:function(){
-if(this._savedSelection){
-delete this._cursorToStart;
-if(_f.withGlobal(this.window,"isCollapsed",_10)){
-this._moveToBookmark(this._savedSelection);
-}
-delete this._savedSelection;
-}
-},onClick:function(){
-this.endEditing(true);
-this.inherited(arguments);
-},replaceValue:function(_32){
-if(!this.customUndo){
-this.inherited(arguments);
-}else{
-if(this.isClosed){
-this.setValue(_32);
-}else{
-this.beginEditing();
-if(!_32){
-_32="&#160;";
-}
-this.setValue(_32);
-this.endEditing();
-}
-}
-},_setDisabledAttr:function(_33){
-this.setValueDeferred.then(_b.hitch(this,function(){
-if((!this.disabled&&_33)||(!this._buttonEnabledPlugins&&_33)){
-_1.forEach(this._plugins,function(p){
-p.set("disabled",true);
-});
-}else{
-if(this.disabled&&!_33){
-_1.forEach(this._plugins,function(p){
-p.set("disabled",false);
-});
-}
-}
-}));
-this.inherited(arguments);
-},_setStateClass:function(){
-try{
-this.inherited(arguments);
-if(this.document&&this.document.body){
-_8.set(this.document.body,"color",_8.get(this.iframe,"color"));
-}
-}
-catch(e){
-}
-}});
-function _34(_35){
-return new _16({command:_35.name});
-};
-function _36(_37){
-return new _16({buttonClass:_15,command:_37.name});
-};
-_b.mixin(_16.registry,{"undo":_34,"redo":_34,"cut":_34,"copy":_34,"paste":_34,"insertOrderedList":_34,"insertUnorderedList":_34,"indent":_34,"outdent":_34,"justifyCenter":_34,"justifyFull":_34,"justifyLeft":_34,"justifyRight":_34,"delete":_34,"selectAll":_34,"removeFormat":_34,"unlink":_34,"insertHorizontalRule":_34,"bold":_36,"italic":_36,"underline":_36,"strikethrough":_36,"subscript":_36,"superscript":_36,"|":function(){
-return new _16({setEditor:function(_38){
-this.editor=_38;
-this.button=new _13({ownerDocument:_38.ownerDocument});
-}});
-}});
-return _1c;
-});

@@ -1,227 +1,258 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/i18n",["./_base/kernel","require","./has","./_base/array","./_base/config","./_base/lang","./_base/xhr","./json","module"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9){
-_3.add("dojo-preload-i18n-Api",1);
-1||_3.add("dojo-v1x-i18n-Api",1);
-var _a=_1.i18n={},_b=/(^.*(^|\/)nls)(\/|$)([^\/]*)\/?([^\/]*)/,_c=function(_d,_e,_f,_10){
-for(var _11=[_f+_10],_12=_e.split("-"),_13="",i=0;i<_12.length;i++){
-_13+=(_13?"-":"")+_12[i];
-if(!_d||_d[_13]){
-_11.push(_f+_13+"/"+_10);
-}
-}
-return _11;
-},_14={},_15=function(_16,_17,_18){
-_18=_18?_18.toLowerCase():_1.locale;
-_16=_16.replace(/\./g,"/");
-_17=_17.replace(/\./g,"/");
-return (/root/i.test(_18))?(_16+"/nls/"+_17):(_16+"/nls/"+_18+"/"+_17);
-},_19=_1.getL10nName=function(_1a,_1b,_1c){
-return _1a=_9.id+"!"+_15(_1a,_1b,_1c);
-},_1d=function(_1e,_1f,_20,_21,_22,_23){
-_1e([_1f],function(_24){
-var _25=_6.clone(_24.root),_26=_c(!_24._v1x&&_24,_22,_20,_21);
-_1e(_26,function(){
-for(var i=1;i<_26.length;i++){
-_25=_6.mixin(_6.clone(_25),arguments[i]);
-}
-var _27=_1f+"/"+_22;
-_14[_27]=_25;
-_23();
-});
-});
-},_28=function(id,_29){
-return /^\./.test(id)?_29(id):id;
-},_2a=function(_2b){
-var _2c=_5.extraLocale||[];
-_2c=_6.isArray(_2c)?_2c:[_2c];
-_2c.push(_2b);
-return _2c;
-},_2d=function(id,_2e,_2f){
-if(_3("dojo-preload-i18n-Api")){
-var _30=id.split("*"),_31=_30[1]=="preload";
-if(_31){
-if(!_14[id]){
-_14[id]=1;
-_32(_30[2],_8.parse(_30[3]),1,_2e);
-}
-_2f(1);
-}
-if(_31||_33(id,_2e,_2f)){
-return;
-}
-}
-var _34=_b.exec(id),_35=_34[1]+"/",_36=_34[5]||_34[4],_37=_35+_36,_38=(_34[5]&&_34[4]),_39=_38||_1.locale,_3a=_37+"/"+_39,_3b=_38?[_39]:_2a(_39),_3c=_3b.length,_3d=function(){
-if(!--_3c){
-_2f(_6.delegate(_14[_3a]));
-}
+
+if(!dojo._hasResource["dojo.i18n"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojo.i18n"] = true;
+dojo.provide("dojo.i18n");
+
+/*=====
+dojo.i18n = {
+	// summary: Utility classes to enable loading of resources for internationalization (i18n)
 };
-_4.forEach(_3b,function(_3e){
-var _3f=_37+"/"+_3e;
-if(_3("dojo-preload-i18n-Api")){
-_40(_3f);
-}
-if(!_14[_3f]){
-_1d(_2e,_37,_35,_36,_3e,_3d);
-}else{
-_3d();
-}
-});
+=====*/
+
+dojo.i18n.getLocalization = function(/*String*/packageName, /*String*/bundleName, /*String?*/locale){
+	//	summary:
+	//		Returns an Object containing the localization for a given resource
+	//		bundle in a package, matching the specified locale.
+	//	description:
+	//		Returns a hash containing name/value pairs in its prototypesuch
+	//		that values can be easily overridden.  Throws an exception if the
+	//		bundle is not found.  Bundle must have already been loaded by
+	//		`dojo.requireLocalization()` or by a build optimization step.  NOTE:
+	//		try not to call this method as part of an object property
+	//		definition (`var foo = { bar: dojo.i18n.getLocalization() }`).  In
+	//		some loading situations, the bundle may not be available in time
+	//		for the object definition.  Instead, call this method inside a
+	//		function that is run after all modules load or the page loads (like
+	//		in `dojo.addOnLoad()`), or in a widget lifecycle method.
+	//	packageName:
+	//		package which is associated with this resource
+	//	bundleName:
+	//		the base filename of the resource bundle (without the ".js" suffix)
+	//	locale:
+	//		the variant to load (optional).  By default, the locale defined by
+	//		the host environment: dojo.locale
+
+	locale = dojo.i18n.normalizeLocale(locale);
+
+	// look for nearest locale match
+	var elements = locale.split('-');
+	var module = [packageName,"nls",bundleName].join('.');
+	var bundle = dojo._loadedModules[module];
+	if(bundle){
+		var localization;
+		for(var i = elements.length; i > 0; i--){
+			var loc = elements.slice(0, i).join('_');
+			if(bundle[loc]){
+				localization = bundle[loc];
+				break;
+			}
+		}
+		if(!localization){
+			localization = bundle.ROOT;
+		}
+
+		// make a singleton prototype so that the caller won't accidentally change the values globally
+		if(localization){
+			var clazz = function(){};
+			clazz.prototype = localization;
+			return new clazz(); // Object
+		}
+	}
+
+	throw new Error("Bundle not found: " + bundleName + " in " + packageName+" , locale=" + locale);
 };
-if(_3("dojo-unit-tests")){
-var _41=_a.unitTests=[];
-}
-if(_3("dojo-preload-i18n-Api")||1){
-var _42=_a.normalizeLocale=function(_43){
-var _44=_43?_43.toLowerCase():_1.locale;
-return _44=="root"?"ROOT":_44;
-},_45=function(mid,_46){
-return (1&&1)?_46.isXdUrl(_2.toUrl(mid+".js")):true;
-},_47=0,_48=[],_32=_a._preloadLocalizations=function(_49,_4a,_4b,_4c){
-_4c=_4c||_2;
-function _4d(mid,_4e){
-if(_45(mid,_4c)||_4b){
-_4c([mid],_4e);
-}else{
-_5a([mid],_4e,_4c);
-}
+
+dojo.i18n.normalizeLocale = function(/*String?*/locale){
+	//	summary:
+	//		Returns canonical form of locale, as used by Dojo.
+	//
+	//  description:
+	//		All variants are case-insensitive and are separated by '-' as specified in [RFC 3066](http://www.ietf.org/rfc/rfc3066.txt).
+	//		If no locale is specified, the dojo.locale is returned.  dojo.locale is defined by
+	//		the user agent's locale unless overridden by djConfig.
+
+	var result = locale ? locale.toLowerCase() : dojo.locale;
+	if(result == "root"){
+		result = "ROOT";
+	}
+	return result; // String
 };
-function _4f(_50,_51){
-var _52=_50.split("-");
-while(_52.length){
-if(_51(_52.join("-"))){
-return;
-}
-_52.pop();
-}
-_51("ROOT");
+
+dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundleName, /*String?*/locale, /*String?*/availableFlatLocales){
+	//	summary:
+	//		See dojo.requireLocalization()
+	//	description:
+	// 		Called by the bootstrap, but factored out so that it is only
+	// 		included in the build when needed.
+
+	var targetLocale = dojo.i18n.normalizeLocale(locale);
+ 	var bundlePackage = [moduleName, "nls", bundleName].join(".");
+	// NOTE: 
+	//		When loading these resources, the packaging does not match what is
+	//		on disk.  This is an implementation detail, as this is just a
+	//		private data structure to hold the loaded resources.  e.g.
+	//		`tests/hello/nls/en-us/salutations.js` is loaded as the object
+	//		`tests.hello.nls.salutations.en_us={...}` The structure on disk is
+	//		intended to be most convenient for developers and translators, but
+	//		in memory it is more logical and efficient to store in a different
+	//		order.  Locales cannot use dashes, since the resulting path will
+	//		not evaluate as valid JS, so we translate them to underscores.
+	
+	//Find the best-match locale to load if we have available flat locales.
+	var bestLocale = "";
+	if(availableFlatLocales){
+		var flatLocales = availableFlatLocales.split(",");
+		for(var i = 0; i < flatLocales.length; i++){
+			//Locale must match from start of string.
+			//Using ["indexOf"] so customBase builds do not see
+			//this as a dojo._base.array dependency.
+			if(targetLocale["indexOf"](flatLocales[i]) == 0){
+				if(flatLocales[i].length > bestLocale.length){
+					bestLocale = flatLocales[i];
+				}
+			}
+		}
+		if(!bestLocale){
+			bestLocale = "ROOT";
+		}		
+	}
+
+	//See if the desired locale is already loaded.
+	var tempLocale = availableFlatLocales ? bestLocale : targetLocale;
+	var bundle = dojo._loadedModules[bundlePackage];
+	var localizedBundle = null;
+	if(bundle){
+		if(dojo.config.localizationComplete && bundle._built){return;}
+		var jsLoc = tempLocale.replace(/-/g, '_');
+		var translationPackage = bundlePackage+"."+jsLoc;
+		localizedBundle = dojo._loadedModules[translationPackage];
+	}
+
+	if(!localizedBundle){
+		bundle = dojo["provide"](bundlePackage);
+		var syms = dojo._getModuleSymbols(moduleName);
+		var modpath = syms.concat("nls").join("/");
+		var parent;
+
+		dojo.i18n._searchLocalePath(tempLocale, availableFlatLocales, function(loc){
+			var jsLoc = loc.replace(/-/g, '_');
+			var translationPackage = bundlePackage + "." + jsLoc;
+			var loaded = false;
+			if(!dojo._loadedModules[translationPackage]){
+				// Mark loaded whether it's found or not, so that further load attempts will not be made
+				dojo["provide"](translationPackage);
+				var module = [modpath];
+				if(loc != "ROOT"){module.push(loc);}
+				module.push(bundleName);
+				var filespec = module.join("/") + '.js';
+				loaded = dojo._loadPath(filespec, null, function(hash){
+					// Use singleton with prototype to point to parent bundle, then mix-in result from loadPath
+					var clazz = function(){};
+					clazz.prototype = parent;
+					bundle[jsLoc] = new clazz();
+					for(var j in hash){ bundle[jsLoc][j] = hash[j]; }
+				});
+			}else{
+				loaded = true;
+			}
+			if(loaded && bundle[jsLoc]){
+				parent = bundle[jsLoc];
+			}else{
+				bundle[jsLoc] = parent;
+			}
+			
+			if(availableFlatLocales){
+				//Stop the locale path searching if we know the availableFlatLocales, since
+				//the first call to this function will load the only bundle that is needed.
+				return true;
+			}
+		});
+	}
+
+	//Save the best locale bundle as the target locale bundle when we know the
+	//the available bundles.
+	if(availableFlatLocales && targetLocale != bestLocale){
+		bundle[targetLocale.replace(/-/g, '_')] = bundle[bestLocale.replace(/-/g, '_')];
+	}
 };
-function _53(_54){
-_54=_42(_54);
-_4f(_54,function(loc){
-if(_4.indexOf(_4a,loc)>=0){
-var mid=_49.replace(/\./g,"/")+"_"+loc;
-_47++;
-_4d(mid,function(_55){
-for(var p in _55){
-_14[_2.toAbsMid(p)+"/"+loc]=_55[p];
-}
---_47;
-while(!_47&&_48.length){
-_2d.apply(null,_48.shift());
-}
-});
-return true;
-}
-return false;
-});
+
+(function(){
+	// If other locales are used, dojo.requireLocalization should load them as
+	// well, by default. 
+	// 
+	// Override dojo.requireLocalization to do load the default bundle, then
+	// iterate through the extraLocale list and load those translations as
+	// well, unless a particular locale was requested.
+
+	var extra = dojo.config.extraLocale;
+	if(extra){
+		if(!extra instanceof Array){
+			extra = [extra];
+		}
+
+		var req = dojo.i18n._requireLocalization;
+		dojo.i18n._requireLocalization = function(m, b, locale, availableFlatLocales){
+			req(m,b,locale, availableFlatLocales);
+			if(locale){return;}
+			for(var i=0; i<extra.length; i++){
+				req(m,b,extra[i], availableFlatLocales);
+			}
+		};
+	}
+})();
+
+dojo.i18n._searchLocalePath = function(/*String*/locale, /*Boolean*/down, /*Function*/searchFunc){
+	//	summary:
+	//		A helper method to assist in searching for locale-based resources.
+	//		Will iterate through the variants of a particular locale, either up
+	//		or down, executing a callback function.  For example, "en-us" and
+	//		true will try "en-us" followed by "en" and finally "ROOT".
+
+	locale = dojo.i18n.normalizeLocale(locale);
+
+	var elements = locale.split('-');
+	var searchlist = [];
+	for(var i = elements.length; i > 0; i--){
+		searchlist.push(elements.slice(0, i).join('-'));
+	}
+	searchlist.push(false);
+	if(down){searchlist.reverse();}
+
+	for(var j = searchlist.length - 1; j >= 0; j--){
+		var loc = searchlist[j] || "ROOT";
+		var stop = searchFunc(loc);
+		if(stop){ break; }
+	}
 };
-_53();
-_4.forEach(_1.config.extraLocale,_53);
-},_33=function(id,_56,_57){
-if(_47){
-_48.push([id,_56,_57]);
-}
-return _47;
-},_40=function(){
+
+dojo.i18n._preloadLocalizations = function(/*String*/bundlePrefix, /*Array*/localesGenerated){
+	//	summary:
+	//		Load built, flattened resource bundles, if available for all
+	//		locales used in the page. Only called by built layer files.
+
+	function preload(locale){
+		locale = dojo.i18n.normalizeLocale(locale);
+		dojo.i18n._searchLocalePath(locale, true, function(loc){
+			for(var i=0; i<localesGenerated.length;i++){
+				if(localesGenerated[i] == loc){
+					dojo["require"](bundlePrefix+"_"+loc);
+					return true; // Boolean
+				}
+			}
+			return false; // Boolean
+		});
+	}
+	preload();
+	var extra = dojo.config.extraLocale||[];
+	for(var i=0; i<extra.length; i++){
+		preload(extra[i]);
+	}
 };
+
 }
-if(1){
-var _58={},_59=new Function("__bundle","__checkForLegacyModules","__mid","__amdValue","var define = function(mid, factory){define.called = 1; __amdValue.result = factory || mid;},"+"\t   require = function(){define.called = 1;};"+"try{"+"define.called = 0;"+"eval(__bundle);"+"if(define.called==1)"+"return __amdValue;"+"if((__checkForLegacyModules = __checkForLegacyModules(__mid)))"+"return __checkForLegacyModules;"+"}catch(e){}"+"try{"+"return eval('('+__bundle+')');"+"}catch(e){"+"return e;"+"}"),_5a=function(_5b,_5c,_5d){
-var _5e=[];
-_4.forEach(_5b,function(mid){
-var url=_5d.toUrl(mid+".js");
-function _2d(_5f){
-var _60=_59(_5f,_40,mid,_58);
-if(_60===_58){
-_5e.push(_14[url]=_58.result);
-}else{
-if(_60 instanceof Error){
-console.error("failed to evaluate i18n bundle; url="+url,_60);
-_60={};
-}
-_5e.push(_14[url]=(/nls\/[^\/]+\/[^\/]+$/.test(url)?_60:{root:_60,_v1x:1}));
-}
-};
-if(_14[url]){
-_5e.push(_14[url]);
-}else{
-var _61=_5d.syncLoadNls(mid);
-if(_61){
-_5e.push(_61);
-}else{
-if(!_7){
-try{
-_5d.getText(url,true,_2d);
-}
-catch(e){
-_5e.push(_14[url]={});
-}
-}else{
-_7.get({url:url,sync:true,load:_2d,error:function(){
-_5e.push(_14[url]={});
-}});
-}
-}
-}
-});
-_5c&&_5c.apply(null,_5e);
-};
-_40=function(_62){
-for(var _63,_64=_62.split("/"),_65=_1.global[_64[0]],i=1;_65&&i<_64.length-1;_65=_65[_64[i++]]){
-}
-if(_65){
-_63=_65[_64[i]];
-if(!_63){
-_63=_65[_64[i].replace(/-/g,"_")];
-}
-if(_63){
-_14[_62]=_63;
-}
-}
-return _63;
-};
-_a.getLocalization=function(_66,_67,_68){
-var _69,_6a=_15(_66,_67,_68);
-_2d(_6a,(!_45(_6a,_2)?function(_6b,_6c){
-_5a(_6b,_6c,_2);
-}:_2),function(_6d){
-_69=_6d;
-});
-return _69;
-};
-if(_3("dojo-unit-tests")){
-_41.push(function(doh){
-doh.register("tests.i18n.unit",function(t){
-var _6e;
-_6e=_59("{prop:1}",_40,"nonsense",_58);
-t.is({prop:1},_6e);
-t.is(undefined,_6e[1]);
-_6e=_59("({prop:1})",_40,"nonsense",_58);
-t.is({prop:1},_6e);
-t.is(undefined,_6e[1]);
-_6e=_59("{'prop-x':1}",_40,"nonsense",_58);
-t.is({"prop-x":1},_6e);
-t.is(undefined,_6e[1]);
-_6e=_59("({'prop-x':1})",_40,"nonsense",_58);
-t.is({"prop-x":1},_6e);
-t.is(undefined,_6e[1]);
-_6e=_59("define({'prop-x':1})",_40,"nonsense",_58);
-t.is(_58,_6e);
-t.is({"prop-x":1},_58.result);
-_6e=_59("define('some/module', {'prop-x':1})",_40,"nonsense",_58);
-t.is(_58,_6e);
-t.is({"prop-x":1},_58.result);
-_6e=_59("this is total nonsense and should throw an error",_40,"nonsense",_58);
-t.is(_6e instanceof Error,true);
-});
-});
-}
-}
-return _6.mixin(_a,{dynamic:true,normalize:_28,load:_2d,cache:_14});
-});

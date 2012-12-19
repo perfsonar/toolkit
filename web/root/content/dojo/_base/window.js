@@ -1,52 +1,104 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/_base/window",["./kernel","./lang","../sniff"],function(_1,_2,_3){
-var _4={global:_1.global,doc:this["document"]||null,body:function(_5){
-_5=_5||_1.doc;
-return _5.body||_5.getElementsByTagName("body")[0];
-},setContext:function(_6,_7){
-_1.global=_4.global=_6;
-_1.doc=_4.doc=_7;
-},withGlobal:function(_8,_9,_a,_b){
-var _c=_1.global;
-try{
-_1.global=_4.global=_8;
-return _4.withDoc.call(null,_8.document,_9,_a,_b);
+
+if(!dojo._hasResource["dojo._base.window"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojo._base.window"] = true;
+dojo.provide("dojo._base.window");
+
+/*=====
+dojo.doc = {
+	// summary:
+	//		Alias for the current document. 'dojo.doc' can be modified
+	//		for temporary context shifting. Also see dojo.withDoc().
+	// description:
+	//    Refer to dojo.doc rather
+	//    than referring to 'window.document' to ensure your code runs
+	//    correctly in managed contexts.
+	// example:
+	// 	|	n.appendChild(dojo.doc.createElement('div'));
 }
-finally{
-_1.global=_4.global=_c;
+=====*/
+dojo.doc = window["document"] || null;
+
+dojo.body = function(){
+	// summary:
+	//		Return the body element of the document
+	//		return the body object associated with dojo.doc
+	// example:
+	// 	|	dojo.body().appendChild(dojo.doc.createElement('div'));
+
+	// Note: document.body is not defined for a strict xhtml document
+	// Would like to memoize this, but dojo.doc can change vi dojo.withDoc().
+	return dojo.doc.body || dojo.doc.getElementsByTagName("body")[0]; // Node
 }
-},withDoc:function(_d,_e,_f,_10){
-var _11=_4.doc,_12=_3("quirks"),_13=_3("ie"),_14,_15,_16;
-try{
-_1.doc=_4.doc=_d;
-_1.isQuirks=_3.add("quirks",_1.doc.compatMode=="BackCompat",true,true);
-if(_3("ie")){
-if((_16=_d.parentWindow)&&_16.navigator){
-_14=parseFloat(_16.navigator.appVersion.split("MSIE ")[1])||undefined;
-_15=_d.documentMode;
-if(_15&&_15!=5&&Math.floor(_14)!=_15){
-_14=_15;
+
+dojo.setContext = function(/*Object*/globalObject, /*DocumentElement*/globalDocument){
+	// summary:
+	//		changes the behavior of many core Dojo functions that deal with
+	//		namespace and DOM lookup, changing them to work in a new global
+	//		context (e.g., an iframe). The varibles dojo.global and dojo.doc
+	//		are modified as a result of calling this function and the result of
+	//		`dojo.body()` likewise differs.
+	dojo.global = globalObject;
+	dojo.doc = globalDocument;
+};
+
+dojo.withGlobal = function(	/*Object*/globalObject, 
+							/*Function*/callback, 
+							/*Object?*/thisObject, 
+							/*Array?*/cbArguments){
+	// summary:
+	//		Invoke callback with globalObject as dojo.global and
+	//		globalObject.document as dojo.doc.
+	// description:
+	//		Invoke callback with globalObject as dojo.global and
+	//		globalObject.document as dojo.doc. If provided, globalObject
+	//		will be executed in the context of object thisObject
+	//		When callback() returns or throws an error, the dojo.global
+	//		and dojo.doc will be restored to its previous state.
+
+	var oldGlob = dojo.global;
+	try{
+		dojo.global = globalObject;
+		return dojo.withDoc.call(null, globalObject.document, callback, thisObject, cbArguments);
+	}finally{
+		dojo.global = oldGlob;
+	}
 }
-_1.isIE=_3.add("ie",_14,true,true);
+
+dojo.withDoc = function(	/*DocumentElement*/documentObject, 
+							/*Function*/callback, 
+							/*Object?*/thisObject, 
+							/*Array?*/cbArguments){
+	// summary:
+	//		Invoke callback with documentObject as dojo.doc.
+	// description:
+	//		Invoke callback with documentObject as dojo.doc. If provided,
+	//		callback will be executed in the context of object thisObject
+	//		When callback() returns or throws an error, the dojo.doc will
+	//		be restored to its previous state.
+
+	var oldDoc = dojo.doc,
+		oldLtr = dojo._bodyLtr;
+
+	try{
+		dojo.doc = documentObject;
+		delete dojo._bodyLtr; // uncache
+
+		if(thisObject && dojo.isString(callback)){
+			callback = thisObject[callback];
+		}
+
+		return callback.apply(thisObject, cbArguments || []);
+	}finally{
+		dojo.doc = oldDoc;
+		if(oldLtr !== undefined){ dojo._bodyLtr = oldLtr; }
+	}
+};
+	
+
 }
-}
-if(_f&&typeof _e=="string"){
-_e=_f[_e];
-}
-return _e.apply(_f,_10||[]);
-}
-finally{
-_1.doc=_4.doc=_11;
-_1.isQuirks=_3.add("quirks",_12,true,true);
-_1.isIE=_3.add("ie",_13,true,true);
-}
-}};
-1&&_2.mixin(_1,_4);
-return _4;
-});

@@ -17,7 +17,6 @@ Project state:
 [ResizeHandle] experimental
 [RotatorContainer] beta
 [ScrollPane] experimental
-[TableContainer] experimental
 
 -------------------------------------------------------------------------------
 Credits
@@ -27,12 +26,11 @@ Credits
 [DragPane]	Peter Higgins (dante)
 [ExpandoPane] Peter Higgins (dante)
 [FloatingPane] Peter Higgins (dante)
-[GridContainer/GridContainerLite] Erwan Morvillez (emorvillez), Jeff Cunat (jfcunat), Guillaume Mouricou (gmouricou), Peter Higgins (dante)
+[GridContainer] Juff Cunat (jfcunat), Peter Higgins (dante)
 [RadioGroup/Fade/Slide] Peter Higgins (dante) 
 [ResizeHandle] Peter Higgins (dante)
 [RotatorContainer] Chris Barber (cb1)
 [ScrollPane] Peter Higgins (dante), Shane O'Sullivan (sos)
-[TableContainer] Shane O'Sullivan (sos)
 
 -------------------------------------------------------------------------------
 Project description
@@ -73,10 +71,6 @@ Project description
 
 	dojox.layout.ScrollPane - a dynamically scrolling pane. Adjusts naturally sized content
 	to a "viewport" and scrolls based on relative mouse position. 
-	
-	dojox.layout.TableContainer - A container widget that lays out child widgets using a
-	Table element. It can create labels for each widget, placed either above or
-	beside the widgets.
 	
 -------------------------------------------------------------------------------
 Dependencies

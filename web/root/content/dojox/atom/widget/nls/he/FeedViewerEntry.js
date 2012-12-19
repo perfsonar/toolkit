@@ -1,2 +1,1 @@
-//>>built
-define("dojox/atom/widget/nls/he/FeedViewerEntry",({deleteButton:"[מחיקה]"}));
+({"deleteButton":"[מחיקה]"})

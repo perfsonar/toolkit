@@ -1,2 +1,1 @@
-//>>built
-define("dojox/form/nls/sv/PasswordValidator",({nomatchMessage:"Lösenorden överensstämmer inte.",badPasswordMessage:"Ogiltigt lösenord."}));
+({"badPasswordMessage":"Ogiltigt lösenord.","nomatchMessage":"Lösenorden stämmer inte överens."})

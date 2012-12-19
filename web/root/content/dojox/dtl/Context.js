@@ -1,56 +1,79 @@
-//>>built
-define("dojox/dtl/Context",["dojo/_base/lang","./_base"],function(_1,dd){
-dd.Context=_1.extend(function(_2){
-this._this={};
-dd._Context.call(this,_2);
-},dd._Context.prototype,{getKeys:function(){
-var _3=[];
-for(var _4 in this){
-if(this.hasOwnProperty(_4)&&_4!="_this"){
-_3.push(_4);
-}
-}
-return _3;
-},extend:function(_5){
-return _1.delegate(this,_5);
-},filter:function(_6){
-var _7=new dd.Context();
-var _8=[];
-var i,_9;
-if(_6 instanceof dd.Context){
-_8=_6.getKeys();
-}else{
-if(typeof _6=="object"){
-for(var _a in _6){
-_8.push(_a);
-}
-}else{
-for(i=0;_9=arguments[i];i++){
-if(typeof _9=="string"){
-_8.push(_9);
-}
-}
-}
-}
-for(i=0,_a;_a=_8[i];i++){
-_7[_a]=this[_a];
-}
-return _7;
-},setThis:function(_b){
-this._this=_b;
-},getThis:function(){
-return this._this;
-},hasKey:function(_c){
-if(this._getter){
-var _d=this._getter(_c);
-if(typeof _d!="undefined"){
-return true;
-}
-}
-if(typeof this[_c]!="undefined"){
-return true;
-}
-return false;
-}});
-return dd.Context;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.dtl.Context"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.dtl.Context"] = true;
+dojo.provide("dojox.dtl.Context");
+dojo.require("dojox.dtl._base");
+
+dojox.dtl.Context = dojo.extend(function(dict){
+	this._this = {};
+	dojox.dtl._Context.call(this, dict);
+}, dojox.dtl._Context.prototype,
+{
+	getKeys: function(){
+		var keys = [];
+		for(var key in this){
+			if(this.hasOwnProperty(key) && key != "_dicts" && key != "_this"){
+				keys.push(key);
+			}
+		}
+		return keys;
+	},
+	extend: function(/*dojox.dtl.Context|Object*/ obj){
+		// summary: Returns a clone of this context object, with the items from the
+		//		passed objecct mixed in.
+		return  dojo.delegate(this, obj);
+	},
+	filter: function(/*dojox.dtl.Context|Object|String...*/ filter){
+		// summary: Returns a clone of this context, only containing the items
+		//		defined in the filter.
+		var context = new dojox.dtl.Context();
+		var keys = [];
+		var i, arg;
+		if(filter instanceof dojox.dtl.Context){
+			keys = filter.getKeys();
+		}else if(typeof filter == "object"){
+			for(var key in filter){
+				keys.push(key);
+			}
+		}else{
+			for(i = 0; arg = arguments[i]; i++){
+				if(typeof arg == "string"){
+					keys.push(arg);
+				}
+			}
+		}
+
+		for(i = 0, key; key = keys[i]; i++){
+			context[key] = this[key];
+		}
+
+		return context;
+	},
+	setThis: function(/*Object*/ _this){
+		this._this = _this;
+	},
+	getThis: function(){
+		return this._this;
+	},
+	hasKey: function(key){
+		if(typeof this[key] != "undefined"){
+			return true;
+		}
+
+		for(var i = 0, dict; dict = this._dicts[i]; i++){
+			if(typeof dict[key] != "undefined"){
+				return true;
+			}
+		}
+
+		return false;
+	}
 });
+
+}

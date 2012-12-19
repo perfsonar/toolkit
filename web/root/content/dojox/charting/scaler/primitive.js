@@ -1,23 +1,39 @@
-//>>built
-define("dojox/charting/scaler/primitive",["dojo/_base/lang"],function(_1){
-var _2=_1.getObject("dojox.charting.scaler.primitive",true);
-return _1.mixin(_2,{buildScaler:function(_3,_4,_5,_6){
-if(_3==_4){
-_3-=0.5;
-_4+=0.5;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.charting.scaler.primitive"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.charting.scaler.primitive"] = true;
+dojo.provide("dojox.charting.scaler.primitive");
+
+dojox.charting.scaler.primitive = {
+	buildScaler: function(/*Number*/ min, /*Number*/ max, /*Number*/ span, /*Object*/ kwArgs){
+		return {
+			bounds: {
+				lower: min,
+				upper: max,
+				from:  min,
+				to:    max,
+				scale: span / (max - min),
+				span:  span
+			},
+			scaler: dojox.charting.scaler.primitive
+		};
+	},
+	buildTicks: function(/*Object*/ scaler, /*Object*/ kwArgs){
+		return {major: [], minor: [], micro: []};	// Object
+	},
+	getTransformerFromModel: function(/*Object*/ scaler){
+		var offset = scaler.bounds.from, scale = scaler.bounds.scale;
+		return function(x){ return (x - offset) * scale; };	// Function
+	},
+	getTransformerFromPlot: function(/*Object*/ scaler){
+		var offset = scaler.bounds.from, scale = scaler.bounds.scale;
+		return function(x){ return x / scale + offset; };	// Function
+	}
+};
+
 }
-return {bounds:{lower:_3,upper:_4,from:_3,to:_4,scale:_5/(_4-_3),span:_5},scaler:_2};
-},buildTicks:function(_7,_8){
-return {major:[],minor:[],micro:[]};
-},getTransformerFromModel:function(_9){
-var _a=_9.bounds.from,_b=_9.bounds.scale;
-return function(x){
-return (x-_a)*_b;
-};
-},getTransformerFromPlot:function(_c){
-var _d=_c.bounds.from,_e=_c.bounds.scale;
-return function(x){
-return x/_e+_d;
-};
-}});
-});

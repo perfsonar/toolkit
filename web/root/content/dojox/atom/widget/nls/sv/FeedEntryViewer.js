@@ -1,2 +1,1 @@
-//>>built
-define("dojox/atom/widget/nls/sv/FeedEntryViewer",({displayOptions:"[visningsalternativ]",title:"Namn",authors:"Författare",contributors:"Medverkande",id:"ID",close:"[stäng]",updated:"Uppdaterat",summary:"Översikt",content:"Innehåll"}));
+({"close":"[Stäng]","title":"Rubrik","authors":"Författare","summary":"Sammanfattning","content":"Innehåll","contributors":"Medverkande","updated":"Uppdaterat","displayOptions":"[Visningsalternativ]","id":"ID"})

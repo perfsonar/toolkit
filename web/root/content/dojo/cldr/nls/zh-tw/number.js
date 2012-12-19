@@ -1,8 +1,1 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-//>>built
-define("dojo/cldr/nls/zh-tw/number",{"nan":"非數值"});
+({"currencyFormat":"¤#,##0.00","group":",","list":";","decimalFormat":"#,##0.###","scientificFormat":"#E0","percentFormat":"#,##0%","decimal":".","currencySpacing-afterCurrency-currencyMatch":"[:letter:]","infinity":"∞","percentSign":"%","minusSign":"-","currencySpacing-beforeCurrency-surroundingMatch":"[:digit:]","currencySpacing-afterCurrency-insertBetween":" ","nan":"NaN","nativeZeroDigit":"0","plusSign":"+","currencySpacing-afterCurrency-surroundingMatch":"[:digit:]","currencySpacing-beforeCurrency-currencyMatch":"[:letter:]","perMille":"‰","patternDigit":"#","currencySpacing-beforeCurrency-insertBetween":" ","exponential":"E"})

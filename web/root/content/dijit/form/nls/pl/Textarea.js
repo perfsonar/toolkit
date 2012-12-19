@@ -1,2 +1,1 @@
-//>>built
-define("dijit/form/nls/pl/Textarea",({iframeEditTitle:"edycja obszaru",iframeFocusTitle:"edycja ramki obszaru"}));
+({"iframeEditTitle":"Obszar edycji","iframeFocusTitle":"Ramka obszaru edycji"})

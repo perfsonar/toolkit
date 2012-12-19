@@ -1,52 +1,507 @@
-require({cache:{
-'dojox/gfx/_base':function(){
-define(["dojo/_base/kernel", "dojo/_base/lang", "dojo/_base/Color", "dojo/_base/sniff", "dojo/_base/window",
-	    "dojo/_base/array","dojo/dom", "dojo/dom-construct","dojo/dom-geometry"],
-function(kernel, lang, Color, has, win, arr, dom, domConstruct, domGeom){
-	// module:
-	//		dojox/gfx
-	// summary:
-	//		This module contains common core Graphics API used by different graphics renderers.
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
 
-	var g = lang.getObject("dojox.gfx", true),
-		b = g._base = {};
-	
+/*
+	This is a compiled version of Dojo, built for deployment and not for
+	development. To get an editable version, please visit:
+
+		http://dojotoolkit.org
+
+	for documentation and information on getting the source.
+*/
+
+if(!dojo._hasResource["dojox.gfx.matrix"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.gfx.matrix"] = true;
+dojo.provide("dojox.gfx.matrix");
+
+(function(){
+	var m = dojox.gfx.matrix;
+
+	// candidates for dojox.math:
+	var _degToRadCache = {};
+	m._degToRad = function(degree){
+		return _degToRadCache[degree] || (_degToRadCache[degree] = (Math.PI * degree / 180));
+	};
+	m._radToDeg = function(radian){ return radian / Math.PI * 180; };
+
+	m.Matrix2D = function(arg){
+		// summary: a 2D matrix object
+		// description: Normalizes a 2D matrix-like object. If arrays is passed,
+		//		all objects of the array are normalized and multiplied sequentially.
+		// arg: Object
+		//		a 2D matrix-like object, a number, or an array of such objects
+		if(arg){
+			if(typeof arg == "number"){
+				this.xx = this.yy = arg;
+			}else if(arg instanceof Array){
+				if(arg.length > 0){
+					var matrix = m.normalize(arg[0]);
+					// combine matrices
+					for(var i = 1; i < arg.length; ++i){
+						var l = matrix, r = dojox.gfx.matrix.normalize(arg[i]);
+						matrix = new m.Matrix2D();
+						matrix.xx = l.xx * r.xx + l.xy * r.yx;
+						matrix.xy = l.xx * r.xy + l.xy * r.yy;
+						matrix.yx = l.yx * r.xx + l.yy * r.yx;
+						matrix.yy = l.yx * r.xy + l.yy * r.yy;
+						matrix.dx = l.xx * r.dx + l.xy * r.dy + l.dx;
+						matrix.dy = l.yx * r.dx + l.yy * r.dy + l.dy;
+					}
+					dojo.mixin(this, matrix);
+				}
+			}else{
+				dojo.mixin(this, arg);
+			}
+		}
+	};
+
+	// the default (identity) matrix, which is used to fill in missing values
+	dojo.extend(m.Matrix2D, {xx: 1, xy: 0, yx: 0, yy: 1, dx: 0, dy: 0});
+
+	dojo.mixin(m, {
+		// summary: class constants, and methods of dojox.gfx.matrix
+
+		// matrix constants
+
+		// identity: dojox.gfx.matrix.Matrix2D
+		//		an identity matrix constant: identity * (x, y) == (x, y)
+		identity: new m.Matrix2D(),
+
+		// flipX: dojox.gfx.matrix.Matrix2D
+		//		a matrix, which reflects points at x = 0 line: flipX * (x, y) == (-x, y)
+		flipX:    new m.Matrix2D({xx: -1}),
+
+		// flipY: dojox.gfx.matrix.Matrix2D
+		//		a matrix, which reflects points at y = 0 line: flipY * (x, y) == (x, -y)
+		flipY:    new m.Matrix2D({yy: -1}),
+
+		// flipXY: dojox.gfx.matrix.Matrix2D
+		//		a matrix, which reflects points at the origin of coordinates: flipXY * (x, y) == (-x, -y)
+		flipXY:   new m.Matrix2D({xx: -1, yy: -1}),
+
+		// matrix creators
+
+		translate: function(a, b){
+			// summary: forms a translation matrix
+			// description: The resulting matrix is used to translate (move) points by specified offsets.
+			// a: Number: an x coordinate value
+			// b: Number: a y coordinate value
+			if(arguments.length > 1){
+				return new m.Matrix2D({dx: a, dy: b}); // dojox.gfx.matrix.Matrix2D
+			}
+			// branch
+			// a: dojox.gfx.Point: a point-like object, which specifies offsets for both dimensions
+			// b: null
+			return new m.Matrix2D({dx: a.x, dy: a.y}); // dojox.gfx.matrix.Matrix2D
+		},
+		scale: function(a, b){
+			// summary: forms a scaling matrix
+			// description: The resulting matrix is used to scale (magnify) points by specified offsets.
+			// a: Number: a scaling factor used for the x coordinate
+			// b: Number: a scaling factor used for the y coordinate
+			if(arguments.length > 1){
+				return new m.Matrix2D({xx: a, yy: b}); // dojox.gfx.matrix.Matrix2D
+			}
+			if(typeof a == "number"){
+				// branch
+				// a: Number: a uniform scaling factor used for the both coordinates
+				// b: null
+				return new m.Matrix2D({xx: a, yy: a}); // dojox.gfx.matrix.Matrix2D
+			}
+			// branch
+			// a: dojox.gfx.Point: a point-like object, which specifies scale factors for both dimensions
+			// b: null
+			return new m.Matrix2D({xx: a.x, yy: a.y}); // dojox.gfx.matrix.Matrix2D
+		},
+		rotate: function(angle){
+			// summary: forms a rotating matrix
+			// description: The resulting matrix is used to rotate points
+			//		around the origin of coordinates (0, 0) by specified angle.
+			// angle: Number: an angle of rotation in radians (>0 for CW)
+			var c = Math.cos(angle);
+			var s = Math.sin(angle);
+			return new m.Matrix2D({xx: c, xy: -s, yx: s, yy: c}); // dojox.gfx.matrix.Matrix2D
+		},
+		rotateg: function(degree){
+			// summary: forms a rotating matrix
+			// description: The resulting matrix is used to rotate points
+			//		around the origin of coordinates (0, 0) by specified degree.
+			//		See dojox.gfx.matrix.rotate() for comparison.
+			// degree: Number: an angle of rotation in degrees (>0 for CW)
+			return m.rotate(m._degToRad(degree)); // dojox.gfx.matrix.Matrix2D
+		},
+		skewX: function(angle) {
+			// summary: forms an x skewing matrix
+			// description: The resulting matrix is used to skew points in the x dimension
+			//		around the origin of coordinates (0, 0) by specified angle.
+			// angle: Number: an skewing angle in radians
+			return new m.Matrix2D({xy: Math.tan(angle)}); // dojox.gfx.matrix.Matrix2D
+		},
+		skewXg: function(degree){
+			// summary: forms an x skewing matrix
+			// description: The resulting matrix is used to skew points in the x dimension
+			//		around the origin of coordinates (0, 0) by specified degree.
+			//		See dojox.gfx.matrix.skewX() for comparison.
+			// degree: Number: an skewing angle in degrees
+			return m.skewX(m._degToRad(degree)); // dojox.gfx.matrix.Matrix2D
+		},
+		skewY: function(angle){
+			// summary: forms a y skewing matrix
+			// description: The resulting matrix is used to skew points in the y dimension
+			//		around the origin of coordinates (0, 0) by specified angle.
+			// angle: Number: an skewing angle in radians
+			return new m.Matrix2D({yx: Math.tan(angle)}); // dojox.gfx.matrix.Matrix2D
+		},
+		skewYg: function(degree){
+			// summary: forms a y skewing matrix
+			// description: The resulting matrix is used to skew points in the y dimension
+			//		around the origin of coordinates (0, 0) by specified degree.
+			//		See dojox.gfx.matrix.skewY() for comparison.
+			// degree: Number: an skewing angle in degrees
+			return m.skewY(m._degToRad(degree)); // dojox.gfx.matrix.Matrix2D
+		},
+		reflect: function(a, b){
+			// summary: forms a reflection matrix
+			// description: The resulting matrix is used to reflect points around a vector,
+			//		which goes through the origin.
+			// a: dojox.gfx.Point: a point-like object, which specifies a vector of reflection
+			// b: null
+			if(arguments.length == 1){
+				b = a.y;
+				a = a.x;
+			}
+			// branch
+			// a: Number: an x coordinate value
+			// b: Number: a y coordinate value
+
+			// make a unit vector
+			var a2 = a * a, b2 = b * b, n2 = a2 + b2, xy = 2 * a * b / n2;
+			return new m.Matrix2D({xx: 2 * a2 / n2 - 1, xy: xy, yx: xy, yy: 2 * b2 / n2 - 1}); // dojox.gfx.matrix.Matrix2D
+		},
+		project: function(a, b){
+			// summary: forms an orthogonal projection matrix
+			// description: The resulting matrix is used to project points orthogonally on a vector,
+			//		which goes through the origin.
+			// a: dojox.gfx.Point: a point-like object, which specifies a vector of projection
+			// b: null
+			if(arguments.length == 1){
+				b = a.y;
+				a = a.x;
+			}
+			// branch
+			// a: Number: an x coordinate value
+			// b: Number: a y coordinate value
+
+			// make a unit vector
+			var a2 = a * a, b2 = b * b, n2 = a2 + b2, xy = a * b / n2;
+			return new m.Matrix2D({xx: a2 / n2, xy: xy, yx: xy, yy: b2 / n2}); // dojox.gfx.matrix.Matrix2D
+		},
+
+		// ensure matrix 2D conformance
+		normalize: function(matrix){
+			// summary: converts an object to a matrix, if necessary
+			// description: Converts any 2D matrix-like object or an array of
+			//		such objects to a valid dojox.gfx.matrix.Matrix2D object.
+			// matrix: Object: an object, which is converted to a matrix, if necessary
+			return (matrix instanceof m.Matrix2D) ? matrix : new m.Matrix2D(matrix); // dojox.gfx.matrix.Matrix2D
+		},
+
+		// common operations
+
+		clone: function(matrix){
+			// summary: creates a copy of a 2D matrix
+			// matrix: dojox.gfx.matrix.Matrix2D: a 2D matrix-like object to be cloned
+			var obj = new m.Matrix2D();
+			for(var i in matrix){
+				if(typeof(matrix[i]) == "number" && typeof(obj[i]) == "number" && obj[i] != matrix[i]) obj[i] = matrix[i];
+			}
+			return obj; // dojox.gfx.matrix.Matrix2D
+		},
+		invert: function(matrix){
+			// summary: inverts a 2D matrix
+			// matrix: dojox.gfx.matrix.Matrix2D: a 2D matrix-like object to be inverted
+			var M = m.normalize(matrix),
+				D = M.xx * M.yy - M.xy * M.yx,
+				M = new m.Matrix2D({
+					xx: M.yy/D, xy: -M.xy/D,
+					yx: -M.yx/D, yy: M.xx/D,
+					dx: (M.xy * M.dy - M.yy * M.dx) / D,
+					dy: (M.yx * M.dx - M.xx * M.dy) / D
+				});
+			return M; // dojox.gfx.matrix.Matrix2D
+		},
+		_multiplyPoint: function(matrix, x, y){
+			// summary: applies a matrix to a point
+			// matrix: dojox.gfx.matrix.Matrix2D: a 2D matrix object to be applied
+			// x: Number: an x coordinate of a point
+			// y: Number: a y coordinate of a point
+			return {x: matrix.xx * x + matrix.xy * y + matrix.dx, y: matrix.yx * x + matrix.yy * y + matrix.dy}; // dojox.gfx.Point
+		},
+		multiplyPoint: function(matrix, /* Number||Point */ a, /* Number, optional */ b){
+			// summary: applies a matrix to a point
+			// matrix: dojox.gfx.matrix.Matrix2D: a 2D matrix object to be applied
+			// a: Number: an x coordinate of a point
+			// b: Number: a y coordinate of a point
+			var M = m.normalize(matrix);
+			if(typeof a == "number" && typeof b == "number"){
+				return m._multiplyPoint(M, a, b); // dojox.gfx.Point
+			}
+			// branch
+			// matrix: dojox.gfx.matrix.Matrix2D: a 2D matrix object to be applied
+			// a: dojox.gfx.Point: a point
+			// b: null
+			return m._multiplyPoint(M, a.x, a.y); // dojox.gfx.Point
+		},
+		multiply: function(matrix){
+			// summary: combines matrices by multiplying them sequentially in the given order
+			// matrix: dojox.gfx.matrix.Matrix2D...: a 2D matrix-like object,
+			//		all subsequent arguments are matrix-like objects too
+			var M = m.normalize(matrix);
+			// combine matrices
+			for(var i = 1; i < arguments.length; ++i){
+				var l = M, r = m.normalize(arguments[i]);
+				M = new m.Matrix2D();
+				M.xx = l.xx * r.xx + l.xy * r.yx;
+				M.xy = l.xx * r.xy + l.xy * r.yy;
+				M.yx = l.yx * r.xx + l.yy * r.yx;
+				M.yy = l.yx * r.xy + l.yy * r.yy;
+				M.dx = l.xx * r.dx + l.xy * r.dy + l.dx;
+				M.dy = l.yx * r.dx + l.yy * r.dy + l.dy;
+			}
+			return M; // dojox.gfx.matrix.Matrix2D
+		},
+
+		// high level operations
+
+		_sandwich: function(matrix, x, y){
+			// summary: applies a matrix at a centrtal point
+			// matrix: dojox.gfx.matrix.Matrix2D: a 2D matrix-like object, which is applied at a central point
+			// x: Number: an x component of the central point
+			// y: Number: a y component of the central point
+			return m.multiply(m.translate(x, y), matrix, m.translate(-x, -y)); // dojox.gfx.matrix.Matrix2D
+		},
+		scaleAt: function(a, b, c, d){
+			// summary: scales a picture using a specified point as a center of scaling
+			// description: Compare with dojox.gfx.matrix.scale().
+			// a: Number: a scaling factor used for the x coordinate
+			// b: Number: a scaling factor used for the y coordinate
+			// c: Number: an x component of a central point
+			// d: Number: a y component of a central point
+
+			// accepts several signatures:
+			//	1) uniform scale factor, Point
+			//	2) uniform scale factor, x, y
+			//	3) x scale, y scale, Point
+			//	4) x scale, y scale, x, y
+
+			switch(arguments.length){
+				case 4:
+					// a and b are scale factor components, c and d are components of a point
+					return m._sandwich(m.scale(a, b), c, d); // dojox.gfx.matrix.Matrix2D
+				case 3:
+					if(typeof c == "number"){
+						// branch
+						// a: Number: a uniform scaling factor used for both coordinates
+						// b: Number: an x component of a central point
+						// c: Number: a y component of a central point
+						// d: null
+						return m._sandwich(m.scale(a), b, c); // dojox.gfx.matrix.Matrix2D
+					}
+					// branch
+					// a: Number: a scaling factor used for the x coordinate
+					// b: Number: a scaling factor used for the y coordinate
+					// c: dojox.gfx.Point: a central point
+					// d: null
+					return m._sandwich(m.scale(a, b), c.x, c.y); // dojox.gfx.matrix.Matrix2D
+			}
+			// branch
+			// a: Number: a uniform scaling factor used for both coordinates
+			// b: dojox.gfx.Point: a central point
+			// c: null
+			// d: null
+			return m._sandwich(m.scale(a), b.x, b.y); // dojox.gfx.matrix.Matrix2D
+		},
+		rotateAt: function(angle, a, b){
+			// summary: rotates a picture using a specified point as a center of rotation
+			// description: Compare with dojox.gfx.matrix.rotate().
+			// angle: Number: an angle of rotation in radians (>0 for CW)
+			// a: Number: an x component of a central point
+			// b: Number: a y component of a central point
+
+			// accepts several signatures:
+			//	1) rotation angle in radians, Point
+			//	2) rotation angle in radians, x, y
+
+			if(arguments.length > 2){
+				return m._sandwich(m.rotate(angle), a, b); // dojox.gfx.matrix.Matrix2D
+			}
+
+			// branch
+			// angle: Number: an angle of rotation in radians (>0 for CCW)
+			// a: dojox.gfx.Point: a central point
+			// b: null
+			return m._sandwich(m.rotate(angle), a.x, a.y); // dojox.gfx.matrix.Matrix2D
+		},
+		rotategAt: function(degree, a, b){
+			// summary: rotates a picture using a specified point as a center of rotation
+			// description: Compare with dojox.gfx.matrix.rotateg().
+			// degree: Number: an angle of rotation in degrees (>0 for CW)
+			// a: Number: an x component of a central point
+			// b: Number: a y component of a central point
+
+			// accepts several signatures:
+			//	1) rotation angle in degrees, Point
+			//	2) rotation angle in degrees, x, y
+
+			if(arguments.length > 2){
+				return m._sandwich(m.rotateg(degree), a, b); // dojox.gfx.matrix.Matrix2D
+			}
+
+			// branch
+			// degree: Number: an angle of rotation in degrees (>0 for CCW)
+			// a: dojox.gfx.Point: a central point
+			// b: null
+			return m._sandwich(m.rotateg(degree), a.x, a.y); // dojox.gfx.matrix.Matrix2D
+		},
+		skewXAt: function(angle, a, b){
+			// summary: skews a picture along the x axis using a specified point as a center of skewing
+			// description: Compare with dojox.gfx.matrix.skewX().
+			// angle: Number: an skewing angle in radians
+			// a: Number: an x component of a central point
+			// b: Number: a y component of a central point
+
+			// accepts several signatures:
+			//	1) skew angle in radians, Point
+			//	2) skew angle in radians, x, y
+
+			if(arguments.length > 2){
+				return m._sandwich(m.skewX(angle), a, b); // dojox.gfx.matrix.Matrix2D
+			}
+
+			// branch
+			// angle: Number: an skewing angle in radians
+			// a: dojox.gfx.Point: a central point
+			// b: null
+			return m._sandwich(m.skewX(angle), a.x, a.y); // dojox.gfx.matrix.Matrix2D
+		},
+		skewXgAt: function(degree, a, b){
+			// summary: skews a picture along the x axis using a specified point as a center of skewing
+			// description: Compare with dojox.gfx.matrix.skewXg().
+			// degree: Number: an skewing angle in degrees
+			// a: Number: an x component of a central point
+			// b: Number: a y component of a central point
+
+			// accepts several signatures:
+			//	1) skew angle in degrees, Point
+			//	2) skew angle in degrees, x, y
+
+			if(arguments.length > 2){
+				return m._sandwich(m.skewXg(degree), a, b); // dojox.gfx.matrix.Matrix2D
+			}
+
+			// branch
+			// degree: Number: an skewing angle in degrees
+			// a: dojox.gfx.Point: a central point
+			// b: null
+			return m._sandwich(m.skewXg(degree), a.x, a.y); // dojox.gfx.matrix.Matrix2D
+		},
+		skewYAt: function(angle, a, b){
+			// summary: skews a picture along the y axis using a specified point as a center of skewing
+			// description: Compare with dojox.gfx.matrix.skewY().
+			// angle: Number: an skewing angle in radians
+			// a: Number: an x component of a central point
+			// b: Number: a y component of a central point
+
+			// accepts several signatures:
+			//	1) skew angle in radians, Point
+			//	2) skew angle in radians, x, y
+
+			if(arguments.length > 2){
+				return m._sandwich(m.skewY(angle), a, b); // dojox.gfx.matrix.Matrix2D
+			}
+
+			// branch
+			// angle: Number: an skewing angle in radians
+			// a: dojox.gfx.Point: a central point
+			// b: null
+			return m._sandwich(m.skewY(angle), a.x, a.y); // dojox.gfx.matrix.Matrix2D
+		},
+		skewYgAt: function(/* Number */ degree, /* Number||Point */ a, /* Number, optional */ b){
+			// summary: skews a picture along the y axis using a specified point as a center of skewing
+			// description: Compare with dojox.gfx.matrix.skewYg().
+			// degree: Number: an skewing angle in degrees
+			// a: Number: an x component of a central point
+			// b: Number: a y component of a central point
+
+			// accepts several signatures:
+			//	1) skew angle in degrees, Point
+			//	2) skew angle in degrees, x, y
+
+			if(arguments.length > 2){
+				return m._sandwich(m.skewYg(degree), a, b); // dojox.gfx.matrix.Matrix2D
+			}
+
+			// branch
+			// degree: Number: an skewing angle in degrees
+			// a: dojox.gfx.Point: a central point
+			// b: null
+			return m._sandwich(m.skewYg(degree), a.x, a.y); // dojox.gfx.matrix.Matrix2D
+		}
+
+		//TODO: rect-to-rect mapping, scale-to-fit (isotropic and anisotropic versions)
+
+	});
+})();
+
+// propagate Matrix2D up
+dojox.gfx.Matrix2D = dojox.gfx.matrix.Matrix2D;
+
+}
+
+if(!dojo._hasResource["dojox.gfx._base"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.gfx._base"] = true;
+dojo.provide("dojox.gfx._base");
+
+(function(){
+	var g = dojox.gfx, b = g._base;
+
 	// candidates for dojox.style (work on VML and SVG nodes)
 	g._hasClass = function(/*DomNode*/node, /*String*/classStr){
-		// summary:
+		//	summary:
 		//		Returns whether or not the specified classes are a portion of the
 		//		class list currently applied to the node.
-		
 		// return (new RegExp('(^|\\s+)'+classStr+'(\\s+|$)')).test(node.className)	// Boolean
 		var cls = node.getAttribute("className");
 		return cls && (" " + cls + " ").indexOf(" " + classStr + " ") >= 0;  // Boolean
-	};
+	}
 	g._addClass = function(/*DomNode*/node, /*String*/classStr){
-		// summary:
+		//	summary:
 		//		Adds the specified classes to the end of the class list on the
 		//		passed node.
 		var cls = node.getAttribute("className") || "";
 		if(!cls || (" " + cls + " ").indexOf(" " + classStr + " ") < 0){
 			node.setAttribute("className", cls + (cls ? " " : "") + classStr);
 		}
-	};
+	}
 	g._removeClass = function(/*DomNode*/node, /*String*/classStr){
-		// summary:
-		//		Removes classes from node.
+		//	summary: Removes classes from node.
 		var cls = node.getAttribute("className");
 		if(cls){
 			node.setAttribute(
-				"className",
+				"className", 
 				cls.replace(new RegExp('(^|\\s+)' + classStr + '(\\s+|$)'), "$1$2")
 			);
 		}
-	};
+	}
 
 	// candidate for dojox.html.metrics (dynamic font resize handler is not implemented here)
 
-	//		derived from Morris John's emResized measurer
+	//	derived from Morris John's emResized measurer
 	b._getFontMeasurements = function(){
-		// summary:
+		//	summary:
 		//		Returns an object that has pixel equivilents of standard font
 		//		size values.
 		var heights = {
@@ -54,37 +509,38 @@ function(kernel, lang, Color, has, win, arr, dom, domConstruct, domGeom){
 			'x-small': 0, 'small': 0, 'medium': 0, 'large': 0, 'x-large': 0,
 			'xx-large': 0
 		};
-		var p;
 
-		if(has("ie")){
-			//		we do a font-size fix if and only if one isn't applied already.
-			// NOTE: If someone set the fontSize on the HTML Element, this will kill it.
-			win.doc.documentElement.style.fontSize="100%";
+		if(dojo.isIE){
+			//	we do a font-size fix if and only if one isn't applied already.
+			//	NOTE: If someone set the fontSize on the HTML Element, this will kill it.
+			dojo.doc.documentElement.style.fontSize="100%";
 		}
 
-		//		set up the measuring node.
-		var div = domConstruct.create("div", {style: {
-				position: "absolute",
-				left: "0",
-				top: "-100px",
-				width: "30px",
-				height: "1000em",
-				borderWidth: "0",
-				margin: "0",
-				padding: "0",
-				outline: "none",
-				lineHeight: "1",
-				overflow: "hidden"
-			}}, win.body());
+		//	set up the measuring node.
+		var div = dojo.doc.createElement("div");
+		var s = div.style;
+		s.position = "absolute";
+		s.left = "-100px";
+		s.top = "0px";
+		s.width = "30px";
+		s.height = "1000em";
+		s.border = "0px";
+		s.margin = "0px";
+		s.padding = "0px";
+		s.outline = "none";
+		s.lineHeight = "1";
+		s.overflow = "hidden";
+		dojo.body().appendChild(div);
 
-		//		do the measurements.
-		for(p in heights){
+		//	do the measurements.
+		for(var p in heights){
 			div.style.fontSize = p;
 			heights[p] = Math.round(div.offsetHeight * 12/16) * 16/12 / 1000;
 		}
 
-		win.body().removeChild(div);
-		return heights; //object
+		dojo.body().removeChild(div);
+		div = null;
+		return heights; 	//	object
 	};
 
 	var fontMeasurements = null;
@@ -99,963 +555,372 @@ function(kernel, lang, Color, has, win, arr, dom, domConstruct, domGeom){
 	// candidate for dojox.html.metrics
 
 	var measuringNode = null, empty = {};
-	b._getTextBox = function(	/*String*/ text,
-								/*Object*/ style,
-								/*String?*/ className){
-		var m, s, al = arguments.length;
-		var i;
+	b._getTextBox = function(/* String */ text, /* Object */ style, /* String? */ className){
+		var m, s;
 		if(!measuringNode){
-			measuringNode = domConstruct.create("div", {style: {
-				position: "absolute",
-				top: "-10000px",
-				left: "0"
-			}}, win.body());
+			m = measuringNode = dojo.doc.createElement("div");
+			s = m.style;
+			s.position = "absolute";
+			s.left = "-10000px";
+			s.top = "0";
+			dojo.body().appendChild(m);
+		}else{
+			m = measuringNode;
+			s = m.style;
 		}
-		m = measuringNode;
 		// reset styles
 		m.className = "";
-		s = m.style;
-		s.borderWidth = "0";
+		s.border = "0";
 		s.margin = "0";
 		s.padding = "0";
 		s.outline = "0";
 		// set new style
-		if(al > 1 && style){
-			for(i in style){
+		if(arguments.length > 1 && style){
+			for(var i in style){
 				if(i in empty){ continue; }
 				s[i] = style[i];
 			}
 		}
 		// set classes
-		if(al > 2 && className){
+		if(arguments.length > 2 && className){
 			m.className = className;
 		}
 		// take a measure
 		m.innerHTML = text;
-
-		if(m["getBoundingClientRect"]){
-			var bcr = m.getBoundingClientRect();
-			return {l: bcr.left, t: bcr.top, w: bcr.width || (bcr.right - bcr.left), h: bcr.height || (bcr.bottom - bcr.top)};
-		}else{
-			return domGeom.getMarginBox(m);
-		}
+		return dojo.marginBox(m);
 	};
 
 	// candidate for dojo.dom
 
 	var uniqueId = 0;
 	b._getUniqueId = function(){
-		// summary:
-		//		returns a unique string for use with any DOM element
+		// summary: returns a unique string for use with any DOM element
 		var id;
 		do{
-			id = kernel._scopeName + "xUnique" + (++uniqueId);
-		}while(dom.byId(id));
+			id = dojo._scopeName + "Unique" + (++uniqueId);
+		}while(dojo.byId(id));
 		return id;
 	};
-
-	/*=====
-	g.Stroke = {
-		// summary:
-		//		A stroke defines stylistic properties that are used when drawing a path.
-
-		// color: String
-		//		The color of the stroke, default value 'black'.
-		color: "black",
-
-		// style: String
-		//		The style of the stroke, one of 'solid', ... . Default value 'solid'.
-		style: "solid",
-
-		// width: Number
-		//		The width of a stroke, default value 1.
-		width: 1,
-
-		// cap: String
-		//		The endcap style of the path. One of 'butt', 'round', ... . Default value 'butt'.
-		cap: "butt",
-
-		// join: Number
-		//		The join style to use when combining path segments. Default value 4.
-		join: 4
-	};
-	
-	g.Fill = {
-		// summary:
-		//		Defines how to fill a shape. Four types of fills can be used: solid, linear gradient, radial gradient and pattern.
-		//		See dojox/gfx.LinearGradient, dojox/gfx.RadialGradient and dojox/gfx.Pattern respectively for more information about the properties supported by each type.
-		
-		// type: String?
-		//		The type of fill. One of 'linear', 'radial', 'pattern' or undefined. If not specified, a solid fill is assumed.
-		type:"",
-		
-		// color: String|dojo/Color?
-		//		The color of a solid fill type.
-		color:null,
-		
-	};
-	
-	g.LinearGradient = {
-		// summary:
-		//		An object defining the default stylistic properties used for Linear Gradient fills.
-		//		Linear gradients are drawn along a virtual line, which results in appearance of a rotated pattern in a given direction/orientation.
-
-		// type: String
-		//		Specifies this object is a Linear Gradient, value 'linear'
-		type: "linear",
-
-		// x1: Number
-		//		The X coordinate of the start of the virtual line along which the gradient is drawn, default value 0.
-		x1: 0,
-
-		// y1: Number
-		//		The Y coordinate of the start of the virtual line along which the gradient is drawn, default value 0.
-		y1: 0,
-
-		// x2: Number
-		//		The X coordinate of the end of the virtual line along which the gradient is drawn, default value 100.
-		x2: 100,
-
-		// y2: Number
-		//		The Y coordinate of the end of the virtual line along which the gradient is drawn, default value 100.
-		y2: 100,
-
-		// colors: Array
-		//		An array of colors at given offsets (from the start of the line).  The start of the line is
-		//		defined at offest 0 with the end of the line at offset 1.
-		//		Default value, [{ offset: 0, color: 'black'},{offset: 1, color: 'white'}], is a gradient from black to white.
-		colors: []
-	};
-	
-	g.RadialGradient = {
-		// summary:
-		//		Specifies the properties for RadialGradients using in fills patterns.
-
-		// type: String
-		//		Specifies this is a RadialGradient, value 'radial'
-		type: "radial",
-
-		// cx: Number
-		//		The X coordinate of the center of the radial gradient, default value 0.
-		cx: 0,
-
-		// cy: Number
-		//		The Y coordinate of the center of the radial gradient, default value 0.
-		cy: 0,
-
-		// r: Number
-		//		The radius to the end of the radial gradient, default value 100.
-		r: 100,
-
-		// colors: Array
-		//		An array of colors at given offsets (from the center of the radial gradient).
-		//		The center is defined at offest 0 with the outer edge of the gradient at offset 1.
-		//		Default value, [{ offset: 0, color: 'black'},{offset: 1, color: 'white'}], is a gradient from black to white.
-		colors: []
-	};
-	
-	g.Pattern = {
-		// summary:
-		//		An object specifying the default properties for a Pattern using in fill operations.
-
-		// type: String
-		//		Specifies this object is a Pattern, value 'pattern'.
-		type: "pattern",
-
-		// x: Number
-		//		The X coordinate of the position of the pattern, default value is 0.
-		x: 0,
-
-		// y: Number
-		//		The Y coordinate of the position of the pattern, default value is 0.
-		y: 0,
-
-		// width: Number
-		//		The width of the pattern image, default value is 0.
-		width: 0,
-
-		// height: Number
-		//		The height of the pattern image, default value is 0.
-		height: 0,
-
-		// src: String
-		//		A url specifying the image to use for the pattern.
-		src: ""
-	};
-
-	g.Text = {
-		//	summary:
-		//		A keyword argument object defining both the text to be rendered in a VectorText shape,
-		//		and specifying position, alignment, and fitting.
-		//	text: String
-		//		The text to be rendered.
-		//	x: Number?
-		//		The left coordinate for the text's bounding box.
-		//	y: Number?
-		//		The top coordinate for the text's bounding box.
-		//	width: Number?
-		//		The width of the text's bounding box.
-		//	height: Number?
-		//		The height of the text's bounding box.
-		//	align: String?
-		//		The alignment of the text, as defined in SVG. Can be "start", "end" or "middle".
-		//	fitting: Number?
-		//		How the text is to be fitted to the bounding box. Can be 0 (no fitting), 1 (fitting based on
-		//		passed width of the bounding box and the size of the font), or 2 (fit text to the bounding box,
-		//		and ignore any size parameters).
-		//	leading: Number?
-		//		The leading to be used between lines in the text.
-		//	decoration: String?
-		//		Any text decoration to be used.
-	};
-
-	g.Font = {
-		// summary:
-		//		An object specifying the properties for a Font used in text operations.
-	
-		// type: String
-		//		Specifies this object is a Font, value 'font'.
-		type: "font",
-	
-		// style: String
-		//		The font style, one of 'normal', 'bold', default value 'normal'.
-		style: "normal",
-	
-		// variant: String
-		//		The font variant, one of 'normal', ... , default value 'normal'.
-		variant: "normal",
-	
-		// weight: String
-		//		The font weight, one of 'normal', ..., default value 'normal'.
-		weight: "normal",
-	
-		// size: String
-		//		The font size (including units), default value '10pt'.
-		size: "10pt",
-	
-		// family: String
-		//		The font family, one of 'serif', 'sanserif', ..., default value 'serif'.
-		family: "serif"
-	};
-
-	=====*/
-
-	lang.mixin(g, {
-		// summary:
-		//		defines constants, prototypes, and utility functions for the core Graphics API
-
-		// default shapes, which are used to fill in missing parameters
-		defaultPath: {
-			// summary:
-			//		Defines the default Path prototype object.
-
-			// type: String
-			//		Specifies this object is a Path, default value 'path'.
-			type: "path", 
-
-			// path: String
-			//		The path commands. See W32C SVG 1.0 specification.
-			//		Defaults to empty string value.
-			path: ""
-		},
-		defaultPolyline: {
-			// summary:
-			//		Defines the default PolyLine prototype.
-
-			// type: String
-			//		Specifies this object is a PolyLine, default value 'polyline'.
-			type: "polyline",
-
-			// points: Array
-			//		An array of point objects [{x:0,y:0},...] defining the default polyline's line segments. Value is an empty array [].
-			points: []
-		},
-		defaultRect: {
-			// summary:
-			//		Defines the default Rect prototype.
-
-			// type: String
-			//		Specifies this default object is a type of Rect. Value is 'rect'
-			type: "rect",
-
-			// x: Number
-			//		The X coordinate of the default rectangles position, value 0.
-			x: 0,
-
-			// y: Number
-			//		The Y coordinate of the default rectangle's position, value 0.
-			y: 0,
-
-			// width: Number
-			//		The width of the default rectangle, value 100.
-			width: 100,
-
-			// height: Number
-			//		The height of the default rectangle, value 100.
-			height: 100,
-
-			// r: Number
-			//		The corner radius for the default rectangle, value 0.
-			r: 0
-		},
-		defaultEllipse: {
-			// summary:
-			//		Defines the default Ellipse prototype.
-
-			// type: String
-			//		Specifies that this object is a type of Ellipse, value is 'ellipse'
-			type: "ellipse",
-
-			// cx: Number
-			//		The X coordinate of the center of the ellipse, default value 0.
-			cx: 0,
-
-			// cy: Number
-			//		The Y coordinate of the center of the ellipse, default value 0.
-			cy: 0,
-
-			// rx: Number
-			//		The radius of the ellipse in the X direction, default value 200.
-			rx: 200,
-
-			// ry: Number
-			//		The radius of the ellipse in the Y direction, default value 200.
-			ry: 100
-		},
-		defaultCircle: {
-			// summary:
-			//		An object defining the default Circle prototype.
-
-			// type: String
-			//		Specifies this object is a circle, value 'circle'
-			type: "circle",
-
-			// cx: Number
-			//		The X coordinate of the center of the circle, default value 0.
-			cx: 0,
-			// cy: Number
-			//		The Y coordinate of the center of the circle, default value 0.
-			cy: 0,
-
-			// r: Number
-			//		The radius, default value 100.
-			r: 100
-		},
-		defaultLine: {
-			// summary:
-			//		An object defining the default Line prototype.
-
-			// type: String
-			//		Specifies this is a Line, value 'line'
-			type: "line",
-
-			// x1: Number
-			//		The X coordinate of the start of the line, default value 0.
-			x1: 0,
-
-			// y1: Number
-			//		The Y coordinate of the start of the line, default value 0.
-			y1: 0,
-
-			// x2: Number
-			//		The X coordinate of the end of the line, default value 100.
-			x2: 100,
-
-			// y2: Number
-			//		The Y coordinate of the end of the line, default value 100.
-			y2: 100
-		},
-		defaultImage: {
-			// summary:
-			//		Defines the default Image prototype.
-
-			// type: String
-			//		Specifies this object is an image, value 'image'.
-			type: "image",
-
-			// x: Number
-			//		The X coordinate of the image's position, default value 0.
-			x: 0,
-
-			// y: Number
-			//		The Y coordinate of the image's position, default value 0.
-			y: 0,
-
-			// width: Number
-			//		The width of the image, default value 0.
-			width: 0,
-
-			// height: Number
-			//		The height of the image, default value 0.
-			height: 0,
-
-			// src: String
-			//		The src url of the image, defaults to empty string.
-			src: ""
-		},
-		defaultText: {
-			// summary:
-			//		Defines the default Text prototype.
-
-			// type: String
-			//		Specifies this is a Text shape, value 'text'.
-			type: "text",
-
-			// x: Number
-			//		The X coordinate of the text position, default value 0.
-			x: 0,
-
-			// y: Number
-			//		The Y coordinate of the text position, default value 0.
-			y: 0,
-
-			// text: String
-			//		The text to be displayed, default value empty string.
-			text: "",
-
-			// align:	String
-			//		The horizontal text alignment, one of 'start', 'end', 'center'. Default value 'start'.
-			align: "start",
-
-			// decoration: String
-			//		The text decoration , one of 'none', ... . Default value 'none'.
-			decoration: "none",
-
-			// rotated: Boolean
-			//		Whether the text is rotated, boolean default value false.
-			rotated: false,
-
-			// kerning: Boolean
-			//		Whether kerning is used on the text, boolean default value true.
-			kerning: true
-		},
-		defaultTextPath: {
-			// summary:
-			//		Defines the default TextPath prototype.
-
-			// type: String
-			//		Specifies this is a TextPath, value 'textpath'.
-			type: "textpath",
-
-			// text: String
-			//		The text to be displayed, default value empty string.
-			text: "",
-
-			// align: String
-			//		The horizontal text alignment, one of 'start', 'end', 'center'. Default value 'start'.
-			align: "start",
-
-			// decoration: String
-			//		The text decoration , one of 'none', ... . Default value 'none'.
-			decoration: "none",
-
-			// rotated: Boolean
-			//		Whether the text is rotated, boolean default value false.
-			rotated: false,
-
-			// kerning: Boolean
-			//		Whether kerning is used on the text, boolean default value true.
-			kerning: true
-		},
-
-		// default stylistic attributes
-		defaultStroke: {
-			// summary:
-			//		A stroke defines stylistic properties that are used when drawing a path.
-			//		This object defines the default Stroke prototype.
-			// type: String
-			//		Specifies this object is a type of Stroke, value 'stroke'.
-			type: "stroke",
-
-			// color: String
-			//		The color of the stroke, default value 'black'.
-			color: "black",
-
-			// style: String
-			//		The style of the stroke, one of 'solid', ... . Default value 'solid'.
-			style: "solid",
-
-			// width: Number
-			//		The width of a stroke, default value 1.
-			width: 1,
-
-			// cap: String
-			//		The endcap style of the path. One of 'butt', 'round', ... . Default value 'butt'.
-			cap: "butt",
-
-			// join: Number
-			//		The join style to use when combining path segments. Default value 4.
-			join: 4
-		},
-		defaultLinearGradient: {
-			// summary:
-			//		An object defining the default stylistic properties used for Linear Gradient fills.
-			//		Linear gradients are drawn along a virtual line, which results in appearance of a rotated pattern in a given direction/orientation.
-
-			// type: String
-			//		Specifies this object is a Linear Gradient, value 'linear'
-			type: "linear",
-
-			// x1: Number
-			//		The X coordinate of the start of the virtual line along which the gradient is drawn, default value 0.
-			x1: 0,
-
-			// y1: Number
-			//		The Y coordinate of the start of the virtual line along which the gradient is drawn, default value 0.
-			y1: 0,
-
-			// x2: Number
-			//		The X coordinate of the end of the virtual line along which the gradient is drawn, default value 100.
-			x2: 100,
-
-			// y2: Number
-			//		The Y coordinate of the end of the virtual line along which the gradient is drawn, default value 100.
-			y2: 100,
-
-			// colors: Array
-			//		An array of colors at given offsets (from the start of the line).  The start of the line is
-			//		defined at offest 0 with the end of the line at offset 1.
-			//		Default value, [{ offset: 0, color: 'black'},{offset: 1, color: 'white'}], is a gradient from black to white.
-			colors: [
-				{ offset: 0, color: "black" }, { offset: 1, color: "white" }
-			]
-		},
-		defaultRadialGradient: {
-			// summary:
-			//		An object specifying the default properties for RadialGradients using in fills patterns.
-
-			// type: String
-			//		Specifies this is a RadialGradient, value 'radial'
-			type: "radial",
-
-			// cx: Number
-			//		The X coordinate of the center of the radial gradient, default value 0.
-			cx: 0,
-
-			// cy: Number
-			//		The Y coordinate of the center of the radial gradient, default value 0.
-			cy: 0,
-
-			// r: Number
-			//		The radius to the end of the radial gradient, default value 100.
-			r: 100,
-
-			// colors: Array
-			//		An array of colors at given offsets (from the center of the radial gradient).
-			//		The center is defined at offest 0 with the outer edge of the gradient at offset 1.
-			//		Default value, [{ offset: 0, color: 'black'},{offset: 1, color: 'white'}], is a gradient from black to white.
-			colors: [
-				{ offset: 0, color: "black" }, { offset: 1, color: "white" }
-			]
-		},
-		defaultPattern: {
-			// summary:
-			//		An object specifying the default properties for a Pattern using in fill operations.
-
-			// type: String
-			//		Specifies this object is a Pattern, value 'pattern'.
-			type: "pattern",
-
-			// x: Number
-			//		The X coordinate of the position of the pattern, default value is 0.
-			x: 0,
-
-			// y: Number
-			//		The Y coordinate of the position of the pattern, default value is 0.
-			y: 0,
-
-			// width: Number
-			//		The width of the pattern image, default value is 0.
-			width: 0,
-
-			// height: Number
-			//		The height of the pattern image, default value is 0.
-			height: 0,
-
-			// src: String
-			//		A url specifying the image to use for the pattern.
-			src: ""
-		},
-		defaultFont: {
-			// summary:
-			//		An object specifying the default properties for a Font used in text operations.
-
-			// type: String
-			//		Specifies this object is a Font, value 'font'.
-			type: "font",
-
-			// style: String
-			//		The font style, one of 'normal', 'bold', default value 'normal'.
-			style: "normal",
-
-			// variant: String
-			//		The font variant, one of 'normal', ... , default value 'normal'.
-			variant: "normal",
-
-			// weight: String
-			//		The font weight, one of 'normal', ..., default value 'normal'.
-			weight: "normal",
-
-			// size: String
-			//		The font size (including units), default value '10pt'.
-			size: "10pt",
-
-			// family: String
-			//		The font family, one of 'serif', 'sanserif', ..., default value 'serif'.
-			family: "serif"
-		},
-
-		getDefault: (function(){
-			// summary:
-			//		Returns a function used to access default memoized prototype objects (see them defined above).
-			var typeCtorCache = {};
-			// a memoized delegate()
-			return function(/*String*/ type){
-				var t = typeCtorCache[type];
-				if(t){
-					return new t();
-				}
-				t = typeCtorCache[type] = new Function();
-				t.prototype = g[ "default" + type ];
+})();
+
+dojo.mixin(dojox.gfx, {
+	//	summary:
+	// 		defines constants, prototypes, and utility functions
+
+	// default shapes, which are used to fill in missing parameters
+	defaultPath: {
+		type: "path", path: ""
+	},
+	defaultPolyline: {
+		type: "polyline", points: []
+	},
+	defaultRect: {
+		type: "rect", x: 0, y: 0, width: 100, height: 100, r: 0
+	},
+	defaultEllipse: {
+		type: "ellipse", cx: 0, cy: 0, rx: 200, ry: 100
+	},
+	defaultCircle: {
+		type: "circle", cx: 0, cy: 0, r: 100
+	},
+	defaultLine: {
+		type: "line", x1: 0, y1: 0, x2: 100, y2: 100
+	},
+	defaultImage: {
+		type: "image", x: 0, y: 0, width: 0, height: 0, src: ""
+	},
+	defaultText: {
+		type: "text", x: 0, y: 0, text: "", align: "start",
+		decoration: "none", rotated: false, kerning: true
+	},
+	defaultTextPath: {
+		type: "textpath", text: "", align: "start",
+		decoration: "none", rotated: false, kerning: true
+	},
+
+	// default geometric attributes
+	defaultStroke: {
+		type: "stroke", color: "black", style: "solid", width: 1, 
+		cap: "butt", join: 4
+	},
+	defaultLinearGradient: {
+		type: "linear", x1: 0, y1: 0, x2: 100, y2: 100,
+		colors: [
+			{ offset: 0, color: "black" }, { offset: 1, color: "white" }
+		]
+	},
+	defaultRadialGradient: {
+		type: "radial", cx: 0, cy: 0, r: 100,
+		colors: [
+			{ offset: 0, color: "black" }, { offset: 1, color: "white" }
+		]
+	},
+	defaultPattern: {
+		type: "pattern", x: 0, y: 0, width: 0, height: 0, src: ""
+	},
+	defaultFont: {
+		type: "font", style: "normal", variant: "normal", 
+		weight: "normal", size: "10pt", family: "serif"
+	},
+
+	getDefault: (function(){
+		var typeCtorCache = {};
+		// a memoized delegate()
+		return function(/*String*/ type){
+			var t = typeCtorCache[type];
+			if(t){
 				return new t();
 			}
-		})(),
+			t = typeCtorCache[type] = function(){};
+			t.prototype = dojox.gfx[ "default" + type ];
+			return new t();
+		}
+	})(),
 
-		normalizeColor: function(/*dojo/Color|Array|string|Object*/ color){
-			// summary:
-			//		converts any legal color representation to normalized
-			//		dojo/Color object
-			// color:
-			//		A color representation.
-			return (color instanceof Color) ? color : new Color(color); // dojo/Color
-		},
-		normalizeParameters: function(existed, update){
-			// summary:
-			//		updates an existing object with properties from an 'update'
-			//		object
-			// existed: Object
-			//		the target object to be updated
-			// update: Object
-			//		the 'update' object, whose properties will be used to update
-			//		the existed object
-			var x;
-			if(update){
-				var empty = {};
-				for(x in existed){
-					if(x in update && !(x in empty)){
-						existed[x] = update[x];
-					}
+	normalizeColor: function(/*Color*/ color){
+		//	summary:
+		// 		converts any legal color representation to normalized
+		// 		dojo.Color object
+		return (color instanceof dojo.Color) ? color : new dojo.Color(color); // dojo.Color
+	},
+	normalizeParameters: function(existed, update){
+		//	summary:
+		// 		updates an existing object with properties from an "update"
+		// 		object
+		//	existed: Object
+		//		the "target" object to be updated
+		//	update:  Object
+		//		the "update" object, whose properties will be used to update
+		//		the existed object
+		if(update){
+			var empty = {};
+			for(var x in existed){
+				if(x in update && !(x in empty)){
+					existed[x] = update[x];
 				}
 			}
-			return existed;	// Object
-		},
-		makeParameters: function(defaults, update){
-			// summary:
-			//		copies the original object, and all copied properties from the
-			//		'update' object
-			// defaults: Object
-			//		the object to be cloned before updating
-			// update: Object
-			//		the object, which properties are to be cloned during updating
-			// returns: Object
-			//      new object with new and default properties
-			var i = null;
-			if(!update){
-				// return dojo.clone(defaults);
-				return lang.delegate(defaults);
+		}
+		return existed;	// Object
+	},
+	makeParameters: function(defaults, update){
+		//	summary:
+		// 		copies the original object, and all copied properties from the
+		// 		"update" object
+		//	defaults: Object
+		//		the object to be cloned before updating
+		//	update:   Object
+		//		the object, which properties are to be cloned during updating
+		if(!update){
+			// return dojo.clone(defaults);
+			return dojo.delegate(defaults);
+		}
+		var result = {};
+		for(var i in defaults){
+			if(!(i in result)){
+				result[i] = dojo.clone((i in update) ? update[i] : defaults[i]);
 			}
-			var result = {};
-			for(i in defaults){
-				if(!(i in result)){
-					result[i] = lang.clone((i in update) ? update[i] : defaults[i]);
-				}
-			}
-			return result; // Object
-		},
-		formatNumber: function(x, addSpace){
-			// summary:
-			//		converts a number to a string using a fixed notation
-			// x: Number
-			//		number to be converted
-			// addSpace: Boolean
-			//		whether to add a space before a positive number
-			// returns: String
-			//      the formatted value
-			var val = x.toString();
-			if(val.indexOf("e") >= 0){
+		}
+		return result; // Object
+	},
+	formatNumber: function(x, addSpace){
+		// summary: converts a number to a string using a fixed notation
+		// x:			Number:		number to be converted
+		// addSpace:	Boolean?:	if it is true, add a space before a positive number
+		var val = x.toString();
+		if(val.indexOf("e") >= 0){
+			val = x.toFixed(4);
+		}else{
+			var point = val.indexOf(".");
+			if(point >= 0 && val.length - point > 5){
 				val = x.toFixed(4);
-			}else{
-				var point = val.indexOf(".");
-				if(point >= 0 && val.length - point > 5){
-					val = x.toFixed(4);
+			}
+		}
+		if(x < 0){
+			return val; // String
+		}
+		return addSpace ? " " + val : val; // String
+	},
+	// font operations
+	makeFontString: function(font){
+		// summary: converts a font object to a CSS font string
+		// font:	Object:	font object (see dojox.gfx.defaultFont)
+		return font.style + " " + font.variant + " " + font.weight + " " + font.size + " " + font.family; // Object
+	},
+	splitFontString: function(str){
+		// summary: converts a CSS font string to a font object
+		// str:		String:	a CSS font string
+		var font = dojox.gfx.getDefault("Font");
+		var t = str.split(/\s+/);
+		do{
+			if(t.length < 5){ break; }
+			font.style  = t[0];
+			font.varian = t[1];
+			font.weight = t[2];
+			var i = t[3].indexOf("/");
+			font.size = i < 0 ? t[3] : t[3].substring(0, i);
+			var j = 4;
+			if(i < 0){
+				if(t[4] == "/"){
+					j = 6;
+					break;
+				}
+				if(t[4].substr(0, 1) == "/"){
+					j = 5;
+					break;
 				}
 			}
-			if(x < 0){
-				return val; // String
+			if(j + 3 > t.length){ break; }
+			font.size = t[j];
+			font.family = t[j + 1];
+		}while(false);
+		return font;	// Object
+	},
+	// length operations
+	cm_in_pt: 72 / 2.54,	// Number: points per centimeter
+	mm_in_pt: 7.2 / 2.54,	// Number: points per millimeter
+	px_in_pt: function(){
+		// summary: returns a number of pixels per point
+		return dojox.gfx._base._getCachedFontMeasurements()["12pt"] / 12;	// Number
+	},
+	pt2px: function(len){
+		// summary: converts points to pixels
+		// len: Number: a value in points
+		return len * dojox.gfx.px_in_pt();	// Number
+	},
+	px2pt: function(len){
+		// summary: converts pixels to points
+		// len: Number: a value in pixels
+		return len / dojox.gfx.px_in_pt();	// Number
+	},
+	normalizedLength: function(len) {
+		// summary: converts any length value to pixels
+		// len: String: a length, e.g., "12pc"
+		if(len.length == 0) return 0;
+		if(len.length > 2){
+			var px_in_pt = dojox.gfx.px_in_pt();
+			var val = parseFloat(len);
+			switch(len.slice(-2)){
+				case "px": return val;
+				case "pt": return val * px_in_pt;
+				case "in": return val * 72 * px_in_pt;
+				case "pc": return val * 12 * px_in_pt;
+				case "mm": return val * dojox.gfx.mm_in_pt * px_in_pt;
+				case "cm": return val * dojox.gfx.cm_in_pt * px_in_pt;
 			}
-			return addSpace ? " " + val : val; // String
-		},
-		// font operations
-		makeFontString: function(font){
-			// summary:
-			//		converts a font object to a CSS font string
-			// font: Object
-			//		font object (see dojox/gfx.defaultFont)
-			return font.style + " " + font.variant + " " + font.weight + " " + font.size + " " + font.family; // Object
-		},
-		splitFontString: function(str){
-			// summary:
-			//		converts a CSS font string to a font object
-			// description:
-			//		Converts a CSS font string to a gfx font object. The CSS font
-			//		string components should follow the W3C specified order
-			//		(see http://www.w3.org/TR/CSS2/fonts.html#font-shorthand):
-			//		style, variant, weight, size, optional line height (will be
-			//		ignored), and family. Note that the Font.size attribute is limited to numeric CSS length.
-			// str: String
-			//		a CSS font string.
-			// returns: Object
-			//      object in dojox/gfx.defaultFont format
-			var font = g.getDefault("Font");
-			var t = str.split(/\s+/);
-			do{
-				if(t.length < 5){ break; }
-				font.style   = t[0];
-				font.variant = t[1];
-				font.weight  = t[2];
-				var i = t[3].indexOf("/");
-				font.size = i < 0 ? t[3] : t[3].substring(0, i);
-				var j = 4;
-				if(i < 0){
-					if(t[4] == "/"){
-						j = 6;
-					}else if(t[4].charAt(0) == "/"){
-						j = 5;
+		}
+		return parseFloat(len);	// Number
+	},
+
+	// a constant used to split a SVG/VML path into primitive components
+	pathVmlRegExp: /([A-Za-z]+)|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g,
+	pathSvgRegExp: /([A-Za-z])|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g,
+
+	equalSources: function(a, b){
+		// summary: compares event sources, returns true if they are equal
+		return a && b && a == b;
+	}
+});
+
+}
+
+if(!dojo._hasResource["dojox.gfx"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.gfx"] = true;
+dojo.provide("dojox.gfx");
+
+
+
+
+dojo.loadInit(function(){
+	//Since loaderInit can be fired before any dojo.provide/require calls,
+	//make sure the dojox.gfx object exists and only run this logic if dojox.gfx.renderer
+	//has not been defined yet.
+	var gfx = dojo.getObject("dojox.gfx", true), sl, flag, match;
+	if(!gfx.renderer){
+		var renderers = (typeof dojo.config.gfxRenderer == "string" ?
+			dojo.config.gfxRenderer : "svg,vml,silverlight,canvas").split(",");
+
+		// mobile platform detection
+		// TODO: move to the base?
+
+		var ua = navigator.userAgent, iPhoneOsBuild = 0, androidVersion = 0;
+		if(dojo.isSafari >= 3){
+			// detect mobile version of WebKit starting with "version 3"
+
+			//	comprehensive iPhone test.  Have to figure out whether it's SVG or Canvas based on the build.
+			//	iPhone OS build numbers from en.wikipedia.org.
+			if(ua.indexOf("iPhone") >= 0 || ua.indexOf("iPod") >= 0){
+				//	grab the build out of this.  Expression is a little nasty because we want
+				//		to be sure we have the whole version string.
+				match = ua.match(/Version\/(\d(\.\d)?(\.\d)?)\sMobile\/([^\s]*)\s?/);
+				if(match){
+					//	grab the build out of the match.  Only use the first three because of specific builds.
+					iPhoneOsBuild = parseInt(match[4].substr(0,3), 16);
+				}
+			}
+		}
+		if(dojo.isWebKit){
+			// Android detection
+			if(!iPhoneOsBuild){
+				match = ua.match(/Android\s+(\d+\.\d+)/);
+				if(match){
+					androidVersion = parseFloat(match[1]);
+					// Android 1.0-1.1 doesn't support SVG but supports Canvas
+				}
+			}
+		}
+
+		for(var i = 0; i < renderers.length; ++i){
+			switch(renderers[i]){
+				case "svg":
+					//	iPhone OS builds greater than 5F1 should have SVG.
+					if(!dojo.isIE && (!iPhoneOsBuild || iPhoneOsBuild >= 0x5f1) && !androidVersion && !dojo.isAIR){
+						dojox.gfx.renderer = "svg";
 					}
-				}
-				if(j < t.length){
-					font.family = t.slice(j).join(" ");
-				}
-			}while(false);
-			return font;	// Object
-		},
-		// length operations
-
-		// cm_in_pt: Number
-		//		points per centimeter (constant)
-		cm_in_pt: 72 / 2.54,
-
-		// mm_in_pt: Number
-		//		points per millimeter (constant)
-		mm_in_pt: 7.2 / 2.54,
-
-		px_in_pt: function(){
-			// summary:
-			//		returns the current number of pixels per point.
-			return g._base._getCachedFontMeasurements()["12pt"] / 12;	// Number
-		},
-
-		pt2px: function(len){
-			// summary:
-			//		converts points to pixels
-			// len: Number
-			//		a value in points
-			return len * g.px_in_pt();	// Number
-		},
-
-		px2pt: function(len){
-			// summary:
-			//		converts pixels to points
-			// len: Number
-			//		a value in pixels
-			return len / g.px_in_pt();	// Number
-		},
-
-		normalizedLength: function(len) {
-			// summary:
-			//		converts any length value to pixels
-			// len: String
-			//		a length, e.g., '12pc'
-			// returns: Number
-			//      pixels
-			if(len.length === 0){ return 0; }
-			if(len.length > 2){
-				var px_in_pt = g.px_in_pt();
-				var val = parseFloat(len);
-				switch(len.slice(-2)){
-					case "px": return val;
-					case "pt": return val * px_in_pt;
-					case "in": return val * 72 * px_in_pt;
-					case "pc": return val * 12 * px_in_pt;
-					case "mm": return val * g.mm_in_pt * px_in_pt;
-					case "cm": return val * g.cm_in_pt * px_in_pt;
-				}
-			}
-			return parseFloat(len);	// Number
-		},
-
-		// pathVmlRegExp: RegExp
-		//		a constant regular expression used to split a SVG/VML path into primitive components
-		// tags:
-		//		private
-		pathVmlRegExp: /([A-Za-z]+)|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g,
-
-		// pathVmlRegExp: RegExp
-		//		a constant regular expression used to split a SVG/VML path into primitive components
-		// tags:
-		//		private
-		pathSvgRegExp: /([A-Za-z])|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g,
-
-		equalSources: function(a, b){
-			// summary:
-			//		compares event sources, returns true if they are equal
-			// a: Object
-			//		first event source
-			// b: Object
-			//		event source to compare against a
-			// returns: Boolean
-			//      true, if objects are truthy and the same
-			return a && b && a === b;
-		},
-
-		switchTo: function(/*String|Object*/ renderer){
-			// summary:
-			//		switch the graphics implementation to the specified renderer.
-			// renderer:
-			//		Either the string name of a renderer (eg. 'canvas', 'svg, ...) or the renderer
-			//		object to switch to.
-			var ns = typeof renderer == "string" ? g[renderer] : renderer;
-			if(ns){
-				// If more options are added, update the docblock at the end of shape.js!
-				arr.forEach(["Group", "Rect", "Ellipse", "Circle", "Line",
-						"Polyline", "Image", "Text", "Path", "TextPath",
-						"Surface", "createSurface", "fixTarget"], function(name){
-					g[name] = ns[name];
-				});
-			}
-		}
-	});
-	
-	/*=====
-		g.createSurface = function(parentNode, width, height){
-			// summary:
-			//		creates a surface
-			// parentNode: Node
-			//		a parent node
-			// width: String|Number
-			//		width of surface, e.g., "100px" or 100
-			// height: String|Number
-			//		height of surface, e.g., "100px" or 100
-			// returns: dojox/gfx.Surface
-			//     newly created surface
-		};
-		g.fixTarget = function(){
-			// tags:
-			//		private
-		};
-	=====*/
-	
-	return g; // defaults object api
-});
-
-},
-'dojox/gfx/renderer':function(){
-define("dojox/gfx/renderer", ["./_base","dojo/_base/lang", "dojo/_base/sniff", "dojo/_base/window", "dojo/_base/config"],
-  function(g, lang, has, win, config){
-  //>> noBuildResolver
-	var currentRenderer = null;
-	return {
-		// summary:
-		//		This module is an AMD loader plugin that loads the appropriate graphics renderer
-		//		implementation based on detected environment and current configuration settings.
-		
-		load: function(id, require, load){
-			// tags:
-			//      private
-			if(currentRenderer && id != "force"){
-				load(currentRenderer);
-				return;
-			}
-			var renderer = config.forceGfxRenderer,
-				renderers = !renderer && (lang.isString(config.gfxRenderer) ?
-					config.gfxRenderer : "svg,vml,canvas,silverlight").split(","),
-				silverlightObject, silverlightFlag;
-
-			while(!renderer && renderers.length){
-				switch(renderers.shift()){
-					case "svg":
-						// the next test is from https://github.com/phiggins42/has.js
-						if("SVGAngle" in win.global){
-							renderer = "svg";
-						}
-						break;
-					case "vml":
-						if(has("ie")){
-							renderer = "vml";
-						}
-						break;
-					case "silverlight":
-						try{
-							if(has("ie")){
-								silverlightObject = new ActiveXObject("AgControl.AgControl");
-								if(silverlightObject && silverlightObject.IsVersionSupported("1.0")){
-									silverlightFlag = true;
-								}
-							}else{
-								if(navigator.plugins["Silverlight Plug-In"]){
-									silverlightFlag = true;
-								}
+					break;
+				case "vml":
+					if(dojo.isIE){
+						dojox.gfx.renderer = "vml";
+					}
+					break;
+				case "silverlight":
+					try{
+						if(dojo.isIE){
+							sl = new ActiveXObject("AgControl.AgControl");
+							if(sl && sl.IsVersionSupported("1.0")){
+								flag = true;
 							}
-						}catch(e){
-							silverlightFlag = false;
-						}finally{
-							silverlightObject = null;
+						}else{
+							if(navigator.plugins["Silverlight Plug-In"]){
+								flag = true;
+							}
 						}
-						if(silverlightFlag){
-							renderer = "silverlight";
-						}
-						break;
-					case "canvas":
-						if(win.global.CanvasRenderingContext2D){
-							renderer = "canvas";
-						}
-						break;
-				}
+					}catch(e){
+						flag = false;
+					}finally{
+						sl = null;
+					}
+					if(flag){ dojox.gfx.renderer = "silverlight"; }
+					break;
+				case "canvas":
+					//TODO: need more comprehensive test for Canvas
+					if(!dojo.isIE){
+						dojox.gfx.renderer = "canvas";
+					}
+					break;
 			}
-
-			if (renderer === 'canvas' && config.canvasEvents !== false) {
-				renderer = "canvasWithEvents";
-			}
-
-			if(config.isDebug){
-				console.log("gfx renderer = " + renderer);
-			}
-
-			function loadRenderer(){
-				require(["dojox/gfx/" + renderer], function(module){
-					g.renderer = renderer;
-					// memorize the renderer module
-					currentRenderer = module;
-					// now load it
-					load(module);
-				});
-			}
-			if(renderer == "svg" && typeof window.svgweb != "undefined"){
-				window.svgweb.addOnLoad(loadRenderer);
-			}else{
-				loadRenderer();
-			}
+			if(dojox.gfx.renderer){ break; }
 		}
-	};
+		if(dojo.config.isDebug){
+			
+		}
+	}
 });
 
-}}});
-define("dojox/gfx", ["dojo/_base/lang", "./gfx/_base", "./gfx/renderer!"], 
-  function(lang, gfxBase, renderer){
-	// module:
-	//		dojox/gfx
-	// summary:
-	//		This the root of the Dojo Graphics package
-	gfxBase.switchTo(renderer);
-	return gfxBase;
-});
+// include a renderer conditionally
+dojo.requireIf(dojox.gfx.renderer == "svg", "dojox.gfx.svg");
+dojo.requireIf(dojox.gfx.renderer == "vml", "dojox.gfx.vml");
+dojo.requireIf(dojox.gfx.renderer == "silverlight", "dojox.gfx.silverlight");
+dojo.requireIf(dojox.gfx.renderer == "canvas", "dojox.gfx.canvas");
+
+}
+

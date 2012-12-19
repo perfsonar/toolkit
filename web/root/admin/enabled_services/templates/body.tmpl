@@ -201,7 +201,7 @@ function select_latency_services() {
 	<tr>
 	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="perfsonarbuoy_owamp" name="perfsonarbuoy_owamp" [% IF services.perfsonarbuoy_owamp.enabled %] checked="checked" [% END %] /></td>
 	<td>perfSONAR-BUOY Latency Testing</td>
-	<td>Enables this host to perform scheduled one-way loss and latency tests. These tests will run periodically giving administrators a view of loss as well as latency from their site over time.</td>
+	<td>Enables this host to perform scheduled one-way latency tests. These tests will run periodically giving administrators a view of the latency from their site over time.</td>
 	</tr>
 	<tr>
 	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="perfsonarbuoy_ma" name="perfsonarbuoy_ma" [% IF services.perfsonarbuoy_ma.enabled %] checked="checked" [% END %] /></td>

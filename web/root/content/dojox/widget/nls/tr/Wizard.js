@@ -1,2 +1,1 @@
-//>>built
-define("dojox/widget/nls/tr/Wizard",({next:"İleri",previous:"Geri",done:"Bitti"}));
+({"next":"İleri","done":"Bitti","previous":"Geri"})

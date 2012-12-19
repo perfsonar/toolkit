@@ -1,15 +1,14 @@
-.dj_ie .dojoxGridRtl .dojoxGridHeader table {
+.dijitRtl .dojoxGridHeader table {
+}
+
+.dj_ie .dijitRtl .dojoxGridHeader table {
 	float:none;
 }
-.dojoxGridRtl .dojoxGridCell {
-	text-align:right;
-}
-.dj_ie8 .dojoxGridRtl .dojoxGridCell {
-	border-left: none;
-}
-.dj_ie .dojoxGridRtl .dojoxGridMasterView .dojoxGridRowTable {
-	border-left: #e5dac8 1px solid
-}
-.dojoxGridRtl .dojoxGridArrowButtonNode {
+
+.dijitRtl .dojoxGridContent {
 	float:left;
+}
+
+.dijitRtl .dojoxGridCell {
+	text-align:right;
 }

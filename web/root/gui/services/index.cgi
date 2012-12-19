@@ -129,9 +129,7 @@ $traceroute_scheduler->init( pid_files => [ $traceroute_scheduler_pid, $tracerou
 my %services = ();
 
 foreach my $service ( $owamp, $bwctl, $npad, $ndt, $psb_ma, $traceroute_ma, $traceroute_scheduler, $hls, $pinger, $snmp_ma, $psb_owamp, $psb_bwctl ) {
-    $logger->debug("Checking ".$service->name());
     my $is_running = $service->check_running();
-    
     my $addresses  = $service->get_addresses();
     my $name       = $service->name();
     my $enabled_service_info = $services_conf->lookup_service({ name => $name });
@@ -166,16 +164,11 @@ $vars{toolkit_version} = $version_conf->get_version();
 $vars{services}        = \%services;
 $vars{admin_name}      = $administrative_info_conf->get_administrator_name();
 $vars{admin_email}     = $administrative_info_conf->get_administrator_email();
-$logger->debug("Grabbing primary address");
 $vars{external_address}     = $external_address_conf->get_primary_address();
-$logger->debug("Grabbing MTU of primary address");
 $vars{mtu}     = $external_address_conf->get_primary_address_mtu();
-$logger->debug("Checking if NTP is synced");
 $vars{ntp_sync_status}     = $ntpinfo->is_synced();
-$logger->debug("Checking if globally registered");
 $vars{global_reg} 		= $administrative_info_conf->has_admin_info() && $hls->check_running();
 
-$logger->debug("Building index page");
 
 $tt->process( "status.tmpl", \%vars, \$html ) or die $tt->error();
 
@@ -214,7 +207,7 @@ sub is_synced {
 package perfSONAR_PS::ServiceInfo::Base;
 
 use IO::Interface qw(:flags);
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 use perfSONAR_PS::Utils::Host qw(get_ips);
 use perfSONAR_PS::Utils::DNS  qw(reverse_dns_multi);
 
@@ -252,8 +245,6 @@ sub init {
 sub check_running {
     my $self = shift;
     
-    $self->{LOGGER}->debug("Checking if running via pid files"); 
-
     #$i tracks index to associate $self->{PID_FILES}[$i] with $self->{PROCESS_NAMES}[$i]
     unless ($self->{PID_FILES}) {
         foreach my $pname ( @{ $self->{PROCESS_NAMES} } ) {
@@ -347,12 +338,12 @@ sub name {
 package perfSONAR_PS::ServiceInfo::pSB_bwctl;
 
 use base 'perfSONAR_PS::ServiceInfo::Base';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::pSB" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::pSB" );
     $self->{SERVICE_NAME} = "perfsonarbuoy_bwctl";
     $self->SUPER::init( %conf );
     return 0;
@@ -365,12 +356,12 @@ sub get_addresses {
 package perfSONAR_PS::ServiceInfo::pSB_owamp;
 
 use base 'perfSONAR_PS::ServiceInfo::Base';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::pSB" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::pSB" );
     $self->{SERVICE_NAME} = "perfsonarbuoy_owamp";
     $self->SUPER::init( %conf );
     return 0;
@@ -383,12 +374,12 @@ sub get_addresses {
 package perfSONAR_PS::ServiceInfo::TracerouteScheduler;
 
 use base 'perfSONAR_PS::ServiceInfo::Base';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::TracerouteScheduler" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::TracerouteScheduler" );
     $self->{SERVICE_NAME} = "traceroute_scheduler";
     $self->SUPER::init( %conf );
     return 0;
@@ -401,7 +392,7 @@ sub get_addresses {
 package perfSONAR_PS::ServiceInfo::BWCTL;
 
 use base 'perfSONAR_PS::ServiceInfo::Base';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub get_addresses {
     my ( $self ) = @_;
@@ -467,7 +458,7 @@ sub read_app_config {
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::BWCTL" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::BWCTL" );
     $self->{SERVICE_NAME} = "bwctl";
 
     $self->SUPER::init( %conf );
@@ -478,7 +469,7 @@ sub init {
 package perfSONAR_PS::ServiceInfo::OWAMP;
 
 use base 'perfSONAR_PS::ServiceInfo::Base';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub get_addresses {
     my ( $self ) = @_;
@@ -544,7 +535,7 @@ sub read_app_config {
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::OWAMP" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::OWAMP" );
     $self->{SERVICE_NAME} = "owamp";
 
     $self->SUPER::init( %conf );
@@ -555,7 +546,7 @@ sub init {
 package perfSONAR_PS::ServiceInfo::NDT;
 
 use base 'perfSONAR_PS::ServiceInfo::Base';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub get_addresses {
     my ( $self ) = @_;
@@ -619,7 +610,7 @@ sub read_app_config {
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::NDT" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::NDT" );
     $self->{SERVICE_NAME} = "ndt";
 
     $self->SUPER::init( %conf );
@@ -630,7 +621,7 @@ sub init {
 package perfSONAR_PS::ServiceInfo::NPAD;
 
 use base 'perfSONAR_PS::ServiceInfo::Base';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub get_addresses {
     my ( $self ) = @_;
@@ -705,7 +696,7 @@ sub read_app_config {
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::NPAD" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::NPAD" );
     $self->{SERVICE_NAME} = "npad";
 
     $self->SUPER::init( %conf );
@@ -718,7 +709,7 @@ package perfSONAR_PS::ServiceInfo::perfSONAR_PS;
 use base 'perfSONAR_PS::ServiceInfo::Base';
 use fields 'VALID_MODULE';
 
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 use Config::General;
 use IO::Socket;
 
@@ -805,7 +796,7 @@ sub check_running(){
     my $self = shift;
      
     my %res = $self->read_app_config( $self->{CONF_FILE} );
-   
+    
     #check process is running
     if(!$self->SUPER::check_running()){
         return 0;
@@ -825,17 +816,14 @@ sub check_running(){
     my @addresses = $self->lookup_interfaces();
     foreach my $address ( @addresses ){
         foreach my $port ( @ports ){
-            $self->{LOGGER}->debug("Connecting to $address:$port"); 
             my $sock = new IO::Socket::INET (
                        PeerAddr => $address,
                        PeerPort => $port,
                        Proto => 'tcp'
                    );
             if($sock){
-                $self->{LOGGER}->debug("Connected to $address:$port"); 
                 return 1;
             }
-            $self->{LOGGER}->debug("Couldn't connect to $address:$port"); 
         }
     }
     
@@ -853,12 +841,12 @@ sub init {
 package perfSONAR_PS::ServiceInfo::PingER;
 
 use base 'perfSONAR_PS::ServiceInfo::perfSONAR_PS';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::PingER" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::PingER" );
     $self->{SERVICE_NAME} = "pinger";
     $self->{VALID_MODULE} = "perfSONAR_PS::Services::MA::PingER";
 
@@ -870,12 +858,12 @@ sub init {
 package perfSONAR_PS::ServiceInfo::hLS;
 
 use base 'perfSONAR_PS::ServiceInfo::perfSONAR_PS';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::hLS" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::hLS" );
     $self->{SERVICE_NAME} = "hls";
     $self->{VALID_MODULE} = "perfSONAR_PS::Services::LS::gLS";
 
@@ -887,12 +875,12 @@ sub init {
 package perfSONAR_PS::ServiceInfo::pSB_MA;
 
 use base 'perfSONAR_PS::ServiceInfo::perfSONAR_PS';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::pSB_MA" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::pSB_MA" );
     $self->{SERVICE_NAME} = "perfsonarbuoy_ma";
     $self->{VALID_MODULE} = "perfSONAR_PS::Services::MA::perfSONARBUOY";
 
@@ -904,12 +892,12 @@ sub init {
 package perfSONAR_PS::ServiceInfo::Traceroute_MA;
 
 use base 'perfSONAR_PS::ServiceInfo::perfSONAR_PS';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::Traceroute_MA" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::Traceroute_MA" );
     $self->{SERVICE_NAME} = "traceroute_ma";
     $self->{VALID_MODULE} = "perfSONAR_PS::Services::MA::Traceroute";
 
@@ -921,12 +909,12 @@ sub init {
 package perfSONAR_PS::ServiceInfo::SNMP_MA;
 
 use base 'perfSONAR_PS::ServiceInfo::perfSONAR_PS';
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(:easy);
 
 sub init {
     my ( $self, %conf ) = @_;
 
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::pSB_MA" );
+    $self->{LOGGER}       = get_logger( "package perfSONAR_PS::Agent::LS::Registration::pSB_MA" );
     $self->{SERVICE_NAME} = "snmp_ma";
     $self->{VALID_MODULE} = "perfSONAR_PS::Services::MA::SNMP";
     $self->SUPER::init( %conf );

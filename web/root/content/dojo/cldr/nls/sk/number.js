@@ -1,8 +1,1 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-//>>built
-define("dojo/cldr/nls/sk/number",{"decimal":",","group":" ","list":",","decimalFormat-short":"000 bil'.'","percentFormat":"#,##0 %","currencyFormat":"#,##0.00 ¤"});
+({"currencyFormat":"#,##0.00 ¤","group":" ","decimal":",","scientificFormat":"#E0","currencySpacing-afterCurrency-currencyMatch":"[:letter:]","infinity":"∞","list":";","percentSign":"%","minusSign":"-","currencySpacing-beforeCurrency-surroundingMatch":"[:digit:]","currencySpacing-afterCurrency-insertBetween":" ","nan":"NaN","nativeZeroDigit":"0","plusSign":"+","currencySpacing-afterCurrency-surroundingMatch":"[:digit:]","currencySpacing-beforeCurrency-currencyMatch":"[:letter:]","perMille":"‰","percentFormat":"#,##0%","decimalFormat":"#,##0.###","patternDigit":"#","currencySpacing-beforeCurrency-insertBetween":" ","exponential":"E"})

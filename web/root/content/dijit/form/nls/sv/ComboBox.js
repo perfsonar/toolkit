@@ -1,2 +1,1 @@
-//>>built
-define("dijit/form/nls/sv/ComboBox",({previousMessage:"Tidigare val",nextMessage:"Fler val"}));
+({"previousMessage":"Föregående alternativ","nextMessage":"Fler alternativ"})

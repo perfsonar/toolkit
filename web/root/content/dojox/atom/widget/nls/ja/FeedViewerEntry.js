@@ -1,2 +1,1 @@
-//>>built
-define("dojox/atom/widget/nls/ja/FeedViewerEntry",({deleteButton:"[削除]"}));
+({"deleteButton":"[削除]"})

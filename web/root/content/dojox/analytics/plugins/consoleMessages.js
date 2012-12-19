@@ -1,18 +1,31 @@
-//>>built
-define("dojox/analytics/plugins/consoleMessages",["dojo/_base/lang","../_base","dojo/_base/config","dojo/aspect"],function(_1,_2,_3,_4){
-var _5=_1.getObject("dojox.analytics.plugins.consoleMessages",true);
-this.addData=_1.hitch(_2,"addData","consoleMessages");
-var _6=_3["consoleLogFuncs"]||["error","warn","info","rlog"];
-if(!console){
-console={};
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.analytics.plugins.consoleMessages"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.analytics.plugins.consoleMessages"] = true;
+dojo.provide("dojox.analytics.plugins.consoleMessages");
+
+dojox.analytics.plugins.consoleMessages = new (function(){
+	// summary:
+	//	plugin to have analyitcs return the base info dojo collects
+	this.addData = dojo.hitch(dojox.analytics, "addData", "consoleMessages");
+
+	var lvls = dojo.config["consoleLogFuncs"] || ["error", "warn", "info", "rlog"];
+	if(!console){
+		console = {};
+	}
+
+	for(var i=0; i < lvls.length; i++){
+		if(console[lvls[i]]){
+			dojo.connect(console, lvls[i], dojo.hitch(this, "addData", lvls[i]));
+		}else{
+			console[lvls[i]] = dojo.hitch(this, "addData", lvls[i]);	
+		}
+	}
+})();
+
 }
-for(var i=0;i<_6.length;i++){
-var _7=_6[i],_8=_1.hitch(this,"addData",_7);
-if(console[_7]){
-_4.after(console,_7,_8,true);
-}else{
-console[_7]=_8;
-}
-}
-return _5;
-});
