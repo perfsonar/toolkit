@@ -145,6 +145,9 @@ sub save {
 
     foreach my $service_config ($pinger_config, $psb_ma_config, $snmp_ma_config, $traceroute_ma_config, $hls_config, $ls_reg_daemon_config) {
         $service_config->set_external_address( external_address => $self->{PRIMARY_ADDRESS} );
+        $service_config->set_external_address_if_name( external_address_if_name => $self->{PRIMARY_ADDRESS_IFACE} );
+        $service_config->set_external_address_ipv4( external_address_ipv4 => $self->{PRIMARY_IPV4} );
+        $service_config->set_external_address_ipv6( external_address_ipv6 => $self->{PRIMARY_IPV6} );
         $res = $service_config->save({ restart_services => $parameters->{restart_services} });
         if ($res != 0) {
             return (-1, "Couldn't save or restart ".$service_config->get_service_name);

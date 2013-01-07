@@ -21,7 +21,7 @@ use Template;
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'CONFIG_FILE', 'SERVICE_NAME', 'ORGANIZATION_NAME', 'LOCATION', 'EXTERNAL_ADDRESS', 'PROJECTS', 'LS_REGISTRATION_INTERVAL';
+use fields 'CONFIG_FILE', 'SERVICE_NAME', 'ORGANIZATION_NAME', 'LOCATION', 'EXTERNAL_ADDRESS', 'EXTERNAL_ADDRESS_IF_NAME','EXTERNAL_ADDRESS_IPV4','EXTERNAL_ADDRESS_IPV6','PROJECTS', 'LS_REGISTRATION_INTERVAL';
 
 use Params::Validate qw(:all);
 use Storable qw(store retrieve freeze thaw dclone);
@@ -58,8 +58,8 @@ sub init {
     return 0;
 }
 
-=head2 get_external_address({ external_address => 1 })
-Returns the external address used to advertise in the gLS
+=head2 get_service_name({ service_name => 1 })
+Returns the service name
 =cut
 
 sub get_service_name {
@@ -69,7 +69,7 @@ sub get_service_name {
     return $self->{SERVICE_NAME};
 }
 
-=head2 get_external_address({ external_address => 1 })
+=head2 get_external_address({ })
 Returns the external address used to advertise in the gLS
 =cut
 
@@ -78,6 +78,39 @@ sub get_external_address {
     my $parameters = validate( @params, { } );
 
     return $self->{EXTERNAL_ADDRESS};
+}
+
+=head2 get_external_address_if_name({ })
+Returns the external address interface name
+=cut
+
+sub get_external_address_if_name {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{EXTERNAL_ADDRESS_IF_NAME};
+}
+
+=head2 get_external_address_ipv4({ })
+Returns the external IPv4 address
+=cut
+
+sub get_external_address_ipv4 {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{EXTERNAL_ADDRESS_IPV4};
+}
+
+=head2 get_external_address_ipv6({ })
+Returns the external IPv6 address
+=cut
+
+sub get_external_address_ipv6 {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{EXTERNAL_ADDRESS_IPV6};
 }
 
 =head2 get_organization_name({ organization_name => 1 })
@@ -150,6 +183,51 @@ sub set_external_address {
     my $external_address = $parameters->{external_address};
 
     $self->{EXTERNAL_ADDRESS} = $external_address;
+
+    return 0;
+}
+
+=head2 set_external_address_if_name({ external_address_if_name => 1 })
+Sets the external address interface name
+=cut
+
+sub set_external_address_if_name {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { external_address_if_name => 1, } );
+
+    my $external_address_if_name = $parameters->{external_address_if_name};
+
+    $self->{EXTERNAL_ADDRESS_IF_NAME} = $external_address_if_name;
+
+    return 0;
+}
+
+=head2 set_external_address_ipv4({ external_address_ipv4 => 1 })
+Sets the external ipv4 address
+=cut
+
+sub set_external_address_ipv4 {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { external_address_ipv4 => 1, } );
+
+    my $external_address_ipv4 = $parameters->{external_address_ipv4};
+
+    $self->{EXTERNAL_ADDRESS_IPV4} = $external_address_ipv4;
+
+    return 0;
+}
+
+=head2 set_external_address_ipv6({ external_address_ipv6 => 1 })
+Sets the external ipv6 address
+=cut
+
+sub set_external_address_ipv6 {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { external_address_ipv6 => 1, } );
+
+    my $external_address_ipv6 = $parameters->{external_address_ipv6};
+
+    $self->{EXTERNAL_ADDRESS_IPV6} = $external_address_ipv6;
 
     return 0;
 }
@@ -232,6 +310,21 @@ sub save {
                             ov => [
                                     "service_accesspoint"
                                   ],
+                        },
+                        {
+                            cv => "external_address_if_name",
+                            lv => "EXTERNAL_ADDRESS_IF_NAME",
+                            ov => [],
+                        },
+                        {
+                            cv => "external_address_ipv4",
+                            lv => "EXTERNAL_ADDRESS_IPV4",
+                            ov => [],
+                        },
+                        {
+                            cv => "external_address_ipv6",
+                            lv => "EXTERNAL_ADDRESS_IPV6",
+                            ov => [],
                         },
                         {
                             cv => "site_name",
@@ -442,6 +535,9 @@ sub reset_state {
     }
 
     $self->{EXTERNAL_ADDRESS}  = $self->psps_config_find_variable({ config => $config, variable => "external_address" });
+    $self->{EXTERNAL_ADDRESS_IF_NAME}  = $self->psps_config_find_variable({ config => $config, variable => "external_address_if_name" });
+    $self->{EXTERNAL_ADDRESS_IPV4}  = $self->psps_config_find_variable({ config => $config, variable => "external_address_ipv4" });
+    $self->{EXTERNAL_ADDRESS_IPV6}  = $self->psps_config_find_variable({ config => $config, variable => "external_address_ipv6" });
     $self->{ORGANIZATION_NAME} = $self->psps_config_find_variable({ config => $config, variable => "site_name" });
     $self->{LOCATION}          = $self->psps_config_find_variable({ config => $config, variable => "site_location" });
     $self->{PROJECTS}          = $self->psps_config_find_variable({ config => $config, variable => "site_project" });
@@ -483,12 +579,15 @@ sub save_state {
     my $parameters = validate( @params, {} );
 
     my %state = (
-        config_file            => $self->{CONFIG_FILE},
-        service_name           => $self->{SERVICE_NAME},
-        organization_name      => $self->{ORGANIZATION_NAME},
-        location               => $self->{LOCATION},
-        external_address       => $self->{EXTERNAL_ADDRESS},
-        projects               => $self->{PROJECTS},
+        config_file                 => $self->{CONFIG_FILE},
+        service_name                => $self->{SERVICE_NAME},
+        organization_name           => $self->{ORGANIZATION_NAME},
+        location                    => $self->{LOCATION},
+        external_address            => $self->{EXTERNAL_ADDRESS},
+        external_address_if_name    => $self->{EXTERNAL_ADDRESS_IF_NAME},
+        external_address_ipv4       => $self->{EXTERNAL_ADDRESS_IPV4},
+        external_address_ipv6       => $self->{EXTERNAL_ADDRESS_IPV6},
+        projects                    => $self->{PROJECTS},
     );
 
     my $str = freeze( \%state );
@@ -507,13 +606,16 @@ sub restore_state {
 
     my $state = thaw( $parameters->{state} );
 
-    $self->{CONFIG_FILE}            = $state->{config_file};
-    $self->{SERVICE_NAME}           = $state->{service_name};
-    $self->{ORGANIZATION_NAME}      = $state->{organization_name};
-    $self->{LOCATION}               = $state->{location};
-    $self->{PROJECTS}               = $state->{projects};
-    $self->{EXTERNAL_ADDRESS}       = $state->{external_address};
-
+    $self->{CONFIG_FILE}                 = $state->{config_file};
+    $self->{SERVICE_NAME}                = $state->{service_name};
+    $self->{ORGANIZATION_NAME}           = $state->{organization_name};
+    $self->{LOCATION}                    = $state->{location};
+    $self->{PROJECTS}                    = $state->{projects};
+    $self->{EXTERNAL_ADDRESS}            = $state->{external_address};
+    $self->{EXTERNAL_ADDRESS_IF_NAME}    = $state->{external_address_if_name};
+    $self->{EXTERNAL_ADDRESS_IPV4}       = $state->{external_address_ipv4};
+    $self->{EXTERNAL_ADDRESS_IPV6}       = $state->{external_address_ipv6};
+    
     return;
 }
 
