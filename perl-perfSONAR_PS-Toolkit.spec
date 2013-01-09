@@ -106,6 +106,7 @@ Requires:       perl-perfSONAR_PS-LookupService
 Requires:       perl-perfSONAR_PS-perfSONARBUOY-server
 Requires:       perl-perfSONAR_PS-perfSONARBUOY-client
 Requires:       perl-perfSONAR_PS-perfSONARBUOY-config
+Requires:       perl-perfSONAR_PS-SimpleLS-BootStrap-client
 Requires:       perl-perfSONAR_PS-SNMPMA
 Requires:       perl-perfSONAR_PS-serviceTest
 Requires:       ndt
@@ -131,6 +132,7 @@ Requires(post):       perl-perfSONAR_PS-LookupService
 Requires(post):       perl-perfSONAR_PS-perfSONARBUOY-server
 Requires(post):       perl-perfSONAR_PS-perfSONARBUOY-client
 Requires(post):       perl-perfSONAR_PS-perfSONARBUOY-config
+Requires(post):       perl-perfSONAR_PS-SimpleLS-BootStrap-client
 Requires(post):       perl-perfSONAR_PS-SNMPMA
 Requires(post):       perl-perfSONAR_PS-serviceTest
 Requires(post):       perl-perfSONAR_PS-TracerouteMA-config
