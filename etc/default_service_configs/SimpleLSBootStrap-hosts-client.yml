@@ -1,0 +1,2 @@
+hosts:
+    - locator: "http://ps1.es.net:8096/lookup/activehosts.json"
