@@ -1,17 +1,11 @@
-/* DnD avatar-specific settings */
-/* For now it uses a default set of rules. Some other DnD classes can be modified as well. */
-.tundra .dojoDndItemBefore {
-	border-top: 2px solid #369;
-}
-
-.tundra .dojoDndItemAfter {
-	border-bottom: 2px solid #369;
-}
 
 .tundra .dojoDndItemOver {
-	cursor:pointer;
+	background-image: url(images/treeHover.png);
 }
-
+.tundra .dojoDndItemAnchor,
+.tundra .dojoDndItemSelected {
+	background-color: #E2EBFE;
+}
 .tundra table.dojoDndAvatar { -moz-border-radius: 0; border: 1px solid #ccc; border-collapse: collapse; background-color: #fff; font-size: 75%; color: black;}
 .tundra .dojoDndAvatar td	{ border: none; }
 .tundra .dojoDndAvatar tr	{ border: none; }
@@ -21,13 +15,13 @@
 .tundra.dojoDndCopy .dojoDndAvatarHeader	{background-color: #f58383; background-image: url(images/dndNoCopy.png); background-repeat: no-repeat; background-position: 2px center;}
 .tundra.dojoDndMove .dojoDndAvatarCanDrop .dojoDndAvatarHeader	{background-color: #97e68d; background-image: url(images/dndMove.png); background-repeat: no-repeat; background-position: 2px center;}
 .tundra.dojoDndCopy .dojoDndAvatarCanDrop .dojoDndAvatarHeader	{background-color: #97e68d; background-image: url(images/dndCopy.png); background-repeat: no-repeat; background-position: 2px center;}
-
-.tundra .dijitContentPaneLoading {
+.tundra .dijitIconLoading {
 	background:url('images/loading.gif') no-repeat left center;
-	padding-left:25px;
+	width: 24px;
+	height: 24px;
 }
-
-.tundra .dijitContentPaneError {
+.tundra .dijitIconError {
 	background:url('images/warning.png') no-repeat left center;
-	padding-left:25px;
+	width: 16px;
+	height: 16px;
 }

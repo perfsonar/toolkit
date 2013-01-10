@@ -1,1 +1,2 @@
-({"badPasswordMessage":"Salasana ei kelpaa.","nomatchMessage":"Salasanat eivät täsmää."})
+//>>built
+define("dojox/form/nls/fi/PasswordValidator",({nomatchMessage:"Salasanat eivät täsmää.",badPasswordMessage:"Salasana ei kelpaa."}));

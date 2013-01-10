@@ -1,133 +1,157 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dijit._editor.html"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit._editor.html"] = true;
-dojo.provide("dijit._editor.html");
-
-dijit._editor.escapeXml=function(/*String*/str, /*Boolean?*/noSingleQuotes){
-	//summary:
-	//		Adds escape sequences for special characters in XML: &<>"'
-	//		Optionally skips escapes for single quotes
-	str = str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;").replace(/>/gm, "&gt;").replace(/"/gm, "&quot;");
-	if(!noSingleQuotes){
-		str = str.replace(/'/gm, "&#39;");
-	}
-	return str; // string
-};
-
-dijit._editor.getNodeHtml=function(/* DomNode */node){
-	var output;
-	switch(node.nodeType){
-		case 1: //element node
-			output = '<' + node.nodeName.toLowerCase();
-
-			//store the list of attributes and sort it to have the
-			//attributes appear in the dictionary order
-			var attrarray = [];
-			if(dojo.isIE && node.outerHTML){
-				var s = node.outerHTML;
-				s = s.substr(0, s.indexOf('>'))
-					.replace(/(['"])[^"']*\1/g, ''); //to make the following regexp safe
-				var reg = /([^\s=]+)=/g;
-				var m, key;
-				while((m = reg.exec(s))){
-					key = m[1];
-					if(key.substr(0,3) != '_dj'){
-						if(key == 'src' || key == 'href'){
-							if(node.getAttribute('_djrealurl')){
-								attrarray.push([key,node.getAttribute('_djrealurl')]);
-								continue;
-							}
-						}
-						var val;
-						switch(key){
-							case 'style':
-								val = node.style.cssText.toLowerCase();
-								break;
-							case 'class':
-								val = node.className;
-								break;
-							default:
-								val = node.getAttribute(key);
-						}
-						attrarray.push([key, val.toString()]);
-					}
-				}
-			}else{
-				var attr, i = 0;
-				while((attr = node.attributes[i++])){
-					//ignore all attributes starting with _dj which are
-					//internal temporary attributes used by the editor
-					var n = attr.name;
-					if(n.substr(0,3) != '_dj' /*&&
-						(attr.specified == undefined || attr.specified)*/){
-						var v = attr.value;
-						if(n == 'src' || n == 'href'){
-							if(node.getAttribute('_djrealurl')){
-								v = node.getAttribute('_djrealurl');
-							}
-						}
-						attrarray.push([n,v]);
-					}
-				}
-			}
-			attrarray.sort(function(a,b){
-				return a[0]<b[0]?-1:(a[0]==b[0]?0:1);
-			});
-			var j = 0;
-			while((attr = attrarray[j++])){
-				output += ' ' + attr[0] + '="' +
-					(dojo.isString(attr[1]) ? dijit._editor.escapeXml(attr[1], true) : attr[1]) + '"';
-			}
-			if(node.childNodes.length){
-				output += '>' + dijit._editor.getChildrenHtml(node)+'</'+node.nodeName.toLowerCase()+'>';
-			}else{
-				output += ' />';
-			}
-			break;
-		case 3: //text
-			// FIXME:
-			output = dijit._editor.escapeXml(node.nodeValue, true);
-			break;
-		case 8: //comment
-			// FIXME:
-			output = '<!--' + dijit._editor.escapeXml(node.nodeValue, true) + '-->';
-			break;
-		default:
-			output = "<!-- Element not recognized - Type: " + node.nodeType + " Name: " + node.nodeName + "-->";
-	}
-	return output;
-};
-
-dijit._editor.getChildrenHtml = function(/* DomNode */dom){
-	// summary: Returns the html content of a DomNode and children
-	var out = "";
-	if(!dom){ return out; }
-	var nodes = dom["childNodes"] || dom;
-
-	//IE issue.
-	//If we have an actual node we can check parent relationships on for IE, 
-	//We should check, as IE sometimes builds invalid DOMS.  If no parent, we can't check
-	//And should just process it and hope for the best.
-	var checkParent = !dojo.isIE || nodes !== dom;
-
-	var node, i = 0;
-	while((node = nodes[i++])){
-		//IE is broken.  DOMs are supposed to be a tree.  But in the case of malformed HTML, IE generates a graph
-		//meaning one node ends up with multiple references (multiple parents).  This is totally wrong and invalid, but
-		//such is what it is.  We have to keep track and check for this because otherise the source output HTML will have dups.
-		//No other browser generates a graph.  Leave it to IE to break a fundamental DOM rule.  So, we check the parent if we can
-		//If we can't, nothing more we can do other than walk it.
-		if(!checkParent || node.parentNode == dom){
-			out += dijit._editor.getNodeHtml(node);
-		}
-	}
-	return out; // String
-};
-
+//>>built
+define("dijit/_editor/html",["dojo/_base/array","dojo/_base/lang","dojo/sniff"],function(_1,_2,_3){
+var _4={};
+_2.setObject("dijit._editor.html",_4);
+var _5=_4.escapeXml=function(_6,_7){
+_6=_6.replace(/&/gm,"&amp;").replace(/</gm,"&lt;").replace(/>/gm,"&gt;").replace(/"/gm,"&quot;");
+if(!_7){
+_6=_6.replace(/'/gm,"&#39;");
 }
+return _6;
+};
+_4.getNodeHtml=function(_8){
+var _9=[];
+_4.getNodeHtmlHelper(_8,_9);
+return _9.join("");
+};
+_4.getNodeHtmlHelper=function(_a,_b){
+switch(_a.nodeType){
+case 1:
+var _c=_a.nodeName.toLowerCase();
+if(!_c||_c.charAt(0)=="/"){
+return "";
+}
+_b.push("<",_c);
+var _d=[],_e={};
+var _f;
+if(_3("dom-attributes-explicit")||_3("dom-attributes-specified-flag")){
+var i=0;
+while((_f=_a.attributes[i++])){
+var n=_f.name;
+if(n.substr(0,3)!=="_dj"&&(!_3("dom-attributes-specified-flag")||_f.specified)&&!(n in _e)){
+var v=_f.value;
+if(n=="src"||n=="href"){
+if(_a.getAttribute("_djrealurl")){
+v=_a.getAttribute("_djrealurl");
+}
+}
+if(_3("ie")===8&&n==="style"){
+v=v.replace("HEIGHT:","height:").replace("WIDTH:","width:");
+}
+_d.push([n,v]);
+_e[n]=v;
+}
+}
+}else{
+var _10=/^input$|^img$/i.test(_a.nodeName)?_a:_a.cloneNode(false);
+var s=_10.outerHTML;
+var _11=/[\w-]+=("[^"]*"|'[^']*'|\S*)/gi;
+var _12=s.match(_11);
+s=s.substr(0,s.indexOf(">"));
+_1.forEach(_12,function(_13){
+if(_13){
+var idx=_13.indexOf("=");
+if(idx>0){
+var key=_13.substring(0,idx);
+if(key.substr(0,3)!="_dj"){
+if(key=="src"||key=="href"){
+if(_a.getAttribute("_djrealurl")){
+_d.push([key,_a.getAttribute("_djrealurl")]);
+return;
+}
+}
+var val,_14;
+switch(key){
+case "style":
+val=_a.style.cssText.toLowerCase();
+break;
+case "class":
+val=_a.className;
+break;
+case "width":
+if(_c==="img"){
+_14=/width=(\S+)/i.exec(s);
+if(_14){
+val=_14[1];
+}
+break;
+}
+case "height":
+if(_c==="img"){
+_14=/height=(\S+)/i.exec(s);
+if(_14){
+val=_14[1];
+}
+break;
+}
+default:
+val=_a.getAttribute(key);
+}
+if(val!=null){
+_d.push([key,val.toString()]);
+}
+}
+}
+}
+},this);
+}
+_d.sort(function(a,b){
+return a[0]<b[0]?-1:(a[0]==b[0]?0:1);
+});
+var j=0;
+while((_f=_d[j++])){
+_b.push(" ",_f[0],"=\"",(typeof _f[1]==="string"?_5(_f[1],true):_f[1]),"\"");
+}
+switch(_c){
+case "br":
+case "hr":
+case "img":
+case "input":
+case "base":
+case "meta":
+case "area":
+case "basefont":
+_b.push(" />");
+break;
+case "script":
+_b.push(">",_a.innerHTML,"</",_c,">");
+break;
+default:
+_b.push(">");
+if(_a.hasChildNodes()){
+_4.getChildrenHtmlHelper(_a,_b);
+}
+_b.push("</",_c,">");
+}
+break;
+case 4:
+case 3:
+_b.push(_5(_a.nodeValue,true));
+break;
+case 8:
+_b.push("<!--",_5(_a.nodeValue,true),"-->");
+break;
+default:
+_b.push("<!-- Element not recognized - Type: ",_a.nodeType," Name: ",_a.nodeName,"-->");
+}
+};
+_4.getChildrenHtml=function(_15){
+var _16=[];
+_4.getChildrenHtmlHelper(_15,_16);
+return _16.join("");
+};
+_4.getChildrenHtmlHelper=function(dom,_17){
+if(!dom){
+return;
+}
+var _18=dom["childNodes"]||dom;
+var _19=!_3("ie")||_18!==dom;
+var _1a,i=0;
+while((_1a=_18[i++])){
+if(!_19||_1a.parentNode==dom){
+_4.getNodeHtmlHelper(_1a,_17);
+}
+}
+};
+return _4;
+});

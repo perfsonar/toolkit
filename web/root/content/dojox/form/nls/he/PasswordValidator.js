@@ -1,1 +1,2 @@
-({"badPasswordMessage":"סיסמה לא חוקית.","nomatchMessage":"הסיסמאות אינן זהות."})
+//>>built
+define("dojox/form/nls/he/PasswordValidator",({nomatchMessage:"הסיסמאות אינן זהות.",badPasswordMessage:"סיסמה לא חוקית."}));

@@ -1,372 +1,208 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dijit.Tooltip"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit.Tooltip"] = true;
-dojo.provide("dijit.Tooltip");
-
-dojo.require("dijit._Widget");
-dojo.require("dijit._Templated");
-
-dojo.declare(
-	"dijit._MasterTooltip",
-	[dijit._Widget, dijit._Templated],
-	{
-		// summary:
-		//		Internal widget that holds the actual tooltip markup,
-		//		which occurs once per page.
-		//		Called by Tooltip widgets which are just containers to hold
-		//		the markup
-		// tags:
-		//		protected
-
-		// duration: Integer
-		//		Milliseconds to fade in/fade out
-		duration: dijit.defaultDuration,
-
-		templateString:"<div class=\"dijitTooltip dijitTooltipLeft\" id=\"dojoTooltip\">\n\t<div class=\"dijitTooltipContainer dijitTooltipContents\" dojoAttachPoint=\"containerNode\" waiRole='alert'></div>\n\t<div class=\"dijitTooltipConnector\"></div>\n</div>\n",
-
-		postCreate: function(){
-			dojo.body().appendChild(this.domNode);
-
-			this.bgIframe = new dijit.BackgroundIframe(this.domNode);
-
-			// Setup fade-in and fade-out functions.
-			this.fadeIn = dojo.fadeIn({ node: this.domNode, duration: this.duration, onEnd: dojo.hitch(this, "_onShow") });
-			this.fadeOut = dojo.fadeOut({ node: this.domNode, duration: this.duration, onEnd: dojo.hitch(this, "_onHide") });
-
-		},
-
-		show: function(/*String*/ innerHTML, /*DomNode*/ aroundNode, /*String[]?*/ position){
-			// summary:
-			//		Display tooltip w/specified contents to right of specified node
-			//		(To left if there's no space on the right, or if LTR==right)
-
-			if(this.aroundNode && this.aroundNode === aroundNode){
-				return;
-			}
-
-			if(this.fadeOut.status() == "playing"){
-				// previous tooltip is being hidden; wait until the hide completes then show new one
-				this._onDeck=arguments;
-				return;
-			}
-			this.containerNode.innerHTML=innerHTML;
-
-			// Firefox bug. when innerHTML changes to be shorter than previous
-			// one, the node size will not be updated until it moves.
-			this.domNode.style.top = (this.domNode.offsetTop + 1) + "px";
-
-			// position the element and change CSS according to position[] (a list of positions to try)
-			var align = {};
-			var ltr = this.isLeftToRight();
-			dojo.forEach( (position && position.length) ? position : dijit.Tooltip.defaultPosition, function(pos){
-				switch(pos){
-					case "after":				
-						align[ltr ? "BR" : "BL"] = ltr ? "BL" : "BR";
-						break;
-					case "before":
-						align[ltr ? "BL" : "BR"] = ltr ? "BR" : "BL";
-						break;
-					case "below":
-						// first try to align left borders, next try to align right borders (or reverse for RTL mode)
-						align[ltr ? "BL" : "BR"] = ltr ? "TL" : "TR";
-						align[ltr ? "BR" : "BL"] = ltr ? "TR" : "TL";
-						break;
-					case "above":
-					default:
-						// first try to align left borders, next try to align right borders (or reverse for RTL mode)
-						align[ltr ? "TL" : "TR"] = ltr ? "BL" : "BR";
-						align[ltr ? "TR" : "TL"] = ltr ? "BR" : "BL";
-						break;
-				}
-			});
-			var pos = dijit.placeOnScreenAroundElement(this.domNode, aroundNode, align, dojo.hitch(this, "orient"));
-
-			// show it
-			dojo.style(this.domNode, "opacity", 0);
-			this.fadeIn.play();
-			this.isShowingNow = true;
-			this.aroundNode = aroundNode;
-		},
-
-		orient: function(/* DomNode */ node, /* String */ aroundCorner, /* String */ tooltipCorner){
-			// summary:
-			//		Private function to set CSS for tooltip node based on which position it's in.
-			//		This is called by the dijit popup code.
-			// tags:
-			//		protected
-
-			node.className = "dijitTooltip " +
-				{
-					"BL-TL": "dijitTooltipBelow dijitTooltipABLeft",
-					"TL-BL": "dijitTooltipAbove dijitTooltipABLeft",
-					"BR-TR": "dijitTooltipBelow dijitTooltipABRight",
-					"TR-BR": "dijitTooltipAbove dijitTooltipABRight",
-					"BR-BL": "dijitTooltipRight",
-					"BL-BR": "dijitTooltipLeft"
-				}[aroundCorner + "-" + tooltipCorner];
-		},
-
-		_onShow: function(){
-			// summary:
-			//		Called at end of fade-in operation
-			// tags:
-			//		protected
-			if(dojo.isIE){
-				// the arrow won't show up on a node w/an opacity filter
-				this.domNode.style.filter="";
-			}
-		},
-
-		hide: function(aroundNode){
-			// summary:
-			//		Hide the tooltip
-			if(this._onDeck && this._onDeck[1] == aroundNode){
-				// this hide request is for a show() that hasn't even started yet;
-				// just cancel the pending show()
-				this._onDeck=null;
-			}else if(this.aroundNode === aroundNode){
-				// this hide request is for the currently displayed tooltip
-				this.fadeIn.stop();
-				this.isShowingNow = false;
-				this.aroundNode = null;
-				this.fadeOut.play();
-			}else{
-				// just ignore the call, it's for a tooltip that has already been erased
-			}
-		},
-
-		_onHide: function(){
-			// summary:
-			//		Called at end of fade-out operation
-			// tags:
-			//		protected
-
-			this.domNode.style.cssText="";	// to position offscreen again
-			if(this._onDeck){
-				// a show request has been queued up; do it now
-				this.show.apply(this, this._onDeck);
-				this._onDeck=null;
-			}
-		}
-
-	}
-);
-
-dijit.showTooltip = function(/*String*/ innerHTML, /*DomNode*/ aroundNode, /*String[]?*/ position){
-	// summary:
-	//		Display tooltip w/specified contents in specified position.
-	//		See description of dijit.Tooltip.defaultPosition for details on position parameter.
-	//		If position is not specified then dijit.Tooltip.defaultPosition is used.
-	if(!dijit._masterTT){ dijit._masterTT = new dijit._MasterTooltip(); }
-	return dijit._masterTT.show(innerHTML, aroundNode, position);
-};
-
-dijit.hideTooltip = function(aroundNode){
-	// summary:
-	//		Hide the tooltip
-	if(!dijit._masterTT){ dijit._masterTT = new dijit._MasterTooltip(); }
-	return dijit._masterTT.hide(aroundNode);
-};
-
-dojo.declare(
-	"dijit.Tooltip",
-	dijit._Widget,
-	{
-		// summary
-		//		Pops up a tooltip (a help message) when you hover over a node.
-
-		// label: String
-		//		Text to display in the tooltip.
-		//		Specified as innerHTML when creating the widget from markup.
-		label: "",
-
-		// showDelay: Integer
-		//		Number of milliseconds to wait after hovering over/focusing on the object, before
-		//		the tooltip is displayed.
-		showDelay: 400,
-
-		// connectId: [const] String[]
-		//		Id's of domNodes to attach the tooltip to.
-		//		When user hovers over any of the specified dom nodes, the tooltip will appear.
-		//
-		//		Note: Currently connectId can only be specified on initialization, it cannot
-		//		be changed via attr('connectId', ...)
-		//
-		//		Note: in 2.0 this will be renamed to connectIds for less confusion.
-		connectId: [],
-
-		// position: String[]
-		//		See description of `dijit.Tooltip.defaultPosition` for details on position parameter.
-		position: [],
-
-		_setConnectIdAttr: function(ids){
-			// TODO: erase old conections
-
-			this._connectNodes = [];
-
-			// TODO: rename connectId to connectIds for 2.0, and remove this code converting from string to array
-			this.connectId = dojo.isArrayLike(ids) ? ids : [ids];
-			
-			dojo.forEach(this.connectId, function(id) {
-				var node = dojo.byId(id);
-				if (node) {
-					this._connectNodes.push(node);
-					dojo.forEach(["onMouseEnter", "onMouseLeave", "onFocus", "onBlur"], function(event){
-						this.connect(node, event.toLowerCase(), "_"+event);
-					}, this);
-					if(dojo.isIE){
-						// BiDi workaround
-						node.style.zoom = 1;
-					}
-				}
-			}, this);
-		},
-
-		postCreate: function(){	
-			dojo.addClass(this.domNode,"dijitTooltipData");
-		},
-
-		_onMouseEnter: function(/*Event*/ e){
-			// summary:
-			//		Handler for mouseenter event on the target node
-			// tags:
-			//		private
-			this._onHover(e);
-		},
-
-		_onMouseLeave: function(/*Event*/ e){
-			// summary:
-			//		Handler for mouseleave event on the target node
-			// tags:
-			//		private
-			this._onUnHover(e);
-		},
-
-		_onFocus: function(/*Event*/ e){
-			// summary:
-			//		Handler for focus event on the target node
-			// tags:
-			//		private
-
-			// TODO: this is dangerously named, as the dijit focus manager calls
-			// _onFocus() on any widget that gets focus (whereas in this class we
-			// are connecting onfocus on the *target* DOM node to this method
-
-			this._focus = true;
-			this._onHover(e);
-			this.inherited(arguments);
-		},
-		
-		_onBlur: function(/*Event*/ e){
-			// summary:
-			//		Handler for blur event on the target node
-			// tags:
-			//		private
-
-			// TODO: rename; see above comment
-
-			this._focus = false;
-			this._onUnHover(e);
-			this.inherited(arguments);
-		},
-
-		_onHover: function(/*Event*/ e){
-			// summary:
-			//		Despite the name of this method, it actually handles both hover and focus
-			//		events on the target node, setting a timer to show the tooltip.
-			// tags:
-			//		private
-			if(!this._showTimer){
-				var target = e.target;
-				this._showTimer = setTimeout(dojo.hitch(this, function(){this.open(target)}), this.showDelay);
-			}
-		},
-
-		_onUnHover: function(/*Event*/ e){
-			// summary:
-			//		Despite the name of this method, it actually handles both mouseleave and blur
-			//		events on the target node, hiding the tooltip.
-			// tags:
-			//		private
-
-			// keep a tooltip open if the associated element still has focus (even though the
-			// mouse moved away)
-			if(this._focus){ return; }
-
-			if(this._showTimer){
-				clearTimeout(this._showTimer);
-				delete this._showTimer;
-			}
-			this.close();
-		},
-
-		open: function(/*DomNode*/ target){
- 			// summary:
-			//		Display the tooltip; usually not called directly.
-			// tags:
-			//		private
-
-			target = target || this._connectNodes[0];
-			if(!target){ return; }
-
-			if(this._showTimer){
-				clearTimeout(this._showTimer);
-				delete this._showTimer;
-			}
-			dijit.showTooltip(this.label || this.domNode.innerHTML, target, this.position);
-			
-			this._connectNode = target;
-		},
-
-		close: function(){
-			// summary:
-			//		Hide the tooltip or cancel timer for show of tooltip
-			// tags:
-			//		private
-
-			if(this._connectNode){
-				// if tooltip is currently shown
-				dijit.hideTooltip(this._connectNode);
-				delete this._connectNode;
-			}
-			if(this._showTimer){
-				// if tooltip is scheduled to be shown (after a brief delay)
-				clearTimeout(this._showTimer);
-				delete this._showTimer;
-			}
-		},
-
-		uninitialize: function(){
-			this.close();
-		}
-	}
-);
-
-// dijit.Tooltip.defaultPosition: String[]
-//		This variable controls the position of tooltips, if the position is not specified to
-//		the Tooltip widget or *TextBox widget itself.  It's an array of strings with the following values:
-//
-//			* before: places tooltip to the left of the target node/widget, or to the right in
-//			  the case of RTL scripts like Hebrew and Arabic
-//			* after: places tooltip to the right of the target node/widget, or to the left in
-//			  the case of RTL scripts like Hebrew and Arabic
-//			* above: tooltip goes above target node
-//			* below: tooltip goes below target node
-//
-//		The list is positions is tried, in order, until a position is found where the tooltip fits
-//		within the viewport.
-//
-//		Be careful setting this parameter.  A value of "above" may work fine until the user scrolls
-//		the screen so that there's no room above the target node.   Nodes with drop downs, like
-//		DropDownButton or FilteringSelect, are especially problematic, in that you need to be sure
-//		that the drop down and tooltip don't overlap, even when the viewport is scrolled so that there
-//		is only room below (or above) the target node, but not both.
-dijit.Tooltip.defaultPosition = ["after", "before"];
-
+//>>built
+require({cache:{"url:dijit/templates/Tooltip.html":"<div class=\"dijitTooltip dijitTooltipLeft\" id=\"dojoTooltip\"\n\t><div class=\"dijitTooltipContainer dijitTooltipContents\" data-dojo-attach-point=\"containerNode\" role='alert'></div\n\t><div class=\"dijitTooltipConnector\" data-dojo-attach-point=\"connectorNode\"></div\n></div>\n"}});
+define("dijit/Tooltip",["dojo/_base/array","dojo/_base/declare","dojo/_base/fx","dojo/dom","dojo/dom-class","dojo/dom-geometry","dojo/dom-style","dojo/_base/lang","dojo/mouse","dojo/on","dojo/sniff","./_base/manager","./place","./_Widget","./_TemplatedMixin","./BackgroundIframe","dojo/text!./templates/Tooltip.html","./main"],function(_1,_2,fx,_3,_4,_5,_6,_7,_8,on,_9,_a,_b,_c,_d,_e,_f,_10){
+var _11=_2("dijit._MasterTooltip",[_c,_d],{duration:_a.defaultDuration,templateString:_f,postCreate:function(){
+this.ownerDocumentBody.appendChild(this.domNode);
+this.bgIframe=new _e(this.domNode);
+this.fadeIn=fx.fadeIn({node:this.domNode,duration:this.duration,onEnd:_7.hitch(this,"_onShow")});
+this.fadeOut=fx.fadeOut({node:this.domNode,duration:this.duration,onEnd:_7.hitch(this,"_onHide")});
+},show:function(_12,_13,_14,rtl,_15){
+if(this.aroundNode&&this.aroundNode===_13&&this.containerNode.innerHTML==_12){
+return;
 }
+if(this.fadeOut.status()=="playing"){
+this._onDeck=arguments;
+return;
+}
+this.containerNode.innerHTML=_12;
+if(_15){
+this.set("textDir",_15);
+}
+this.containerNode.align=rtl?"right":"left";
+var pos=_b.around(this.domNode,_13,_14&&_14.length?_14:_16.defaultPosition,!rtl,_7.hitch(this,"orient"));
+var _17=pos.aroundNodePos;
+if(pos.corner.charAt(0)=="M"&&pos.aroundCorner.charAt(0)=="M"){
+this.connectorNode.style.top=_17.y+((_17.h-this.connectorNode.offsetHeight)>>1)-pos.y+"px";
+this.connectorNode.style.left="";
+}else{
+if(pos.corner.charAt(1)=="M"&&pos.aroundCorner.charAt(1)=="M"){
+this.connectorNode.style.left=_17.x+((_17.w-this.connectorNode.offsetWidth)>>1)-pos.x+"px";
+}else{
+this.connectorNode.style.left="";
+this.connectorNode.style.top="";
+}
+}
+_6.set(this.domNode,"opacity",0);
+this.fadeIn.play();
+this.isShowingNow=true;
+this.aroundNode=_13;
+},orient:function(_18,_19,_1a,_1b,_1c){
+this.connectorNode.style.top="";
+var _1d=_1b.h,_1e=_1b.w;
+_18.className="dijitTooltip "+{"MR-ML":"dijitTooltipRight","ML-MR":"dijitTooltipLeft","TM-BM":"dijitTooltipAbove","BM-TM":"dijitTooltipBelow","BL-TL":"dijitTooltipBelow dijitTooltipABLeft","TL-BL":"dijitTooltipAbove dijitTooltipABLeft","BR-TR":"dijitTooltipBelow dijitTooltipABRight","TR-BR":"dijitTooltipAbove dijitTooltipABRight","BR-BL":"dijitTooltipRight","BL-BR":"dijitTooltipLeft"}[_19+"-"+_1a];
+this.domNode.style.width="auto";
+var _1f=_5.position(this.domNode);
+if(_9("ie")==9){
+_1f.w+=2;
+}
+var _20=Math.min((Math.max(_1e,1)),_1f.w);
+_5.setMarginBox(this.domNode,{w:_20});
+if(_1a.charAt(0)=="B"&&_19.charAt(0)=="B"){
+var bb=_5.position(_18);
+var _21=this.connectorNode.offsetHeight;
+if(bb.h>_1d){
+var _22=_1d-((_1c.h+_21)>>1);
+this.connectorNode.style.top=_22+"px";
+this.connectorNode.style.bottom="";
+}else{
+this.connectorNode.style.bottom=Math.min(Math.max(_1c.h/2-_21/2,0),bb.h-_21)+"px";
+this.connectorNode.style.top="";
+}
+}else{
+this.connectorNode.style.top="";
+this.connectorNode.style.bottom="";
+}
+return Math.max(0,_1f.w-_1e);
+},_onShow:function(){
+if(_9("ie")){
+this.domNode.style.filter="";
+}
+},hide:function(_23){
+if(this._onDeck&&this._onDeck[1]==_23){
+this._onDeck=null;
+}else{
+if(this.aroundNode===_23){
+this.fadeIn.stop();
+this.isShowingNow=false;
+this.aroundNode=null;
+this.fadeOut.play();
+}else{
+}
+}
+},_onHide:function(){
+this.domNode.style.cssText="";
+this.containerNode.innerHTML="";
+if(this._onDeck){
+this.show.apply(this,this._onDeck);
+this._onDeck=null;
+}
+},_setAutoTextDir:function(_24){
+this.applyTextDir(_24,_9("ie")?_24.outerText:_24.textContent);
+_1.forEach(_24.children,function(_25){
+this._setAutoTextDir(_25);
+},this);
+},_setTextDirAttr:function(_26){
+this._set("textDir",_26);
+if(_26=="auto"){
+this._setAutoTextDir(this.containerNode);
+}else{
+this.containerNode.dir=this.textDir;
+}
+}});
+_10.showTooltip=function(_27,_28,_29,rtl,_2a){
+if(_29){
+_29=_1.map(_29,function(val){
+return {after:"after-centered",before:"before-centered"}[val]||val;
+});
+}
+if(!_16._masterTT){
+_10._masterTT=_16._masterTT=new _11();
+}
+return _16._masterTT.show(_27,_28,_29,rtl,_2a);
+};
+_10.hideTooltip=function(_2b){
+return _16._masterTT&&_16._masterTT.hide(_2b);
+};
+var _16=_2("dijit.Tooltip",_c,{label:"",showDelay:400,connectId:[],position:[],selector:"",_setConnectIdAttr:function(_2c){
+_1.forEach(this._connections||[],function(_2d){
+_1.forEach(_2d,function(_2e){
+_2e.remove();
+});
+},this);
+this._connectIds=_1.filter(_7.isArrayLike(_2c)?_2c:(_2c?[_2c]:[]),function(id){
+return _3.byId(id,this.ownerDocument);
+},this);
+this._connections=_1.map(this._connectIds,function(id){
+var _2f=_3.byId(id,this.ownerDocument),_30=this.selector,_31=_30?function(_32){
+return on.selector(_30,_32);
+}:function(_33){
+return _33;
+},_34=this;
+return [on(_2f,_31(_8.enter),function(){
+_34._onHover(this);
+}),on(_2f,_31("focusin"),function(){
+_34._onHover(this);
+}),on(_2f,_31(_8.leave),_7.hitch(_34,"_onUnHover")),on(_2f,_31("focusout"),_7.hitch(_34,"_onUnHover"))];
+},this);
+this._set("connectId",_2c);
+},addTarget:function(_35){
+var id=_35.id||_35;
+if(_1.indexOf(this._connectIds,id)==-1){
+this.set("connectId",this._connectIds.concat(id));
+}
+},removeTarget:function(_36){
+var id=_36.id||_36,idx=_1.indexOf(this._connectIds,id);
+if(idx>=0){
+this._connectIds.splice(idx,1);
+this.set("connectId",this._connectIds);
+}
+},buildRendering:function(){
+this.inherited(arguments);
+_4.add(this.domNode,"dijitTooltipData");
+},startup:function(){
+this.inherited(arguments);
+var ids=this.connectId;
+_1.forEach(_7.isArrayLike(ids)?ids:[ids],this.addTarget,this);
+},getContent:function(_37){
+return this.label||this.domNode.innerHTML;
+},_onHover:function(_38){
+if(!this._showTimer){
+this._showTimer=this.defer(function(){
+this.open(_38);
+},this.showDelay);
+}
+},_onUnHover:function(){
+if(this._showTimer){
+this._showTimer.remove();
+delete this._showTimer;
+}
+this.close();
+},open:function(_39){
+if(this._showTimer){
+this._showTimer.remove();
+delete this._showTimer;
+}
+var _3a=this.getContent(_39);
+if(!_3a){
+return;
+}
+_16.show(_3a,_39,this.position,!this.isLeftToRight(),this.textDir);
+this._connectNode=_39;
+this.onShow(_39,this.position);
+},close:function(){
+if(this._connectNode){
+_16.hide(this._connectNode);
+delete this._connectNode;
+this.onHide();
+}
+if(this._showTimer){
+this._showTimer.remove();
+delete this._showTimer;
+}
+},onShow:function(){
+},onHide:function(){
+},destroy:function(){
+this.close();
+_1.forEach(this._connections||[],function(_3b){
+_1.forEach(_3b,function(_3c){
+_3c.remove();
+});
+},this);
+this.inherited(arguments);
+}});
+_16._MasterTooltip=_11;
+_16.show=_10.showTooltip;
+_16.hide=_10.hideTooltip;
+_16.defaultPosition=["after-centered","before-centered"];
+return _16;
+});

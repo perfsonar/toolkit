@@ -1,272 +1,162 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.layout.ToggleSplitter"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.layout.ToggleSplitter"] = true;
-dojo.provide("dojox.layout.ToggleSplitter");
-dojo.experimental("dojox.layout.ToggleSplitter"); 
-
-dojo.require("dijit.layout.BorderContainer");
-
-dojo.declare("dojox.layout.ToggleSplitter", [ dijit.layout._Splitter ],
-{
-	// summary: 
-	//		A draggable and toggle-to-close/open spacer between two items in a BorderContainer
-	//
-	// description:
-	// 		Extends the dijit.layout._Splitter to add a toggling behavior
-	// 		on double-click
-	//
-
-/*=====
-	container: null,
-	child: null,
-	region: null,
-=====*/
-
-	// open: Boolean
-	//	the initial and current state of the splitter (and its attached pane)
-	open: true, 
-
-	// closedThreshold: Integer
-	//	how small the attached pane can be before its considered closed
-	closedThreshold: 5,
-
-	// openSize: String
-	//	the css height/width value to apply by default when the attached pane is open
-	openSize: "",
-
-	// _closedSize: String
-	//	the css height/width value to apply by default when the attached pane is closed
-	_closedSize: "0",
-	
-	templateString: '<div class="dijitSplitter dojoxToggleSplitter" dojoAttachEvent="onkeypress:_onKeyPress,onmousedown:_onMouseDown" tabIndex="0" waiRole="separator"><div dojoAttachPoint="toggleNode" class="dijitSplitterThumb dojoxToggleSplitterIcon"></div></div>',
-
-	postCreate: function(){
-		this._started = false; 
-
-		this.inherited(arguments);
-		
-		// add a region css hook
-		var region = this.region; 
-		dojo.addClass(this.domNode, "dojoxToggleSplitter"+region.charAt(0).toUpperCase() + region.substring(1));
-
-		// hook up double-clicks to toggle the splitter - 
-		this.connect(this, "onDblClick", "_toggleMe");
-
-	}, 
-	startup: function(){
-		this.inherited(arguments);
-
-		// we have to wait until startup to be sure the child exists in the dom
-		// and has non-zero size (if its supposed to be showing)
-		var paneNode = this.child.domNode, 
-			intPaneSize = dojo.style(paneNode, (this.horizontal ? "height" : "width"));
-		
-		// creation of splitters is an opaque process in BorderContainer, 
-		// so if we want to get init params, we have to retrieve them from the attached BC child
-		// NOTE: for this to work we have to extend the prototype of dijit._Widget (some more)
-		dojo.forEach(["toggleSplitterOpen", "toggleSplitterClosedThreshold", "toggleSplitterOpenSize"], function(name){
-			var pname = name.substring("toggleSplitter".length);
-			pname = pname.charAt(0).toLowerCase() + pname.substring(1);
-			if(name in this.child){
-				this[pname] = this.child[name];
-			}
-		}, this);
-
-		if(!this.openSize){
-			// store the current size as the openSize if none was provided
-
-			// dojo.style always returns a integer (pixel) value for height/width
-			// use an arbirary default if a pane was initalized closed and no openSize provided
-			this.openSize = (this.open) ? intPaneSize + "px" : "75px";
-		}
-		this._openStyleProps = this._getStyleProps(paneNode, true);
-
-		// update state
-		this._started = true; 
-		this.attr("open", this.open);
-
-		return this;
-	},
-	_onMouseUp: function(evt){
-		dojo.disconnect(this._onMoveHandle);
-		dojo.disconnect(this._onUpHandle);
-		delete this._onMoveHandle; 
-		delete this._onUpHandle;
-		delete this._startPosn; 
-	},
-	_onPrelimMouseMove: function(evt){
-		// only start dragging when a mouse down AND a significant mousemove occurs
-		var startPosn = this._startPosn || 0;
-		// allow a little fudging in a click before we consider a drag started
-		var dragThreshold = 3; 
-		var offset = Math.abs( startPosn - (this.horizontal ? evt.clientY : evt.clientX) );
-		if(offset >= dragThreshold){
-			// treat as a drag and dismantle this preliminary handlers
-			dojo.disconnect(this._onMoveHandle);
-			this._startDrag(evt);
-		}
-	},
-	_onMouseDown: function(evt){
-		// summary: 
-		// 	handle mousedown events from the domNode
-		if(!this.open){
-			// ignore mousedown while closed 
-			// - this has the effect of preventing dragging while closed, which is the prefered behavior (for now)
-			return; 
-		}
-		// Mousedown can fire more than once (!)
-		// ..so check before connecting
-		if(!this._onUpHandle){
-			this._onUpHandle = dojo.connect(dojo.body(), "onmouseup", this, "_onMouseUp");
-		}
-		if(!this._onMoveHandle){
-			this._startPosn = this.horizontal ? evt.clientY : evt.clientX; 
-			// start listening for mousemove
-			this._onMoveHandle = dojo.connect(dojo.body(), "onmousemove", this, "_onPrelimMouseMove");
-		}
-	}, 
-	_handleOnChange: function(){
-		// summary
-		// 	effect the state change with the new value of this.open
-
-		// TODO: animate the open/close
-		
-		var paneNode = this.child.domNode, 
-			openProps,
-			dim = this.horizontal ? "height" : "width"; 
-
-		if(this.open){
-			// change to open state
-			var styleProps = dojo.mixin({
-				display: "block", 
-				overflow: "auto",
-				visibility: "visible"
-			}, this._openStyleProps);
-
-			styleProps[dim] = (this._openStyleProps && this._openStyleProps[dim]) ? this._openStyleProps[dim] : this.openSize;
-			dojo.style(paneNode, styleProps);
-			
-			// and re-hook up the mouse event handler
-			this.connect(this.domNode, "onmousedown", "_onMouseDown");
-
-		} else {
-			// change to closed state
-			// FIXME: this wont work in a drag-to-closed scenario
-			var paneStyle  = dojo.getComputedStyle(paneNode); 
-			
-			openProps = this._getStyleProps(paneNode, true, paneStyle);
-			var closedProps = this._getStyleProps(paneNode, false, paneStyle);
-
-			this._openStyleProps = openProps;
-			dojo.style(paneNode, closedProps);
-		}
-		this._setStateClass();
-		if(this.container._started){
-			this.container._layoutChildren(this.region);
-		}
-	},
-	
-	_getStyleProps: function(paneNode, open, paneStyle){
-		// summary: 
-		//	create an object with the style property name: values 
-		// 	that will need to be applied to the child pane render the given state
-		if(!paneStyle){
-			paneStyle  = dojo.getComputedStyle(paneNode);
-		}
-		var styleProps = {}, 
-			dim = this.horizontal ? "height" : "width";
-			
-		styleProps["overflow"] = (open) ? paneStyle["overflow"] : "hidden";
-		styleProps["visibility"] = (open) ? paneStyle["visibility"] : "hidden";
-
-		// use the inline width/height style value, in preference to the computedStyle
-		// for the open width/height
-		styleProps[dim] = (open) ? paneNode.style[dim] || paneStyle[dim] : this._closedSize;
-
-		// We include the padding,border,margin width values for restoring on open
-		var edgeNames = ["Top", "Right", "Bottom", "Left"];
-		dojo.forEach(["padding","margin","border"], function(pname){
-			for(var i=0; i<edgeNames.length; i++){
-				var fullname = pname+edgeNames[i]; 
-				if(pname=="border"){
-					pname+="Width";
-				}
-				if(undefined !== paneStyle[fullname]){
-					styleProps[fullname] = (open) ? 
-						paneStyle[fullname] : 0;
-				}
-			}
-		});
-		return styleProps;
-	},
-	
-	_setStateClass: function(){
-		// sumamry: 
-		//	apply the appropriate classes for the current open state
-		if(this.open){
-			dojo.removeClass(this.domNode, "dojoxToggleSplitterClosed");
-			dojo.addClass(this.domNode, "dojoxToggleSplitterOpen");
-			dojo.removeClass(this.toggleNode, "dojoxToggleSplitterIconClosed");
-			dojo.addClass(this.toggleNode, "dojoxToggleSplitterIconOpen");
-		} else {
-			dojo.addClass(this.domNode, "dojoxToggleSplitterClosed");
-			dojo.removeClass(this.domNode, "dojoxToggleSplitterOpen");
-			dojo.addClass(this.toggleNode, "dojoxToggleSplitterIconClosed");
-			dojo.removeClass(this.toggleNode, "dojoxToggleSplitterIconOpen");
-		}
-	},
-	_setOpenAttr: function(/*Boolean*/ value){
-		// summary: 
-		// 	setter for the open property
-		if(!this._started) {
-			return; 
-		}
-		this.open = value;
-		this._handleOnChange(value, true);
-		var evt = this.open ? "onOpen" : "onClose";
-		this[evt](this.child);
-	},
-	onOpen: function(){
-		// stub
-	},
-	onClose: function(){
-		// stub
-	},
-
-	_toggleMe: function(evt){
-		// summary: 
-		// 	event handle, toggle the open state
-		if(evt){
-			dojo.stopEvent(evt);
-		}
-		this.attr("open", !this.open);
-	},
-
-	_onKeyPress: function(/*Event*/ e){
-		this.inherited(arguments); 
-		// TODO: add support for space, enter to cause toggle
-	}
-
-});
-
-// As BC places no constraints on what kind of widgets can be children
-// we have to extend the base class to ensure the properties we need can be set (both in markup and programatically)
-dojo.extend(dijit._Widget, {
-	// toggleSplitterOpen: Boolean
-	toggleSplitterOpen: true, 
-	
-	// toggleSplitterClosedThreshold: Integer
-	toggleSplitterClosedThreshold: 5, 
-
-	// toggleSplitterClosedThreshold: String
-	// 		a css size value (e.g. "100px")
-	toggleSplitterOpenSize: ""
-});
-
+//>>built
+define("dojox/layout/ToggleSplitter",["dojo","dijit","dijit/layout/BorderContainer"],function(_1,_2){
+_1.experimental("dojox.layout.ToggleSplitter");
+var _3=_1.declare("dojox.layout.ToggleSplitter",_2.layout._Splitter,{container:null,child:null,region:null,state:"full",_closedSize:"0",baseClass:"dojoxToggleSplitter",templateString:"<div class=\"dijitSplitter dojoxToggleSplitter\" dojoAttachEvent=\"onkeypress:_onKeyPress,onmousedown:_startDrag,onmouseenter:_onMouse,onmouseleave:_onMouse\">"+"<div dojoAttachPoint=\"toggleNode\" class=\"dijitSplitterThumb dojoxToggleSplitterIcon\" tabIndex=\"0\" role=\"separator\" "+"dojoAttachEvent=\"onmousedown:_onToggleNodeMouseDown,onclick:_toggle,onmouseenter:_onToggleNodeMouseMove,onmouseleave:_onToggleNodeMouseMove,onfocus:_onToggleNodeMouseMove,onblur:_onToggleNodeMouseMove\">"+"<span class=\"dojoxToggleSplitterA11y\" dojoAttachPoint=\"a11yText\"></span></div>"+"</div>",postCreate:function(){
+this.inherited(arguments);
+var _4=this.region;
+_1.addClass(this.domNode,this.baseClass+_4.charAt(0).toUpperCase()+_4.substring(1));
+},startup:function(){
+this.inherited(arguments);
+var _5=this.child,_6=this.child.domNode,_7=_1.style(_6,(this.horizontal?"height":"width"));
+this.domNode.setAttribute("aria-controls",_6.id);
+_1.forEach(["toggleSplitterState","toggleSplitterFullSize","toggleSplitterCollapsedSize"],function(_8){
+var _9=_8.substring("toggleSplitter".length);
+_9=_9.charAt(0).toLowerCase()+_9.substring(1);
+if(_8 in this.child){
+this[_9]=this.child[_8];
 }
+},this);
+if(!this.fullSize){
+this.fullSize=this.state=="full"?_7+"px":"75px";
+}
+this._openStyleProps=this._getStyleProps(_6,"full");
+this._started=true;
+this.set("state",this.state);
+return this;
+},_onKeyPress:function(_a){
+if(this.state=="full"){
+this.inherited(arguments);
+}
+if(_a.charCode==_1.keys.SPACE||_a.keyCode==_1.keys.ENTER){
+this._toggle(_a);
+}
+},_onToggleNodeMouseDown:function(_b){
+_1.stopEvent(_b);
+this.toggleNode.focus();
+},_startDrag:function(e){
+if(this.state=="full"){
+this.inherited(arguments);
+}
+},_stopDrag:function(e){
+this.inherited(arguments);
+this.toggleNode.blur();
+},_toggle:function(_c){
+var _d;
+switch(this.state){
+case "full":
+_d=this.collapsedSize?"collapsed":"closed";
+break;
+case "collapsed":
+_d="closed";
+break;
+default:
+_d="full";
+}
+this.set("state",_d);
+},_onToggleNodeMouseMove:function(_e){
+var _f=this.baseClass,_10=this.toggleNode,on=this.state=="full"||this.state=="collapsed",_11=_e.type=="mouseout"||_e.type=="blur";
+_1.toggleClass(_10,_f+"IconOpen",_11&&on);
+_1.toggleClass(_10,_f+"IconOpenHover",!_11&&on);
+_1.toggleClass(_10,_f+"IconClosed",_11&&!on);
+_1.toggleClass(_10,_f+"IconClosedHover",!_11&&!on);
+},_handleOnChange:function(_12){
+var _13=this.child.domNode,_14,_15,dim=this.horizontal?"height":"width";
+if(this.state=="full"){
+var _16=_1.mixin({display:"block",overflow:"auto",visibility:"visible"},this._openStyleProps);
+_16[dim]=(this._openStyleProps&&this._openStyleProps[dim])?this._openStyleProps[dim]:this.fullSize;
+_1.style(this.domNode,"cursor","");
+_1.style(_13,_16);
+}else{
+if(this.state=="collapsed"){
+_15=_1.getComputedStyle(_13);
+_14=this._getStyleProps(_13,"full",_15);
+this._openStyleProps=_14;
+_1.style(this.domNode,"cursor","auto");
+_1.style(_13,dim,this.collapsedSize);
+}else{
+if(!this.collapsedSize){
+_15=_1.getComputedStyle(_13);
+_14=this._getStyleProps(_13,"full",_15);
+this._openStyleProps=_14;
+}
+var _17=this._getStyleProps(_13,"closed",_15);
+_1.style(this.domNode,"cursor","auto");
+_1.style(_13,_17);
+}
+}
+this._setStateClass();
+if(this.container._started){
+this.container._layoutChildren(this.region);
+}
+},_getStyleProps:function(_18,_19,_1a){
+if(!_1a){
+_1a=_1.getComputedStyle(_18);
+}
+var _1b={},dim=this.horizontal?"height":"width";
+_1b["overflow"]=(_19!="closed")?_1a["overflow"]:"hidden";
+_1b["visibility"]=(_19!="closed")?_1a["visibility"]:"hidden";
+_1b[dim]=(_19!="closed")?_18.style[dim]||_1a[dim]:this._closedSize;
+var _1c=["Top","Right","Bottom","Left"];
+_1.forEach(["padding","margin","border"],function(_1d){
+for(var i=0;i<_1c.length;i++){
+var _1e=_1d+_1c[i];
+if(_1d=="border"){
+_1e+="Width";
+}
+if(undefined!==_1a[_1e]){
+_1b[_1e]=(_19!="closed")?_1a[_1e]:0;
+}
+}
+});
+return _1b;
+},_setStateClass:function(){
+var _1f="&#9652",_20=this.region.toLowerCase(),_21=this.baseClass,_22=this.toggleNode,on=this.state=="full"||this.state=="collapsed",_23=this.focused;
+_1.toggleClass(_22,_21+"IconOpen",on&&!_23);
+_1.toggleClass(_22,_21+"IconClosed",!on&&!_23);
+_1.toggleClass(_22,_21+"IconOpenHover",on&&_23);
+_1.toggleClass(_22,_21+"IconClosedHover",!on&&_23);
+if(_20=="top"&&on||_20=="bottom"&&!on){
+_1f="&#9650";
+}else{
+if(_20=="top"&&!on||_20=="bottom"&&on){
+_1f="&#9660";
+}else{
+if(_20=="right"&&on||_20=="left"&&!on){
+_1f="&#9654";
+}else{
+if(_20=="right"&&!on||_20=="left"&&on){
+_1f="&#9664";
+}
+}
+}
+}
+this.a11yText.innerHTML=_1f;
+},_setStateAttr:function(_24){
+if(!this._started){
+return;
+}
+var _25=this.state;
+this.state=_24;
+this._handleOnChange(_25);
+var _26;
+switch(_24){
+case "full":
+this.domNode.setAttribute("aria-expanded",true);
+_26="onOpen";
+break;
+case "collapsed":
+this.domNode.setAttribute("aria-expanded",true);
+_26="onCollapsed";
+break;
+default:
+this.domNode.setAttribute("aria-expanded",false);
+_26="onClosed";
+}
+this[_26](this.child);
+},onOpen:function(_27){
+},onCollapsed:function(_28){
+},onClosed:function(_29){
+}});
+_1.extend(_2._Widget,{toggleSplitterState:"full",toggleSplitterFullSize:"",toggleSplitterCollapsedSize:""});
+return _3;
+});

@@ -1,49 +1,13 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dijit.Toolbar"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit.Toolbar"] = true;
-dojo.provide("dijit.Toolbar");
-
-dojo.require("dijit._Widget");
-dojo.require("dijit._KeyNavContainer");
-dojo.require("dijit._Templated");
-
-dojo.declare("dijit.Toolbar",
-	[dijit._Widget, dijit._Templated, dijit._KeyNavContainer],
-	{
-	// summary:
-	//		A Toolbar widget, used to hold things like `dijit.Editor` buttons
-
-	templateString:
-		'<div class="dijit dijitToolbar" waiRole="toolbar" tabIndex="${tabIndex}" dojoAttachPoint="containerNode">' +
-		//	'<table style="table-layout: fixed" class="dijitReset dijitToolbarTable">' + // factor out style
-		//		'<tr class="dijitReset" dojoAttachPoint="containerNode"></tr>'+
-		//	'</table>' +
-		'</div>',
-
-	postCreate: function(){
-		this.connectKeyNavHandlers(
-			this.isLeftToRight() ? [dojo.keys.LEFT_ARROW] : [dojo.keys.RIGHT_ARROW],
-			this.isLeftToRight() ? [dojo.keys.RIGHT_ARROW] : [dojo.keys.LEFT_ARROW]
-		);
-	},
-
-	startup: function(){
-		if(this._started){ return; }
-
-		this.startupKeyNavChildren();
-
-		this.inherited(arguments);
-	}
+//>>built
+define("dijit/Toolbar",["require","dojo/_base/declare","dojo/has","dojo/keys","dojo/ready","./_Widget","./_KeyNavContainer","./_TemplatedMixin"],function(_1,_2,_3,_4,_5,_6,_7,_8){
+if(_3("dijit-legacy-requires")){
+_5(0,function(){
+var _9=["dijit/ToolbarSeparator"];
+_1(_9);
+});
 }
-);
-
-// For back-compat, remove for 2.0
-dojo.require("dijit.ToolbarSeparator");
-
-}
+return _2("dijit.Toolbar",[_6,_8,_7],{templateString:"<div class=\"dijit\" role=\"toolbar\" tabIndex=\"${tabIndex}\" data-dojo-attach-point=\"containerNode\">"+"</div>",baseClass:"dijitToolbar",postCreate:function(){
+this.inherited(arguments);
+this.connectKeyNavHandlers(this.isLeftToRight()?[_4.LEFT_ARROW]:[_4.RIGHT_ARROW],this.isLeftToRight()?[_4.RIGHT_ARROW]:[_4.LEFT_ARROW]);
+}});
+});

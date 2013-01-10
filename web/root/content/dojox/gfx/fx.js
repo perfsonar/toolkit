@@ -1,288 +1,227 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.gfx.fx"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.gfx.fx"] = true;
-dojo.provide("dojox.gfx.fx");
-
-dojo.require("dojox.gfx.matrix");
-
-(function(){
-	var d = dojo, g = dojox.gfx, m = g.matrix;
-
-	// Generic interpolators. Should they be moved to dojox.fx?
-
-	var InterpolNumber = function(start, end){
-		this.start = start, this.end = end;
-	};
-	d.extend(InterpolNumber, {
-		getValue: function(r){
-			return (this.end - this.start) * r + this.start;
-		}
-	});
-
-	var InterpolUnit = function(start, end, unit){
-		this.start = start, this.end = end;
-		this.unit = unit;
-	};
-	d.extend(InterpolUnit, {
-		getValue: function(r){
-			return (this.end - this.start) * r + this.start + this.unit;
-		}
-	});
-
-	var InterpolColor = function(start, end){
-		this.start = start, this.end = end;
-		this.temp = new dojo.Color();
-	};
-	d.extend(InterpolColor, {
-		getValue: function(r){
-			return d.blendColors(this.start, this.end, r, this.temp);
-		}
-	});
-
-	var InterpolValues = function(values){
-		this.values = values;
-		this.length = values.length;
-	};
-	d.extend(InterpolValues, {
-		getValue: function(r){
-			return this.values[Math.min(Math.floor(r * this.length), this.length - 1)];
-		}
-	});
-
-	var InterpolObject = function(values, def){
-		this.values = values;
-		this.def = def ? def : {};
-	};
-	d.extend(InterpolObject, {
-		getValue: function(r){
-			var ret = dojo.clone(this.def);
-			for(var i in this.values){
-				ret[i] = this.values[i].getValue(r);
-			}
-			return ret;
-		}
-	});
-
-	var InterpolTransform = function(stack, original){
-		this.stack = stack;
-		this.original = original;
-	};
-	d.extend(InterpolTransform, {
-		getValue: function(r){
-			var ret = [];
-			dojo.forEach(this.stack, function(t){
-				if(t instanceof m.Matrix2D){
-					ret.push(t);
-					return;
-				}
-				if(t.name == "original" && this.original){
-					ret.push(this.original);
-					return;
-				}
-				if(!(t.name in m)){ return; }
-				var f = m[t.name];
-				if(typeof f != "function"){
-					// constant
-					ret.push(f);
-					return;
-				}
-				var val = dojo.map(t.start, function(v, i){
-								return (t.end[i] - v) * r + v;
-							}),
-					matrix = f.apply(m, val);
-				if(matrix instanceof m.Matrix2D){
-					ret.push(matrix);
-				}
-			}, this);
-			return ret;
-		}
-	});
-
-	var transparent = new d.Color(0, 0, 0, 0);
-
-	var getColorInterpol = function(prop, obj, name, def){
-		if(prop.values){
-			return new InterpolValues(prop.values);
-		}
-		var value, start, end;
-		if(prop.start){
-			start = g.normalizeColor(prop.start);
-		}else{
-			start = value = obj ? (name ? obj[name] : obj) : def;
-		}
-		if(prop.end){
-			end = g.normalizeColor(prop.end);
-		}else{
-			if(!value){
-				value = obj ? (name ? obj[name] : obj) : def;
-			}
-			end = value;
-		}
-		return new InterpolColor(start, end);
-	};
-
-	var getNumberInterpol = function(prop, obj, name, def){
-		if(prop.values){
-			return new InterpolValues(prop.values);
-		}
-		var value, start, end;
-		if(prop.start){
-			start = prop.start;
-		}else{
-			start = value = obj ? obj[name] : def;
-		}
-		if(prop.end){
-			end = prop.end;
-		}else{
-			if(typeof value != "number"){
-				value = obj ? obj[name] : def;
-			}
-			end = value;
-		}
-		return new InterpolNumber(start, end);
-	};
-
-	g.fx.animateStroke = function(/*Object*/ args){
-		// summary:
-		//	Returns an animation which will change stroke properties over time
-		// example:
-		//	|	dojox.gfx.fx.animateStroke{{
-		//	|		shape: shape,
-		//	|		duration: 500,
-		//	|		color: {start: "red", end: "green"},
-		//	|		width: {end: 15},
-		//	|		join:  {values: ["miter", "bevel", "round"]}
-		//	|	}).play();
-		if(!args.easing){ args.easing = d._defaultEasing; }
-		var anim = new d._Animation(args), shape = args.shape, stroke;
-		d.connect(anim, "beforeBegin", anim, function(){
-			stroke = shape.getStroke();
-			var prop = args.color, values = {}, value, start, end;
-			if(prop){
-				values.color = getColorInterpol(prop, stroke, "color", transparent);
-			}
-			prop = args.style;
-			if(prop && prop.values){
-				values.style = new InterpolValues(prop.values);
-			}
-			prop = args.width;
-			if(prop){
-				values.width = getNumberInterpol(prop, stroke, "width", 1);
-			}
-			prop = args.cap;
-			if(prop && prop.values){
-				values.cap = new InterpolValues(prop.values);
-			}
-			prop = args.join;
-			if(prop){
-				if(prop.values){
-					values.join = new InterpolValues(prop.values);
-				}else{
-					start = prop.start ? prop.start : (stroke && stroke.join || 0);
-					end = prop.end ? prop.end : (stroke && stroke.join || 0);
-					if(typeof start == "number" && typeof end == "number"){
-						values.join = new InterpolNumber(start, end);
-					}
-				}
-			}
-			this.curve = new InterpolObject(values, stroke);
-		});
-		d.connect(anim, "onAnimate", shape, "setStroke");
-		return anim; // dojo._Animation
-	};
-
-	g.fx.animateFill = function(/*Object*/ args){
-		// summary:
-		//	Returns an animation which will change fill color over time.
-		//	Only solid fill color is supported at the moment
-		// example:
-		//	|	dojox.gfx.fx.animateFill{{
-		//	|		shape: shape,
-		//	|		duration: 500,
-		//	|		color: {start: "red", end: "green"}
-		//	|	}).play();
-		if(!args.easing){ args.easing = d._defaultEasing; }
-		var anim = new d._Animation(args), shape = args.shape, fill;
-		d.connect(anim, "beforeBegin", anim, function(){
-			fill = shape.getFill();
-			var prop = args.color, values = {};
-			if(prop){
-				this.curve = getColorInterpol(prop, fill, "", transparent);
-			}
-		});
-		d.connect(anim, "onAnimate", shape, "setFill");
-		return anim; // dojo._Animation
-	};
-
-	g.fx.animateFont = function(/*Object*/ args){
-		// summary:
-		//	Returns an animation which will change font properties over time
-		// example:
-		//	|	dojox.gfx.fx.animateFont{{
-		//	|		shape: shape,
-		//	|		duration: 500,
-		//	|		variant: {values: ["normal", "small-caps"]},
-		//	|		size:  {end: 10, unit: "pt"}
-		//	|	}).play();
-		if(!args.easing){ args.easing = d._defaultEasing; }
-		var anim = new d._Animation(args), shape = args.shape, font;
-		d.connect(anim, "beforeBegin", anim, function(){
-			font = shape.getFont();
-			var prop = args.style, values = {}, value, start, end;
-			if(prop && prop.values){
-				values.style = new InterpolValues(prop.values);
-			}
-			prop = args.variant;
-			if(prop && prop.values){
-				values.variant = new InterpolValues(prop.values);
-			}
-			prop = args.weight;
-			if(prop && prop.values){
-				values.weight = new InterpolValues(prop.values);
-			}
-			prop = args.family;
-			if(prop && prop.values){
-				values.family = new InterpolValues(prop.values);
-			}
-			prop = args.size;
-			if(prop && prop.unit){
-				start = parseFloat(prop.start ? prop.start : (shape.font && shape.font.size || "0"));
-				end = parseFloat(prop.end ? prop.end : (shape.font && shape.font.size || "0"));
-				values.size = new InterpolUnit(start, end, prop.unit);
-			}
-			this.curve = new InterpolObject(values, font);
-		});
-		d.connect(anim, "onAnimate", shape, "setFont");
-		return anim; // dojo._Animation
-	};
-
-	g.fx.animateTransform = function(/*Object*/ args){
-		// summary:
-		//	Returns an animation which will change transformation over time
-		// example:
-		//	|	dojox.gfx.fx.animateTransform{{
-		//	|		shape: shape,
-		//	|		duration: 500,
-		//	|		transform: [
-		//	|			{name: "translate", start: [0, 0], end: [200, 200]},
-		//	|			{name: "original"}
-		//	|		]
-		//	|	}).play();
-		if(!args.easing){ args.easing = d._defaultEasing; }
-		var anim = new d._Animation(args), shape = args.shape, original;
-		d.connect(anim, "beforeBegin", anim, function(){
-			original = shape.getTransform();
-			this.curve = new InterpolTransform(args.transform, original);
-		});
-		d.connect(anim, "onAnimate", shape, "setTransform");
-		return anim; // dojo._Animation
-	};
-})();
-
+//>>built
+define("dojox/gfx/fx",["dojo/_base/lang","./_base","./matrix","dojo/_base/Color","dojo/_base/array","dojo/_base/fx","dojo/_base/connect"],function(_1,g,m,_2,_3,fx,_4){
+var _5=g.fx={};
+function _6(_7,_8){
+this.start=_7,this.end=_8;
+};
+_6.prototype.getValue=function(r){
+return (this.end-this.start)*r+this.start;
+};
+function _9(_a,_b,_c){
+this.start=_a,this.end=_b;
+this.units=_c;
+};
+_9.prototype.getValue=function(r){
+return (this.end-this.start)*r+this.start+this.units;
+};
+function _d(_e,_f){
+this.start=_e,this.end=_f;
+this.temp=new _2();
+};
+_d.prototype.getValue=function(r){
+return _2.blendColors(this.start,this.end,r,this.temp);
+};
+function _10(_11){
+this.values=_11;
+this.length=_11.length;
+};
+_10.prototype.getValue=function(r){
+return this.values[Math.min(Math.floor(r*this.length),this.length-1)];
+};
+function _12(_13,def){
+this.values=_13;
+this.def=def?def:{};
+};
+_12.prototype.getValue=function(r){
+var ret=_1.clone(this.def);
+for(var i in this.values){
+ret[i]=this.values[i].getValue(r);
 }
+return ret;
+};
+function _14(_15,_16){
+this.stack=_15;
+this.original=_16;
+};
+_14.prototype.getValue=function(r){
+var ret=[];
+_3.forEach(this.stack,function(t){
+if(t instanceof m.Matrix2D){
+ret.push(t);
+return;
+}
+if(t.name=="original"&&this.original){
+ret.push(this.original);
+return;
+}
+if(t.name=="matrix"){
+if((t.start instanceof m.Matrix2D)&&(t.end instanceof m.Matrix2D)){
+var _17=new m.Matrix2D();
+for(var p in t.start){
+_17[p]=(t.end[p]-t.start[p])*r+t.start[p];
+}
+ret.push(_17);
+}
+return;
+}
+if(!(t.name in m)){
+return;
+}
+var f=m[t.name];
+if(typeof f!="function"){
+ret.push(f);
+return;
+}
+var val=_3.map(t.start,function(v,i){
+return (t.end[i]-v)*r+v;
+}),_18=f.apply(m,val);
+if(_18 instanceof m.Matrix2D){
+ret.push(_18);
+}
+},this);
+return ret;
+};
+var _19=new _2(0,0,0,0);
+function _1a(_1b,obj,_1c,def){
+if(_1b.values){
+return new _10(_1b.values);
+}
+var _1d,_1e,end;
+if(_1b.start){
+_1e=g.normalizeColor(_1b.start);
+}else{
+_1e=_1d=obj?(_1c?obj[_1c]:obj):def;
+}
+if(_1b.end){
+end=g.normalizeColor(_1b.end);
+}else{
+if(!_1d){
+_1d=obj?(_1c?obj[_1c]:obj):def;
+}
+end=_1d;
+}
+return new _d(_1e,end);
+};
+function _1f(_20,obj,_21,def){
+if(_20.values){
+return new _10(_20.values);
+}
+var _22,_23,end;
+if(_20.start){
+_23=_20.start;
+}else{
+_23=_22=obj?obj[_21]:def;
+}
+if(_20.end){
+end=_20.end;
+}else{
+if(typeof _22!="number"){
+_22=obj?obj[_21]:def;
+}
+end=_22;
+}
+return new _6(_23,end);
+};
+_5.animateStroke=function(_24){
+if(!_24.easing){
+_24.easing=fx._defaultEasing;
+}
+var _25=new fx.Animation(_24),_26=_24.shape,_27;
+_4.connect(_25,"beforeBegin",_25,function(){
+_27=_26.getStroke();
+var _28=_24.color,_29={},_2a,_2b,end;
+if(_28){
+_29.color=_1a(_28,_27,"color",_19);
+}
+_28=_24.style;
+if(_28&&_28.values){
+_29.style=new _10(_28.values);
+}
+_28=_24.width;
+if(_28){
+_29.width=_1f(_28,_27,"width",1);
+}
+_28=_24.cap;
+if(_28&&_28.values){
+_29.cap=new _10(_28.values);
+}
+_28=_24.join;
+if(_28){
+if(_28.values){
+_29.join=new _10(_28.values);
+}else{
+_2b=_28.start?_28.start:(_27&&_27.join||0);
+end=_28.end?_28.end:(_27&&_27.join||0);
+if(typeof _2b=="number"&&typeof end=="number"){
+_29.join=new _6(_2b,end);
+}
+}
+}
+this.curve=new _12(_29,_27);
+});
+_4.connect(_25,"onAnimate",_26,"setStroke");
+return _25;
+};
+_5.animateFill=function(_2c){
+if(!_2c.easing){
+_2c.easing=fx._defaultEasing;
+}
+var _2d=new fx.Animation(_2c),_2e=_2c.shape,_2f;
+_4.connect(_2d,"beforeBegin",_2d,function(){
+_2f=_2e.getFill();
+var _30=_2c.color,_31={};
+if(_30){
+this.curve=_1a(_30,_2f,"",_19);
+}
+});
+_4.connect(_2d,"onAnimate",_2e,"setFill");
+return _2d;
+};
+_5.animateFont=function(_32){
+if(!_32.easing){
+_32.easing=fx._defaultEasing;
+}
+var _33=new fx.Animation(_32),_34=_32.shape,_35;
+_4.connect(_33,"beforeBegin",_33,function(){
+_35=_34.getFont();
+var _36=_32.style,_37={},_38,_39,end;
+if(_36&&_36.values){
+_37.style=new _10(_36.values);
+}
+_36=_32.variant;
+if(_36&&_36.values){
+_37.variant=new _10(_36.values);
+}
+_36=_32.weight;
+if(_36&&_36.values){
+_37.weight=new _10(_36.values);
+}
+_36=_32.family;
+if(_36&&_36.values){
+_37.family=new _10(_36.values);
+}
+_36=_32.size;
+if(_36&&_36.units){
+_39=parseFloat(_36.start?_36.start:(_34.font&&_34.font.size||"0"));
+end=parseFloat(_36.end?_36.end:(_34.font&&_34.font.size||"0"));
+_37.size=new _9(_39,end,_36.units);
+}
+this.curve=new _12(_37,_35);
+});
+_4.connect(_33,"onAnimate",_34,"setFont");
+return _33;
+};
+_5.animateTransform=function(_3a){
+if(!_3a.easing){
+_3a.easing=fx._defaultEasing;
+}
+var _3b=new fx.Animation(_3a),_3c=_3a.shape,_3d;
+_4.connect(_3b,"beforeBegin",_3b,function(){
+_3d=_3c.getTransform();
+this.curve=new _14(_3a.transform,_3d);
+});
+_4.connect(_3b,"onAnimate",_3c,"setTransform");
+return _3b;
+};
+return _5;
+});

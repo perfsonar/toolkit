@@ -1,5 +1,4 @@
-	/* dojox.layout.ExpandoPane */
-
+	
 	.dojoxExpandoPane {
 		overflow:hidden;
 		z-index:440 !important;
@@ -8,45 +7,38 @@
 	.dojoxExpandoPane .dojoxExpandoWrapper {
 		overflow:hidden;
 	}
-
 	.dojoxExpandoClosed .dojoxExpandoTitleNode {
 		display:none;
 	}
-
-	/* hide all layout children scrollbars when closed */
+	
 	.dojoxExpandoClosed .dojoxExpandoWrapper * {
 		overflow:hidden !important;
 	}
-
 	.dojoxExpandoTitleNode {
 		padding-right:6px; 
 		padding-left:6px;
 	}
-
 	.dojoxExpandoIcon .a11yNode {
 		display:none;
 		visibility:hidden;
 	}
-
 	.dojoxExpandoBottom .dojoxExpandoIcon,
 	.dojoxExpandoTop .dojoxExpandoIcon,
 	.dojoxExpandoLeft .dojoxExpandoIcon {
 		float:right;
 		margin-right:2px;
 	}
-
 	.dojoxExpandoRight .dojoxExpandoIcon {
 		float:left;
 		margin-left:2px;
 	}
-
 	.dojoxExpandoIcon {
 		width:14px;
 		cursor:pointer;
 		background-position:-60px 0px;
+		background-repeat: no-repeat;
 		height:14px;
 	}
-
 	.dojoxExpandoClosed .dojoxExpandoIcon {
 		background-position: 0px 0px;
 		margin:0 auto;
@@ -55,9 +47,7 @@
 	.dijitBorderContainer-dijitExpandoPane {
 		border: none !important; 
 	}
-
-	/* soria definitions */
-
+	
 	.soria .dojoxExpandoTitle {
 		height:16px;
 		font-size:0.9em;
@@ -83,16 +73,14 @@
 	}
 	
 	.soria .dojoxExpandoIcon {
-		background: url('../../../dijit/themes/soria/images/spriteRoundedIconsSmall.png') no-repeat center center;
-		background-position:-60px 0px;
+		background-image: url('../../../dijit/themes/soria/images/spriteRoundedIconsSmall.png');
 	}
 	
-	.soria .dojoxExpandoClosed .dojoxExpandoIcon {
-		background-position:0px 0px;
-		margin-right:3px;
+	.dj_ie6 .soria .dojoxExpandoIcon {
+		background-image: url('../../../dijit/themes/soria/images/spriteRoundedIconsSmall.gif');
 	}
+		
 	
-	/* tundra styles */
 	.tundra .dojoxExpandoTitle {
 		font-weight: bold;
 		padding: 5px;
@@ -116,25 +104,73 @@
 		background-color: #fafafa;
 		border: 1px solid #ccc !important;
 	}
-
 	.tundra .dojoxExpandoRight .dojoxExpandoTitle,
 	.tundra .dojoxExpandoLeft .dojoxExpandoTitle,
 	.tundra .dojoxExpandoClosed .dojoxExpandoTitle,
 	.tundra .dojoxExpandoClosed {
 		background-color: #fafafa;
 	}
-
-	/* open/closed states */
+	
 	.tundra .dojoxExpandoIcon {
-		background: url('../../../dijit/themes/tundra/images/minusButton.gif') no-repeat center center;
-		
-	}
-	.tundra .dojoxExpandoClosed .dojoxExpandoIcon {
-		background: url('../../../dijit/themes/tundra/images/plusButton.gif') no-repeat;
-		margin:3px;
+		background-image: url('../../../dijit/themes/tundra/images/spriteRoundedIconsSmall.gif');
 	}
 	
-	/* nihilo theme styles */
+	.tundra .dojoxExpandoClosed .dojoxExpandoIconLeft,
+	.tundra .dojoxExpandoClosed .dojoxExpandoIconRight,
+	.tundra .dojoxExpandoClosed .dojoxExpandoIconTop,
+	.tundra .dojoxExpandoClosed .dojoxExpandoIconBottom {
+		margin-top: 3px;
+	}
+	
+	
+	.claro .dojoxExpandoTitle {
+		font-weight: bold;
+		border:1px solid #769DC0;
+		border-bottom:none;
+        background-color:#cde8ff;
+		background-image: url("../../../dijit/themes/claro/images/standardGradient.png");
+        background-position:0px 0px;
+        background-repeat:repeat-x;
+		padding: 5px 7px 2px 7px;
+        min-height:17px;
+        color:#4a4a4a;
+	}
+		
+	.claro .dojoxExpandoClosed .dojoxExpandoTitle {
+		background: none;
+		background-color: #E6E6E7;
+		border: none;
+		padding:3px;
+	}
+	
+	.claro .dojoxExpandoClosed {
+		background: none;
+		background-color: #E6E6E7;
+		border: 1px solid #769DC0 !important;
+	}
+	.claro .dojoxExpandoRight .dojoxExpandoTitle,
+	.claro .dojoxExpandoLeft .dojoxExpandoTitle,
+	.claro .dojoxExpandoClosed .dojoxExpandoTitle{
+		background-color: #E6E6E7;
+	}
+	.claro .dojoxExpandoClosed .dojoxExpandoTitle{
+		background-image: url("../../../dijit/themes/claro/images/standardGradient.png");
+		background-position:0 0;
+	}
+	
+	
+	.claro .dojoxExpandoIcon {
+		background-image: url('../../../dijit/themes/tundra/images/spriteRoundedIconsSmall.gif');
+	}
+	
+	.claro .dojoxExpandoClosed .dojoxExpandoIconLeft,
+	.claro .dojoxExpandoClosed .dojoxExpandoIconRight,
+	.claro .dojoxExpandoClosed .dojoxExpandoIconTop,
+	.claro .dojoxExpandoClosed .dojoxExpandoIconBottom {
+		margin-top: 3px;
+	}
+	
+	
 	.nihilo .dojoxExpandoPane {
 		background: #fafafa;
 	}
@@ -164,16 +200,48 @@
 	}
 	
 	.nihilo .dojoxExpandoIcon {
-		background: url('../../../dijit/themes/nihilo/images/spriteRoundedIconsSmall.png') no-repeat center center;
-		background-position:-60px 0px;
+		background-image: url('../../../dijit/themes/nihilo/images/spriteRoundedIconsSmall.png');
 	}
 	
-	.nihilo .dojoxExpandoClosed .dojoxExpandoIcon {
-		background-position:0px 0px;
+	.dj_ie6 .nihilo .dojoxExpandoIcon {
+		background-image: url('../../../dijit/themes/nihilo/images/spriteRoundedIconsSmall.gif');
 	}
-	
+		
 	.nihilo .dojoxExpandoTop {
 		border-bottom:1px solid #ccc;
 		border-left:1px solid #ccc;
 		border-right:1px solid #ccc; 
+	}
+	
+	
+	
+	.dojoxExpandoClosed .dojoxExpandoIcon {
+		margin-right:4px;
+	}
+	.dojoxExpandoIconLeft {
+	  background-position: 0 0;
+	}
+	.dojoxExpandoClosed .dojoxExpandoIconLeft {
+	  background-position: -30px 0;
+		margin-right: 4px;
+	}
+	.dojoxExpandoIconRight {
+	  background-position: -30px 0;
+	}
+	.dojoxExpandoClosed .dojoxExpandoIconRight {
+	  background-position: 0 0;
+		margin-left: 4px;
+	}
+	.dojoxExpandoIconBottom {
+	  background-position: -15px 0;
+	}
+	.dojoxExpandoClosed .dojoxExpandoIconBottom {
+	  background-position: -45px 0;
+		margin-top:1px;
+	}
+	.dojoxExpandoIconTop {
+	  background-position: -45px 0;
+	}
+	.dojoxExpandoClosed .dojoxExpandoIconTop {
+	  background-position: -15px 0;
 	}

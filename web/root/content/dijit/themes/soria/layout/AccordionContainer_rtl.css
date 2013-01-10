@@ -1,8 +1,7 @@
 .dijitRtl .soria .dijitAccordionArrow {
-	background-position: 0px top;
+	background-position: 0 top;
 }
-
-.dijitRtl .soria .dijitAccordionTitle-selected .dijitAccordionArrow {
-	/* same rule as LTR mode, just listed to override previous rule in this file */
+.dijitRtl .soria .dijitAccordionTitleSelected .dijitAccordionArrow {
+	
 	background-position: -15px top;
 }

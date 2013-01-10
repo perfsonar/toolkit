@@ -1,1 +1,2 @@
-({"badPasswordMessage":"Неправильный пароль.","nomatchMessage":"Пароли не совпадают."})
+//>>built
+define("dojox/form/nls/ru/PasswordValidator",({nomatchMessage:"Пароли не совпадают.",badPasswordMessage:"Неправильный пароль."}));

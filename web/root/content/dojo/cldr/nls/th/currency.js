@@ -1,1 +1,8 @@
-({"HKD_displayName":"เหรียญฮ่องกง","CHF_displayName":"ฟรังก์สวิส","JPY_symbol":"¥","HKD_symbol":"HK$","CAD_displayName":"ดอลลาร์แคนาดา","CNY_displayName":"หยวนเหรินเหมินบี้","USD_symbol":"US$","AUD_displayName":"ดอลลาร์ออสเตรเลีย","JPY_displayName":"เยน","CAD_symbol":"Can$","USD_displayName":"ดอลลาร์สหรัฐ","EUR_symbol":"€","CNY_symbol":"￥","GBP_displayName":"ปอนด์สเตอร์ลิงอังกฤษ","GBP_symbol":"£","AUD_symbol":"$A","EUR_displayName":"ยูโร"})
+/*
+	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+//>>built
+define("dojo/cldr/nls/th/currency",{"AUD_displayName":"ดอลลาร์ออสเตรเลีย","CAD_displayName":"ดอลลาร์แคนาดา","CHF_displayName":"ฟรังก์สวิส","CNY_displayName":"หยวนเหรินหมินปี้ (สาธารณรัฐประชาชนจีน)","EUR_displayName":"ยูโร","GBP_displayName":"ปอนด์สเตอร์ลิง (สหราชอาณาจักร)","HKD_displayName":"ดอลลาร์ฮ่องกง","JPY_displayName":"เยนญี่ปุ่น","JPY_symbol":"¥","USD_displayName":"ดอลลาร์สหรัฐ"});

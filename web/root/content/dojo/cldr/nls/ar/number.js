@@ -1,1 +1,8 @@
-({"group":"٬","percentSign":"٪","exponential":"اس","list":"؛","decimal":"٫","nan":"ليس رقم","nativeZeroDigit":"٠","decimalFormat":"#,##0.###;#,##0.###-","currencyFormat":"¤ #,##0.00;¤ #,##0.00-","scientificFormat":"#E0","currencySpacing-afterCurrency-currencyMatch":"[:letter:]","infinity":"∞","minusSign":"-","currencySpacing-beforeCurrency-surroundingMatch":"[:digit:]","currencySpacing-afterCurrency-insertBetween":" ","plusSign":"+","currencySpacing-afterCurrency-surroundingMatch":"[:digit:]","currencySpacing-beforeCurrency-currencyMatch":"[:letter:]","perMille":"‰","percentFormat":"#,##0%","patternDigit":"#","currencySpacing-beforeCurrency-insertBetween":" "})
+/*
+	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+//>>built
+define("dojo/cldr/nls/ar/number",{"decimal":",","group":".","list":";","percentSign":"%","plusSign":"+","minusSign":"-","exponential":"E","perMille":"‰","infinity":"∞","nan":"NaN","decimalFormat":"#,##0.###;#,##0.###-","decimalFormat-short":"000T","currencyFormat":"¤ #,##0.00;¤ #,##0.00-"});

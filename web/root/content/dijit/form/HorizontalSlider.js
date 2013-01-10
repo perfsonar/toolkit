@@ -1,321 +1,200 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dijit.form.HorizontalSlider"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit.form.HorizontalSlider"] = true;
-dojo.provide("dijit.form.HorizontalSlider");
-
-dojo.require("dijit.form._FormWidget");
-dojo.require("dijit._Container");
-dojo.require("dojo.dnd.move");
-dojo.require("dijit.form.Button");
-dojo.require("dojo.number");
-dojo.require("dojo._base.fx");
-
-dojo.declare(
-	"dijit.form.HorizontalSlider",
-	[dijit.form._FormValueWidget, dijit._Container],
-{
-	// summary:
-	//		A form widget that allows one to select a value with a horizontally draggable handle
-
-	templateString:"<table class=\"dijit dijitReset dijitSlider\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" rules=\"none\" dojoAttachEvent=\"onkeypress:_onKeyPress\"\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t\t><td dojoAttachPoint=\"containerNode,topDecoration\" class=\"dijitReset\" style=\"text-align:center;width:100%;\"></td\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t></tr\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset dijitSliderButtonContainer dijitSliderButtonContainerH\"\n\t\t\t><div class=\"dijitSliderDecrementIconH\" tabIndex=\"-1\" style=\"display:none\" dojoAttachPoint=\"decrementButton\"><span class=\"dijitSliderButtonInner\">-</span></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><div class=\"dijitSliderBar dijitSliderBumper dijitSliderBumperH dijitSliderLeftBumper dijitSliderLeftBumper\" dojoAttachEvent=\"onmousedown:_onClkDecBumper\"></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><input dojoAttachPoint=\"valueNode\" type=\"hidden\" ${nameAttrSetting}\n\t\t\t/><div class=\"dijitReset dijitSliderBarContainerH\" waiRole=\"presentation\" dojoAttachPoint=\"sliderBarContainer\"\n\t\t\t\t><div waiRole=\"presentation\" dojoAttachPoint=\"progressBar\" class=\"dijitSliderBar dijitSliderBarH dijitSliderProgressBar dijitSliderProgressBarH\" dojoAttachEvent=\"onmousedown:_onBarClick\"\n\t\t\t\t\t><div class=\"dijitSliderMoveable dijitSliderMoveableH\" \n\t\t\t\t\t\t><div dojoAttachPoint=\"sliderHandle,focusNode\" class=\"dijitSliderImageHandle dijitSliderImageHandleH\" dojoAttachEvent=\"onmousedown:_onHandleClick\" waiRole=\"slider\" valuemin=\"${minimum}\" valuemax=\"${maximum}\"></div\n\t\t\t\t\t></div\n\t\t\t\t></div\n\t\t\t\t><div waiRole=\"presentation\" dojoAttachPoint=\"remainingBar\" class=\"dijitSliderBar dijitSliderBarH dijitSliderRemainingBar dijitSliderRemainingBarH\" dojoAttachEvent=\"onmousedown:_onBarClick\"></div\n\t\t\t></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><div class=\"dijitSliderBar dijitSliderBumper dijitSliderBumperH dijitSliderRightBumper dijitSliderRightBumper\" dojoAttachEvent=\"onmousedown:_onClkIncBumper\"></div\n\t\t></td\n\t\t><td class=\"dijitReset dijitSliderButtonContainer dijitSliderButtonContainerH\" style=\"right:0px;\"\n\t\t\t><div class=\"dijitSliderIncrementIconH\" tabIndex=\"-1\" style=\"display:none\" dojoAttachPoint=\"incrementButton\"><span class=\"dijitSliderButtonInner\">+</span></div\n\t\t></td\n\t></tr\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t\t><td dojoAttachPoint=\"containerNode,bottomDecoration\" class=\"dijitReset\" style=\"text-align:center;\"></td\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t></tr\n></table>\n",
-
-	// Overrides FormValueWidget.value to indicate numeric value
-	value: 0,
-
-	// showButtons: Boolean
-	//		Show increment/decrement buttons at the ends of the slider?
-	showButtons: true,
-
-	// minimum:: Integer
-	//		The minimum value the slider can be set to.
-	minimum: 0,
-
-	// maximum: Integer
-	//		The maximum value the slider can be set to.
-	maximum: 100,
-
-	// discreteValues: Integer
-	//		If specified, indicates that the slider handle has only 'discreteValues' possible positions,
-	//      and that after dragging the handle, it will snap to the nearest possible position.
-	//      Thus, the slider has only 'discreteValues' possible values.
-	//
-	//		For example, if minimum=10, maxiumum=30, and discreteValues=3, then the slider handle has
-	//		three possible positions, representing values 10, 20, or 30.
-	//
-	//		If discreteValues is not specified or if it's value is higher than the number of pixels
-	//		in the slider bar, then the slider handle can be moved freely, and the slider's value will be
-	//		computed/reported based on pixel position (in this case it will likely be fractional,
-	//      such as 123.456789).
-	discreteValues: Infinity,
-
-	// pageIncrement: Integer
-	//		If discreteValues is also specified, this indicates the amount of clicks (ie, snap positions)
-	//      that the slider handle is moved via pageup/pagedown keys.
-    //      If discreteValues is not specified, it indicates the number of pixels.
-	pageIncrement: 2,
-
-	// clickSelect: Boolean
-	//		If clicking the slider bar changes the value or not
-	clickSelect: true,
-
-	// slideDuration: Number
-	//		The time in ms to take to animate the slider handle from 0% to 100%,
-	//		when clicking the slider bar to make the handle move.
-	slideDuration: dijit.defaultDuration,
-
-	// Flag to _Templated
-	widgetsInTemplate: true,
-
-	attributeMap: dojo.delegate(dijit.form._FormWidget.prototype.attributeMap, {
-		id: ""
-	}),
-
-	baseClass: "dijitSlider",
-
-	_mousePixelCoord: "pageX",
-	_pixelCount: "w",
-	_startingPixelCoord: "x",
-	_startingPixelCount: "l",
-	_handleOffsetCoord: "left",
-	_progressPixelSize: "width",
-
-	_onKeyPress: function(/*Event*/ e){
-		if(this.disabled || this.readOnly || e.altKey || e.ctrlKey){ return; }
-		switch(e.charOrCode){
-			case dojo.keys.HOME:
-				this._setValueAttr(this.minimum, true);
-				break;
-			case dojo.keys.END:
-				this._setValueAttr(this.maximum, true);
-				break;
-			// this._descending === false: if ascending vertical (min on top)
-			// (this._descending || this.isLeftToRight()): if left-to-right horizontal or descending vertical
-			case ((this._descending || this.isLeftToRight()) ? dojo.keys.RIGHT_ARROW : dojo.keys.LEFT_ARROW):
-			case (this._descending === false ? dojo.keys.DOWN_ARROW : dojo.keys.UP_ARROW):
-			case (this._descending === false ? dojo.keys.PAGE_DOWN : dojo.keys.PAGE_UP):
-				this.increment(e);
-				break;
-			case ((this._descending || this.isLeftToRight()) ? dojo.keys.LEFT_ARROW : dojo.keys.RIGHT_ARROW):
-			case (this._descending === false ? dojo.keys.UP_ARROW : dojo.keys.DOWN_ARROW):
-			case (this._descending === false ? dojo.keys.PAGE_UP : dojo.keys.PAGE_DOWN):
-				this.decrement(e);
-				break;
-			default:
-				return;
-		}
-		dojo.stopEvent(e);
-	},
-
-	_onHandleClick: function(e){
-		if(this.disabled || this.readOnly){ return; }
-		if(!dojo.isIE){
-			// make sure you get focus when dragging the handle
-			// (but don't do on IE because it causes a flicker on mouse up (due to blur then focus)
-			dijit.focus(this.sliderHandle);
-		}
-		dojo.stopEvent(e);
-	},
-	
-	_isReversed: function(){
-		// summary:
-		//		Returns true if direction is from right to left
-		// tags:
-		//		protected extension
-		return !this.isLeftToRight();
-	},
-
-	_onBarClick: function(e){
-		if(this.disabled || this.readOnly || !this.clickSelect){ return; }
-		dijit.focus(this.sliderHandle);
-		dojo.stopEvent(e);
-		var abspos = dojo.coords(this.sliderBarContainer, true);
-		var pixelValue = e[this._mousePixelCoord] - abspos[this._startingPixelCoord];
-		this._setPixelValue(this._isReversed() ? (abspos[this._pixelCount] - pixelValue) : pixelValue, abspos[this._pixelCount], true);
-		this._movable.onMouseDown(e);
-	},
-
-	_setPixelValue: function(/*Number*/ pixelValue, /*Number*/ maxPixels, /*Boolean, optional*/ priorityChange){
-		if(this.disabled || this.readOnly){ return; }
-		pixelValue = pixelValue < 0 ? 0 : maxPixels < pixelValue ? maxPixels : pixelValue;
-		var count = this.discreteValues;
-		if(count <= 1 || count == Infinity){ count = maxPixels; }
-		count--;
-		var pixelsPerValue = maxPixels / count;
-		var wholeIncrements = Math.round(pixelValue / pixelsPerValue);
-		this._setValueAttr((this.maximum-this.minimum)*wholeIncrements/count + this.minimum, priorityChange);
-	},
-
-	_setValueAttr: function(/*Number*/ value, /*Boolean, optional*/ priorityChange){
-		// summary:
-		//		Hook so attr('value', value) works.
-		this.valueNode.value = this.value = value;
-		dijit.setWaiState(this.focusNode, "valuenow", value);
-		this.inherited(arguments);
-		var percent = (value - this.minimum) / (this.maximum - this.minimum);
-		var progressBar = (this._descending === false) ? this.remainingBar : this.progressBar;
-		var remainingBar = (this._descending === false) ? this.progressBar : this.remainingBar;
-		if(this._inProgressAnim && this._inProgressAnim.status != "stopped"){
-			this._inProgressAnim.stop(true);
-		}
-		if(priorityChange && this.slideDuration > 0 && progressBar.style[this._progressPixelSize]){
-			// animate the slider
-			var _this = this;
-			var props = {};
-			var start = parseFloat(progressBar.style[this._progressPixelSize]);
-			var duration = this.slideDuration * (percent-start/100);
-			if(duration == 0){ return; }
-			if(duration < 0){ duration = 0 - duration; }
-			props[this._progressPixelSize] = { start: start, end: percent*100, units:"%" };
-			this._inProgressAnim = dojo.animateProperty({ node: progressBar, duration: duration, 
-				onAnimate: function(v){ remainingBar.style[_this._progressPixelSize] = (100-parseFloat(v[_this._progressPixelSize])) + "%"; },
-				onEnd: function(){ delete _this._inProgressAnim; },
-				properties: props
-			})
-			this._inProgressAnim.play();
-		}
-		else{
-			progressBar.style[this._progressPixelSize] = (percent*100) + "%";
-			remainingBar.style[this._progressPixelSize] = ((1-percent)*100) + "%";
-		}
-	},
-
-	_bumpValue: function(signedChange){
-		if(this.disabled || this.readOnly){ return; }
-		var s = dojo.getComputedStyle(this.sliderBarContainer);
-		var c = dojo._getContentBox(this.sliderBarContainer, s);
-		var count = this.discreteValues;
-		if(count <= 1 || count == Infinity){ count = c[this._pixelCount]; }
-		count--;
-		var value = (this.value - this.minimum) * count / (this.maximum - this.minimum) + signedChange;
-		if(value < 0){ value = 0; }
-		if(value > count){ value = count; }
-		value = value * (this.maximum - this.minimum) / count + this.minimum;
-		this._setValueAttr(value, true);
-	},
-
-	_onClkBumper: function(val){
-		if(this.disabled || this.readOnly || !this.clickSelect){ return; }
-		this._setValueAttr(val, true);
-	},
-
-	_onClkIncBumper: function(){
-		this._onClkBumper(this._descending === false ? this.minimum : this.maximum);
-	},
-
-	_onClkDecBumper: function(){
-		this._onClkBumper(this._descending === false ? this.maximum : this.minimum);
-	},
-
-	decrement: function(e){
-		// summary:
-		//		Decrement slider by 1 unit
-		// tags:
-		//		private
-		this._bumpValue(e.charOrCode == dojo.keys.PAGE_DOWN ? -this.pageIncrement : -1);
-	},
-
-	increment: function(e){
-		// summary:
-		//		Increment slider by 1 unit
-		// tags:
-		//		private
-		this._bumpValue(e.charOrCode == dojo.keys.PAGE_UP ? this.pageIncrement : 1);
-	},
-
-	_mouseWheeled: function(/*Event*/ evt){
-		// summary:
-		//		Event handler for mousewheel where supported
-		dojo.stopEvent(evt);
-		// FIXME: this adds mouse wheel support for safari, though stopEvent doesn't prevent
-		// it from bleeding to window?!
-		var janky = !dojo.isMozilla;
-		var scroll = evt[(janky ? "wheelDelta" : "detail")] * (janky ? 1 : -1);
-		this[(scroll < 0 ? "decrement" : "increment")](evt);
-	},
-
-	startup: function(){
-		dojo.forEach(this.getChildren(), function(child){
-			if(this[child.container] != this.containerNode){
-				this[child.container].appendChild(child.domNode);
-			}
-		}, this);
-	},
-
-	_typematicCallback: function(/*Number*/ count, /*Object*/ button, /*Event*/ e){
-		if(count == -1){ return; }
-		this[(button == (this._descending? this.incrementButton : this.decrementButton))? "decrement" : "increment"](e);
-	},
-
-	postCreate: function(){
-		if(this.showButtons){
-			this.incrementButton.style.display="";
-			this.decrementButton.style.display="";
-			this._connects.push(dijit.typematic.addMouseListener(
-				this.decrementButton, this, "_typematicCallback", 25, 500));
-			this._connects.push(dijit.typematic.addMouseListener(
-				this.incrementButton, this, "_typematicCallback", 25, 500));
-		}
-		this.connect(this.domNode, !dojo.isMozilla ? "onmousewheel" : "DOMMouseScroll", "_mouseWheeled");
-
-		// define a custom constructor for a SliderMover that points back to me
-		var _self = this;
-		var mover = function(){
-			dijit.form._SliderMover.apply(this, arguments);
-			this.widget = _self;
-		};
-		dojo.extend(mover, dijit.form._SliderMover.prototype);
-
-		this._movable = new dojo.dnd.Moveable(this.sliderHandle, {mover: mover});
-		//find any associated label element and add to slider focusnode.
-		var label=dojo.query('label[for="'+this.id+'"]');
-		if(label.length){
-			label[0].id = (this.id+"_label");
-			dijit.setWaiState(this.focusNode, "labelledby", label[0].id);
-		}
-		dijit.setWaiState(this.focusNode, "valuemin", this.minimum);
-		dijit.setWaiState(this.focusNode, "valuemax", this.maximum);
-
-		this.inherited(arguments);
-	},
-
-	destroy: function(){
-		this._movable.destroy();
-		if(this._inProgressAnim && this._inProgressAnim.status != "stopped"){
-			this._inProgressAnim.stop(true);
-		}
-		this.inherited(arguments);	
-	}
-});
-
-dojo.declare("dijit.form._SliderMover",
-	dojo.dnd.Mover,
-{
-	onMouseMove: function(e){
-		var widget = this.widget;
-		var abspos = widget._abspos;
-		if(!abspos){
-			abspos = widget._abspos = dojo.coords(widget.sliderBarContainer, true);
-			widget._setPixelValue_ = dojo.hitch(widget, "_setPixelValue");
-			widget._isReversed_ = widget._isReversed();
-		}
-		var pixelValue = e[widget._mousePixelCoord] - abspos[widget._startingPixelCoord];
-		widget._setPixelValue_(widget._isReversed_ ? (abspos[widget._pixelCount]-pixelValue) : pixelValue, abspos[widget._pixelCount], false);
-	},
-	
-	destroy: function(e){
-		dojo.dnd.Mover.prototype.destroy.apply(this, arguments);
-		var widget = this.widget;
-		widget._abspos = null;
-		widget._setValueAttr(widget.value, true);
-	}
-});
-
-
-
+//>>built
+require({cache:{"url:dijit/form/templates/HorizontalSlider.html":"<table class=\"dijit dijitReset dijitSlider dijitSliderH\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" rules=\"none\" data-dojo-attach-event=\"onkeypress:_onKeyPress,onkeyup:_onKeyUp\"\n\trole=\"presentation\"\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t\t><td data-dojo-attach-point=\"topDecoration\" class=\"dijitReset dijitSliderDecoration dijitSliderDecorationT dijitSliderDecorationH\"></td\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t></tr\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset dijitSliderButtonContainer dijitSliderButtonContainerH\"\n\t\t\t><div class=\"dijitSliderDecrementIconH\" style=\"display:none\" data-dojo-attach-point=\"decrementButton\"><span class=\"dijitSliderButtonInner\">-</span></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><div class=\"dijitSliderBar dijitSliderBumper dijitSliderBumperH dijitSliderLeftBumper\" data-dojo-attach-event=\"press:_onClkDecBumper\"></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><input data-dojo-attach-point=\"valueNode\" type=\"hidden\" ${!nameAttrSetting}\n\t\t\t/><div class=\"dijitReset dijitSliderBarContainerH\" role=\"presentation\" data-dojo-attach-point=\"sliderBarContainer\"\n\t\t\t\t><div role=\"presentation\" data-dojo-attach-point=\"progressBar\" class=\"dijitSliderBar dijitSliderBarH dijitSliderProgressBar dijitSliderProgressBarH\" data-dojo-attach-event=\"press:_onBarClick\"\n\t\t\t\t\t><div class=\"dijitSliderMoveable dijitSliderMoveableH\"\n\t\t\t\t\t\t><div data-dojo-attach-point=\"sliderHandle,focusNode\" class=\"dijitSliderImageHandle dijitSliderImageHandleH\" data-dojo-attach-event=\"press:_onHandleClick\" role=\"slider\"></div\n\t\t\t\t\t></div\n\t\t\t\t></div\n\t\t\t\t><div role=\"presentation\" data-dojo-attach-point=\"remainingBar\" class=\"dijitSliderBar dijitSliderBarH dijitSliderRemainingBar dijitSliderRemainingBarH\" data-dojo-attach-event=\"press:_onBarClick\"></div\n\t\t\t></div\n\t\t></td\n\t\t><td class=\"dijitReset\"\n\t\t\t><div class=\"dijitSliderBar dijitSliderBumper dijitSliderBumperH dijitSliderRightBumper\" data-dojo-attach-event=\"press:_onClkIncBumper\"></div\n\t\t></td\n\t\t><td class=\"dijitReset dijitSliderButtonContainer dijitSliderButtonContainerH\"\n\t\t\t><div class=\"dijitSliderIncrementIconH\" style=\"display:none\" data-dojo-attach-point=\"incrementButton\"><span class=\"dijitSliderButtonInner\">+</span></div\n\t\t></td\n\t></tr\n\t><tr class=\"dijitReset\"\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t\t><td data-dojo-attach-point=\"containerNode,bottomDecoration\" class=\"dijitReset dijitSliderDecoration dijitSliderDecorationB dijitSliderDecorationH\"></td\n\t\t><td class=\"dijitReset\" colspan=\"2\"></td\n\t></tr\n></table>\n"}});
+define("dijit/form/HorizontalSlider",["dojo/_base/array","dojo/_base/declare","dojo/dnd/move","dojo/_base/event","dojo/_base/fx","dojo/dom-geometry","dojo/dom-style","dojo/keys","dojo/_base/lang","dojo/sniff","dojo/dnd/Moveable","dojo/dnd/Mover","dojo/query","dojo/mouse","../registry","../focus","../typematic","./Button","./_FormValueWidget","../_Container","dojo/text!./templates/HorizontalSlider.html"],function(_1,_2,_3,_4,fx,_5,_6,_7,_8,_9,_a,_b,_c,_d,_e,_f,_10,_11,_12,_13,_14){
+var _15=_2("dijit.form._SliderMover",_b,{onMouseMove:function(e){
+var _16=this.widget;
+var _17=_16._abspos;
+if(!_17){
+_17=_16._abspos=_5.position(_16.sliderBarContainer,true);
+_16._setPixelValue_=_8.hitch(_16,"_setPixelValue");
+_16._isReversed_=_16._isReversed();
 }
+var _18=e[_16._mousePixelCoord]-_17[_16._startingPixelCoord];
+_16._setPixelValue_(_16._isReversed_?(_17[_16._pixelCount]-_18):_18,_17[_16._pixelCount],false);
+},destroy:function(e){
+_b.prototype.destroy.apply(this,arguments);
+var _19=this.widget;
+_19._abspos=null;
+_19._setValueAttr(_19.value,true);
+}});
+var _1a=_2("dijit.form.HorizontalSlider",[_12,_13],{templateString:_14,value:0,showButtons:true,minimum:0,maximum:100,discreteValues:Infinity,pageIncrement:2,clickSelect:true,slideDuration:_e.defaultDuration,_setIdAttr:"",baseClass:"dijitSlider",cssStateNodes:{incrementButton:"dijitSliderIncrementButton",decrementButton:"dijitSliderDecrementButton",focusNode:"dijitSliderThumb"},_mousePixelCoord:"pageX",_pixelCount:"w",_startingPixelCoord:"x",_handleOffsetCoord:"left",_progressPixelSize:"width",_onKeyUp:function(e){
+if(this.disabled||this.readOnly||e.altKey||e.ctrlKey||e.metaKey){
+return;
+}
+this._setValueAttr(this.value,true);
+},_onKeyPress:function(e){
+if(this.disabled||this.readOnly||e.altKey||e.ctrlKey||e.metaKey){
+return;
+}
+switch(e.charOrCode){
+case _7.HOME:
+this._setValueAttr(this.minimum,false);
+break;
+case _7.END:
+this._setValueAttr(this.maximum,false);
+break;
+case ((this._descending||this.isLeftToRight())?_7.RIGHT_ARROW:_7.LEFT_ARROW):
+case (this._descending===false?_7.DOWN_ARROW:_7.UP_ARROW):
+case (this._descending===false?_7.PAGE_DOWN:_7.PAGE_UP):
+this.increment(e);
+break;
+case ((this._descending||this.isLeftToRight())?_7.LEFT_ARROW:_7.RIGHT_ARROW):
+case (this._descending===false?_7.UP_ARROW:_7.DOWN_ARROW):
+case (this._descending===false?_7.PAGE_UP:_7.PAGE_DOWN):
+this.decrement(e);
+break;
+default:
+return;
+}
+_4.stop(e);
+},_onHandleClick:function(e){
+if(this.disabled||this.readOnly){
+return;
+}
+if(!_9("ie")){
+_f.focus(this.sliderHandle);
+}
+_4.stop(e);
+},_isReversed:function(){
+return !this.isLeftToRight();
+},_onBarClick:function(e){
+if(this.disabled||this.readOnly||!this.clickSelect){
+return;
+}
+_f.focus(this.sliderHandle);
+_4.stop(e);
+var _1b=_5.position(this.sliderBarContainer,true);
+var _1c=e[this._mousePixelCoord]-_1b[this._startingPixelCoord];
+this._setPixelValue(this._isReversed()?(_1b[this._pixelCount]-_1c):_1c,_1b[this._pixelCount],true);
+this._movable.onMouseDown(e);
+},_setPixelValue:function(_1d,_1e,_1f){
+if(this.disabled||this.readOnly){
+return;
+}
+var _20=this.discreteValues;
+if(_20<=1||_20==Infinity){
+_20=_1e;
+}
+_20--;
+var _21=_1e/_20;
+var _22=Math.round(_1d/_21);
+this._setValueAttr(Math.max(Math.min((this.maximum-this.minimum)*_22/_20+this.minimum,this.maximum),this.minimum),_1f);
+},_setValueAttr:function(_23,_24){
+this._set("value",_23);
+this.valueNode.value=_23;
+this.focusNode.setAttribute("aria-valuenow",_23);
+this.inherited(arguments);
+var _25=(_23-this.minimum)/(this.maximum-this.minimum);
+var _26=(this._descending===false)?this.remainingBar:this.progressBar;
+var _27=(this._descending===false)?this.progressBar:this.remainingBar;
+if(this._inProgressAnim&&this._inProgressAnim.status!="stopped"){
+this._inProgressAnim.stop(true);
+}
+if(_24&&this.slideDuration>0&&_26.style[this._progressPixelSize]){
+var _28=this;
+var _29={};
+var _2a=parseFloat(_26.style[this._progressPixelSize]);
+var _2b=this.slideDuration*(_25-_2a/100);
+if(_2b==0){
+return;
+}
+if(_2b<0){
+_2b=0-_2b;
+}
+_29[this._progressPixelSize]={start:_2a,end:_25*100,units:"%"};
+this._inProgressAnim=fx.animateProperty({node:_26,duration:_2b,onAnimate:function(v){
+_27.style[_28._progressPixelSize]=(100-parseFloat(v[_28._progressPixelSize]))+"%";
+},onEnd:function(){
+delete _28._inProgressAnim;
+},properties:_29});
+this._inProgressAnim.play();
+}else{
+_26.style[this._progressPixelSize]=(_25*100)+"%";
+_27.style[this._progressPixelSize]=((1-_25)*100)+"%";
+}
+},_bumpValue:function(_2c,_2d){
+if(this.disabled||this.readOnly){
+return;
+}
+var s=_6.getComputedStyle(this.sliderBarContainer);
+var c=_5.getContentBox(this.sliderBarContainer,s);
+var _2e=this.discreteValues;
+if(_2e<=1||_2e==Infinity){
+_2e=c[this._pixelCount];
+}
+_2e--;
+var _2f=(this.value-this.minimum)*_2e/(this.maximum-this.minimum)+_2c;
+if(_2f<0){
+_2f=0;
+}
+if(_2f>_2e){
+_2f=_2e;
+}
+_2f=_2f*(this.maximum-this.minimum)/_2e+this.minimum;
+this._setValueAttr(_2f,_2d);
+},_onClkBumper:function(val){
+if(this.disabled||this.readOnly||!this.clickSelect){
+return;
+}
+this._setValueAttr(val,true);
+},_onClkIncBumper:function(){
+this._onClkBumper(this._descending===false?this.minimum:this.maximum);
+},_onClkDecBumper:function(){
+this._onClkBumper(this._descending===false?this.maximum:this.minimum);
+},decrement:function(e){
+this._bumpValue(e.charOrCode==_7.PAGE_DOWN?-this.pageIncrement:-1);
+},increment:function(e){
+this._bumpValue(e.charOrCode==_7.PAGE_UP?this.pageIncrement:1);
+},_mouseWheeled:function(evt){
+_4.stop(evt);
+this._bumpValue(evt.wheelDelta<0?-1:1,true);
+},startup:function(){
+if(this._started){
+return;
+}
+_1.forEach(this.getChildren(),function(_30){
+if(this[_30.container]!=this.containerNode){
+this[_30.container].appendChild(_30.domNode);
+}
+},this);
+this.inherited(arguments);
+},_typematicCallback:function(_31,_32,e){
+if(_31==-1){
+this._setValueAttr(this.value,true);
+}else{
+this[(_32==(this._descending?this.incrementButton:this.decrementButton))?"decrement":"increment"](e);
+}
+},buildRendering:function(){
+this.inherited(arguments);
+if(this.showButtons){
+this.incrementButton.style.display="";
+this.decrementButton.style.display="";
+}
+var _33=_c("label[for=\""+this.id+"\"]");
+if(_33.length){
+if(!_33[0].id){
+_33[0].id=this.id+"_label";
+}
+this.focusNode.setAttribute("aria-labelledby",_33[0].id);
+}
+this.focusNode.setAttribute("aria-valuemin",this.minimum);
+this.focusNode.setAttribute("aria-valuemax",this.maximum);
+},postCreate:function(){
+this.inherited(arguments);
+if(this.showButtons){
+this.own(_10.addMouseListener(this.decrementButton,this,"_typematicCallback",25,500),_10.addMouseListener(this.incrementButton,this,"_typematicCallback",25,500));
+}
+this.connect(this.domNode,_d.wheel,"_mouseWheeled");
+var _34=_2(_15,{widget:this});
+this._movable=new _a(this.sliderHandle,{mover:_34});
+this._layoutHackIE7();
+},destroy:function(){
+this._movable.destroy();
+if(this._inProgressAnim&&this._inProgressAnim.status!="stopped"){
+this._inProgressAnim.stop(true);
+}
+this.inherited(arguments);
+}});
+_1a._Mover=_15;
+return _1a;
+});

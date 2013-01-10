@@ -1,1 +1,2 @@
-({"close":"[اغلاق]","title":"العنوان","authors":"المؤلفين","summary":"الملخص","content":"محتويات","contributors":"المساهمين","updated":"تعديل في","displayOptions":"[اختيارات العرض]","id":"الكود"})
+//>>built
+define("dojox/atom/widget/nls/ar/FeedEntryViewer",({displayOptions:"[اختيارات العرض]",title:"العنوان",authors:"المؤلفين",contributors:"المساهمين",id:"الكود",close:"[اغلاق]",updated:"تحديث في",summary:"الملخص",content:"المحتويات"}));

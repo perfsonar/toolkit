@@ -1,9 +1,7 @@
-/* Calendar */
 
-.dijitRtl .tundra .dijitCalendarDecrease {
+.tundra .dijitCalendarRtl .dijitCalendarDecrease {
 	background-position: -30px top;
 }
-
-.dijitRtl .tundra .dijitCalendarIncrease {
-	background-position: 0px top;
+.tundra .dijitCalendarRtl .dijitCalendarIncrease {
+	background-position: 0 top;
 }

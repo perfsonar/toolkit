@@ -1,404 +1,238 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.data.JsonRestStore"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.data.JsonRestStore"] = true;
-dojo.provide("dojox.data.JsonRestStore");
-
-dojo.require("dojox.data.ServiceStore");
-dojo.require("dojox.rpc.JsonRest");
-
-
-dojo.declare("dojox.data.JsonRestStore",
-	dojox.data.ServiceStore,
-	{
-		constructor: function(options){
-			//summary:
-			//		JsonRestStore is a Dojo Data store interface to JSON HTTP/REST web
-			//		storage services that support read and write through GET, PUT, POST, and DELETE. 
-			// options: 
-			// 		Keyword arguments
-			//	
-			// The *schema* parameter
-			//		This is a schema object for this store. This should be JSON Schema format.
-			//
-			// The *service* parameter
-			// 		This is the service object that is used to retrieve lazy data and save results
-			// 		The function should be directly callable with a single parameter of an object id to be loaded
-			// 		The function should also have the following methods:
-			// 			put(id,value) - puts the value at the given id
-			// 			post(id,value) - posts (appends) the value at the given id
-			// 			delete(id) - deletes the value corresponding to the given id
-			//		Note that it is critical that the service parses responses as JSON.
-			//		If you are using dojox.rpc.Service, the easiest way to make sure this 
-			// 		happens is to make the responses have a content type of 
-			// 		application/json. If you are creating your own service, make sure you
-			//		use handleAs: "json" with your XHR requests.
-			//
-			// The *target* parameter
-			// 		This is the target URL for this Service store. This may be used in place
-			// 		of a service parameter to connect directly to RESTful URL without
-			// 		using a dojox.rpc.Service object.
-			//
-			// The *idAttribute* parameter
-			//		Defaults to 'id'. The name of the attribute that holds an objects id.
-			//		This can be a preexisting id provided by the server.
-			//		If an ID isn't already provided when an object
-			//		is fetched or added to the store, the autoIdentity system
-			//		will generate an id for it and add it to the index.
-			//
-			// The *syncMode* parameter
-			//		Setting this to true will set the store to using synchronous calls by default.
-			//		Sync calls return their data immediately from the calling function, so
-			//		callbacks are unnecessary
-			//
-			//	description:
-			//		The JsonRestStore will cause all saved modifications to be sent to the server using Rest commands (PUT, POST, or DELETE).
-			// 		When using a Rest store on a public network, it is important to implement proper security measures to
-			//		control access to resources.
-			//		On the server side implementing a REST interface means providing GET, PUT, POST, and DELETE handlers.
-			//		GET - Retrieve an object or array/result set, this can be by id (like /table/1) or with a 
-			// 			query (like /table/?name=foo). 
-			//		PUT - This should modify a object, the URL will correspond to the id (like /table/1), and the body will 
-			// 			provide the modified object
-			//		POST - This should create a new object. The URL will correspond to the target store (like /table/)
-			// 			and the body should be the properties of the new object. The server's response should include a
-			// 			Location header that indicates the id of the newly created object. This id will be used for subsequent
-			// 			PUT and DELETE requests. JsonRestStore also includes a Content-Location header that indicates
-			//			the temporary randomly generated id used by client, and this location is used for subsequent 
-			// 			PUT/DELETEs if no Location header is provided by the server or if a modification is sent prior 
-			// 			to receiving a response from the server. 
-			// 		DELETE - This should delete an object by id.
-			// 		These articles include more detailed information on using the JsonRestStore:
-			//		http://www.sitepen.com/blog/2008/06/13/restful-json-dojo-data/
-			//		http://blog.medryx.org/2008/07/24/jsonreststore-overview/
-			//		
-			//	example:
-			// 		A JsonRestStore takes a REST service or a URL and uses it the remote communication for a
-			// 		read/write dojo.data implementation. A JsonRestStore can be created with a simple URL like:
-			// 	|	new JsonRestStore({target:"/MyData/"});
-			//	example:
-			// 		To use a JsonRestStore with a service, you should create a
-			// 		service with a REST transport. This can be configured with an SMD:
-			//	|	{
-			//	|		services: {
-			//	|			jsonRestStore: {
-			//	|				transport: "REST",
-			//	|				envelope: "URL",
-			//	|				target: "store.php",
-			//	|				contentType:"application/json",
-			//	|				parameters: [
-			//	|					{name: "location", type: "string", optional: true}
-			//	|				]
-			//	|			}
-			//	|		}
-			//	|	}
-			// 		The SMD can then be used to create service, and the service can be passed to a JsonRestStore. For example:
-			//	|	var myServices = new dojox.rpc.Service(dojo.moduleUrl("dojox.rpc.tests.resources", "test.smd"));
-			//	|	var jsonStore = new dojox.data.JsonRestStore({service:myServices.jsonRestStore});
-			//	example:
-			//		The JsonRestStore also supports lazy loading. References can be made to objects that have not been loaded.
-			//		For example if a service returned:
-			//	|	{"name":"Example","lazyLoadedObject":{"$ref":"obj2"}}
-			// 		And this object has accessed using the dojo.data API:
-			//	|	var obj = jsonStore.getValue(myObject,"lazyLoadedObject");
-			//		The object would automatically be requested from the server (with an object id of "obj2").
-			//	
-
-			dojo.connect(dojox.rpc.Rest._index,"onUpdate",this,function(obj,attrName,oldValue,newValue){
-				var prefix = this.service.servicePath;
-				if(!obj.__id){
-					console.log("no id on updated object ", obj);
-				}else if(obj.__id.substring(0,prefix.length) == prefix){
-					this.onSet(obj,attrName,oldValue,newValue);
-				}
-			});
-			this.idAttribute = this.idAttribute || 'id';// no options about it, we have to have identity
-			//setup a byId alias to the api call
-			if(typeof options.target == 'string' && !this.service){
-				this.service = dojox.rpc.Rest(this.target,true); // create a default Rest service
-			}
-			dojox.rpc.JsonRest.registerService(this.service, options.target, this.schema);
-			this.schema = this.service._schema = this.schema || this.service._schema || {};
-			// wrap the service with so it goes through JsonRest manager 
-			this.service._store = this;
-			this.schema._idAttr = this.idAttribute;
-			var constructor = dojox.rpc.JsonRest.getConstructor(this.service);
-			var self = this;
-			this._constructor = function(data){
-				constructor.call(this, data);
-				self.onNew(this);
-			}
-			this._constructor.prototype = constructor.prototype;
-			this._index = dojox.rpc.Rest._index;
-			//given a url, load json data from as the store
-		},
-		referenceIntegrity: true,
-		target:"",
-		//Write API Support
-		newItem: function(data, parentInfo){
-			// summary:
-			//		adds a new item to the store at the specified point.
-			//		Takes two parameters, data, and options.
-			//
-			//	data: /* object */
-			//		The data to be added in as an item.
-			data = new this._constructor(data);
-			if(parentInfo){
-				// get the previous value or any empty array
-				var values = this.getValue(parentInfo.parent,parentInfo.attribute,[]);
-				// set the new value
-				this.setValue(parentInfo.parent,parentInfo.attribute,values.concat([data]));
-			}
-			return data;
-		},
-		deleteItem: function(item){
-			// summary:
-			//		deletes item and any references to that item from the store.
-			//
-			//	item:
-			//  	item to delete
-			//
-
-			//	If the desire is to delete only one reference, unsetAttribute or
-			//	setValue is the way to go.
-			var checked = [];
-			var store = dojox.data._getStoreForItem(item) || this;
-			if(this.referenceIntegrity){
-				// cleanup all references
-				dojox.rpc.JsonRest._saveNotNeeded = true;
-				var index = dojox.rpc.Rest._index;
-				var fixReferences = function(parent){
-					var toSplice;
-					// keep track of the checked ones
-					checked.push(parent);
-					// mark it checked so we don't run into circular loops when encountering cycles
-					parent.__checked = 1;
-					for(var i in parent){
-						var value = parent[i];
-						if(value == item){
-							if(parent != index){ // make sure we are just operating on real objects 
-								if(parent instanceof Array){
-									// mark it as needing to be spliced, don't do it now or it will mess up the index into the array
-									(toSplice = toSplice || []).push(i);	
-								}else{
-									// property, just delete it.
-									(dojox.data._getStoreForItem(parent) || store).unsetAttribute(parent, i);
-								}
-							}
-						}else{
-							if((typeof value == 'object') && value){
-								if(!value.__checked){
-									// recursively search
-									fixReferences(value);
-								}
-								if(typeof value.__checked == 'object' && parent != index){
-									// if it is a modified array, we will replace it
-									(dojox.data._getStoreForItem(parent) || store).setValue(parent, i, value.__checked);
-								}
-							}
-						}
-					}
-					if(toSplice){
-						// we need to splice the deleted item out of these arrays
-						i = toSplice.length;
-						parent = parent.__checked = parent.concat(); // indicates that the array is modified
-						while(i--){
-							parent.splice(toSplice[i], 1);
-						}
-						return parent;
-					}
-					return null;
-				};
-				// start with the index
-				fixReferences(index);
-				dojox.rpc.JsonRest._saveNotNeeded = false;
-				var i = 0;
-				while(checked[i]){
-					// remove the checked marker
-					delete checked[i++].__checked;
-				}
-			}			
-			dojox.rpc.JsonRest.deleteObject(item);
-
-			store.onDelete(item);
-		},
-		changing: function(item,_deleting){
-			// summary:
-			//		adds an item to the list of dirty items.  This item
-			//		contains a reference to the item itself as well as a
-			//		cloned and trimmed version of old item for use with
-			//		revert.
-			dojox.rpc.JsonRest.changing(item,_deleting);
-		},
-
-		setValue: function(item, attribute, value){
-			// summary:
-			//		sets 'attribute' on 'item' to 'value'
-
-			var old = item[attribute];
-			var store = item.__id ? dojox.data._getStoreForItem(item) : this;
-			if(dojox.json.schema && store.schema && store.schema.properties){
-				// if we have a schema and schema validator available we will validate the property change
-				dojox.json.schema.mustBeValid(dojox.json.schema.checkPropertyChange(value,store.schema.properties[attribute]));
-			}
-			if(attribute == store.idAttribute){
-				throw new Error("Can not change the identity attribute for an item");
-			}
-			store.changing(item);
-			item[attribute]=value;
-			store.onSet(item,attribute,old,value);
-		},
-		setValues: function(item, attribute, values){
-			// summary:
-			//	sets 'attribute' on 'item' to 'value' value
-			//	must be an array.
-
-
-			if(!dojo.isArray(values)){
-				throw new Error("setValues expects to be passed an Array object as its value");
-			}
-			this.setValue(item,attribute,values);
-		},
-
-		unsetAttribute: function(item, attribute){
-			// summary:
-			//		unsets 'attribute' on 'item'
-
-			this.changing(item);
-			var old = item[attribute];
-			delete item[attribute];
-			this.onSet(item,attribute,old,undefined);
-		},
-		save: function(kwArgs){
-			// summary:
-			//		Saves the dirty data using REST Ajax methods. See dojo.data.api.Write for API.
-			//
-			//	kwArgs.global:
-			//		This will cause the save to commit the dirty data for all 
-			// 		JsonRestStores as a single transaction.
-
-			if(!(kwArgs && kwArgs.global)){
-				(kwArgs = kwArgs || {}).service = this.service;
-			} 
-			var actions = dojox.rpc.JsonRest.commit(kwArgs);
-			this.serverVersion = this._updates && this._updates.length;
-			return actions;
-		},
-
-		revert: function(kwArgs){
-			// summary
-			//		returns any modified data to its original state prior to a save();
-			//
-			//	kwArgs.global:
-			//		This will cause the revert to undo all the changes for all 
-			// 		JsonRestStores in a single operation.
-			var dirtyObjects = dojox.rpc.JsonRest.getDirtyObjects().concat([]);
-			while (dirtyObjects.length>0){
-				var d = dirtyObjects.pop();
-				var store = dojox.data._getStoreForItem(d.object || d.old);
-				if(!d.object){
-					// was a deletion, we will add it back
-					store.onNew(d.old);
-				}else if(!d.old){
-					// was an addition, remove it
-					store.onDelete(d.object);
-				}else{
-					// find all the properties that were modified
-					for(var i in d.object){
-						if(d.object[i] != d.old[i]){
-							store.onSet(d.object, i, d.object[i], d.old[i]);
-						}
-					}
-				}
-			}
-			dojox.rpc.JsonRest.revert(kwArgs && kwArgs.global && this.service);
-		},
-
-		isDirty: function(item){
-			// summary
-			//		returns true if the item is marked as dirty.
-			return dojox.rpc.JsonRest.isDirty(item);
-		},
-		isItem: function(item, anyStore){
-			//	summary:
-			//		Checks to see if a passed 'item'
-			//		really belongs to this JsonRestStore.
-			//
-			//	item: /* object */
-			//		The value to test for being an item
-			//	anyStore: /* boolean*/
-			//		If true, this will return true if the value is an item for any JsonRestStore,
-			//		not just this instance
-			return item && item.__id && (anyStore || this.service == dojox.rpc.JsonRest.getServiceAndId(item.__id).service);
-		},
-		_doQuery: function(args){
-			var query= typeof args.queryStr == 'string' ? args.queryStr : args.query;
-			return dojox.rpc.JsonRest.query(this.service,query, args);
-		},
-		_processResults: function(results, deferred){
-			// index the results
-			var count = results.length;
-			// if we don't know the length, and it is partial result, we will guess that it is twice as big, that will work for most widgets
-			return {totalCount:deferred.fullLength || (deferred.request.count == count ? (deferred.request.start || 0) + count * 2 : count), items: results};
-		},
-
-		getConstructor: function(){
-			// summary:
-			// 		Gets the constructor for objects from this store
-			return this._constructor;
-		},
-		getIdentity: function(item){
-			var id = item.__clientId || item.__id;
-			if(!id){
-				return id;
-			}
-			var prefix = this.service.servicePath;
-			// support for relative or absolute referencing with ids 
-			return id.substring(0,prefix.length) != prefix ?  id : id.substring(prefix.length); // String
-		},
-		fetchItemByIdentity: function(args){
-			var id = args.identity;
-			var store = this;
-			// if it is an absolute id, we want to find the right store to query
-			if(id.toString().match(/^(\w*:)?\//)){
-				var serviceAndId = dojox.rpc.JsonRest.getServiceAndId(id);
-				store = serviceAndId.service._store;
-				args.identity = serviceAndId.id; 
-			}
-			args._prefix = store.service.servicePath;
-			return store.inherited(arguments);
-		},
-		//Notifcation Support
-
-		onSet: function(){},
-		onNew: function(){},
-		onDelete: 	function(){},
-
-		getFeatures: function(){
-			// summary:
-			// 		return the store feature set
-			var features = this.inherited(arguments);
-			features["dojo.data.api.Write"] = true;
-			features["dojo.data.api.Notification"] = true;
-			return features;
-		}
-
-
-	}
-);
-dojox.data._getStoreForItem = function(item){
-	if(item.__id){
-		var servicePath = item.__id.toString().match(/.*\//)[0];
-		var service = dojox.rpc.JsonRest.services[servicePath];
-		return service ? service._store : new dojox.data.JsonRestStore({target:servicePath});
-	}
-	return null;
-};
-dojox.json.ref._useRefs = true; // Use referencing when identifiable objects are referenced
-
+//>>built
+define("dojox/data/JsonRestStore",["dojo/_base/lang","dojo/_base/declare","dojo/_base/connect","dojox/rpc/Rest","dojox/rpc/JsonRest","dojox/json/schema","dojox/data/ServiceStore"],function(_1,_2,_3,_4,_5,_6,_7){
+var _8=_1.getObject("dojox.rpc",true);
+var _9=_2("dojox.data.JsonRestStore",_7,{constructor:function(_a){
+_3.connect(_4._index,"onUpdate",this,function(_b,_c,_d,_e){
+var _f=this.service.servicePath;
+if(!_b.__id){
+}else{
+if(_b.__id.substring(0,_f.length)==_f){
+this.onSet(_b,_c,_d,_e);
 }
+}
+});
+this.idAttribute=this.idAttribute||"id";
+if(typeof _a.target=="string"){
+_a.target=_a.target.match(/\/$/)||this.allowNoTrailingSlash?_a.target:(_a.target+"/");
+if(!this.service){
+this.service=_5.services[_a.target]||_4(_a.target,true);
+}
+}
+_5.registerService(this.service,_a.target,this.schema);
+this.schema=this.service._schema=this.schema||this.service._schema||{};
+this.service._store=this;
+this.service.idAsRef=this.idAsRef;
+this.schema._idAttr=this.idAttribute;
+var _10=_5.getConstructor(this.service);
+var _11=this;
+this._constructor=function(_12){
+_10.call(this,_12);
+_11.onNew(this);
+};
+this._constructor.prototype=_10.prototype;
+this._index=_4._index;
+},loadReferencedSchema:true,idAsRef:false,referenceIntegrity:true,target:"",allowNoTrailingSlash:false,newItem:function(_13,_14){
+_13=new this._constructor(_13);
+if(_14){
+var _15=this.getValue(_14.parent,_14.attribute,[]);
+_15=_15.concat([_13]);
+_13.__parent=_15;
+this.setValue(_14.parent,_14.attribute,_15);
+}
+return _13;
+},deleteItem:function(_16){
+var _17=[];
+var _18=_19._getStoreForItem(_16)||this;
+if(this.referenceIntegrity){
+_5._saveNotNeeded=true;
+var _1a=_4._index;
+var _1b=function(_1c){
+var _1d;
+_17.push(_1c);
+_1c.__checked=1;
+for(var i in _1c){
+if(i.substring(0,2)!="__"){
+var _1e=_1c[i];
+if(_1e==_16){
+if(_1c!=_1a){
+if(_1c instanceof Array){
+(_1d=_1d||[]).push(i);
+}else{
+(_19._getStoreForItem(_1c)||_18).unsetAttribute(_1c,i);
+}
+}
+}else{
+if((typeof _1e=="object")&&_1e){
+if(!_1e.__checked){
+_1b(_1e);
+}
+if(typeof _1e.__checked=="object"&&_1c!=_1a){
+(_19._getStoreForItem(_1c)||_18).setValue(_1c,i,_1e.__checked);
+}
+}
+}
+}
+}
+if(_1d){
+i=_1d.length;
+_1c=_1c.__checked=_1c.concat();
+while(i--){
+_1c.splice(_1d[i],1);
+}
+return _1c;
+}
+return null;
+};
+_1b(_1a);
+_5._saveNotNeeded=false;
+var i=0;
+while(_17[i]){
+delete _17[i++].__checked;
+}
+}
+_5.deleteObject(_16);
+_18.onDelete(_16);
+},changing:function(_1f,_20){
+_5.changing(_1f,_20);
+},cancelChanging:function(_21){
+if(!_21.__id){
+return;
+}
+dirtyObjects=_22=_5.getDirtyObjects();
+for(var i=0;i<dirtyObjects.length;i++){
+var _22=dirtyObjects[i];
+if(_21==_22.object){
+dirtyObjects.splice(i,1);
+return;
+}
+}
+},setValue:function(_23,_24,_25){
+var old=_23[_24];
+var _26=_23.__id?_19._getStoreForItem(_23):this;
+if(_6&&_26.schema&&_26.schema.properties){
+_6.mustBeValid(_6.checkPropertyChange(_25,_26.schema.properties[_24]));
+}
+if(_24==_26.idAttribute){
+throw new Error("Can not change the identity attribute for an item");
+}
+_26.changing(_23);
+_23[_24]=_25;
+if(_25&&!_25.__parent){
+_25.__parent=_23;
+}
+_26.onSet(_23,_24,old,_25);
+},setValues:function(_27,_28,_29){
+if(!_1.isArray(_29)){
+throw new Error("setValues expects to be passed an Array object as its value");
+}
+this.setValue(_27,_28,_29);
+},unsetAttribute:function(_2a,_2b){
+this.changing(_2a);
+var old=_2a[_2b];
+delete _2a[_2b];
+this.onSet(_2a,_2b,old,undefined);
+},save:function(_2c){
+if(!(_2c&&_2c.global)){
+(_2c=_2c||{}).service=this.service;
+}
+if("syncMode" in _2c?_2c.syncMode:this.syncMode){
+_8._sync=true;
+}
+var _2d=_5.commit(_2c);
+this.serverVersion=this._updates&&this._updates.length;
+return _2d;
+},revert:function(_2e){
+_5.revert(_2e&&_2e.global&&this.service);
+},isDirty:function(_2f){
+return _5.isDirty(_2f,this);
+},isItem:function(_30,_31){
+return _30&&_30.__id&&(_31||this.service==_5.getServiceAndId(_30.__id).service);
+},_doQuery:function(_32){
+var _33=typeof _32.queryStr=="string"?_32.queryStr:_32.query;
+var _34=_5.query(this.service,_33,_32);
+var _35=this;
+if(this.loadReferencedSchema){
+_34.addCallback(function(_36){
+var _37=_34.ioArgs&&_34.ioArgs.xhr&&_34.ioArgs.xhr.getResponseHeader("Content-Type");
+var _38=_37&&_37.match(/definedby\s*=\s*([^;]*)/);
+if(_37&&!_38){
+_38=_34.ioArgs.xhr.getResponseHeader("Link");
+_38=_38&&_38.match(/<([^>]*)>;\s*rel="?definedby"?/);
+}
+_38=_38&&_38[1];
+if(_38){
+var _39=_5.getServiceAndId((_35.target+_38).replace(/^(.*\/)?(\w+:\/\/)|[^\/\.]+\/\.\.\/|^.*\/(\/)/,"$2$3"));
+var _3a=_5.byId(_39.service,_39.id);
+_3a.addCallbacks(function(_3b){
+_1.mixin(_35.schema,_3b);
+return _36;
+},function(_3c){
+console.error(_3c);
+return _36;
+});
+return _3a;
+}
+return undefined;
+});
+}
+return _34;
+},_processResults:function(_3d,_3e){
+var _3f=_3d.length;
+return {totalCount:_3e.fullLength||(_3e.request.count==_3f?(_3e.request.start||0)+_3f*2:_3f),items:_3d};
+},getConstructor:function(){
+return this._constructor;
+},getIdentity:function(_40){
+var id=_40.__clientId||_40.__id;
+if(!id){
+return id;
+}
+var _41=this.service.servicePath.replace(/[^\/]*$/,"");
+return id.substring(0,_41.length)!=_41?id:id.substring(_41.length);
+},fetchItemByIdentity:function(_42){
+var id=_42.identity;
+var _43=this;
+if(id.toString().match(/^(\w*:)?\//)){
+var _44=_5.getServiceAndId(id);
+_43=_44.service._store;
+_42.identity=_44.id;
+}
+_42._prefix=_43.service.servicePath.replace(/[^\/]*$/,"");
+return _43.inherited(arguments);
+},onSet:function(){
+},onNew:function(){
+},onDelete:function(){
+},getFeatures:function(){
+var _45=this.inherited(arguments);
+_45["dojo.data.api.Write"]=true;
+_45["dojo.data.api.Notification"]=true;
+return _45;
+},getParent:function(_46){
+return _46&&_46.__parent;
+}});
+_9.getStore=function(_47,_48){
+if(typeof _47.target=="string"){
+_47.target=_47.target.match(/\/$/)||_47.allowNoTrailingSlash?_47.target:(_47.target+"/");
+var _49=(_5.services[_47.target]||{})._store;
+if(_49){
+return _49;
+}
+}
+return new (_48||_9)(_47);
+};
+var _19=_1.getObject("dojox.data",true);
+_19._getStoreForItem=function(_4a){
+if(_4a.__id){
+var _4b=_5.getServiceAndId(_4a.__id);
+if(_4b&&_4b.service._store){
+return _4b.service._store;
+}else{
+var _4c=_4a.__id.toString().match(/.*\//)[0];
+return new _9({target:_4c});
+}
+}
+return null;
+};
+var _4d=_1.getObject("dojox.json.ref",true);
+_4d._useRefs=true;
+return _9;
+});

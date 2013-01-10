@@ -34,8 +34,9 @@ if ($0 =~ /nph-/) {
 }
 #Get this out first so can get out error messages
 print $msg."Content-type: text/html\n\n";
-my $version="5.71, 2/23/2012, Les Cottrell";
-# used dig to get IPv6 address. Change SLAC logo. Fixed up some links.
+my $version="6.0, 10/5/2012, Les Cottrell";
+# Added meta tag to reduce robots visting the page and end up producing
+# a measurement as a result (and cache the results for all time in the process)
 
 ################################################################################
 #Understand the local environment
@@ -47,9 +48,7 @@ my $uid=scalar(getpwuid($<));
 #Get fully qualified IP address of the local host
 use Net::Domain qw(hostname hostfqdn hostdomain);
 my $hostname = hostfqdn();
-#my (undef, $aliases, $addrtype, $length, @addrs)=gethostbyname($hostname);
-#my ($a, $b, $c, $d)=unpack('C4',$addrs[0]);
-#my $ipaddr=$a.".".$b.".".$c.".".$d;
+my $ipv="4";#set default used by gethostbyname6 to decide if to force IPv6
 my $ipaddr=gethostbyname6($hostname);
 my $site="";#Allows us to special case SLAC's configuration
 if($hostname=~/\.slac\.stanford\.edu/) {$site="slac";}
@@ -114,9 +113,11 @@ if (defined $ENV{'HTTP_X_FORWARDED_FOR'}) {
   my $oldaddr=$addr;
   $addr = $ENV{'HTTP_X_FORWARDED_FOR'};
   $addr =~ s/,.*$//;  # if address1, address2, ... keep only address1
-  if($addr=~/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) {
-    if(private($addr)) { 
-      $warn.="Proxy provided a private IP address for your web client/browser,"
+  #if($addr=~/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) {
+  my $valid_ip=valid_ip($addr);
+  if($valid_ip eq "4" || $valid_ip eq "6") {
+    if($valid_ip eq "4" && private($addr)) { 
+      $warn.="Proxy provided a private IPv4 address for your web client/browser,"
           . " HTTP_X_FORWARDED_FOR=$ENV{'HTTP_X_FORWARDED_FOR'}<br>\n";
       $addr=$oldaddr;#Private address restore original address
     }     
@@ -151,6 +152,7 @@ my $ping_size="56";
 my $probe=""; #Can be overwritten (to -I) by probe=ICMP for traceroute
 foreach my $pair (@pairs) {
   my ($name,$value)=split(/=/,$pair);
+  $name=lc($name);
   if($name eq "target") {
     $addr=$value;
   }
@@ -171,7 +173,7 @@ foreach my $pair (@pairs) {
     elsif($value eq "traceroute") {;}
     else {
       $err .= "Invalid function value, "
-           .   "valid values=ping or tracepath or traceroute<br>\n";
+           .  "valid values=ping or tracepath or traceroute<br>\n";
     }
   }
   elsif($name eq "debug") {$debug=$value;}
@@ -187,6 +189,12 @@ foreach my $pair (@pairs) {
   }
   elsif($name eq "probe") {
     if($value=="ICMP")     {$probe="-I";}#OK for Linux & Solaris
+  }
+  elsif($name eq "ipv") {
+    $ipv=$value;
+    unless ($ipv eq "6" || $ipv eq "4"){
+      $err .= "ipv='$ipv' is invalid, if supplied  must equal 6 or 4<br>\n";
+    }
   }
 }
 ###########################################################################
@@ -250,14 +258,19 @@ my @target=split(/\./,$addr); my $target_domain;
 my $ipv6=0;
 if(valid_ip($addr) eq "6") { #Check for possible IPv6 addr format
   $ipv6=1;
-  $Tr = $Tr . "6";#append "6" on end of command name "traceroute" -> "traceroute6", 
-                  #"ping" -> "ping6"
+  if($archname ne 'solaris') {
+    $Tr = $Tr . "6";#append "6" on end of command name "traceroute" -> "traceroute6", 
+                    #"ping" -> "ping6"
+  }
+  else {
+    push(@Tropts, "-A inet6");
+  }
 }
 elsif(valid_ip($addr) eq "n") {#Target is a valid host name
   $host=$addr;
   $addr=(gethostbyname6($host));
   if($addr eq "") {
-    $err.="Can't find address for host name ".
+    $err.="Can't find IPv$ipv address for host name ".
           "<font color='red'> $host</font>.".
           " Probably an unknown host.<br>\n";
   }
@@ -273,7 +286,12 @@ elsif(valid_ip($addr) eq "n") {#Target is a valid host name
         $target_domain=$a1.".".$b1;
       }
     }
-    else {$ipv6=1; $Tr=$Tr."6";}
+    else {
+      $ipv6=1;
+      if($archname ne 'solaris') {$Tr=$Tr."6";}
+      #else                       {$Tr=$Tr." -A inet6 ";}#Unable to test. It gives traceroute: ifaddrlist: SIOCGLIFCONF: Error 0
+      else {push(@Tropts,"-A inet6");}
+    }
   }
 }
 elsif(valid_ip($addr) eq "4") {#$QUERY_STRING contains an IPv4 target address
@@ -395,7 +413,10 @@ else {$browser="";}
 $msg = "$function from $ipaddr ($ENV{SERVER_NAME}) "
      . "to $browser $addr ($host) for $ENV{'REMOTE_ADDR'}";
 if($host eq "") {$host="host with no DNS entry";}
-print "<title>$msg</title>\n";# Now put out title and header
+###############Put out header etc.#####################
+print "<html>\n<head>\n<title>$msg</title>\n"
+    . "<meta name='robots' content='noindex,nofollow'>\n"
+    . "</head>\n<body>\n";
 ##################################################################################
 # *** Sites may want to tailor the following statement to meet their needs. ******
 if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
@@ -607,9 +628,8 @@ sub private {
      #127.0.0.0 - 127.255.255.255 local loopback
      my ($a1, $b1, $c1, $d1)=split(/\./,$addr);
      if (  ($a1 ==  10) 
-        ||( ($a1 == 172) && (($b1 >= 16) && ($b1 <= 31))                          )
-        ||( ($a1 == 192) &&  ($b1 == 168)                                        )
-        ||( ($a1 == 127) )
+        ||( ($a1 == 172) && (($b1 >= 16)  && ($b1 <=  31)))
+        ||( ($a1 == 192) &&  ($b1 == 168) || ($a1 == 127))
        ){#Is it a private address?
        return 1;
      } 
@@ -657,7 +677,7 @@ sub gethostbyname6 {
   # returns IPv6 address if successful else returns ""
   my $name=$_[0];
   my $ipaddr="";
-  if(gethostbyname($name)) {
+  if($ipv eq "4" && gethostbyname($name)) {
     $ipaddr=gethostbyname($name);
     my ($a1, $b1, $c1, $d1)=unpack('C4',$ipaddr);
     $ipaddr=$a1.".".$b1.".".$c1.".".$d1;
@@ -679,6 +699,9 @@ sub gethostbyname6 {
   return $ipaddr;
 }
 __END__
+#Examples:
+http://net.its.hawaii.edu/cgi-bin/traceroute.pl?target=2001%3A4860%3A8005%3A%3A68&function=traceroute&ipv=6
+http://www.slac.stanford.edu/cgi-bin/traceroute.pl?target=ipv6.google.com&function=traceroute
 #--------------------------------------------------------------#
 #                                                              #
 #                      DISCLAIMER NOTICE                       #
@@ -955,3 +978,11 @@ __END__
 #my $version="5.5, 12/02/2011, Les Cottrell";
 #Make $hostname work with IPv4 & IPv6
 
+#version="5.71, 2/23/2012, Les Cottrell";
+# used dig to get IPv6 address. Change SLAC logo. Fixed up some links.
+
+#$version="5.8, 5/12/2012, Les Cottrell";
+# Added option to force IPv6, made fix to private proxy address
+
+#$verson="5.9, 6/4/2012, Les Cottrell";
+# Attempted to support ipv6 on Solaris, unable to test.

@@ -1,1 +1,2 @@
-({"previousMessage":"Prejšnje možnosti","nextMessage":"Dodatne možnosti"})
+//>>built
+define("dijit/form/nls/sl/ComboBox",({previousMessage:"Prejšnje izbire",nextMessage:"Dodatne izbire"}));

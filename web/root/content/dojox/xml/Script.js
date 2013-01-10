@@ -1,22 +1,8 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.xml.Script"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.xml.Script"] = true;
-dojo.provide("dojox.xml.Script");
-dojo.require("dojo.parser");
-dojo.require("dojox.xml.widgetParser");
-
-dojo.declare("dojox.xml.Script", null, {
-	constructor: function(props, node){
-		dojo.parser.instantiate(
-			dojox.xml.widgetParser._processScript(node)
-		);
-	}
+//>>built
+define("dojox/xml/Script",["dojo/_base/kernel","dojo/_base/declare","dojo/parser","./widgetParser"],function(_1,_2,_3){
+dojo.getObject("xml",true,dojox);
+_1("dojox.xml.Script",null,{constructor:function(_4,_5){
+_2.instantiate(_3._processScript(_5));
+}});
+return dojox.xml.Script;
 });
-
-}

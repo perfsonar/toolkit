@@ -1,1 +1,2 @@
-({"close":"[ปิด]","title":"ชื่อเรื่อง","authors":"ผู้เขียน","summary":"สรุป","content":"เนื้อหา","contributors":"ผู้อนุเคราะห์","updated":"อัพเดต","displayOptions":"[อ็อพชันการแสดงผล]","id":"ID"})
+//>>built
+define("dojox/atom/widget/nls/th/FeedEntryViewer",({displayOptions:"[แสดงอ็อพชัน]",title:"หัวเรื่อง",authors:"ผู้เขียน",contributors:"ผู้ร่วมให้ข้อมูล",id:"ID",close:"[ปิด]",updated:"อัพเดต",summary:"ยอดรวม",content:"เนื้อหา"}));

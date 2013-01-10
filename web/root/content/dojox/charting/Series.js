@@ -1,27 +1,24 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.charting.Series"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.charting.Series"] = true;
-dojo.provide("dojox.charting.Series");
-
-dojo.require("dojox.charting.Element");
-
-dojo.declare("dojox.charting.Series", dojox.charting.Element, {
-	constructor: function(chart, data, kwArgs){
-		dojo.mixin(this, kwArgs);
-		if(typeof this.plot != "string"){ this.plot = "default"; }
-		this.data = data;
-		this.dirty = true;
-		this.clear();
-	},
-	clear: function(){
-		this.dyn = {};
-	}
-});
-
+//>>built
+define("dojox/charting/Series",["dojo/_base/lang","dojo/_base/declare","./Element"],function(_1,_2,_3){
+return _2("dojox.charting.Series",_3,{constructor:function(_4,_5,_6){
+_1.mixin(this,_6);
+if(typeof this.plot!="string"){
+this.plot="default";
 }
+this.update(_5);
+},clear:function(){
+this.dyn={};
+},update:function(_7){
+if(_1.isArray(_7)){
+this.data=_7;
+}else{
+this.source=_7;
+this.data=this.source.data;
+if(this.source.setSeriesObject){
+this.source.setSeriesObject(this);
+}
+}
+this.dirty=true;
+this.clear();
+}});
+});

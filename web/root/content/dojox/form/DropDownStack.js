@@ -1,21 +1,4 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.form.DropDownStack"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.form.DropDownStack"] = true;
-dojo.provide("dojox.form.DropDownStack");
-
-dojo.require("dojox.form.DropDownSelect");
-dojo.require("dojox.form._SelectStackMixin");
-
-dojo.declare("dojox.form.DropDownStack",
-	[ dojox.form.DropDownSelect, dojox.form._SelectStackMixin ], {
-	// summary: A dropdown-based select stack.
-	
+//>>built
+define("dojox/form/DropDownStack",["dijit/form/Select","./_SelectStackMixin","dojo/_base/declare"],function(_1,_2,_3){
+return _3("dojox.form.DropDownStack",[_1,_2]);
 });
-
-}

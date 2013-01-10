@@ -1,1 +1,2 @@
-({"next":"Következő","done":"Kész","previous":"Előző"})
+//>>built
+define("dojox/widget/nls/hu/Wizard",({next:"Tovább",previous:"Előző",done:"Kész"}));

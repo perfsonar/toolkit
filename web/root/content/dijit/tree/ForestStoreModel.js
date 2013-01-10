@@ -1,228 +1,77 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dijit.tree.ForestStoreModel"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit.tree.ForestStoreModel"] = true;
-dojo.provide("dijit.tree.ForestStoreModel");
-
-dojo.require("dijit.tree.TreeStoreModel");
-
-dojo.declare("dijit.tree.ForestStoreModel", dijit.tree.TreeStoreModel, {
-	// summary:
-	//		Interface between Tree and a dojo.store that doesn't have a root item,
-	//		i.e. has multiple "top level" items.
-	//
-	// description
-	//		Use this class to wrap a dojo.store, making all the items matching the specified query
-	//		appear as children of a fabricated "root item".  If no query is specified then all the
-	//		items returned by fetch() on the underlying store become children of the root item.
-	//		It allows dijit.Tree to assume a single root item, even if the store doesn't have one.
-
-	// Parameters to constructor
-
-	// rootId: String
-	//		ID of fabricated root item
-	rootId: "$root$",
-
-	// rootLabel: String
-	//		Label of fabricated root item
-	rootLabel: "ROOT",
-
-	// query: String
-	//		Specifies the set of children of the root item.
-	// example:
-	//	|	{type:'continent'}
-	query: null,
-
-	// End of parameters to constructor
-
-	constructor: function(params){
-		// summary:
-		//		Sets up variables, etc.
-		// tags:
-		//		private
-
-		// Make dummy root item
-		this.root = {
-			store: this,
-			root: true,
-			id: params.rootId,
-			label: params.rootLabel,
-			children: params.rootChildren	// optional param
-		};
-	},
-
-	// =======================================================================
-	// Methods for traversing hierarchy
-
-	mayHaveChildren: function(/*dojo.data.Item*/ item){
-		// summary:
-		//		Tells if an item has or may have children.  Implementing logic here
-		//		avoids showing +/- expando icon for nodes that we know don't have children.
-		//		(For efficiency reasons we may not want to check if an element actually
-		//		has children until user clicks the expando node)
-		// tags:
-		//		extension
-		return item === this.root || this.inherited(arguments);
-	},
-
-	getChildren: function(/*dojo.data.Item*/ parentItem, /*function(items)*/ callback, /*function*/ onError){
-		// summary:
-		// 		Calls onComplete() with array of child items of given parent item, all loaded.
-		if(parentItem === this.root){
-			if(this.root.children){
-				// already loaded, just return
-				callback(this.root.children);
-			}else{
-				this.store.fetch({
-					query: this.query,
-					onComplete: dojo.hitch(this, function(items){
-						this.root.children = items;
-						callback(items);
-					}),
-					onError: onError
-				});
-			}
-		}else{
-			this.inherited(arguments);
-		}
-	},
-
-	// =======================================================================
-	// Inspecting items
-
-	getIdentity: function(/* item */ item){
-		return (item === this.root) ? this.root.id : this.inherited(arguments);
-	},
-
-	getLabel: function(/* item */ item){
-		return	(item === this.root) ? this.root.label : this.inherited(arguments);
-	},
-
-	// =======================================================================
-	// Write interface
-
-	newItem: function(/* Object? */ args, /*Item*/ parent){
-		// summary:
-		//		Creates a new item.   See dojo.data.api.Write for details on args.
-		//		Used in drag & drop when item from external source dropped onto tree.
-		if(parent===this.root){
-			this.onNewRootItem(args);
-			return this.store.newItem(args);
-		}else{
-			return this.inherited(arguments);
-		}
-	},
- 
-	onNewRootItem: function(args){
-		// summary:
-		//		User can override this method to modify a new element that's being
-		//		added to the root of the tree, for example to add a flag like root=true
-	},
-
-	pasteItem: function(/*Item*/ childItem, /*Item*/ oldParentItem, /*Item*/ newParentItem, /*Boolean*/ bCopy, /*int?*/ insertIndex){
-		// summary:
-		//		Move or copy an item from one parent item to another.
-		//		Used in drag & drop
-		if(oldParentItem === this.root){
-			if(!bCopy){
-				// It's onLeaveRoot()'s responsibility to modify the item so it no longer matches
-				// this.query... thus triggering an onChildrenChange() event to notify the Tree
-				// that this element is no longer a child of the root node
-				this.onLeaveRoot(childItem);
-			}
-		}
-		dijit.tree.TreeStoreModel.prototype.pasteItem.call(this, childItem,
-			oldParentItem === this.root ? null : oldParentItem,
-			newParentItem === this.root ? null : newParentItem,
-			bCopy,
-			insertIndex
-		);
-		if(newParentItem === this.root){
-			// It's onAddToRoot()'s responsibility to modify the item so it matches
-			// this.query... thus triggering an onChildrenChange() event to notify the Tree
-			// that this element is now a child of the root node
-			this.onAddToRoot(childItem);
-		}
-	},
-
-	// =======================================================================
-	// Handling for top level children
-	
-	onAddToRoot: function(/* item */ item){
-		// summary:
-		//		Called when item added to root of tree; user must override this method
-		//		to modify the item so that it matches the query for top level items
-		// example:
-		//	|	store.setValue(item, "root", true);
-		// tags:
-		//		extension
-		console.log(this, ": item ", item, " added to root");
-	},
-
-	onLeaveRoot: function(/* item */ item){
-		// summary:
-		//		Called when item removed from root of tree; user must override this method
-		//		to modify the item so it doesn't match the query for top level items
-		// example:
-		// 	|	store.unsetAttribute(item, "root");
-		// tags:
-		//		extension
-		console.log(this, ": item ", item, " removed from root");
-	},
-	
-	// =======================================================================
-	// Events from data store
-
-	_requeryTop: function(){
-		// reruns the query for the children of the root node,
-		// sending out an onSet notification if those children have changed
-		var oldChildren = this.root.children || [];
-		this.store.fetch({
-			query: this.query,
-			onComplete: dojo.hitch(this, function(newChildren){
-				this.root.children = newChildren;
-
-				// If the list of children or the order of children has changed...	
-				if(oldChildren.length != newChildren.length ||
-					dojo.some(oldChildren, function(item, idx){ return newChildren[idx] != item;})){
-					this.onChildrenChange(this.root, newChildren);
-				}
-			})
-		});
-	},
-
-	_onNewItem: function(/* dojo.data.Item */ item, /* Object */ parentInfo){
-		// summary:
-		//		Handler for when new items appear in the store.
-
-		//		In theory, any new item could be a top level item.
-		//		Do the safe but inefficient thing by requerying the top
-		//		level items.   User can override this function to do something
-		//		more efficient.
-		this._requeryTop();
-
-		this.inherited(arguments);
-	},
-
-	_onDeleteItem: function(/*Object*/ item){
-		// summary:
-		//		Handler for delete notifications from underlying store
-
-		// check if this was a child of root, and if so send notification that root's children
-		// have changed
-		if(dojo.indexOf(this.root.children, item) != -1){
-			this._requeryTop();
-		}
-
-		this.inherited(arguments);
-	}
-});
-
-
-
+//>>built
+define("dijit/tree/ForestStoreModel",["dojo/_base/array","dojo/_base/declare","dojo/_base/kernel","dojo/_base/lang","./TreeStoreModel"],function(_1,_2,_3,_4,_5){
+return _2("dijit.tree.ForestStoreModel",_5,{rootId:"$root$",rootLabel:"ROOT",query:null,constructor:function(_6){
+this.root={store:this,root:true,id:_6.rootId,label:_6.rootLabel,children:_6.rootChildren};
+},mayHaveChildren:function(_7){
+return _7===this.root||this.inherited(arguments);
+},getChildren:function(_8,_9,_a){
+if(_8===this.root){
+if(this.root.children){
+_9(this.root.children);
+}else{
+this.store.fetch({query:this.query,onComplete:_4.hitch(this,function(_b){
+this.root.children=_b;
+_9(_b);
+}),onError:_a});
 }
+}else{
+this.inherited(arguments);
+}
+},isItem:function(_c){
+return (_c===this.root)?true:this.inherited(arguments);
+},fetchItemByIdentity:function(_d){
+if(_d.identity==this.root.id){
+var _e=_d.scope||_3.global;
+if(_d.onItem){
+_d.onItem.call(_e,this.root);
+}
+}else{
+this.inherited(arguments);
+}
+},getIdentity:function(_f){
+return (_f===this.root)?this.root.id:this.inherited(arguments);
+},getLabel:function(_10){
+return (_10===this.root)?this.root.label:this.inherited(arguments);
+},newItem:function(_11,_12,_13){
+if(_12===this.root){
+this.onNewRootItem(_11);
+return this.store.newItem(_11);
+}else{
+return this.inherited(arguments);
+}
+},onNewRootItem:function(){
+},pasteItem:function(_14,_15,_16,_17,_18){
+if(_15===this.root){
+if(!_17){
+this.onLeaveRoot(_14);
+}
+}
+this.inherited(arguments,[_14,_15===this.root?null:_15,_16===this.root?null:_16,_17,_18]);
+if(_16===this.root){
+this.onAddToRoot(_14);
+}
+},onAddToRoot:function(_19){
+},onLeaveRoot:function(_1a){
+},_requeryTop:function(){
+var _1b=this.root.children||[];
+this.store.fetch({query:this.query,onComplete:_4.hitch(this,function(_1c){
+this.root.children=_1c;
+if(_1b.length!=_1c.length||_1.some(_1b,function(_1d,idx){
+return _1c[idx]!=_1d;
+})){
+this.onChildrenChange(this.root,_1c);
+}
+})});
+},onNewItem:function(_1e,_1f){
+this._requeryTop();
+this.inherited(arguments);
+},onDeleteItem:function(_20){
+if(_1.indexOf(this.root.children,_20)!=-1){
+this._requeryTop();
+}
+this.inherited(arguments);
+},onSetItem:function(_21,_22,_23,_24){
+this._requeryTop();
+this.inherited(arguments);
+}});
+});

@@ -1,1 +1,2 @@
-({"close":"[chiudi]","title":"Titolo","authors":"Autori","summary":"Riepilogo","content":"Indice","contributors":"Collaboratori","updated":"Aggiornato","displayOptions":"[visualizza opzioni]","id":"ID"})
+//>>built
+define("dojox/atom/widget/nls/it/FeedEntryViewer",({displayOptions:"[visualizza opzioni]",title:"Titolo",authors:"Autori",contributors:"Contributor",id:"ID",close:"[chiudi]",updated:"Aggiornato",summary:"Riepilogo",content:"Contenuto"}));

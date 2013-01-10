@@ -1,55 +1,23 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.form.TimeSpinner"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.form.TimeSpinner"] = true;
-dojo.provide("dojox.form.TimeSpinner");
-
-dojo.require("dijit.form._Spinner");
-dojo.require("dijit.form.NumberTextBox");
-dojo.require("dojo.date");
-dojo.require("dojo.date.locale");
-dojo.require("dojo.date.stamp");
-
-dojo.declare(
-"dojox.form.TimeSpinner",
-[dijit.form._Spinner],
-{
-	// summary: Time Spinner
-	// description: This widget is the same as a normal NumberSpinner, but for the time component of a date object instead
-
-	required: false,
-
-	adjust: function(/* Object */ val, /*Number*/ delta){
-		return dojo.date.add(val, "minute", delta)
-	},
-
-	//FIXME should we allow for constraints in this widget?
-	isValid: function(){return true;},
-
-	smallDelta: 5,
-
-	largeDelta: 30,
-
-	timeoutChangeRate: 0.50,	
-
-	parse: function(time, locale){
-		return dojo.date.locale.parse(time, {selector:"time", formatLength:"short"});
-	},
-
-	format: function(time, locale){
-		if (dojo.isString(time)) { return time; }
-		return dojo.date.locale.format(time, {selector:"time", formatLength:"short"});
-	},
-
-	serialize: dojo.date.stamp.toISOString,
-
-	value: "12:00 AM"
-
-});
-
+//>>built
+define("dojox/form/TimeSpinner",["dojo/_base/lang","dojo/_base/event","dijit/form/_Spinner","dojo/keys","dojo/date","dojo/date/locale","dojo/date/stamp","dojo/_base/declare"],function(_1,_2,_3,_4,_5,_6,_7,_8){
+return _8("dojox.form.TimeSpinner",_3,{required:false,adjust:function(_9,_a){
+return _5.add(_9,"minute",_a);
+},isValid:function(){
+return true;
+},smallDelta:5,largeDelta:30,timeoutChangeRate:0.5,parse:function(_b,_c){
+return _6.parse(_b,{selector:"time",formatLength:"short"});
+},format:function(_d,_e){
+if(_1.isString(_d)){
+return _d;
 }
+return _6.format(_d,{selector:"time",formatLength:"short"});
+},serialize:_7.toISOString,value:"12:00 AM",_onKeyPress:function(e){
+if((e.charOrCode==_4.HOME||e.charOrCode==_4.END)&&!(e.ctrlKey||e.altKey||e.metaKey)&&typeof this.get("value")!="undefined"){
+var _f=this.constraints[(e.charOrCode==_4.HOME?"min":"max")];
+if(_f){
+this._setValueAttr(_f,true);
+}
+_2.stop(e);
+}
+}});
+});

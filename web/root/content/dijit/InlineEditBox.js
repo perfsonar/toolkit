@@ -1,509 +1,248 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dijit.InlineEditBox"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit.InlineEditBox"] = true;
-dojo.provide("dijit.InlineEditBox");
-
-dojo.require("dojo.i18n");
-
-dojo.require("dijit._Widget");
-dojo.require("dijit._Container");
-dojo.require("dijit.form.Button");
-dojo.require("dijit.form.TextBox");
-
-dojo.requireLocalization("dijit", "common", null, "ROOT,ar,ca,cs,da,de,el,es,fi,fr,he,hu,it,ja,ko,nb,nl,pl,pt,pt-pt,ru,sk,sl,sv,th,tr,zh,zh-tw");
-
-dojo.declare("dijit.InlineEditBox",
-	dijit._Widget,
-	{
-	// summary:
-	//		An element with in-line edit capabilitites
-	//
-	// description:
-	//		Behavior for an existing node (`<p>`, `<div>`, `<span>`, etc.) so that
-	// 		when you click it, an editor shows up in place of the original
-	//		text.  Optionally, Save and Cancel button are displayed below the edit widget.
-	//		When Save is clicked, the text is pulled from the edit
-	//		widget and redisplayed and the edit widget is again hidden.
-	//		By default a plain Textarea widget is used as the editor (or for
-	//		inline values a TextBox), but you can specify an editor such as
-	//		dijit.Editor (for editing HTML) or a Slider (for adjusting a number).
-	//		An edit widget must support the following API to be used:
-	//			- displayedValue or value as initialization parameter,
-	//			and available through attr('displayedValue') / attr('value')
-	//			- void focus()
-	//			- DOM-node focusNode = node containing editable text
-
-	// editing: [readonly] Boolean
-	//		Is the node currently in edit mode?
-	editing: false,
-
-	// autoSave: Boolean
-	//		Changing the value automatically saves it; don't have to push save button
-	//		(and save button isn't even displayed)
-	autoSave: true,
-
-	// buttonSave: String
-	//		Save button label
-	buttonSave: "",
-
-	// buttonCancel: String
-	//		Cancel button label
-	buttonCancel: "",
-
-	// renderAsHtml: Boolean
-	//		Set this to true if the specified Editor's value should be interpreted as HTML
-	//		rather than plain text (ex: `dijit.Editor`)
-	renderAsHtml: false,
-
-	// editor: String
-	//		Class name for Editor widget
-	editor: "dijit.form.TextBox",
-
-	// editorParams: Object
-	//		Set of parameters for editor, like {required: true}
-	editorParams: {},
-
-	onChange: function(value){
-		// summary:
-		//		Set this handler to be notified of changes to value.
-		// tags:
-		//		callback
-	},
-	
-	onCancel: function(){
-		// summary:
-		//		Set this handler to be notified when editing is cancelled.
-		// tags:
-		//		callback
-	},
-
-	// width: String
-	//		Width of editor.  By default it's width=100% (ie, block mode).
-	width: "100%",
-
-	// value: String
-	//		The display value of the widget in read-only mode
-	value: "",
-
-	// noValueIndicator: [const] String
-	//		The text that gets displayed when there is no value (so that the user has a place to click to edit)
-	noValueIndicator: "<span style='font-family: wingdings; text-decoration: underline;'>&nbsp;&nbsp;&nbsp;&nbsp;&#x270d;&nbsp;&nbsp;&nbsp;&nbsp;</span>",
-
-	constructor: function(){
-		// summary:
-		//		Sets up private arrays etc.
-		// tags:
-		//		private
-		this.editorParams = {};
-	},
-
-	postMixInProperties: function(){
-		this.inherited(arguments);
-
-		// save pointer to original source node, since Widget nulls-out srcNodeRef
-		this.displayNode = this.srcNodeRef;
-
-		// connect handlers to the display node
-		var events = {
-			ondijitclick: "_onClick",
-			onmouseover: "_onMouseOver",
-			onmouseout: "_onMouseOut",
-			onfocus: "_onMouseOver",
-			onblur: "_onMouseOut"			
-		};
-		for(var name in events){
-			this.connect(this.displayNode, name, events[name]);
-		}
-		dijit.setWaiRole(this.displayNode, "button");
-		if(!this.displayNode.getAttribute("tabIndex")){
-			this.displayNode.setAttribute("tabIndex", 0);
-		}
-
-		this.attr('value', this.value || this.displayNode.innerHTML);
-	},
-
-	setDisabled: function(/*Boolean*/ disabled){
-		// summary:
-		//		Deprecated.   Use attr('disable', ...) instead.
-		// tags:
-		//		deprecated
-		dojo.deprecated("dijit.InlineEditBox.setDisabled() is deprecated.  Use attr('disabled', bool) instead.", "", "2.0");
-		this.attr('disabled', disabled);
-	},
-	_setDisabledAttr: function(/*Boolean*/ disabled){
-		// summary: 
-		//		Hook to make attr("disabled", ...) work.
-		//		Set disabled state of widget.
-		this.disabled = disabled;
-		dijit.setWaiState(this.domNode, "disabled", disabled);
-	},
-
-	_onMouseOver: function(){
-		// summary:
-		//		Handler for onmouseover event.
-		// tags:
-		//		private
-		dojo.addClass(this.displayNode, this.disabled ? "dijitDisabledClickableRegion" : "dijitClickableRegion");
-	},
-
-	_onMouseOut: function(){
-		// summary:
-		//		Handler for onmouseout event.
-		// tags:
-		//		private
-		dojo.removeClass(this.displayNode, this.disabled ? "dijitDisabledClickableRegion" : "dijitClickableRegion");
-	},
-
-	_onClick: function(/*Event*/ e){
-		// summary:
-		//		Handler for onclick event.
-		// tags:
-		//		private
-		if(this.disabled){ return; }
-		if(e){ dojo.stopEvent(e); }
-		this._onMouseOut();
-
-		// Since FF gets upset if you move a node while in an event handler for that node...
-		setTimeout(dojo.hitch(this, "edit"), 0);
-	},
-
-	edit: function(){
-		// summary:
-		//		Display the editor widget in place of the original (read only) markup.
-		// tags:
-		//		private
-
-		if(this.disabled || this.editing){ return; }
-		this.editing = true;
-
-		var editValue = 
-				(this.renderAsHtml ?
-				this.value :
-				this.value.replace(/\s*\r?\n\s*/g,"").replace(/<br\/?>/gi,"\n").replace(/&gt;/g,">").replace(/&lt;/g,"<").replace(/&amp;/g,"&").replace(/&quot;/g,"\""));
-
-		// Placeholder for edit widget
-		// Put place holder (and eventually editWidget) before the display node so that it's positioned correctly
-		// when Calendar dropdown appears, which happens automatically on focus.
-		var placeholder = dojo.create("span", null, this.domNode, "before");
-
-		var ew = this.editWidget = new dijit._InlineEditor({
-			value: dojo.trim(editValue),
-			autoSave: this.autoSave,
-			buttonSave: this.buttonSave,
-			buttonCancel: this.buttonCancel,
-			renderAsHtml: this.renderAsHtml,
-			editor: this.editor,
-			editorParams: this.editorParams,
-			sourceStyle: dojo.getComputedStyle(this.displayNode),
-			save: dojo.hitch(this, "save"),
-			cancel: dojo.hitch(this, "cancel"),
-			width: this.width
-		}, placeholder);
-
-		// to avoid screen jitter, we first create the editor with position:absolute, visibility:hidden,
-		// and then when it's finished rendering, we switch from display mode to editor
-		var ews = ew.domNode.style;
-		this.displayNode.style.display="none";
-		ews.position = "static";
-		ews.visibility = "visible";
-
-		// Replace the display widget with edit widget, leaving them both displayed for a brief time so that
-		// focus can be shifted without incident.  (browser may needs some time to render the editor.)
-		this.domNode = ew.domNode;
-		setTimeout(function(){
-			ew.focus();
-			ew._resetValue = ew.getValue();
-		}, 100);
-	},
-
-	_showText: function(/*Boolean*/ focus){
-		// summary:
-		//		Revert to display mode, and optionally focus on display node
-		// tags:
-		//		private
-
-		// display the read-only text and then quickly hide the editor (to avoid screen jitter)
-		this.displayNode.style.display="";
-		var ew = this.editWidget;
-		var ews = ew.domNode.style;
-		ews.position="absolute";
-		ews.visibility="hidden";
-
-		this.domNode = this.displayNode;
-
-		if(focus){
-			dijit.focus(this.displayNode);
-		}
-		ews.display = "none";
-		// give the browser some time to render the display node and then shift focus to it
-		// and hide the edit widget before garbage collecting the edit widget
-		setTimeout(function(){
-			ew.destroy();
-			delete ew;
-			if(dojo.isIE){
-				// messing with the DOM tab order can cause IE to focus the body - so restore
-				dijit.focus(dijit.getFocus());
-			}
-		}, 1000); // no hurry - wait for things to quiesce
-	},
-
-	save: function(/*Boolean*/ focus){
-		// summary:
-		//		Save the contents of the editor and revert to display mode.
-		// focus: Boolean
-		//		Focus on the display mode text
-		// tags:
-		//		private
-		if(this.disabled || !this.editing){ return; }
-		this.editing = false;
-
-		var value = this.editWidget.getValue() + "";
-		this.attr('value', this.renderAsHtml? value
-			: value.replace(/&/gm, "&amp;").replace(/</gm, "&lt;").replace(/>/gm, "&gt;").replace(/"/gm, "&quot;").replace(/\n/g, "<br>")
-		);
-
-		// tell the world that we have changed
-		this.onChange(value);
-
-		this._showText(focus);	
-	},
-
-	setValue: function(/*String*/ val){
-		// summary:
-		//		Deprecated.   Use attr('value', ...) instead.
-		// tags:
-		//		deprecated
-		dojo.deprecated("dijit.InlineEditBox.setValue() is deprecated.  Use attr('value', ...) instead.", "", "2.0");
-		return this.attr("value", val);
-	},
-	_setValueAttr: function(/*String*/ val){
-		// summary:
-		// 		Hook to make attr("value", ...) work.
-		//		Inserts specified HTML value into this node, or an "input needed" character if node is blank.
-		this.value = val;
-		this.displayNode.innerHTML = dojo.trim(val) || this.noValueIndicator;
-	},
-
-	getValue: function(){
-		// summary:
-		//		Deprecated.   Use attr('value') instead.
-		// tags:
-		//		deprecated
-		dojo.deprecated("dijit.InlineEditBox.getValue() is deprecated.  Use attr('value') instead.", "", "2.0");
-		return this.attr("value");
-	},
-
-	cancel: function(/*Boolean*/ focus){
-		// summary:
-		//		Revert to display mode, discarding any changes made in the editor
-		// tags:
-		//		private
-
-		this.editing = false;
-		
-		// tell the world that we have no changes
-		this.onCancel();
-		
-		this._showText(focus);
-	}
-});
-
-dojo.declare(
-	"dijit._InlineEditor",
-	 [dijit._Widget, dijit._Templated],
-{
-	// summary:
-	// 		Internal widget used by InlineEditBox, displayed when in editing mode
-	//		to display the editor and maybe save/cancel buttons.  Calling code should
-	//		connect to save/cancel methods to detect when editing is finished
-	//
-	//		Has mainly the same parameters as InlineEditBox, plus these values:
-	//
-	// style: Object
-	//		Set of CSS attributes of display node, to replicate in editor
-	//
-	// value: String
-	//		Value as an HTML string or plain text string, depending on renderAsHTML flag
-
-	templateString:"<span dojoAttachPoint=\"editNode\" waiRole=\"presentation\" style=\"position: absolute; visibility:hidden\" class=\"dijitReset dijitInline\"\n\tdojoAttachEvent=\"onkeypress: _onKeyPress\" \n\t><span dojoAttachPoint=\"editorPlaceholder\"></span\n\t><span dojoAttachPoint=\"buttonContainer\"\n\t\t><button class='saveButton' dojoAttachPoint=\"saveButton\" dojoType=\"dijit.form.Button\" dojoAttachEvent=\"onClick:save\" disabled=\"true\" label=\"${buttonSave}\"></button\n\t\t><button class='cancelButton' dojoAttachPoint=\"cancelButton\" dojoType=\"dijit.form.Button\" dojoAttachEvent=\"onClick:cancel\" label=\"${buttonCancel}\"></button\n\t></span\n></span>\n",
-	widgetsInTemplate: true,
-
-	postMixInProperties: function(){
-		this.inherited(arguments);
-		this.messages = dojo.i18n.getLocalization("dijit", "common", this.lang);
-		dojo.forEach(["buttonSave", "buttonCancel"], function(prop){
-			if(!this[prop]){ this[prop] = this.messages[prop]; }
-		}, this);
-	},
-
-	postCreate: function(){
-		// Create edit widget in place in the template
-		var cls = dojo.getObject(this.editor);
-
-		// Copy the style from the source
-		// Don't copy ALL properties though, just the necessary/applicable ones
-		var srcStyle = this.sourceStyle;
-		var editStyle = "line-height:" + srcStyle.lineHeight + ";";
-		dojo.forEach(["Weight","Family","Size","Style"], function(prop){
-			editStyle += "font-"+prop+":"+srcStyle["font"+prop]+";";
-		}, this);
-		dojo.forEach(["marginTop","marginBottom","marginLeft", "marginRight"], function(prop){
-			this.domNode.style[prop] = srcStyle[prop];
-		}, this);
-		if(this.width=="100%"){
-			// block mode
-			editStyle += "width:100%;";
-			this.domNode.style.display = "block";
-		}else{
-			// inline-block mode
-			editStyle += "width:" + (this.width + (Number(this.width)==this.width ? "px" : "")) + ";";
-		}
-		this.editorParams.style = editStyle;
-		this.editorParams[ "displayedValue" in cls.prototype ? "displayedValue" : "value"] = this.value;
-		var ew = this.editWidget = new cls(this.editorParams, this.editorPlaceholder);
-
-		this.connect(ew, "onChange", "_onChange");
-
-		// Monitor keypress on the edit widget.   Note that edit widgets do a stopEvent() on ESC key (to
-		// prevent Dialog from closing when the user just wants to revert the value in the edit widget),
-		// so this is the only way we can see the key press event.
-		this.connect(ew, "onKeyPress", "_onKeyPress");
-		this.connect(ew, "onKeyUp", "_onKeyPress"); // in case ESC was eaten but changed value
-
-		if(this.autoSave){
-			this.buttonContainer.style.display="none";
-		}
-	},
-
-	destroy: function(){
-		this.editWidget.destroy();
-		this.inherited(arguments);
-	},
-
-	getValue: function(){
-		// summary:
-		//		Return the [display] value of the edit widget
-		var ew = this.editWidget;
-		return ew.attr("displayedValue" in ew ? "displayedValue" : "value");
-	},
-
-	_onKeyPress: function(e){
-		// summary:
-		//		Handler for keypress in the edit box (see template).
-		// description:
-		//		For autoSave widgets, if Esc/Enter, call cancel/save.
-		//		For non-autoSave widgets, enable save button if the text value is
-		//		different than the original value.
-		// tags:
-		//		private
-
-		if(this._exitInProgress){
-			return;
-		}
-		if(this.autoSave){
-			if(e.altKey || e.ctrlKey){ return; }
-			// If Enter/Esc pressed, treat as save/cancel.
-			if(e.charOrCode == dojo.keys.ESCAPE){
-				dojo.stopEvent(e);
-				this._exitInProgress = true;
-				this.cancel(true);
-			}else if(e.charOrCode == dojo.keys.ENTER && this.editWidget.focusNode.tagName == "INPUT"){
-				dojo.stopEvent(e);
-				this._exitInProgress = true;
-				this.save(true);
-			}else if(e.charOrCode === dojo.keys.TAB){
-				this._exitInProgress = true;
-				// allow the TAB to change focus before we mess with the DOM: #6227
-				// Expounding by request:
-				// 	The current focus is on the edit widget input field.
-				//	save() will hide and destroy this widget.
-				//	We want the focus to jump from the currently hidden
-				//	displayNode, but since it's hidden, it's impossible to
-				//	unhide it, focus it, and then have the browser focus
-				//	away from it to the next focusable element since each
-				//	of these events is asynchronous and the focus-to-next-element
-				//	is already queued.
-				//	So we allow the browser time to unqueue the move-focus event 
-				//	before we do all the hide/show stuff.
-				setTimeout(dojo.hitch(this, "save", false), 0);
-			}
-		}else{
-			var _this = this;
-			// Delay before calling getValue().
-			// The delay gives the browser a chance to update the native value.
-			setTimeout(
-				function(){
-					_this._onChange(); // handle save button
-				}, 100);
-		}
-	},
-
-	_onBlur: function(){
-		// summary:
-		//		Called when focus moves outside the editor
-		// tags:
-		//		private
-
-		this.inherited(arguments);
-		if(this._exitInProgress){
-			// when user clicks the "save" button, focus is shifted back to display text, causing this
-			// function to be called, but in that case don't do anything
-			return;
-		}
-		if(this.autoSave){
-			this._exitInProgress = true;
-			if(this.getValue() == this._resetValue){
-				this.cancel(false);
-			}else{
-				this.save(false);
-			}
-		}
-	},
-
-	_onChange: function(){
-		// summary:
-		//		Called when the underlying widget fires an onChange event,
-		//		which means that the user has finished entering the value
-		// tags:
-		//		private
-
-		if(this._exitInProgress){
-			// TODO: the onChange event might happen after the return key for an async widget
-			// like FilteringSelect.  Shouldn't be deleting the edit widget on end-of-edit
-			return;
-		}
-		if(this.autoSave){
-			this._exitInProgress = true;
-			this.save(true);
-		}else{
-			// in case the keypress event didn't get through (old problem with Textarea that has been fixed
-			// in theory) or if the keypress event comes too quickly and the value inside the Textarea hasn't
-			// been updated yet)
-			this.saveButton.attr("disabled", (this.getValue() == this._resetValue) || !this.enableSave());
-		}
-	},
-	
-	enableSave: function(){
-		// summary:
-		//		User overridable function returning a Boolean to indicate
-		// 		if the Save button should be enabled or not - usually due to invalid conditions
-		// tags:
-		//		extension
-		return this.editWidget.isValid ? this.editWidget.isValid() : true;
-	},
-
-	focus: function(){
-		// summary:
-		//		Focus on the edit widget.
-		this.editWidget.focus();
-		dijit.selectInputText(this.editWidget.focusNode);
-	}
-});
-
+//>>built
+require({cache:{"url:dijit/templates/InlineEditBox.html":"<span data-dojo-attach-point=\"editNode\" role=\"presentation\" class=\"dijitReset dijitInline dijitOffScreen\"\n\tdata-dojo-attach-event=\"onkeypress: _onKeyPress\"\n\t><span data-dojo-attach-point=\"editorPlaceholder\"></span\n\t><span data-dojo-attach-point=\"buttonContainer\"\n\t\t><button data-dojo-type=\"dijit/form/Button\" data-dojo-props=\"label: '${buttonSave}', 'class': 'saveButton'\"\n\t\t\tdata-dojo-attach-point=\"saveButton\" data-dojo-attach-event=\"onClick:save\"></button\n\t\t><button data-dojo-type=\"dijit/form/Button\"  data-dojo-props=\"label: '${buttonCancel}', 'class': 'cancelButton'\"\n\t\t\tdata-dojo-attach-point=\"cancelButton\" data-dojo-attach-event=\"onClick:cancel\"></button\n\t></span\n></span>\n"}});
+define("dijit/InlineEditBox",["dojo/_base/array","dojo/_base/declare","dojo/dom-attr","dojo/dom-class","dojo/dom-construct","dojo/dom-style","dojo/_base/event","dojo/i18n","dojo/_base/kernel","dojo/keys","dojo/_base/lang","dojo/sniff","dojo/when","./focus","./_Widget","./_TemplatedMixin","./_WidgetsInTemplateMixin","./_Container","./form/Button","./form/_TextBoxMixin","./form/TextBox","dojo/text!./templates/InlineEditBox.html","dojo/i18n!./nls/common"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c,_d,fm,_e,_f,_10,_11,_12,_13,_14,_15){
+var _16=_2("dijit._InlineEditor",[_e,_f,_10],{templateString:_15,postMixInProperties:function(){
+this.inherited(arguments);
+this.messages=_8.getLocalization("dijit","common",this.lang);
+_1.forEach(["buttonSave","buttonCancel"],function(_17){
+if(!this[_17]){
+this[_17]=this.messages[_17];
 }
+},this);
+},buildRendering:function(){
+this.inherited(arguments);
+var Cls=typeof this.editor=="string"?(_b.getObject(this.editor)||require(this.editor)):this.editor;
+var _18=this.sourceStyle,_19="line-height:"+_18.lineHeight+";",_1a=_6.getComputedStyle(this.domNode);
+_1.forEach(["Weight","Family","Size","Style"],function(_1b){
+var _1c=_18["font"+_1b],_1d=_1a["font"+_1b];
+if(_1d!=_1c){
+_19+="font-"+_1b+":"+_18["font"+_1b]+";";
+}
+},this);
+_1.forEach(["marginTop","marginBottom","marginLeft","marginRight","position","left","top","right","bottom","float","clear","display"],function(_1e){
+this.domNode.style[_1e]=_18[_1e];
+},this);
+var _1f=this.inlineEditBox.width;
+if(_1f=="100%"){
+_19+="width:100%;";
+this.domNode.style.display="block";
+}else{
+_19+="width:"+(_1f+(Number(_1f)==_1f?"px":""))+";";
+}
+var _20=_b.delegate(this.inlineEditBox.editorParams,{style:_19,dir:this.dir,lang:this.lang,textDir:this.textDir});
+_20["displayedValue" in Cls.prototype?"displayedValue":"value"]=this.value;
+this.editWidget=new Cls(_20,this.editorPlaceholder);
+if(this.inlineEditBox.autoSave){
+_5.destroy(this.buttonContainer);
+}
+},postCreate:function(){
+this.inherited(arguments);
+var ew=this.editWidget;
+if(this.inlineEditBox.autoSave){
+this.connect(ew,"onChange","_onChange");
+this.connect(ew,"onKeyPress","_onKeyPress");
+}else{
+if("intermediateChanges" in ew){
+ew.set("intermediateChanges",true);
+this.connect(ew,"onChange","_onIntermediateChange");
+this.saveButton.set("disabled",true);
+}
+}
+},startup:function(){
+this.editWidget.startup();
+this.inherited(arguments);
+},_onIntermediateChange:function(){
+this.saveButton.set("disabled",(this.getValue()==this._resetValue)||!this.enableSave());
+},destroy:function(){
+this.editWidget.destroy(true);
+this.inherited(arguments);
+},getValue:function(){
+var ew=this.editWidget;
+return String(ew.get("displayedValue" in ew?"displayedValue":"value"));
+},_onKeyPress:function(e){
+if(this.inlineEditBox.autoSave&&this.inlineEditBox.editing){
+if(e.altKey||e.ctrlKey){
+return;
+}
+if(e.charOrCode==_a.ESCAPE){
+_7.stop(e);
+this.cancel(true);
+}else{
+if(e.charOrCode==_a.ENTER&&e.target.tagName=="INPUT"){
+_7.stop(e);
+this._onChange();
+}
+}
+}
+},_onBlur:function(){
+this.inherited(arguments);
+if(this.inlineEditBox.autoSave&&this.inlineEditBox.editing){
+if(this.getValue()==this._resetValue){
+this.cancel(false);
+}else{
+if(this.enableSave()){
+this.save(false);
+}
+}
+}
+},_onChange:function(){
+if(this.inlineEditBox.autoSave&&this.inlineEditBox.editing&&this.enableSave()){
+fm.focus(this.inlineEditBox.displayNode);
+}
+},enableSave:function(){
+return this.editWidget.isValid?this.editWidget.isValid():true;
+},focus:function(){
+this.editWidget.focus();
+if(this.editWidget.focusNode){
+fm._onFocusNode(this.editWidget.focusNode);
+if(this.editWidget.focusNode.tagName=="INPUT"){
+this.defer(function(){
+_13.selectInputText(this.editWidget.focusNode);
+});
+}
+}
+}});
+var _21=_2("dijit.InlineEditBox",_e,{editing:false,autoSave:true,buttonSave:"",buttonCancel:"",renderAsHtml:false,editor:_14,editorWrapper:_16,editorParams:{},disabled:false,onChange:function(){
+},onCancel:function(){
+},width:"100%",value:"",noValueIndicator:_c("ie")<=6?"<span style='font-family: wingdings; text-decoration: underline;'>&#160;&#160;&#160;&#160;&#x270d;&#160;&#160;&#160;&#160;</span>":"<span style='text-decoration: underline;'>&#160;&#160;&#160;&#160;&#x270d;&#160;&#160;&#160;&#160;</span>",constructor:function(){
+this.editorParams={};
+},postMixInProperties:function(){
+this.inherited(arguments);
+this.displayNode=this.srcNodeRef;
+var _22={ondijitclick:"_onClick",onmouseover:"_onMouseOver",onmouseout:"_onMouseOut",onfocus:"_onMouseOver",onblur:"_onMouseOut"};
+for(var _23 in _22){
+this.connect(this.displayNode,_23,_22[_23]);
+}
+this.displayNode.setAttribute("role","button");
+if(!this.displayNode.getAttribute("tabIndex")){
+this.displayNode.setAttribute("tabIndex",0);
+}
+if(!this.value&&!("value" in this.params)){
+this.value=_b.trim(this.renderAsHtml?this.displayNode.innerHTML:(this.displayNode.innerText||this.displayNode.textContent||""));
+}
+if(!this.value){
+this.displayNode.innerHTML=this.noValueIndicator;
+}
+_4.add(this.displayNode,"dijitInlineEditBoxDisplayMode");
+},setDisabled:function(_24){
+_9.deprecated("dijit.InlineEditBox.setDisabled() is deprecated.  Use set('disabled', bool) instead.","","2.0");
+this.set("disabled",_24);
+},_setDisabledAttr:function(_25){
+this.domNode.setAttribute("aria-disabled",_25?"true":"false");
+if(_25){
+this.displayNode.removeAttribute("tabIndex");
+}else{
+this.displayNode.setAttribute("tabIndex",0);
+}
+_4.toggle(this.displayNode,"dijitInlineEditBoxDisplayModeDisabled",_25);
+this._set("disabled",_25);
+},_onMouseOver:function(){
+if(!this.disabled){
+_4.add(this.displayNode,"dijitInlineEditBoxDisplayModeHover");
+}
+},_onMouseOut:function(){
+_4.remove(this.displayNode,"dijitInlineEditBoxDisplayModeHover");
+},_onClick:function(e){
+if(this.disabled){
+return;
+}
+if(e){
+_7.stop(e);
+}
+this._onMouseOut();
+this.defer("edit");
+},edit:function(){
+if(this.disabled||this.editing){
+return;
+}
+this._set("editing",true);
+this._savedTabIndex=_3.get(this.displayNode,"tabIndex")||"0";
+if(this.wrapperWidget){
+var ew=this.wrapperWidget.editWidget;
+ew.set("displayedValue" in ew?"displayedValue":"value",this.value);
+}else{
+var _26=_5.create("span",null,this.domNode,"before");
+var Ewc=typeof this.editorWrapper=="string"?_b.getObject(this.editorWrapper):this.editorWrapper;
+this.wrapperWidget=new Ewc({value:this.value,buttonSave:this.buttonSave,buttonCancel:this.buttonCancel,dir:this.dir,lang:this.lang,tabIndex:this._savedTabIndex,editor:this.editor,inlineEditBox:this,sourceStyle:_6.getComputedStyle(this.displayNode),save:_b.hitch(this,"save"),cancel:_b.hitch(this,"cancel"),textDir:this.textDir},_26);
+if(!this.wrapperWidget._started){
+this.wrapperWidget.startup();
+}
+if(!this._started){
+this.startup();
+}
+}
+var ww=this.wrapperWidget;
+_4.add(this.displayNode,"dijitOffScreen");
+_4.remove(ww.domNode,"dijitOffScreen");
+_6.set(ww.domNode,{visibility:"visible"});
+_3.set(this.displayNode,"tabIndex","-1");
+_d(ww.editWidget.onLoadDeferred,_b.hitch(ww,function(){
+this.defer(function(){
+this.focus();
+this._resetValue=this.getValue();
+});
+}));
+},_onBlur:function(){
+this.inherited(arguments);
+if(!this.editing){
+}
+},destroy:function(){
+if(this.wrapperWidget&&!this.wrapperWidget._destroyed){
+this.wrapperWidget.destroy();
+delete this.wrapperWidget;
+}
+this.inherited(arguments);
+},_showText:function(_27){
+var ww=this.wrapperWidget;
+_6.set(ww.domNode,{visibility:"hidden"});
+_4.add(ww.domNode,"dijitOffScreen");
+_4.remove(this.displayNode,"dijitOffScreen");
+_3.set(this.displayNode,"tabIndex",this._savedTabIndex);
+if(_27){
+fm.focus(this.displayNode);
+}
+},save:function(_28){
+if(this.disabled||!this.editing){
+return;
+}
+this._set("editing",false);
+var ww=this.wrapperWidget;
+var _29=ww.getValue();
+this.set("value",_29);
+this._showText(_28);
+},setValue:function(val){
+_9.deprecated("dijit.InlineEditBox.setValue() is deprecated.  Use set('value', ...) instead.","","2.0");
+return this.set("value",val);
+},_setValueAttr:function(val){
+val=_b.trim(val);
+var _2a=this.renderAsHtml?val:val.replace(/&/gm,"&amp;").replace(/</gm,"&lt;").replace(/>/gm,"&gt;").replace(/"/gm,"&quot;").replace(/\n/g,"<br>");
+this.displayNode.innerHTML=_2a||this.noValueIndicator;
+this._set("value",val);
+if(this._started){
+this.defer(function(){
+this.onChange(val);
+});
+}
+if(this.textDir=="auto"){
+this.applyTextDir(this.displayNode,this.displayNode.innerText);
+}
+},getValue:function(){
+_9.deprecated("dijit.InlineEditBox.getValue() is deprecated.  Use get('value') instead.","","2.0");
+return this.get("value");
+},cancel:function(_2b){
+if(this.disabled||!this.editing){
+return;
+}
+this._set("editing",false);
+this.defer("onCancel");
+this._showText(_2b);
+},_setTextDirAttr:function(_2c){
+if(!this._created||this.textDir!=_2c){
+this._set("textDir",_2c);
+this.applyTextDir(this.displayNode,this.displayNode.innerText);
+this.displayNode.align=this.dir=="rtl"?"right":"left";
+}
+}});
+_21._InlineEditor=_16;
+return _21;
+});

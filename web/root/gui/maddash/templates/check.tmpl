@@ -1,0 +1,50 @@
+[% USE date %]
+
+<div data-dojo-type="dijit/layout/ContentPane">
+
+[% graph_div_id = "check_graph_${ check.rowName }_${ check.colName }" %]
+
+<script type="dojo/method">
+    // I have no clue how to get the first historical check to click so we do this hack
+    load_graph('[%- graph_div_id -%]', '[%- check.history.0.returnParams.graphUrl -%]', '[%- check.history.0.returnParams.check_start_time -%]', '[%- check.history.0.returnParams.check_end_time %]');
+</script>
+
+<table>
+<tr>
+  <td>Test</td>
+  <td>[%- check.description -%]</td>
+</tr>
+<tr>
+  <td>Source</td>
+  <td>[%- check.rowName -%]</td>
+</tr>
+<tr>
+  <td>Destination</td>
+  <td>[%- check.colName -%]</td>
+</tr>
+<tr>
+  <td>Check History</td>
+  <td>
+  <table>
+  <tr>
+  [% FOREACH historical_check IN check.history %]
+  <td id="historical_check_[%- loop.count -%]" class="check_grid_[%- historical_check.status + 1 -%]"><div class="verticalText" onClick="load_graph('[%- graph_div_id -%]', '[%- historical_check.returnParams.graphUrl -%]', '[%- historical_check.returnParams.check_start_time -%]', '[%- historical_check.returnParams.check_end_time %]');">&nbsp;</div></td>
+  <div data-dojo-type="dijit/Tooltip" data-dojo-props="connectId:'historical_check_[%- loop.count -%]',position:['above']">
+    [%- historical_check.message -%]
+  </div>
+  [% END %]
+  </tr>
+  <tr>
+  [% FOREACH historical_check IN check.history %]
+  <td style="height: 250px"><div style="float: none;" class="verticalText">[%- date.format(historical_check.time, locale = 'en_US') -%]</div></td>
+  [% END %]
+  </tr>
+
+  </table>
+  </td>
+</tr>
+</table>
+
+<div id="[%- graph_div_id -%]"></div>
+
+</div>

@@ -1,1 +1,2 @@
-({"iframeEditTitle":"uredi področje","iframeFocusTitle":"uredi področje okvirja"})
+//>>built
+define("dijit/form/nls/sl/Textarea",({iframeEditTitle:"urejevalno področje",iframeFocusTitle:"okvir urejevalnega področja"}));

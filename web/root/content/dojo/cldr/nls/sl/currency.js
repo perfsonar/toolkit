@@ -1,1 +1,8 @@
-({"EUR_displayName":"Evro","GBP_displayName":"Britanski Funt Sterling","JPY_displayName":"Japonski Jen","CNY_displayName":"Kitajski Yuan Renminbi","USD_displayName":"Ameriški Dolar","USD_symbol":"US$","GBP_symbol":"UK£","JPY_symbol":"JP¥","EUR_symbol":"€"})
+/*
+	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+//>>built
+define("dojo/cldr/nls/sl/currency",{"AUD_displayName":"avstralski dolar","CAD_displayName":"kanadski dolar","CHF_displayName":"švicarski frank","CNY_displayName":"kitajski juan renminbi","EUR_displayName":"evro","GBP_displayName":"britanski funt","HKD_displayName":"hongkonški dolar","JPY_displayName":"japonski jen","JPY_symbol":"¥","USD_displayName":"ameriški dolar","USD_symbol":"$"});

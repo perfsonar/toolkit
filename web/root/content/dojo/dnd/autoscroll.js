@@ -1,113 +1,105 @@
 /*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-
-if(!dojo._hasResource["dojo.dnd.autoscroll"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojo.dnd.autoscroll"] = true;
-dojo.provide("dojo.dnd.autoscroll");
-
-dojo.dnd.getViewport = function(){
-	// summary: returns a viewport size (visible part of the window)
-
-	// FIXME: need more docs!!
-	var d = dojo.doc, dd = d.documentElement, w = window, b = dojo.body();
-	if(dojo.isMozilla){
-		return {w: dd.clientWidth, h: w.innerHeight};	// Object
-	}else if(!dojo.isOpera && w.innerWidth){
-		return {w: w.innerWidth, h: w.innerHeight};		// Object
-	}else if (!dojo.isOpera && dd && dd.clientWidth){
-		return {w: dd.clientWidth, h: dd.clientHeight};	// Object
-	}else if (b.clientWidth){
-		return {w: b.clientWidth, h: b.clientHeight};	// Object
-	}
-	return null;	// Object
+//>>built
+define("dojo/dnd/autoscroll",["../_base/lang","../sniff","../_base/window","../dom-geometry","../dom-style","../window"],function(_1,_2,_3,_4,_5,_6){
+var _7={};
+_1.setObject("dojo.dnd.autoscroll",_7);
+_7.getViewport=_6.getBox;
+_7.V_TRIGGER_AUTOSCROLL=32;
+_7.H_TRIGGER_AUTOSCROLL=32;
+_7.V_AUTOSCROLL_VALUE=16;
+_7.H_AUTOSCROLL_VALUE=16;
+var _8,_9=_3.doc,_a=Infinity,_b=Infinity;
+_7.autoScrollStart=function(d){
+_9=d;
+_8=_6.getBox(_9);
+var _c=_3.body(_9).parentNode;
+_a=Math.max(_c.scrollHeight-_8.h,0);
+_b=Math.max(_c.scrollWidth-_8.w,0);
 };
-
-dojo.dnd.V_TRIGGER_AUTOSCROLL = 32;
-dojo.dnd.H_TRIGGER_AUTOSCROLL = 32;
-
-dojo.dnd.V_AUTOSCROLL_VALUE = 16;
-dojo.dnd.H_AUTOSCROLL_VALUE = 16;
-
-dojo.dnd.autoScroll = function(e){
-	// summary:
-	//		a handler for onmousemove event, which scrolls the window, if
-	//		necesary
-	// e: Event:
-	//		onmousemove event
-
-	// FIXME: needs more docs!
-	var v = dojo.dnd.getViewport(), dx = 0, dy = 0;
-	if(e.clientX < dojo.dnd.H_TRIGGER_AUTOSCROLL){
-		dx = -dojo.dnd.H_AUTOSCROLL_VALUE;
-	}else if(e.clientX > v.w - dojo.dnd.H_TRIGGER_AUTOSCROLL){
-		dx = dojo.dnd.H_AUTOSCROLL_VALUE;
-	}
-	if(e.clientY < dojo.dnd.V_TRIGGER_AUTOSCROLL){
-		dy = -dojo.dnd.V_AUTOSCROLL_VALUE;
-	}else if(e.clientY > v.h - dojo.dnd.V_TRIGGER_AUTOSCROLL){
-		dy = dojo.dnd.V_AUTOSCROLL_VALUE;
-	}
-	window.scrollBy(dx, dy);
-};
-
-dojo.dnd._validNodes = {"div": 1, "p": 1, "td": 1};
-dojo.dnd._validOverflow = {"auto": 1, "scroll": 1};
-
-dojo.dnd.autoScrollNodes = function(e){
-	// summary:
-	//		a handler for onmousemove event, which scrolls the first avaialble
-	//		Dom element, it falls back to dojo.dnd.autoScroll()
-	// e: Event:
-	//		onmousemove event
-
-	// FIXME: needs more docs!
-	for(var n = e.target; n;){
-		if(n.nodeType == 1 && (n.tagName.toLowerCase() in dojo.dnd._validNodes)){
-			var s = dojo.getComputedStyle(n);
-			if(s.overflow.toLowerCase() in dojo.dnd._validOverflow){
-				var b = dojo._getContentBox(n, s), t = dojo._abs(n, true);
-				//console.log(b.l, b.t, t.x, t.y, n.scrollLeft, n.scrollTop);
-				var w = Math.min(dojo.dnd.H_TRIGGER_AUTOSCROLL, b.w / 2), 
-					h = Math.min(dojo.dnd.V_TRIGGER_AUTOSCROLL, b.h / 2),
-					rx = e.pageX - t.x, ry = e.pageY - t.y, dx = 0, dy = 0;
-				if(dojo.isWebKit || dojo.isOpera){
-					// FIXME: this code should not be here, it should be taken into account 
-					// either by the event fixing code, or the dojo._abs()
-					// FIXME: this code doesn't work on Opera 9.5 Beta
-					rx += dojo.body().scrollLeft, ry += dojo.body().scrollTop;
-				}
-				if(rx > 0 && rx < b.w){
-					if(rx < w){
-						dx = -w;
-					}else if(rx > b.w - w){
-						dx = w;
-					}
-				}
-				//console.log("ry =", ry, "b.h =", b.h, "h =", h);
-				if(ry > 0 && ry < b.h){
-					if(ry < h){
-						dy = -h;
-					}else if(ry > b.h - h){
-						dy = h;
-					}
-				}
-				var oldLeft = n.scrollLeft, oldTop = n.scrollTop;
-				n.scrollLeft = n.scrollLeft + dx;
-				n.scrollTop  = n.scrollTop  + dy;
-				if(oldLeft != n.scrollLeft || oldTop != n.scrollTop){ return; }
-			}
-		}
-		try{
-			n = n.parentNode;
-		}catch(x){
-			n = null;
-		}
-	}
-	dojo.dnd.autoScroll(e);
-};
-
+_7.autoScroll=function(e){
+var v=_8||_6.getBox(_9),_d=_3.body(_9).parentNode,dx=0,dy=0;
+if(e.clientX<_7.H_TRIGGER_AUTOSCROLL){
+dx=-_7.H_AUTOSCROLL_VALUE;
+}else{
+if(e.clientX>v.w-_7.H_TRIGGER_AUTOSCROLL){
+dx=Math.min(_7.H_AUTOSCROLL_VALUE,_b-_d.scrollLeft);
 }
+}
+if(e.clientY<_7.V_TRIGGER_AUTOSCROLL){
+dy=-_7.V_AUTOSCROLL_VALUE;
+}else{
+if(e.clientY>v.h-_7.V_TRIGGER_AUTOSCROLL){
+dy=Math.min(_7.V_AUTOSCROLL_VALUE,_a-_d.scrollTop);
+}
+}
+window.scrollBy(dx,dy);
+};
+_7._validNodes={"div":1,"p":1,"td":1};
+_7._validOverflow={"auto":1,"scroll":1};
+_7.autoScrollNodes=function(e){
+var b,t,w,h,rx,ry,dx=0,dy=0,_e,_f;
+for(var n=e.target;n;){
+if(n.nodeType==1&&(n.tagName.toLowerCase() in _7._validNodes)){
+var s=_5.getComputedStyle(n),_10=(s.overflow.toLowerCase() in _7._validOverflow),_11=(s.overflowX.toLowerCase() in _7._validOverflow),_12=(s.overflowY.toLowerCase() in _7._validOverflow);
+if(_10||_11||_12){
+b=_4.getContentBox(n,s);
+t=_4.position(n,true);
+}
+if(_10||_11){
+w=Math.min(_7.H_TRIGGER_AUTOSCROLL,b.w/2);
+rx=e.pageX-t.x;
+if(_2("webkit")||_2("opera")){
+rx+=_3.body().scrollLeft;
+}
+dx=0;
+if(rx>0&&rx<b.w){
+if(rx<w){
+dx=-w;
+}else{
+if(rx>b.w-w){
+dx=w;
+}
+}
+_e=n.scrollLeft;
+n.scrollLeft=n.scrollLeft+dx;
+}
+}
+if(_10||_12){
+h=Math.min(_7.V_TRIGGER_AUTOSCROLL,b.h/2);
+ry=e.pageY-t.y;
+if(_2("webkit")||_2("opera")){
+ry+=_3.body().scrollTop;
+}
+dy=0;
+if(ry>0&&ry<b.h){
+if(ry<h){
+dy=-h;
+}else{
+if(ry>b.h-h){
+dy=h;
+}
+}
+_f=n.scrollTop;
+n.scrollTop=n.scrollTop+dy;
+}
+}
+if(dx||dy){
+return;
+}
+}
+try{
+n=n.parentNode;
+}
+catch(x){
+n=null;
+}
+}
+_7.autoScroll(e);
+};
+return _7;
+});

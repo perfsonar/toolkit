@@ -1,598 +1,241 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.data.GoogleSearchStore"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.data.GoogleSearchStore"] = true;
-dojo.provide("dojox.data.GoogleSearchStore");
-dojo.provide("dojox.data.GoogleWebSearchStore");
-dojo.provide("dojox.data.GoogleBlogSearchStore");
-dojo.provide("dojox.data.GoogleLocalSearchStore");
-dojo.provide("dojox.data.GoogleVideoSearchStore");
-dojo.provide("dojox.data.GoogleNewsSearchStore");
-dojo.provide("dojox.data.GoogleBookSearchStore");
-dojo.provide("dojox.data.GoogleImageSearchStore");
-
-dojo.require("dojo.io.script");
-
-dojo.experimental("dojox.data.GoogleSearchStore");
-
-dojo.declare("dojox.data.GoogleSearchStore",null,{
-	// summary:
-	//	A data store for retrieving search results from Google.
-	//  This data store acts as a base class for Google searches,
-	//  and has a number of child data stores that implement different
-	//  searches. This store defaults to searching the web, and is functionally
-	//  identical to the dojox.data.GoogleWebSearchStore object.
-	//	The following attributes are supported on each item:
-	//		<ul>
-	//			<li>url - The URL for the item</li>
-	//			<li>unescapedUrl - The URL for the item, with URL escaping. This is often more readable</li>
-	//			<li>visibleUrl - The URL with no protocol specified.
-	//			<li>cacheUrl - The URL to the copy of the document cached by Google
-	//			<li>title - The page title in HTML format.</li>
-	//			<li>titleNoFormatting - The page title in plain text</li>
-	//			<li>content - A snippet of information about the page</li>
-	//		</ul>
-	//	The query accepts one parameter: text - The string to search for
-	constructor: function(/*Object*/args){
-		//	summary:
-		//		Initializer for the GoogleSearchStore store.
-		//	description:
-		//		The GoogleSearchStore is a Datastore interface to
-		//      the Google search service. The constructor accepts the following arguments:
-		//		<ul>
-		//			<li>label - the label attribute to use. Defaults to titleNoFormatting</li>
-		//			<li>key - The API key to use. This is optional</li>
-		//			<li>lang - The language locale to use. Defaults to the browser locale</li>
-		//		</ul>
-
-		if(args){
-			if(args.label){
-				this.label = args.label;
-			}
-			if(args.key){
-				this._key = args.key;
-			}
-			if(args.lang){
-				this._lang = args.lang;
-			}
-		}
-		this._id = dojox.data.GoogleSearchStore.prototype._id++;
-	},
-
-	// _id: Integer
-	// A unique identifier for this store.
-	_id: 0,
-
-	// _requestCount: Integer
-	// A counter for the number of requests made. This is used to define
-	// the callback function that GoogleSearchStore will use.
-	_requestCount: 0,
-
-	// _googleUrl: String
-	// The URL to Googles search web service.
-	_googleUrl: "http://ajax.googleapis.com/ajax/services/search/",
-
-	// _storeRef: String
-	// The internal reference added to each item pointing at the store which owns it.
-	_storeRef: "_S",
-
-	// _attributes: Array
-	// The list of attributes that this store supports
-	_attributes: ["unescapedUrl", "url", "visibleUrl", "cacheUrl", "title", "titleNoFormatting", "content"],
-
-	// label: String
-	// The default attribute which acts as a label for each item.
-	label: "titleNoFormatting",
-
-	// type: String
-	// The type of search. Valid values are "web", "local", "video", "blogs", "news", "books", "images".
-	// This should not be set directly. Instead use one of the child classes.
-	_type: "web",
-
-	_queryAttr: "text",
-
-	_assertIsItem: function(/* item */ item){
-		//	summary:
-		//      This function tests whether the item passed in is indeed an item in the store.
-		//	item:
-		//		The item to test for being contained by the store.
-		if(!this.isItem(item)){
-			throw new Error("dojox.data.GoogleSearchStore: a function was passed an item argument that was not an item");
-		}
-	},
-
-	_assertIsAttribute: function(/* attribute-name-string */ attribute){
-		//	summary:
-		//		This function tests whether the item passed in is indeed a valid 'attribute' like type for the store.
-		//	attribute:
-		//		The attribute to test for being contained by the store.
-		if(typeof attribute !== "string"){
-			throw new Error("dojox.data.GoogleSearchStore: a function was passed an attribute argument that was not an attribute name string");
-		}
-	},
-
-	getFeatures: function(){
-		//	summary:
-		//      See dojo.data.api.Read.getFeatures()
-		return {
-			'dojo.data.api.Read': true
-		};
-	},
-
-	getValue: function(item, attribute, defaultValue){
-		//	summary:
-		//      See dojo.data.api.Read.getValue()
-		var values = this.getValues(item, attribute);
-		if(values && values.length > 0){
-			return values[0];
-		}
-		return defaultValue;
-	},
-
-	getAttributes: function(item){
-		//	summary:
-		//      See dojo.data.api.Read.getAttributes()
-		return this._attributes;
-	},
-
-	hasAttribute: function(item, attribute){
-		//	summary:
-		//      See dojo.data.api.Read.hasAttributes()
-		if(this.getValue(item,attribute)){
-			return true;
-		}
-		return false;
-	},
-
-	isItemLoaded: function(item){
-		 //	summary:
-		 //      See dojo.data.api.Read.isItemLoaded()
-		 return this.isItem(item);
-	},
-
-	loadItem: function(keywordArgs){
-		//	summary:
-		//      See dojo.data.api.Read.loadItem()
-	},
-
-	getLabel: function(item){
-		//	summary:
-		//      See dojo.data.api.Read.getLabel()
-		return this.getValue(item,this.label);
-	},
-
-	getLabelAttributes: function(item){
-		//	summary:
-		//      See dojo.data.api.Read.getLabelAttributes()
-		return [this.label];
-	},
-
-	containsValue: function(item, attribute, value){
-		//	summary:
-		//      See dojo.data.api.Read.containsValue()
-		var values = this.getValues(item,attribute);
-		for(var i = 0; i < values.length; i++){
-			if(values[i] === value){
-				return true;
-			}
-		}
-		return false;
-	},
-
-	getValues: function(item, attribute){
-		//	summary:
-		//      See dojo.data.api.Read.getValue()
-		this._assertIsItem(item);
-		this._assertIsAttribute(attribute);
-		var val = item[attribute];
-		if(dojo.isArray(val)) {
-			return val;
-		}else if(val !== undefined){
-			return [val];
-		}else{
-			return [];
-		}
-	},
-
-	isItem: function(item){
-		//	summary:
-		//      See dojo.data.api.Read.isItem()
-		if(item && item[this._storeRef] === this){
-			return true;
-		}
-		return false;
-	},
-
-	close: function(request){
-		//	summary:
-		//      See dojo.data.api.Read.close()
-	},
-
-	_format: function(item, name){
-		return item;//base implementation does not format any items
-	},
-
-	fetch: function(request){
-		//	summary:
-		//		Fetch Google search items that match to a query
-		//	request:
-		//		A request object
-		//	fetchHandler:
-		//		A function to call for fetched items
-		//	errorHandler:
-		//		A function to call on error
-		request = request || {};
-
-		var scope = request.scope || dojo.global;
-
-		if(!request.query || !request.query[this._queryAttr]){
-			if(request.onError){
-				request.onError.call(scope, new Error(this.declaredClass +
-					": A query must be specified, with a '" + [this._queryAttr] + "' parameter."));
-				return;
-			}
-		}
-		//Make a copy of the request object, in case it is
-		//modified outside the store in the middle of a request
-		var query = request.query[this._queryAttr];
-		request = {
-			query: {
-			},
-			onComplete: request.onComplete,
-			onError: request.onError,
-			onItem: request.onItem,
-			onBegin: request.onBegin,
-			start: request.start,
-			count: request.count
-		};
-		request.query[this._queryAttr] = query;
-
-        //Google's web api will only return a max of 8 results per page.
-		var pageSize = 8;
-
-		//Generate a unique function to be called back
-		var callbackFn = "GoogleSearchStoreCallback_" + this._id + "_" + (++this._requestCount);
-
-		//Build up the content to send the request for.
-		//rsz is the result size, "large" gives 8 results each time
-		var content = this._createContent(query, callbackFn, request);
-
-		var firstRequest;
-
-		if(typeof(request.start) === "undefined" || request.start === null){
-			request.start = 0;
-		}
-
-		if(!request.count){
-			request.count = pageSize;
-		}
-		firstRequest = {start: request.start - request.start % pageSize};
-
-		var _this = this;
-		var handle = null;
-		var searchUrl = this._googleUrl + this._type;
-
-		var getArgs = {
-			url: searchUrl,
-			preventCache: true,
-			content: content
-		};
-
-		var items = [];
-		var successfulReq = 0;
-		var finished = false;
-		var lastOnItem = request.start -1;
-		var numRequests = 0;
-
-		// Performs the remote request.
-		function doRequest(req){
-			//Record how many requests have been made.
-			numRequests ++;
-			getArgs.content.context = getArgs.content.start = req.start;
-
-			var deferred = dojo.io.script.get(getArgs);
-
-			//We only set up the errback, because the callback isn't ever really used because we have
-			//to link to the jsonp callback function....
-			deferred.addErrback(function(error){
-				if(request.onError){
-					request.onError.call(scope, error, request);
-				}
-			});
-		}
-
-		// Function to handle returned data.
-		var myHandler = function(start, data){
-			if(finished){return;}
-			var results = _this._getItems(data);
-			var cursor = data ? data['cursor']: null;
-			if(results){
-				//Process the results, adding the store reference to them
-				for(var i = 0; i < results.length && i + start < request.count + request.start; i++) {
-					_this._processItem(results[i], data);
-					items[i + start] = results[i];
-				}
-				successfulReq ++;
-				if(successfulReq == 1){
-					// After the first request, we know how many results exist.
-					// So perform any follow up requests to retrieve more data.
-					var pages = cursor ? cursor.pages : null;
-					var firstStart = pages ? Number(pages[pages.length - 1].start) : 0;
-
-					//Call the onBegin method if it exists
-					if (request.onBegin){
-						var est = cursor ? cursor.estimatedResultCount : results.length;
-						var total =  est ? Math.min(est, firstStart + results.length) : firstStart + results.length;
-						request.onBegin.call(scope, total, request);
-					}
-
-					// Request the next pages.
-					var nextPage = (request.start - request.start % pageSize) + pageSize;
-					var page = 1;
-					while(pages){
-						if(!pages[page] || Number(pages[page].start) >= request.start + request.count){
-							break;
-						}
-						if(Number(pages[page].start) >= nextPage) {
-							doRequest({start: pages[page].start});
-						}
-						page++;
-					}
-				}
-
-				// Call the onItem function on all retrieved items.
-				if(request.onItem && items[lastOnItem + 1]){
-					do{
-						lastOnItem++;
-						request.onItem.call(scope, items[lastOnItem], request);
-					}while(items[lastOnItem + 1] && lastOnItem < request.start + request.count);
-				}
-
-				//If this is the last request, call final fetch handler.
-				if(successfulReq == numRequests){
-					//Process the items...
-					finished = true;
-					//Clean up the function, it should never be called again
-					dojo.global[callbackFn] = null;
-					if(request.onItem){
-						request.onComplete.call(scope, null, request);
-					}else{
-						items = items.slice(request.start, request.start + request.count);
-						request.onComplete.call(scope, items, request);
-					}
-
-				}
-			}
-		};
-
-		var callbacks = [];
-		var lastCallback = firstRequest.start - 1;
-
-		var sortFn = function(a,b){
-			if(a.start < b.start){return -1;}
-			if(b.start < a.start){return 1;}
-			return 0;
-		};
-
-		// Attach a callback function to the global namespace, where Google can call it.
-		dojo.global[callbackFn] = function(start, data, responseCode, errorMsg){
-			try {
-				if(responseCode != 200){
-					if(request.onError){
-						request.onError.call(scope, new Error("Response from Google was: " + responseCode), request);
-					}
-					dojo.global[callbackFn] = function(){};//an error occurred, do not return anything else.
-					return;
-				}
-	
-				if(start == lastCallback + 1){
-					myHandler(Number(start), data);
-					lastCallback += pageSize;
-	
-					//make sure that the callbacks happen in the correct sequence
-					if(callbacks.length > 0){
-						callbacks.sort(sortFn);
-						//In case the requsts do not come back in order, sort the returned results.
-						while(callbacks.length > 0 && callbacks[0].start == lastCallback + 1){
-							myHandler(Number(callbacks[0].start), callbacks[0].data);
-							callbacks.splice(0,1);
-							lastCallback += pageSize;
-						}
-					}
-				}else{
-					callbacks.push({start:start, data: data});
-				}
-			} catch (e) {
-				request.onError.call(scope, e, request);
-			}
-		};
-
-		// Perform the first request. When this has finished
-		// we will have a list of pages, which can then be
-		// gone through
-		doRequest(firstRequest);
-	},
-
-	_processItem: function(item, data) {
-		item[this._storeRef] = this;
-	},
-
-	_getItems: function(data){
-		return data['results'] || data;
-	},
-
-	_createContent: function(query, callback, request){
-		return {
-				q: query,
-				v:"1.0",
-				rsz:"large",
-				callback: callback,
-				key:this._key,
-				hl: this._lang
-			};
-	}
-});
-
-dojo.declare("dojox.data.GoogleWebSearchStore", dojox.data.GoogleSearchStore,{
-	// summary:
-	//	A data store for retrieving search results from Google.
-	//	The following attributes are supported on each item:
-	//		<ul>
-	//			<li>title - The page title in HTML format.</li>
-	//			<li>titleNoFormatting - The page title in plain text</li>
-	//			<li>content - A snippet of information about the page</li>
-	//			<li>url - The URL for the item</li>
-	//			<li>unescapedUrl - The URL for the item, with URL escaping. This is often more readable</li>
-	//			<li>visibleUrl - The URL with no protocol specified.</li>
-	//			<li>cacheUrl - The URL to the copy of the document cached by Google</li>
-	//		</ul>
-	//	The query accepts one parameter: text - The string to search for
-});
-
-dojo.declare("dojox.data.GoogleBlogSearchStore", dojox.data.GoogleSearchStore,{
-	// summary:
-	//	A data store for retrieving search results from Google.
-	//	The following attributes are supported on each item:
-	//		<ul>
-	//			<li>title - The blog post title in HTML format.</li>
-	//			<li>titleNoFormatting - The  blog post title in plain text</li>
-	//			<li>content - A snippet of information about the blog post</li>
-	//			<li>blogUrl - The URL for the blog</li>
-	//			<li>postUrl - The URL for the a single blog post</li>
-	//			<li>visibleUrl - The URL with no protocol specified.
-	//			<li>cacheUrl - The URL to the copy of the document cached by Google
-	//			<li>author - The author of the blog post</li>
-	//			<li>publishedDate - The published date, in RFC-822 format</li>
-	//		</ul>
-	//	The query accepts one parameter: text - The string to search for
-	_type: "blogs",
-	_attributes: ["blogUrl", "postUrl", "title", "titleNoFormatting", "content", "author", "publishedDate"]
-});
-
-
-dojo.declare("dojox.data.GoogleLocalSearchStore", dojox.data.GoogleSearchStore,{
-	// summary:
-	//	A data store for retrieving search results from Google.
-	//	The following attributes are supported on each item:
-	//		<ul>
-	//			<li>title - The blog post title in HTML format.</li>
-	//			<li>titleNoFormatting - The  blog post title in plain text</li>
-	//			<li>content - A snippet of information about the blog post</li>
-	//			<li>url - The URL for the item</li>
-	//			<li>lat - The latitude.</li>
-	//			<li>lng - The longtitude.</li>
-	//			<li>streetAddress - The street address</li>
-	//			<li>city - The city</li>
-	//			<li>region - The region</li>
-	//			<li>country - The country</li>
-	//			<li>phoneNumbers - Phone numbers associated with this address. Can be one or more.</li>
-	//			<li>ddUrl - A URL that can be used to provide driving directions from the center of the search results to this search results</li>
-	//			<li>ddUrlToHere - A URL that can be used to provide driving directions from this search result to a user specified location</li>
-	//			<li>staticMapUrl - The published date, in RFC-822 format</li>
-	//		</ul>
-	//	The query accepts one parameter: text - The string to search for
-	_type: "local",
-	_attributes: ["title", "titleNoFormatting", "url", "lat", "lng", "streetAddress",
-					"city", "region", "country", "phoneNumbers", "ddUrl", "ddUrlToHere",
-					"ddUrlFromHere", "staticMapUrl"]
-});
-
-dojo.declare("dojox.data.GoogleVideoSearchStore", dojox.data.GoogleSearchStore,{
-	// summary:
-	//	A data store for retrieving search results from Google.
-	//	The following attributes are supported on each item:
-	//		<ul>
-	//			<li>title - The blog post title in HTML format.</li>
-	//			<li>titleNoFormatting - The  blog post title in plain text</li>
-	//			<li>content - A snippet of information about the blog post</li>
-	//			<li>url - The URL for the item</li>
-	//			<li>published - The published date, in RFC-822 format.</li>
-	//			<li>publisher - The name of the publisher.</li>
-	//			<li>duration - The approximate duration, in seconds, of the video.</li>
-	//			<li>tbWidth - The width in pixels of the video.</li>
-	//			<li>tbHeight - The height in pixels of the video</li>
-	//			<li>tbUrl - The URL to a thumbnail representation of the video.</li>
-	//			<li>playUrl - If present, supplies the url of the flash version of the video that can be played inline on your page. To play this video simply create and <embed> element on your page using this value as the src attribute and using application/x-shockwave-flash as the type attribute. If you want the video to play right away, make sure to append &autoPlay=true to the url..</li>
-	//		</ul>
-	//	The query accepts one parameter: text - The string to search for
-	_type: "video",
-	_attributes: ["title", "titleNoFormatting", "content", "url", "published", "publisher",
-					"duration", "tbWidth", "tbHeight", "tbUrl", "playUrl"]
-});
-
-dojo.declare("dojox.data.GoogleNewsSearchStore", dojox.data.GoogleSearchStore,{
-	// summary:
-	//	A data store for retrieving search results from Google.
-	//	The following attributes are supported on each item:
-	//		<ul>
-	//			<li>title - The news story title in HTML format.</li>
-	//			<li>titleNoFormatting - The news story title in plain text</li>
-	//			<li>content - A snippet of information about the news story</li>
-	//			<li>url - The URL for the item</li>
-	//			<li>unescapedUrl - The URL for the item, with URL escaping. This is often more readable</li>
-	//			<li>publisher - The name of the publisher</li>
-	//			<li>clusterUrl - A URL pointing to a page listing related storied.</li>
-	//			<li>location - The location of the news story.</li>
-	//			<li>publishedDate - The date of publication, in RFC-822 format.</li>
-	//			<li>relatedStories - An optional array of objects specifying related stories.
-	//				Each object has the following subset of properties:
-	//				"title", "titleNoFormatting", "url", "unescapedUrl", "publisher", "location", "publishedDate".
-	//			</li>
-	//		</ul>
-	//	The query accepts one parameter: text - The string to search for
-	_type: "news",
-	_attributes: ["title", "titleNoFormatting", "content", "url", "unescapedUrl", "publisher",
-					"clusterUrl", "location", "publishedDate", "relatedStories" ]
-});
-
-dojo.declare("dojox.data.GoogleBookSearchStore", dojox.data.GoogleSearchStore,{
-	// summary:
-	//	A data store for retrieving search results from Google.
-	//	The following attributes are supported on each item:
-	//		<ul>
-	//			<li>title - The book title in HTML format.</li>
-	//			<li>titleNoFormatting - The book title in plain text</li>
-	//			<li>authors - An array of authors</li>
-	//			<li>url - The URL for the item</li>
-	//			<li>unescapedUrl - The URL for the item, with URL escaping. This is often more readable</li>
-	//			<li>bookId - An identifier for the book, usually an ISBN.</li>
-	//			<li>pageCount - The number of pages in the book.</li>
-	//			<li>publishedYear - The year of publication.</li>
-	//		</ul>
-	//	The query accepts one parameter: text - The string to search for
-	_type: "books",
-	_attributes: ["title", "titleNoFormatting", "authors", "url", "unescapedUrl", "bookId",
-					"pageCount", "publishedYear"]
-});
-
-dojo.declare("dojox.data.GoogleImageSearchStore", dojox.data.GoogleSearchStore,{
-	// summary:
-	//	A data store for retrieving search results from Google.
-	//	The following attributes are supported on each item:
-	//		<ul>
-	//			<li>title - The image title in HTML format.</li>
-	//			<li>titleNoFormatting - The image title in plain text</li>
-	//			<li>url - The URL for the image</li>
-	//			<li>unescapedUrl - The URL for the image, with URL escaping. This is often more readable</li>
-	//			<li>tbUrl - The URL for the image thumbnail</li>
-	//			<li>visibleUrl - A shortened version of the URL associated with the result, stripped of a protocol and path</li>
-	//			<li>originalContextUrl - The URL of the page containing the image.</li>
-	//			<li>width - The width of the image in pixels.</li>
-	//			<li>height - The height of the image in pixels.</li>
-	//			<li>tbWidth - The width of the image thumbnail in pixels.</li>
-	//			<li>tbHeight - The height of the image thumbnail in pixels.</li>
-	//			<li>content - A snippet of information about the image, in HTML format</li>
-	//			<li>contentNoFormatting - A snippet of information about the image, in plain text</li>
-	//		</ul>
-	//	The query accepts one parameter: text - The string to search for
-	_type: "images",
-	_attributes: ["title", "titleNoFormatting", "visibleUrl", "url", "unescapedUrl", "originalContextUrl",
-					"width", "height", "tbWidth", "tbHeight", "tbUrl", "content", "contentNoFormatting"]
-});
-
+//>>built
+define("dojox/data/GoogleSearchStore",["dojo/_base/kernel","dojo/_base/lang","dojo/_base/declare","dojo/_base/query","dojo/dom-construct","dojo/io/script"],function(_1,_2,_3,_4,_5,_6){
+_1.experimental("dojox.data.GoogleSearchStore");
+var _7=_3("dojox.data.GoogleSearchStore",null,{constructor:function(_8){
+if(_8){
+if(_8.label){
+this.label=_8.label;
 }
+if(_8.key){
+this._key=_8.key;
+}
+if(_8.lang){
+this._lang=_8.lang;
+}
+if("urlPreventCache" in _8){
+this.urlPreventCache=_8.urlPreventCache?true:false;
+}
+}
+this._id=dojox.data.GoogleSearchStore.prototype._id++;
+},_id:0,_requestCount:0,_googleUrl:"http://ajax.googleapis.com/ajax/services/search/",_storeRef:"_S",_attributes:["unescapedUrl","url","visibleUrl","cacheUrl","title","titleNoFormatting","content","estimatedResultCount"],_aggregatedAttributes:{estimatedResultCount:"cursor.estimatedResultCount"},label:"titleNoFormatting",_type:"web",urlPreventCache:true,_queryAttrs:{text:"q"},_assertIsItem:function(_9){
+if(!this.isItem(_9)){
+throw new Error("dojox.data.GoogleSearchStore: a function was passed an item argument that was not an item");
+}
+},_assertIsAttribute:function(_a){
+if(typeof _a!=="string"){
+throw new Error("dojox.data.GoogleSearchStore: a function was passed an attribute argument that was not an attribute name string");
+}
+},getFeatures:function(){
+return {"dojo.data.api.Read":true};
+},getValue:function(_b,_c,_d){
+var _e=this.getValues(_b,_c);
+if(_e&&_e.length>0){
+return _e[0];
+}
+return _d;
+},getAttributes:function(_f){
+return this._attributes;
+},hasAttribute:function(_10,_11){
+if(this.getValue(_10,_11)){
+return true;
+}
+return false;
+},isItemLoaded:function(_12){
+return this.isItem(_12);
+},loadItem:function(_13){
+},getLabel:function(_14){
+return this.getValue(_14,this.label);
+},getLabelAttributes:function(_15){
+return [this.label];
+},containsValue:function(_16,_17,_18){
+var _19=this.getValues(_16,_17);
+for(var i=0;i<_19.length;i++){
+if(_19[i]===_18){
+return true;
+}
+}
+return false;
+},getValues:function(_1a,_1b){
+this._assertIsItem(_1a);
+this._assertIsAttribute(_1b);
+var val=_1a[_1b];
+if(_2.isArray(val)){
+return val;
+}else{
+if(val!==undefined){
+return [val];
+}else{
+return [];
+}
+}
+},isItem:function(_1c){
+if(_1c&&_1c[this._storeRef]===this){
+return true;
+}
+return false;
+},close:function(_1d){
+},_format:function(_1e,_1f){
+return _1e;
+},fetch:function(_20){
+_20=_20||{};
+var _21=_20.scope||_1.global;
+if(!_20.query){
+if(_20.onError){
+_20.onError.call(_21,new Error(this.declaredClass+": A query must be specified."));
+return;
+}
+}
+var _22={};
+for(var _23 in this._queryAttrs){
+_22[_23]=_20.query[_23];
+}
+_20={query:_22,onComplete:_20.onComplete,onError:_20.onError,onItem:_20.onItem,onBegin:_20.onBegin,start:_20.start,count:_20.count};
+var _24=8;
+var _25="GoogleSearchStoreCallback_"+this._id+"_"+(++this._requestCount);
+var _26=this._createContent(_22,_25,_20);
+var _27;
+if(typeof (_20.start)==="undefined"||_20.start===null){
+_20.start=0;
+}
+if(!_20.count){
+_20.count=_24;
+}
+_27={start:_20.start-_20.start%_24};
+var _28=this;
+var _29=this._googleUrl+this._type;
+var _2a={url:_29,preventCache:this.urlPreventCache,content:_26};
+var _2b=[];
+var _2c=0;
+var _2d=false;
+var _2e=_20.start-1;
+var _2f=0;
+var _30=[];
+function _31(req){
+_2f++;
+_2a.content.context=_2a.content.start=req.start;
+var _32=_6.get(_2a);
+_30.push(_32.ioArgs.id);
+_32.addErrback(function(_33){
+if(_20.onError){
+_20.onError.call(_21,_33,_20);
+}
+});
+};
+var _34=function(_35,_36){
+if(_30.length>0){
+_4("#"+_30.splice(0,1)).forEach(_5.destroy);
+}
+if(_2d){
+return;
+}
+var _37=_28._getItems(_36);
+var _38=_36?_36["cursor"]:null;
+if(_37){
+for(var i=0;i<_37.length&&i+_35<_20.count+_20.start;i++){
+_28._processItem(_37[i],_36);
+_2b[i+_35]=_37[i];
+}
+_2c++;
+if(_2c==1){
+var _39=_38?_38.pages:null;
+var _3a=_39?Number(_39[_39.length-1].start):0;
+if(_20.onBegin){
+var est=_38?_38.estimatedResultCount:_37.length;
+var _3b=est?Math.min(est,_3a+_37.length):_3a+_37.length;
+_20.onBegin.call(_21,_3b,_20);
+}
+var _3c=(_20.start-_20.start%_24)+_24;
+var _3d=1;
+while(_39){
+if(!_39[_3d]||Number(_39[_3d].start)>=_20.start+_20.count){
+break;
+}
+if(Number(_39[_3d].start)>=_3c){
+_31({start:_39[_3d].start});
+}
+_3d++;
+}
+}
+if(_20.onItem&&_2b[_2e+1]){
+do{
+_2e++;
+_20.onItem.call(_21,_2b[_2e],_20);
+}while(_2b[_2e+1]&&_2e<_20.start+_20.count);
+}
+if(_2c==_2f){
+_2d=true;
+_1.global[_25]=null;
+if(_20.onItem){
+_20.onComplete.call(_21,null,_20);
+}else{
+_2b=_2b.slice(_20.start,_20.start+_20.count);
+_20.onComplete.call(_21,_2b,_20);
+}
+}
+}
+};
+var _3e=[];
+var _3f=_27.start-1;
+_1.global[_25]=function(_40,_41,_42,_43){
+try{
+if(_42!=200){
+if(_20.onError){
+_20.onError.call(_21,new Error("Response from Google was: "+_42),_20);
+}
+_1.global[_25]=function(){
+};
+return;
+}
+if(_40==_3f+1){
+_34(Number(_40),_41);
+_3f+=_24;
+if(_3e.length>0){
+_3e.sort(_28._getSort());
+while(_3e.length>0&&_3e[0].start==_3f+1){
+_34(Number(_3e[0].start),_3e[0].data);
+_3e.splice(0,1);
+_3f+=_24;
+}
+}
+}else{
+_3e.push({start:_40,data:_41});
+}
+}
+catch(e){
+_20.onError.call(_21,e,_20);
+}
+};
+_31(_27);
+},_getSort:function(){
+return function(a,b){
+if(a.start<b.start){
+return -1;
+}
+if(b.start<a.start){
+return 1;
+}
+return 0;
+};
+},_processItem:function(_44,_45){
+_44[this._storeRef]=this;
+for(var _46 in this._aggregatedAttributes){
+_44[_46]=_2.getObject(this._aggregatedAttributes[_46],false,_45);
+}
+},_getItems:function(_47){
+return _47["results"]||_47;
+},_createContent:function(_48,_49,_4a){
+var _4b={v:"1.0",rsz:"large",callback:_49,key:this._key,hl:this._lang};
+for(var _4c in this._queryAttrs){
+_4b[this._queryAttrs[_4c]]=_48[_4c];
+}
+return _4b;
+}});
+var _4d=_3("dojox.data.GoogleWebSearchStore",_7,{});
+var _4e=_3("dojox.data.GoogleBlogSearchStore",_7,{_type:"blogs",_attributes:["blogUrl","postUrl","title","titleNoFormatting","content","author","publishedDate"],_aggregatedAttributes:{}});
+var _4f=_3("dojox.data.GoogleLocalSearchStore",_7,{_type:"local",_attributes:["title","titleNoFormatting","url","lat","lng","streetAddress","city","region","country","phoneNumbers","ddUrl","ddUrlToHere","ddUrlFromHere","staticMapUrl","viewport"],_aggregatedAttributes:{viewport:"viewport"},_queryAttrs:{text:"q",centerLatLong:"sll",searchSpan:"sspn"}});
+var _50=_3("dojox.data.GoogleVideoSearchStore",_7,{_type:"video",_attributes:["title","titleNoFormatting","content","url","published","publisher","duration","tbWidth","tbHeight","tbUrl","playUrl"],_aggregatedAttributes:{}});
+var _51=_3("dojox.data.GoogleNewsSearchStore",_7,{_type:"news",_attributes:["title","titleNoFormatting","content","url","unescapedUrl","publisher","clusterUrl","location","publishedDate","relatedStories"],_aggregatedAttributes:{}});
+var _52=_3("dojox.data.GoogleBookSearchStore",_7,{_type:"books",_attributes:["title","titleNoFormatting","authors","url","unescapedUrl","bookId","pageCount","publishedYear"],_aggregatedAttributes:{}});
+var _53=_3("dojox.data.GoogleImageSearchStore",_7,{_type:"images",_attributes:["title","titleNoFormatting","visibleUrl","url","unescapedUrl","originalContextUrl","width","height","tbWidth","tbHeight","tbUrl","content","contentNoFormatting"],_aggregatedAttributes:{}});
+return {Search:_7,ImageSearch:_53,BookSearch:_52,NewsSearch:_51,VideoSearch:_50,LocalSearch:_4f,BlogSearch:_4e,WebSearch:_4d};
+});

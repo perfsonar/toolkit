@@ -1,57 +1,22 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.form.Manager"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.form.Manager"] = true;
-dojo.provide("dojox.form.Manager");
-
-dojo.require("dijit._Widget");
-dojo.require("dijit._Templated");
-
-dojo.require("dojox.form.manager._Mixin");
-dojo.require("dojox.form.manager._NodeMixin");
-dojo.require("dojox.form.manager._FormMixin");
-dojo.require("dojox.form.manager._ValueMixin");
-dojo.require("dojox.form.manager._EnableMixin");
-dojo.require("dojox.form.manager._DisplayMixin");
-dojo.require("dojox.form.manager._ClassMixin");
-
-dojo.declare("dojox.form.Manager", [
-		dijit._Widget, dijit._Templated,
-		dojox.form.manager._Mixin,
-		dojox.form.manager._NodeMixin,
-		dojox.form.manager._FormMixin,
-		dojox.form.manager._ValueMixin,
-		dojox.form.manager._EnableMixin,
-		dojox.form.manager._DisplayMixin,
-		dojox.form.manager._ClassMixin
-], {
-	// summary:
-	//		The widget to orchestrate dynamic forms.
-	// description:
-	//		This widget hosts dojox.form.manager mixins.
-	//		See dojox.form.manager._Mixin for more info.
-
-	widgetsInTemplate: true,
-
-	buildRendering: function(){
-		var node = this.domNode = this.srcNodeRef;
-		if(!this.containerNode){
-			// all widgets with descendants must set containerNode
-				this.containerNode = node;
-		}
-		this._attachTemplateNodes(node);
-	},
-
-	startup: function(){
-		if(this._started){ return; }
-		this._attachTemplateNodes(this.getDescendants(), function(n,p){ return n[p]; });
-		this.inherited(arguments);
-	}
-});
-
+//>>built
+define("dojox/form/Manager",["dijit/_Widget","dijit/_TemplatedMixin","./manager/_Mixin","./manager/_NodeMixin","./manager/_FormMixin","./manager/_ValueMixin","./manager/_EnableMixin","./manager/_DisplayMixin","./manager/_ClassMixin","dojo/_base/declare"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a){
+return _a("dojox.form.Manager",[_1,_3,_4,_5,_6,_7,_8,_9],{buildRendering:function(){
+var _b=(this.domNode=this.srcNodeRef);
+if(!this.containerNode){
+this.containerNode=_b;
 }
+this.inherited(arguments);
+this._attachPoints=[];
+this._attachEvents=[];
+_2.prototype._attachTemplateNodes.call(this,_b,function(n,p){
+return n.getAttribute(p);
+});
+},destroyRendering:function(_c){
+if(!this.__ctm){
+this.__ctm=true;
+_2.prototype.destroyRendering.apply(this,arguments);
+delete this.__ctm;
+this.inherited(arguments);
+}
+}});
+});

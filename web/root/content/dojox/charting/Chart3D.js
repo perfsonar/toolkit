@@ -1,93 +1,62 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.charting.Chart3D"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.charting.Chart3D"] = true;
-dojo.provide("dojox.charting.Chart3D");
-
-dojo.require("dojox.gfx3d");
-
-(function(){
-	var observerVector = {x: 0, y: 0, z: 1}, v = dojox.gfx3d.vector, n = dojox.gfx.normalizedLength;
-
-	dojo.declare("dojox.charting.Chart3D", null, {
-		constructor: function(node, lights, camera, theme){
-			// setup a view
-			this.node = dojo.byId(node);
-			this.surface = dojox.gfx.createSurface(this.node, n(this.node.style.width), n(this.node.style.height));
-			this.view = this.surface.createViewport();
-			this.view.setLights(lights.lights, lights.ambient, lights.specular);
-			this.view.setCameraTransform(camera);
-			this.theme = theme;
-			
-			// initialize internal variables
-			this.walls = [];
-			this.plots = [];
-		},
-		
-		// public API
-		generate: function(){
-			return this._generateWalls()._generatePlots();
-		},
-		invalidate: function(){
-			this.view.invalidate();
-			return this;
-		},
-		render: function(){
-			this.view.render();
-			return this;
-		},
-		addPlot: function(plot){
-			return this._add(this.plots, plot);
-		},
-		removePlot: function(plot){
-			return this._remove(this.plots, plot);
-		},
-		addWall: function(wall){
-			return this._add(this.walls, wall);
-		},
-		removeWall: function(wall){
-			return this._remove(this.walls, wall);
-		},
-		
-		// internal API
-		_add: function(array, item){
-			if(!dojo.some(array, function(i){ return i == item; })){
-				array.push(item);
-				this.view.invalidate();
-			}
-			return this;
-		},
-		_remove: function(array, item){
-			var a = dojo.filter(array, function(i){ return i != item; });
-			return a.length < array.length ? (array = a, this.invalidate()) : this;
-		},
-		_generateWalls: function(){
-			for(var i = 0; i < this.walls.length; ++i){
-				if(v.dotProduct(observerVector, this.walls[i].normal) > 0){
-					this.walls[i].generate(this);
-				}
-			}
-			return this;
-		},
-		_generatePlots: function(){
-			var depth = 0, m = dojox.gfx3d.matrix, i = 0;
-			for(; i < this.plots.length; ++i){
-				depth += this.plots[i].getDepth();
-			}
-			for(--i; i >= 0; --i){
-				var scene = this.view.createScene();
-				scene.setTransform(m.translate(0, 0, -depth));
-				this.plots[i].generate(this, scene);
-				depth -= this.plots[i].getDepth();
-			}
-			return this;
-		}
-	});
-})();
-
+//>>built
+define("dojox/charting/Chart3D",["dojo/_base/array","dojo/dom","dojo/_base/declare","dojox/gfx","dojox/gfx3d"],function(_1,_2,_3,_4,_5){
+var _6={x:0,y:0,z:1},v=_5.vector,n=_4.normalizedLength;
+return _3("dojox.charting.Chart3D",null,{constructor:function(_7,_8,_9,_a){
+this.node=_2.byId(_7);
+this.surface=_4.createSurface(this.node,n(this.node.style.width),n(this.node.style.height));
+this.view=this.surface.createViewport();
+this.view.setLights(_8.lights,_8.ambient,_8.specular);
+this.view.setCameraTransform(_9);
+this.theme=_a;
+this.walls=[];
+this.plots=[];
+},generate:function(){
+return this._generateWalls()._generatePlots();
+},invalidate:function(){
+this.view.invalidate();
+return this;
+},render:function(){
+this.view.render();
+return this;
+},addPlot:function(_b){
+return this._add(this.plots,_b);
+},removePlot:function(_c){
+return this._remove(this.plots,_c);
+},addWall:function(_d){
+return this._add(this.walls,_d);
+},removeWall:function(_e){
+return this._remove(this.walls,_e);
+},_add:function(_f,_10){
+if(!_1.some(_f,function(i){
+return i==_10;
+})){
+_f.push(_10);
+this.view.invalidate();
 }
+return this;
+},_remove:function(_11,_12){
+var a=_1.filter(_11,function(i){
+return i!=_12;
+});
+return a.length<_11.length?(_11=a,this.invalidate()):this;
+},_generateWalls:function(){
+for(var i=0;i<this.walls.length;++i){
+if(v.dotProduct(_6,this.walls[i].normal)>0){
+this.walls[i].generate(this);
+}
+}
+return this;
+},_generatePlots:function(){
+var _13=0,m=_5.matrix,i=0;
+for(;i<this.plots.length;++i){
+_13+=this.plots[i].getDepth();
+}
+for(--i;i>=0;--i){
+var _14=this.view.createScene();
+_14.setTransform(m.translate(0,0,-_13));
+this.plots[i].generate(this,_14);
+_13-=this.plots[i].getDepth();
+}
+return this;
+}});
+});

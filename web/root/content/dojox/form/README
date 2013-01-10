@@ -8,10 +8,10 @@ Project state:
 experimental
 -------------------------------------------------------------------------------
 Credits
-	Nathan Toone (nathan)
-	Peter Higgins	(dante)
-    Wolfram Kriesing (http://wolfram.kriesing.de/blog/): Rating
-    Mike Wilcox
+	Nathan Toone (toonetown)
+	Peter Higgins (dante)
+	Wolfram Kriesing (wolfram)
+	Mike Wilcox (mwilcox)
 -------------------------------------------------------------------------------
 Project description
 
@@ -39,8 +39,8 @@ Additional Notes (Brief widget list):
 	* CheckedMultiSelect - an extension to dijit.form.MultiSelect which
 						uses check boxes instead of ctrl-click
 
- 	* DropDownSelect - an extension to dijit.form.DropDownButton which is
- 						meant to mirror the html <select> drop down
+	* DropDownSelect - an extension to dijit.form.DropDownButton which is
+						meant to mirror the html <select> drop down
 
 	* DropDownStack/RadioStack - a widget that can toggle parts of a form as
 						"on" or "off" - to allow for different options based on 
@@ -53,10 +53,13 @@ Additional Notes (Brief widget list):
 						
 	* FilePickerTextBox - a validating text box that can browser server-side
 						files using a dojox.data.FileStore
-	* FileUploader - Convert (almost) any button into a file input. Multi-file
-						uploads supported. Uses a SWF file created with Deft.
-						Compatible with Flash Player versions 8-10.
+	* FileUploader - Allows for Multi-file uploads and file masking. Uses a SWF
+						file created with Deft. Compatible with Flash Player
+						versions 8-10. Degradeable to a multi-file HTML uploader.
 	
+	* ListInput - A text-box widget that allows inputting multiple items (similar
+						to the "to" field on many email clients)
+						
     * MultiComboBox - an experimental ComboBox that allows
 						multiple entries bases on a separator character.
 

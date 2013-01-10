@@ -1,0 +1,9 @@
+<div class="subTitle1">Mesh Performance Dashboards</div>
+
+<center><font color="red"><div id="web_admin_error">[% error_message %]</div></font></center>
+
+<div id="maddash_tab_container" dojoType="dijit.layout.TabContainer" style="height: 100%">
+[% FOREACH dashboard IN dashboards %]
+    <div id="maddash_tab_[%- dashboard.name -%]" dojoType="dijit.layout.ContentPane" href="[%- self_url -%]?fname=get_dashboard&args=[%- dashboard.id -%]" title="[%- dashboard.name -%]" style="height:100%"></div>
+[% END %]
+</div>
