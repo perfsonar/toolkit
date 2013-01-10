@@ -89,6 +89,9 @@ sub setup_links {
 	    }
 
             foreach my $script (@scripts) {
+                `chkconfig --list $script &> /dev/null`;
+                next if $? != 0;
+                
                 if ($service->{enabled}) {
                     system( "chkconfig --add $script" );
                     system( "chkconfig $script on" );
