@@ -24,9 +24,6 @@ my $ndt_pname               = [ "web100srv", "fakewww" ];
 my $PingER_cfg              = "/opt/perfsonar_ps/PingER/etc/daemon.conf";
 my $PingER_pid              = "/var/run/pinger.pid";
 my $PingER_pname            = "daemon.pl";
-my $hLS_cfg                 = "/opt/perfsonar_ps/lookup_service/etc/daemon.conf";
-my $hLS_pid                 = "/var/run/lookup_service.pid";
-my $hLS_pname               = "daemon.pl";
 my $SNMP_MA_cfg             = "/opt/perfsonar_ps/snmp_ma/etc/daemon.conf";
 my $SNMP_MA_pid             = "/var/run/snmp_ma.pid";
 my $SNMP_MA_pname           = "daemon.pl";
@@ -110,8 +107,6 @@ my $ndt = perfSONAR_PS::ServiceInfo::NDT->new();
 $ndt->init( pid_files => $ndt_pid, process_names => $ndt_pname );
 my $pinger = perfSONAR_PS::ServiceInfo::PingER->new();
 $pinger->init( conf_file => $PingER_cfg, pid_files => $PingER_pid, process_names => $PingER_pname );
-my $hls = perfSONAR_PS::ServiceInfo::hLS->new();
-$hls->init( conf_file => $hLS_cfg, pid_files => $hLS_pid, process_names => $hLS_pname );
 my $snmp_ma = perfSONAR_PS::ServiceInfo::SNMP_MA->new();
 $snmp_ma->init( conf_file => $SNMP_MA_cfg, pid_files => $SNMP_MA_pid, process_names => $SNMP_MA_pname );
 my $psb_ma = perfSONAR_PS::ServiceInfo::pSB_MA->new();
@@ -128,7 +123,7 @@ $traceroute_scheduler->init( pid_files => [ $traceroute_scheduler_pid, $tracerou
 
 my %services = ();
 
-foreach my $service ( $owamp, $bwctl, $npad, $ndt, $psb_ma, $traceroute_ma, $traceroute_scheduler, $hls, $pinger, $snmp_ma, $psb_owamp, $psb_bwctl ) {
+foreach my $service ( $owamp, $bwctl, $npad, $ndt, $psb_ma, $traceroute_ma, $traceroute_scheduler, $pinger, $snmp_ma, $psb_owamp, $psb_bwctl ) {
     $logger->debug("Checking ".$service->name());
     my $is_running = $service->check_running();
     
@@ -173,7 +168,7 @@ $vars{mtu}     = $external_address_conf->get_primary_address_mtu();
 $logger->debug("Checking if NTP is synced");
 $vars{ntp_sync_status}     = $ntpinfo->is_synced();
 $logger->debug("Checking if globally registered");
-$vars{global_reg} 		= $administrative_info_conf->has_admin_info() && $hls->check_running();
+$vars{global_reg} 		= $administrative_info_conf->has_admin_info();
 
 $logger->debug("Building index page");
 
@@ -861,23 +856,6 @@ sub init {
     $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::PingER" );
     $self->{SERVICE_NAME} = "pinger";
     $self->{VALID_MODULE} = "perfSONAR_PS::Services::MA::PingER";
-
-    $self->SUPER::init( %conf );
-
-    return 0;
-}
-
-package perfSONAR_PS::ServiceInfo::hLS;
-
-use base 'perfSONAR_PS::ServiceInfo::perfSONAR_PS';
-use Log::Log4perl qw(get_logger);
-
-sub init {
-    my ( $self, %conf ) = @_;
-
-    $self->{LOGGER}       = get_logger( "perfSONAR_PS::Agent::LS::Registration::hLS" );
-    $self->{SERVICE_NAME} = "hls";
-    $self->{VALID_MODULE} = "perfSONAR_PS::Services::LS::gLS";
 
     $self->SUPER::init( %conf );
 
