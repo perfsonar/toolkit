@@ -27,6 +27,7 @@ File::Path
 File::Temp
 FindBin
 Getopt::Long
+HTML::Entities
 IO::File
 IO::Interface
 IO::Socket
@@ -36,7 +37,7 @@ LWP::UserAgent
 Log::Log4perl
 Net::CIDR
 Net::DNS
-Net::IP
+Net::Domain
 Net::IP
 Net::Interface
 Net::NTP
@@ -54,7 +55,6 @@ Socket
 Socket6
 Socket::GetAddrInfo
 Storable
-Sys::Hostname
 Template
 Time::HiRes
 Time::Local
