@@ -20,7 +20,12 @@ function add_keyword(keyword) {
 }
 
 function handle_modify_host_information() {
-	var host_location = dijit.byId('modify_host_information_host_location').attr('value');
+	var city = dijit.byId('modify_host_information_host_city').attr('value');
+	var state = dijit.byId('modify_host_information_host_state').attr('value');
+	var country = dijit.byId('modify_host_information_host_country').attr('value');
+	var zipcode = dijit.byId('modify_host_information_host_zipcode').attr('value');
+	var latitude = dijit.byId('modify_host_information_host_latitude').attr('value');
+	var longitude = dijit.byId('modify_host_information_host_longitude').attr('value');
 	var organization_name = dijit.byId('modify_host_information_organization_name').attr('value');
 	var administrator_email = dijit.byId('modify_host_information_administrator_email').attr('value');
 	var administrator_name = dijit.byId('modify_host_information_administrator_name').attr('value');
@@ -29,18 +34,31 @@ function handle_modify_host_information() {
     console.log(subscribe);
     var existing_email = dojo.byId('administrator_email').value;
 
-	handle_cgi_ajax_call(null, 'Problem setting host information', true, 'set_host_information', [ organization_name, host_location, administrator_name, administrator_email, subscribe ]);
+	handle_cgi_ajax_call(null, 'Problem setting host information', true, 'set_host_information', [ organization_name, host_location, city, state, country, zipcode, administrator_name, administrator_email, latitude, longitude, subscribe ]);
 }
 
 function display_modify_host_information_dialog() {
 	console.log("display_modify_host_information_dialog()");
 
-	var host_location = dojo.byId('host_location').value;
+//	var host_location = dojo.byId('host_location').value;
 	var organization_name = dojo.byId('organization_name').value;
 	var administrator_email = dojo.byId('administrator_email').value;
 	var administrator_name = dojo.byId('administrator_name').value;
+	var city = dojo.byId('host_city').value;
+	var state = dojo.byId('host_state').value;
+	var country = dojo.byId('host_country').value;
+	var zipcode = dojo.byId('host_zipcode').value;
+	var latitude = dojo.byId('host_latitude').value;
+	var longitude = dojo.byId('host_longitude').value;
+	
 
-	dijit.byId('modify_host_information_host_location').attr('value', host_location);
+//	dijit.byId('modify_host_information_host_location').attr('value', host_location);
+	dijit.byId('modify_host_information_host_city').attr('value', city);
+	dijit.byId('modify_host_information_host_state').attr('value', state);
+	dijit.byId('modify_host_information_host_country').attr('value', country);
+	dijit.byId('modify_host_information_host_zipcode').attr('value', zipcode);
+	dijit.byId('modify_host_information_host_latitude').attr('value', latitude);
+	dijit.byId('modify_host_information_host_longitude').attr('value', longitude);
 	dijit.byId('modify_host_information_organization_name').attr('value', organization_name);
 	dijit.byId('modify_host_information_administrator_email').attr('value', administrator_email);
 	dijit.byId('modify_host_information_administrator_name').attr('value', administrator_name);
@@ -81,10 +99,34 @@ Organization Name
 </tr>
 <tr>
 <td>
-Host Location
+City
 </td>
 <td>
-<input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_host_location" size="20" />
+<input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_host_city" size="20" />
+</td>
+</tr>
+<tr>
+<td>
+State
+</td>
+<td>
+<input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_host_state" size="20" />
+</td>
+</tr>
+<tr>
+<td>
+Country
+</td>
+<td>
+<input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_host_country" size="20" />
+</td>
+</tr>
+<tr>
+<td>
+ZipCode
+</td>
+<td>
+<input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_host_zipcode" size="20" />
 </td>
 </tr>
 <tr>
@@ -102,6 +144,22 @@ Administrator Email
 <td>
 <input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_administrator_email" size="20" />
 <input id="subscribe" name="subscribe" dojoType="dijit.form.CheckBox" value="agreed" > <label for="subscribe">Subscribe to NP Toolkit user list</label>
+</td>
+</tr>
+<tr>
+<td>
+Latitude
+</td>
+<td>
+<input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_host_latitude" size="20" />
+</td>
+</tr>
+<tr>
+<td>
+Longitude
+</td>
+<td>
+<input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_host_longitude" size="20" />
 </td>
 </tr>
 </table>
@@ -122,3 +180,4 @@ Administrator Email
 	<input class="button" type="button" value="Cancel" onClick="dijit.byId('dialog_add_new_community').hide();">
 </div>
 [% INCLUDE footer.tmpl %]
+

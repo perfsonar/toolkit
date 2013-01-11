@@ -156,6 +156,12 @@ my $html;
 my %vars = ();
 $vars{site_name}       = $administrative_info_conf->get_organization_name();
 $vars{site_location}   = $administrative_info_conf->get_location();
+$vars{city}   = $administrative_info_conf->get_city();
+$vars{state}   = $administrative_info_conf->get_state();
+$vars{country}   = $administrative_info_conf->get_country();
+$vars{zipcode}   = $administrative_info_conf->get_zipcode();
+$vars{latitude}   = $administrative_info_conf->get_latitude();
+$vars{longitude}   = $administrative_info_conf->get_longitude();
 $vars{keywords}        = $administrative_info_conf->get_keywords();
 $vars{toolkit_version} = $version_conf->get_version();
 $vars{services}        = \%services;
@@ -912,3 +918,4 @@ sub init {
 }
 
 # vim: expandtab shiftwidth=4 tabstop=4
+

@@ -187,6 +187,12 @@ sub fill_variables {
     $vars->{administrator_name}  = $administrative_info_conf->get_administrator_name();
     $vars->{administrator_email} = $administrative_info_conf->get_administrator_email();
     $vars->{location}            = $administrative_info_conf->get_location();
+    $vars->{city}            = $administrative_info_conf->get_city();
+    $vars->{state}            = $administrative_info_conf->get_state();
+    $vars->{country}            = $administrative_info_conf->get_country();
+    $vars->{zipcode}            = $administrative_info_conf->get_zipcode();
+    $vars->{latitude}            = $administrative_info_conf->get_latitude();
+    $vars->{longitude}            = $administrative_info_conf->get_longitude();
     my $keywords         = $administrative_info_conf->get_keywords();
     my @display_keywords = ();
     if ( $keywords ) {
@@ -205,12 +211,19 @@ sub fill_variables {
 }
 
 sub set_host_information  {
-    my ( $organization_name, $host_location, $administrator_name, $administrator_email, $subscribe ) = @_;
+    my ( $organization_name, $host_location, $city, $state, $country, $zipcode, $administrator_name, $administrator_email, $latitude, $longitude, $subscribe ) = @_;
 
     $administrative_info_conf->set_organization_name( { organization_name => $organization_name } );
     $administrative_info_conf->set_location( { location => $host_location } );
+    $administrative_info_conf->set_city( { city => $city } );
+    $administrative_info_conf->set_state( { state => $state } );
+    $administrative_info_conf->set_country( { country => $country } );
+    $administrative_info_conf->set_zipcode( { zipcode => $zipcode } );
+    $administrative_info_conf->set_latitude( { latitude => $latitude } );
+    $administrative_info_conf->set_longitude( { longitude => $longitude } );
     $administrative_info_conf->set_administrator_name( { administrator_name => $administrator_name } );
     $administrative_info_conf->set_administrator_email( { administrator_email => $administrator_email } );
+    
 
 	if($administrator_email && $subscribe eq "true"){
 		subscribe($administrator_email);
@@ -305,3 +318,4 @@ sub save_state {
 }
 
 1;
+

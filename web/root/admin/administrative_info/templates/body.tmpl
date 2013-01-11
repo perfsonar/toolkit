@@ -7,8 +7,14 @@
 <input type="hidden" id="nptoolkit_is_modified" value="[% is_modified %]" />
 <input type="hidden" id="organization_name" value="[% organization_name %]" />
 <input type="hidden" id="host_location" value="[% location %]" />
+<input type="hidden" id="host_city" value="[% city %]" />
+<input type="hidden" id="host_state" value="[% state %]" />
+<input type="hidden" id="host_country" value="[% country %]" />
+<input type="hidden" id="host_zipcode" value="[% zipcode %]" />
 <input type="hidden" id="administrator_name" value="[% administrator_name %]" />
 <input type="hidden" id="administrator_email" value="[% administrator_email %]" />
+<input type="hidden" id="host_latitude" value="[% latitude %]" />
+<input type="hidden" id="host_longitude" value="[% longitude %]" />
 
 <input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save_config()">
 <input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset_config()">
@@ -19,15 +25,32 @@
         </tr>
         <tr>
         <td>Organization Name</td><td>[% organization_name %]</td>
+        <tr>
+        <tr>
+        <td>City</td><td>[% city %]</td>
         </tr>
         <tr>
-        <td>Host Location</td><td>[% location %]</td>
+        <td>State</td><td>[% state %]</td>
         </tr>
+        <tr>
+        <td>Country</td><td>[% country %]</td>
+        </tr>
+        <tr>
+        <td>Zipcode</td><td>[% zipcode %]</td>
+        </tr>
+        <tr></tr>
         <tr>
         <td>Administrator Name</td><td>[% administrator_name %]</td>
         </tr>
         <tr>
         <td>Administrator Email</td><td>[% administrator_email %]</td>
+        </tr>
+        <tr></tr>
+        <tr>
+        <td>Latitude</td><td>[% latitude %]</td>
+        </tr>
+        <tr>
+        <td>Longitude</td><td>[% longitude %]</td>
         </tr>
 </table>
 
@@ -73,3 +96,4 @@ network (e.g.  Internet2, ESnet), you might select these communities.
 <input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset_config()">
 
 </div>
+

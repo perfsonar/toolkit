@@ -20,7 +20,7 @@ NDT and NPAD since they both use these same settings for their configuration.
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'SITE_INFO_FILE', 'ADMINISTRATOR_NAME', 'ADMINISTRATOR_EMAIL', 'ORGANIZATION_NAME', 'LOCATION', 'KEYWORDS';
+use fields 'SITE_INFO_FILE', 'ADMINISTRATOR_NAME', 'ADMINISTRATOR_EMAIL', 'ORGANIZATION_NAME', 'LOCATION', 'KEYWORDS', 'CITY', 'STATE', 'COUNTRY', 'ZIPCODE','LATITUDE','LONGITUDE';
 
 use Params::Validate qw(:all);
 use Storable qw(store retrieve freeze thaw dclone);
@@ -209,6 +209,97 @@ sub set_location {
     return 0;
 }
 
+=head2 set_city({ city => 1 })
+Sets the box's location- city
+=cut
+
+sub set_city {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { city => 1, } );
+
+    my $value = $parameters->{city};
+
+    $self->{CITY} = $value;
+
+    return 0;
+}
+
+
+=head2 set_state({ state => 1 })
+Sets the box's location- state
+=cut
+
+sub set_state {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { state => 1, } );
+
+    my $value = $parameters->{state};
+
+    $self->{STATE} = $value;
+
+    return 0;
+}
+
+=head2 set_country({ country => 1 })
+Sets the box's location- country
+=cut
+
+sub set_country {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { country => 1, } );
+
+    my $value = $parameters->{country};
+
+    $self->{COUNTRY} = $value;
+
+    return 0;
+}
+
+=head2 set_zipcode({ zipcode => 1 })
+Sets the box's location- zipcode
+=cut
+
+sub set_zipcode {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { zipcode => 1, } );
+
+    my $value = $parameters->{zipcode};
+
+    $self->{ZIPCODE} = $value;
+
+    return 0;
+}
+
+=head2 set_latitude({ latitude => 1 })
+Sets the box's latitude
+=cut
+
+sub set_latitude {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { latitude => 1, } );
+
+    my $value = $parameters->{latitude};
+
+    $self->{LATITUDE} = $value;
+
+    return 0;
+}
+
+=head2 set_longitude({ longitude => 1 })
+Sets the box's longitude
+=cut
+
+sub set_longitude {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { longitude => 1, } );
+
+    my $value = $parameters->{longitude};
+
+    $self->{LONGITUDE} = $value;
+
+    return 0;
+}
+
 =head2 add_keyword ({ keyword => 1 })
 
 Adds the specified keyword to the configuration. Returns 0 on success, -1 on
@@ -300,6 +391,76 @@ sub get_location {
     return $self->{LOCATION};
 }
 
+
+=head2 get_city ({})
+Returns the node's configured city
+=cut
+
+sub get_city {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+
+    return $self->{CITY};
+}
+
+
+=head2 get_state ({})
+Returns the node's configured state
+=cut
+
+sub get_state {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+
+    return $self->{STATE};
+}
+
+=head2 get_country ({})
+Returns the node's configured country
+=cut
+
+sub get_country {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+
+    return $self->{COUNTRY};
+}
+
+=head2 get_zipcode ({})
+Returns the node's configured zipcode
+=cut
+
+sub get_zipcode {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+
+    return $self->{ZIPCODE};
+}
+
+=head2 get_latitude ({})
+Returns the node's configured latitude
+=cut
+
+sub get_latitude {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+
+    return $self->{LATITUDE};
+}
+
+=head2 get_longitude ({})
+Returns the node's configured location
+=cut
+
+sub get_longitude {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, {} );
+
+    return $self->{LONGITUDE};
+}
+
+
+
 =head2 last_modified()
     Returns when the site information was last saved.
 =cut
@@ -328,6 +489,12 @@ sub reset_state {
         $self->{ADMINISTRATOR_NAME}  = $res->{administrator_name};
         $self->{LOCATION}            = $res->{location};
         $self->{KEYWORDS}            = $res->{keywords};
+        $self->{CITY}            	 = $res->{city};
+        $self->{STATE}           	 = $res->{state};
+        $self->{COUNTRY}             = $res->{country};
+        $self->{ZIPCODE}             = $res->{zipcode};
+        $self->{LATITUDE}            = $res->{latitude};
+        $self->{LONGITUDE}           = $res->{longitude};
     }
 
     return 0;
@@ -355,6 +522,12 @@ sub read_administrative_info_file {
     my $email_user;
     my $email_host;
     my $administrator_email;
+    my $city;
+    my $state;
+    my $country;
+    my $zipcode;
+    my $latitude;
+    my $longitude;
     my %keywords = ();
 
     while ( <SITE_INFO_FILE> ) {
@@ -383,6 +556,18 @@ sub read_administrative_info_file {
         }
         elsif ( $variable eq "site_project" ) {
             $keywords{$value} = 1;
+        }elsif ( $variable eq "city" ) {
+            $city = $value;
+        }elsif ( $variable eq "state" ) {
+            $state = $value;
+        }elsif ( $variable eq "country" ) {
+            $country = $value;
+        }elsif ( $variable eq "zipcode" ) {
+            $zipcode = $value;
+        }elsif ( $variable eq "latitude" ) {
+            $latitude = $value;
+        }elsif ( $variable eq "longitude" ) {
+            $longitude = $value;
         }
     }
 
@@ -399,6 +584,12 @@ sub read_administrative_info_file {
         organization_name   => $organization_name,
         administrator_name  => $administrator_name,
         location            => $location,
+        city            	=> $city,
+        state            	=> $state,
+        country            	=> $country,
+        zipcode				=> $zipcode,
+        latitude			=> $latitude,
+        longitude			=> $longitude
     );
 
     return ( 0, \%info );
@@ -441,7 +632,12 @@ sub generate_administrative_info_file {
         $output .= "site_project=" . $keyword . "\n";
     }
     $output .= "administrator_email=" . $self->{ADMINISTRATOR_EMAIL} . "\n";
-
+	$output .= "city=" . $self->{CITY} . "\n";
+	$output .= "state=" . $self->{STATE} . "\n";
+	$output .= "country=" . $self->{COUNTRY} . "\n";
+	$output .= "zipcode=" . $self->{ZIPCODE} . "\n";
+	$output .= "latitude=" . $self->{LATITUDE} . "\n";
+	$output .= "longitude=" . $self->{LONGITUDE} . "\n";
     return $output;
 }
 
@@ -461,6 +657,12 @@ sub save_state {
         organization_name => $self->{ORGANIZATION_NAME},
         location          => $self->{LOCATION},
         keywords          => $self->{KEYWORDS},
+        city			  => $self->{CITY},
+        state			  => $self->{STATE},
+        country			  => $self->{COUNTRY},
+        zipcode			  => $self->{ZIPCODE},
+        latitude		  => $self->{LATITUDE},
+        longitude		  => $self->{LONGITUDE},
     );
 
     my $str = freeze( \%state );
@@ -481,6 +683,8 @@ sub restore_state {
 
     $self->{SITE_INFO_FILE} = $state->{'administrative_info_file'}, $self->{ADMINISTRATOR_NAME} = $state->{'admin_name'}, $self->{ADMINISTRATOR_EMAIL} = $state->{'admin_email'}, $self->{ORGANIZATION_NAME} = $state->{'organization_name'}, $self->{LOCATION} = $state->{'location'},
         $self->{KEYWORDS} = $state->{'keywords'},
+        $self->{CITY} = $state->{'city'},$self->{STATE} = $state->{'state'},$self->{COUNTRY} = $state->{'country'}, $self->{ZIPCODE} = $state->{'zipcode'},
+        $self->{LATITUDE} = $state->{'latitude'}, $self->{LONGITUDE} = $state->{'longitude'},
 
         $self->{LOGGER}->debug( "State: " . Dumper( $state ) );
     return;
@@ -536,3 +740,4 @@ All rights reserved.
 =cut
 
 # vim: expandtab shiftwidth=4 tabstop=4
+
