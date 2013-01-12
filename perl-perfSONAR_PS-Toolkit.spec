@@ -1,4 +1,3 @@
-%define _unpackaged_files_terminate_build 0
 %define install_base /opt/perfsonar_ps/toolkit
 
 %define apacheconf apache-toolkit_web_gui.conf
@@ -231,6 +230,15 @@ install -D -m 0755 init_scripts/%{init_script_6} %{buildroot}/etc/init.d/%{init_
 install -D -m 0755 init_scripts/%{init_script_7} %{buildroot}/etc/init.d/%{init_script_7}
 install -D -m 0755 init_scripts/%{init_script_8} %{buildroot}/etc/init.d/%{init_script_8}
 
+# Clean up unnecessary files
+rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
+rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_2}
+rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
+rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_4}
+rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
+rm -rf %{buildroot}/%{install_base}/scripts/nptoolkit-configure.pyc
+rm -rf %{buildroot}/%{install_base}/scripts/nptoolkit-configure.pyo
+
 %clean
 rm -rf %{buildroot}
 
@@ -348,7 +356,7 @@ done
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
-#%doc %{install_base}/doc/*
+%doc %{install_base}/doc/*
 %config(noreplace) %{install_base}/etc/*
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/lib/*
