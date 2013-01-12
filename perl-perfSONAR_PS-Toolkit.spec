@@ -1,3 +1,4 @@
+%define _unpackaged_files_terminate_build 0
 %define install_base /opt/perfsonar_ps/toolkit
 
 %define apacheconf apache-toolkit_web_gui.conf
@@ -236,8 +237,6 @@ rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_2}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_4}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
-rm -rf %{buildroot}/%{install_base}/scripts/nptoolkit-configure.pyc
-rm -rf %{buildroot}/%{install_base}/scripts/nptoolkit-configure.pyo
 
 %clean
 rm -rf %{buildroot}
