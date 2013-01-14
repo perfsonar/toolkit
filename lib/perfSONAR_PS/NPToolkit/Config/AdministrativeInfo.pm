@@ -115,11 +115,6 @@ sub save {
         return (-1, "Couldn't initialize Traceroute MA configuration");
     }
 
-    my $hls_config = perfSONAR_PS::NPToolkit::Config::hLS->new();
-    if ( $hls_config->init() != 0 ) {
-        return (-1, "Couldn't initialize hLS configuration");
-    }
-
     my $ls_reg_daemon_config = perfSONAR_PS::NPToolkit::Config::LSRegistrationDaemon->new();
     if ( $ls_reg_daemon_config->init() != 0 ) {
         return (-1, "Couldn't initialize LS Registration Daemon configuration");
@@ -136,7 +131,7 @@ sub save {
         }
     }
 
-    foreach my $service_config ($pinger_config, $psb_ma_config, $snmp_ma_config, $traceroute_ma_config, $hls_config, $ls_reg_daemon_config) {
+    foreach my $service_config ($pinger_config, $psb_ma_config, $snmp_ma_config, $traceroute_ma_config, $ls_reg_daemon_config) {
         $service_config->set_location( location => $self->{LOCATION} );
         $service_config->set_organization_name( organization_name => $self->{ORGANIZATION_NAME} );
         $service_config->set_projects( projects => \@keywords );

@@ -27,8 +27,6 @@ my $ndt_pid                    = undef;
 my $ndt_pname                  = [ "web100srv", "fakewww" ];
 my $PingER_pid                 = "/var/run/pinger.pid";
 my $PingER_pname            = "daemon.pl";
-my $hLS_pid                    = "/var/run/lookup_service.pid";
-my $hLS_pname               = "daemon.pl";
 my $SNMP_MA_pid                = "/var/run/snmp_ma.pid";
 my $SNMP_MA_pname           = "daemon.pl";
 my $pSB_MA_pid                 = "/var/run/perfsonarbuoy_ma.pid";
@@ -125,8 +123,6 @@ my $ndt = perfSONAR_PS::ServiceWatcher::NDT->new();
 $ndt->init( pid_files => $ndt_pid, process_names => $ndt_pname );
 my $pinger = perfSONAR_PS::ServiceWatcher::PingER->new();
 $pinger->init( pid_files => $PingER_pid, process_names => $PingER_pname );
-my $hls = perfSONAR_PS::ServiceWatcher::hLS->new();
-$hls->init( pid_files => $hLS_pid, process_names => $hLS_pname );
 my $snmp_ma = perfSONAR_PS::ServiceWatcher::SNMP_MA->new();
 $snmp_ma->init( pid_files => $SNMP_MA_pid, process_names => $SNMP_MA_pname );
 my $psb_ma = perfSONAR_PS::ServiceWatcher::pSB_MA->new();
@@ -154,7 +150,7 @@ $traceroute_scheduler->init( pid_files => [ $traceroute_scheduler_pid, $tracerou
 
 # do a 'restart' pass if the "--regular-restart" flag was specified
 if ($REGULAR_RESTART) {
-    foreach my $service ( $mysql, $hls, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $traceroute_scheduler, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
+    foreach my $service ( $mysql, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $traceroute_scheduler, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
 		my ($status, $res);
 
 		($status, $res) = $service->is_enabled();
@@ -186,7 +182,7 @@ if ($REGULAR_RESTART) {
 	}
 }
 # do a single pass to see if the services are up, and try to start them. Report any that are down.
-foreach my $service ( $hls, $mysql, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $traceroute_scheduler, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
+foreach my $service ( $mysql, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $traceroute_scheduler, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
 	my ($status, $res);
 
 	($status, $res) = $service->is_enabled();
@@ -230,7 +226,7 @@ foreach my $service ( $hls, $mysql, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinge
 }
 
 # do a single pass of all the services that are up, and send "OK" messages for all the ones that are running.
-foreach my $service ( $hls, $mysql, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $traceroute_scheduler, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
+foreach my $service ( $mysql, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $traceroute_scheduler, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
 	my ($status, $res);
 
 	($status, $res) = $service->is_enabled();
@@ -876,41 +872,6 @@ sub kill {
 
 	# PingER can leave processes around for a while...
 	sleep(30);
-
-	return (0, "");
-}
-
-sub needs_regular_restart {
-	my ($self) = @_;
-
-	return 1;
-}
-
-package perfSONAR_PS::ServiceWatcher::hLS;
-
-use base 'perfSONAR_PS::ServiceWatcher::Base';
-
-sub init {
-    my ( $self, %conf ) = @_;
-
-    $self->{SERVICE_NAME} = "hls";
-
-    $self->SUPER::init( %conf );
-
-    return 0;
-}
-
-# Try to stop gracefully, and then, forcibly kill any remaining hLS processes
-sub kill {
-	my ($self) = @_;
-
-	my ($status, $res) = $self->SUPER::kill();
-
-	my $master_pid = `pgrep -f -l hLS | grep -v grep | awk '{ print \$3 }' | uniq`;
-	if ($master_pid) {
-		chomp($master_pid);
-		system("pkill -9 -f '$master_pid'");
-	}
 
 	return (0, "");
 }
