@@ -24,6 +24,7 @@ etc/backingstore.conf.d/upgrade_livecd.conf
 etc/backingstore.conf.d/upgrade_owmesh.conf
 etc/config_daemon-logger.conf
 etc/config_daemon.conf
+etc/default_service_configs/SimpleLSBootStrap-hosts-client.yml
 etc/default_service_configs/hLS.conf
 etc/default_service_configs/ls_registration_daemon.conf
 etc/default_service_configs/pinger.conf

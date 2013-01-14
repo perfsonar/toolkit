@@ -269,6 +269,7 @@ ln -s /var/lib/cacti/rra /opt/perfsonar_ps/toolkit/web/root/admin/cacti
 
 # Overwrite the existing configuration files for the services with new
 # configuration files containing the default settings.
+cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/SimpleLSBootStrap-hosts-client.yml /opt/SimpleLS/bootstrap/etc/hosts-client.yml
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/ls_registration_daemon.conf /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/pinger.conf /opt/perfsonar_ps/PingER/etc/daemon.conf
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/psb_ma.conf /opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf
