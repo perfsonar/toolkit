@@ -248,11 +248,6 @@ function select_latency_services() {
 	<td>Traceroute Scheduler</td>
 	<td>Enables this host to run scheduled traceroute tests.</td>
         </tr>
-	<tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="hls" name="hls" [% IF services.hls.enabled %] checked="checked" [% END %] /></td>
-	<td>Lookup Service</td>
-	<td>Registers your services into the global set of perfSONAR services so that they can be discovered</td>
-        </tr>
 
 </table>
 [% END %]
