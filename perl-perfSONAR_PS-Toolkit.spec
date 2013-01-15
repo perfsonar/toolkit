@@ -287,7 +287,7 @@ echo "site_project=pS-NPToolkit-%{version}" >> /opt/perfsonar_ps/toolkit/etc/adm
 mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
 
 #Make sure that the administrator_info file gets reloaded
-/opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl
+/opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl 2> /dev/null
 
 #Make sure that the owmesh file supports default traceroute options
 /opt/perfsonar_ps/toolkit/scripts/upgrade_owmesh_traceroute
@@ -307,10 +307,10 @@ chmod o+r /opt/perfsonar_ps/toolkit/etc/administrative_info
 chmod o+r /opt/perfsonar_ps/toolkit/etc/enabled_services
 chmod o+r /opt/perfsonar_ps/toolkit/etc/external_addresses
 chmod o+r /opt/perfsonar_ps/toolkit/etc/ntp_known_servers
-chmod o+r /etc/bwctld/bwctld.limits
-chmod o+r /etc/bwctld/bwctld.keys
-chmod o+r /etc/owampd/owampd.limits
-chmod o+r /etc/owampd/owampd.pfs
+chmod o+r /etc/bwctld/bwctld.limits 2> /dev/null
+chmod o+r /etc/bwctld/bwctld.keys 2> /dev/null
+chmod o+r /etc/owampd/owampd.limits 2> /dev/null
+chmod o+r /etc/owampd/owampd.pfs 2> /dev/null
 
 chkconfig --add %{init_script_1}
 chkconfig --add %{init_script_2}
@@ -327,7 +327,7 @@ chkconfig %{init_script_5} on
 # apache needs to be on for the toolkit to work
 chkconfig --level 2345 httpd on
 
-/opt/perfsonar_ps/toolkit/scripts/initialize_databases
+/opt/perfsonar_ps/toolkit/scripts/initialize_databases 2> /dev/null
 
 %post LiveCD
 # The toolkit_config init script is only enabled when the LiveCD is being used
