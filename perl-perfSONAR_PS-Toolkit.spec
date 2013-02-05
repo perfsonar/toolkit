@@ -83,6 +83,8 @@ Requires:		perl(Term::ReadLine)
 Requires:		perl(Time::HiRes)
 Requires:		perl(Time::Local)
 Requires:		perl(XML::LibXML) >= 1.60
+Requires:		perl(XML::Simple)
+Requires:		perl(XML::Twig)
 Requires:		perl(aliased)
 Requires:		perl(base)
 Requires:		perl(lib)
