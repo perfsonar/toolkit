@@ -14,6 +14,12 @@ ntp-ucla.usno.navy.mil:Naval Observatory - Los Angeles, CA USA
 ntp-uw.usno.navy.mil:Naval Observatory - Seattle, WA USA
 ntp-ua.usno.navy.mil:Naval Observatory - Fairbanks, AK USA
 tick.mhpcc.hpc.mil:Maui HPC Center - Maui, HI USA
+ntp.hawaii.edu:University of Hawaii - Honolulu, HI USA
+ntp.nict.jp:NICT - National Institute of Information and Communications Technology - Tokyo, Japan
+ns2.jp.apan.net:Asia Pacific Advanced Network - Tokyo, Japan
+clock.nc.fukuoka-u.ac.jp:Fukuoka University- Fukuoka, Japan
+ns.twgrid.org: TWGrid - Taipei, Taiwan
+140.109.7.5:Academia Sinica IIS - Taipei, Taiwan
 a.ntp.monipe.rnp.br:RNP Time Server #1 - Brazil
 b.ntp.monipe.rnp.br:RNP Time Server #2 - Brazil
 c.ntp.monipe.rnp.br:RNP Time Server #3 - Brazil
