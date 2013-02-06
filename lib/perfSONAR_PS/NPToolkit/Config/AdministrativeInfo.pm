@@ -20,7 +20,7 @@ NDT and NPAD since they both use these same settings for their configuration.
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'SITE_INFO_FILE', 'ADMINISTRATOR_NAME', 'ADMINISTRATOR_EMAIL', 'ORGANIZATION_NAME', 'LOCATION', 'KEYWORDS', 'CITY', 'STATE', 'COUNTRY', 'ZIPCODE','LATITUDE','LONGITUDE';
+use fields 'SITE_INFO_FILE', 'ADMINISTRATOR_NAME', 'ADMINISTRATOR_EMAIL', 'ORGANIZATION_NAME', 'LOCATION', 'KEYWORDS', 'CITY', 'REGION', 'COUNTRY', 'ZIP_CODE','LATITUDE','LONGITUDE';
 
 use Params::Validate qw(:all);
 use Storable qw(store retrieve freeze thaw dclone);
@@ -230,7 +230,7 @@ sub set_state {
 
     my $value = $parameters->{state};
 
-    $self->{STATE} = $value;
+    $self->{REGION} = $value;
 
     return 0;
 }
@@ -260,7 +260,7 @@ sub set_zipcode {
 
     my $value = $parameters->{zipcode};
 
-    $self->{ZIPCODE} = $value;
+    $self->{ZIP_CODE} = $value;
 
     return 0;
 }
@@ -407,7 +407,7 @@ sub get_state {
     my ( $self, @params ) = @_;
     my $parameters = validate( @params, {} );
 
-    return $self->{STATE};
+    return $self->{REGION};
 }
 
 =head2 get_country ({})
@@ -429,7 +429,7 @@ sub get_zipcode {
     my ( $self, @params ) = @_;
     my $parameters = validate( @params, {} );
 
-    return $self->{ZIPCODE};
+    return $self->{ZIP_CODE};
 }
 
 =head2 get_latitude ({})
@@ -485,9 +485,9 @@ sub reset_state {
         $self->{LOCATION}            = $res->{location};
         $self->{KEYWORDS}            = $res->{keywords};
         $self->{CITY}            	 = $res->{city};
-        $self->{STATE}           	 = $res->{state};
+        $self->{REGION}           	 = $res->{state};
         $self->{COUNTRY}             = $res->{country};
-        $self->{ZIPCODE}             = $res->{zipcode};
+        $self->{ZIP_CODE}             = $res->{zipcode};
         $self->{LATITUDE}            = $res->{latitude};
         $self->{LONGITUDE}           = $res->{longitude};
     }
@@ -628,9 +628,9 @@ sub generate_administrative_info_file {
     }
     $output .= "administrator_email=" . $self->{ADMINISTRATOR_EMAIL} . "\n";
 	$output .= "city=" . $self->{CITY} . "\n";
-	$output .= "state=" . $self->{STATE} . "\n";
+	$output .= "state=" . $self->{REGION} . "\n";
 	$output .= "country=" . $self->{COUNTRY} . "\n";
-	$output .= "zipcode=" . $self->{ZIPCODE} . "\n";
+	$output .= "zipcode=" . $self->{ZIP_CODE} . "\n";
 	$output .= "latitude=" . $self->{LATITUDE} . "\n";
 	$output .= "longitude=" . $self->{LONGITUDE} . "\n";
     return $output;
@@ -653,9 +653,9 @@ sub save_state {
         location          => $self->{LOCATION},
         keywords          => $self->{KEYWORDS},
         city			  => $self->{CITY},
-        state			  => $self->{STATE},
+        state			  => $self->{REGION},
         country			  => $self->{COUNTRY},
-        zipcode			  => $self->{ZIPCODE},
+        zipcode			  => $self->{ZIP_CODE},
         latitude		  => $self->{LATITUDE},
         longitude		  => $self->{LONGITUDE},
     );
@@ -678,7 +678,7 @@ sub restore_state {
 
     $self->{SITE_INFO_FILE} = $state->{'administrative_info_file'}, $self->{ADMINISTRATOR_NAME} = $state->{'admin_name'}, $self->{ADMINISTRATOR_EMAIL} = $state->{'admin_email'}, $self->{ORGANIZATION_NAME} = $state->{'organization_name'}, $self->{LOCATION} = $state->{'location'},
         $self->{KEYWORDS} = $state->{'keywords'},
-        $self->{CITY} = $state->{'city'},$self->{STATE} = $state->{'state'},$self->{COUNTRY} = $state->{'country'}, $self->{ZIPCODE} = $state->{'zipcode'},
+        $self->{CITY} = $state->{'city'},$self->{REGION} = $state->{'state'},$self->{COUNTRY} = $state->{'country'}, $self->{ZIP_CODE} = $state->{'zipcode'},
         $self->{LATITUDE} = $state->{'latitude'}, $self->{LONGITUDE} = $state->{'longitude'},
 
         $self->{LOGGER}->debug( "State: " . Dumper( $state ) );
