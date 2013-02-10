@@ -3,7 +3,7 @@ package perfSONAR_PS::NPToolkit::BackingStore::Utils;
 use strict;
 use warnings;
 
-our $VERSION = 3.2;
+our $VERSION = 3.3;
 
 use Params::Validate qw(:all);
 use Log::Log4perl qw(get_logger);

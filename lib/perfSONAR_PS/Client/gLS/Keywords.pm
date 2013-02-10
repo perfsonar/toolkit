@@ -3,7 +3,7 @@ package perfSONAR_PS::Client::gLS::Keywords;
 use strict;
 use warnings;
 
-our $VERSION = 3.2;
+our $VERSION = 3.3;
 
 use fields 'GLS_CLIENT', 'CACHE_DIRECTORY', 'LOGGER';
 
