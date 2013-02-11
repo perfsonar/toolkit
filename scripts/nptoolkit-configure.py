@@ -118,20 +118,20 @@ def initialize():
                          "required": False,
                          "requiresReboot": False,
                     },
-                    {
-                         "description": "Backup data/configurations",
-                         "command": "/opt/perfsonar_ps/toolkit/scripts/",
-                         "isConfiguredFunction": None,
-                         "required": False,
-                         "requiresReboot": False,
-                    },
-                    {
-                         "description": "Restore data/configurations",
-                         "command": "/opt/perfsonar_ps/toolkit/scripts/",
-                         "isConfiguredFunction": None,
-                         "required": False,
-                         "requiresReboot": True,
-                    },
+#                    {
+#                         "description": "Backup data/configurations",
+#                         "command": "/opt/perfsonar_ps/toolkit/scripts/",
+#                         "isConfiguredFunction": None,
+#                         "required": False,
+#                         "requiresReboot": False,
+#                    },
+#                    {
+#                         "description": "Restore data/configurations",
+#                         "command": "/opt/perfsonar_ps/toolkit/scripts/",
+#                         "isConfiguredFunction": None,
+#                         "required": False,
+#                         "requiresReboot": True,
+#                    },
                  ]
     items = []
 

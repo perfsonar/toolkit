@@ -40,8 +40,3 @@ fi
 rm -f /etc/passwd.new &> /dev/null
 rm -f /etc/group.new &> /dev/null
 rm -f /etc/shadow.new &> /dev/null
-
-# Wipe out old administrative info site location data
-cat /opt/perfsonar_ps/toolkit/etc/administrative_info | grep -v "site_location=" > /opt/personar_ps/toolkit/etc/administrative_info.new 2> /dev/null
-cp -f /opt/personar_ps/toolkit/etc/administrative_info.new /opt/perfsonar_ps/toolkit/etc/administrative_info &> /dev/null
-rm -f /opt/personar_ps/toolkit/etc/administrative_info.new &> /dev/null
