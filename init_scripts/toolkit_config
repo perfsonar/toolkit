@@ -24,9 +24,9 @@ do
 	echo $CMD
 
 	if $CMD ; then
-	    echo "$0 $ARG: pS-Toolkit configuration restored"
+	    echo -e "$0\n $ARG: pS-Toolkit configuration restored"
 	else
-	    echo "$0 $ARG: pS-Toolkit configuration could not be restored"
+	    echo -e "$0\n $ARG: pS-Toolkit configuration could not be restored"
 	    ERROR=3
 	fi
 
@@ -38,14 +38,15 @@ do
 	echo $CMD
 
 	if $CMD ; then
-	    echo "$0 $ARG: pS-Toolkit configuration saved"
+	    echo -e "$0\n $ARG: pS-Toolkit configuration saved"
 	else
-	    echo "$0 $ARG: pS-Toolkit configuration could not be saved"
+	    echo -e "$0\n $ARG: pS-Toolkit configuration could not be saved"
 	    ERROR=3
 	fi
     umount /mnt/toolkit   &> /dev/null
     umount /mnt/squashfs  &> /dev/null
-    umount /mnt/cdrom     &> /dev/null
+    umount /mnt/live      &> /dev/null
+    umount /mnt/store      &> /dev/null
 
         rm /var/lock/subsys/toolkit_config
 	;;
@@ -54,7 +55,7 @@ do
 	cat <<EOF
 
 start      - restores the configuration from the backing store
-stop       - does nothing
+stop       - saves the configuration to the backing store
 restart    - does nothing
 help       - this screen
 

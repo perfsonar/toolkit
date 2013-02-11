@@ -34,7 +34,7 @@ my $CONF_FILE = "$RealBin/../etc/backingstore.conf";
 my $CONF_DIRECTORY = "$RealBin/../etc/backingstore.conf.d";
 
 my $data_store_location;
-my $original_cd_location;
+my $live_media_location;
 
 my ($status, $res);
 
@@ -49,11 +49,11 @@ my $conf = $res;
 
 ($status, $res) = load_live_device();
 if ($status != 0) {
-    print "Problem loading original CD: $res";
+    print "Problem loading live device: $res";
     exit -1;
 }
 
-$original_cd_location = $res->{directory};
+$live_media_location = $res->{directory};
 
 ($status, $res) = mount_data_store();
 if ($status != 0) {
@@ -127,7 +127,7 @@ sub compare_file {
     my $parameters = validate( @_, { filename => 1 });
 
     my $filename      = $parameters->{filename};
-    my $orig_filename = $original_cd_location."/".$filename;
+    my $orig_filename = $live_media_location."/".$filename;
 
     if (! -e $orig_filename) {
         return 1;

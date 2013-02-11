@@ -75,80 +75,94 @@ start() {
     fi
     
     if [ -d $STORE_LOCATION/NPTools ]; then
-        # mount root readwrite using scratch as the read-write aspect. Uses
-        # pivot_root since the scratch file needs to be mounted outside the
-        # directory tree it's being made read-write against (/).
+		# Compare versions of the NPToolkit data store
+		# If versions are not consistent we will prompt user later
+		if [ -e $STORE_LOCATION/NPTools/NPToolkit.version ]; then
+			StoreVersion = `$STORE_LOCATION/NPTools/NPToolkit.version`
+			ToolkitVersion = `/opt/perfsonar_ps/scripts/NPToolkit.version`
+			if [ `echo "${StoreVersion:0:3} < ${ToolkitVersion:0:3}" | bc` -eq 0 ]; then
+        		# mount root readwrite using scratch as the read-write aspect. Uses
+		        # pivot_root since the scratch file needs to be mounted outside the
+		        # directory tree it's being made read-write against (/).
     
-        # Create the scratch file if it doesn't already exist
-        if [ ! -f $SCRATCH_FILE ]; then
-            touch $SCRATCH_FILE
-        fi
+		        # Create the scratch file if it doesn't already exist
+		        if [ ! -f $SCRATCH_FILE ]; then
+		            touch $SCRATCH_FILE
+		        fi
     
-        # Resize the scratch file to 800M if it's less than that
-        ScratchSize=$(du -ks $SCRATCH_FILE | cut -f1)
-        if [ ${ScratchSize} -lt 800000 ]; then
-            echo -n $"Resizing scratch file: "
-            dd if=/dev/zero of=$SCRATCH_FILE bs=10M count=80 &> /dev/null
-            success && echo
-        fi
+		        # Resize the scratch file to 800M if it's less than that
+		        ScratchSize=$(du -ks $SCRATCH_FILE | cut -f1)
+		        if [ ${ScratchSize} -lt 800000 ]; then
+		            echo -n $"Resizing scratch file: "
+		            dd if=/dev/zero of=$SCRATCH_FILE bs=10M count=80 &> /dev/null
+		            success && echo
+		        fi
     
-        # Blow away whatever was in the scratch file
-        echo -n $"Clearing scratch file: "
-        mkfs.ext2 -F $SCRATCH_FILE &> /dev/null
-        success && echo
+		        # Blow away whatever was in the scratch file
+		        echo -n $"Clearing scratch file: "
+		        mkfs.ext2 -F $SCRATCH_FILE &> /dev/null
+		        success && echo
     
-        echo -n $"Setting up temporary root: "
-        # Mount the temporary root image
-        mount -n -t ext2 -o loop $TEMP_ROOT_FILE $TEMP_ROOT_LOCATION
+		        echo -n $"Setting up temporary root: "
+		        # Mount the temporary root image
+		        mount -n -t ext2 -o loop $TEMP_ROOT_FILE $TEMP_ROOT_LOCATION
     
-        # Mount scratch inside the temporary root
-        mount -n -t ext2 -o loop $SCRATCH_FILE $TEMP_ROOT_LOCATION/scratch
-        success && echo
+		        # Mount scratch inside the temporary root
+		        mount -n -t ext2 -o loop $SCRATCH_FILE $TEMP_ROOT_LOCATION/scratch
+		        success && echo
     
-        # AUFS needs to be loaded before we do the pivot_root since that module
-        # isn't necessarily available in our temp root location.
-        modprobe aufs
+		        # AUFS needs to be loaded before we do the pivot_root since that module
+		        # isn't necessarily available in our temp root location.
+		        modprobe aufs
     
-        # Swap to the temporary root
-        cd $TEMP_ROOT_LOCATION
-        /sbin/pivot_root . $TEMP_ROOT_LOCATION/sysroot
+		        # Swap to the temporary root
+		        cd $TEMP_ROOT_LOCATION
+		        /sbin/pivot_root . $TEMP_ROOT_LOCATION/sysroot
     
-        echo -n $"Creating overlay: "
-        # Create the aufs overlay of the old / and the scratch file
-        /bin/mount -t aufs -o br=/scratch:/sysroot=ro none /new_root
-        success && echo
+		        echo -n $"Creating overlay: "
+		        # Create the aufs overlay of the old / and the scratch file
+		        /bin/mount -t aufs -o br=/scratch:/sysroot=ro none /new_root
+		        success && echo
     
-        echo -n $"Swapping to new root: "
-        # Swap to the overlay as the new root
-        cd /new_root
-        /bin/mkdir -p /new_root/old_temp_root
-        /sbin/pivot_root . /new_root/old_temp_root
-        success && echo
+		        echo -n $"Swapping to new root: "
+		        # Swap to the overlay as the new root
+		        cd /new_root
+		        /bin/mkdir -p /new_root/old_temp_root
+		        /sbin/pivot_root . /new_root/old_temp_root
+		        success && echo
     
-        # Recreate all the various things that were mounted under the original
-        # root. 
-        echo -n $"Recreating /proc, /sys, /dev: "
-        mount -t proc proc /proc
-        mount -t sysfs sys /sys
-        mkdir -p /dev/shm
-        mount -t tmpfs shm /dev/shm
-        rm -f /dev/null
-        cp -Ra /old_temp_root/sysroot/dev/* /dev
-        mount -t devpts devpts /dev/pts
-        if [ -d /proc/sys/fs/binfmt_misc ]; then
-            mount -t binfmt_misc none /proc/sys/fs/binfmt_misc
-        fi
+		        # Recreate all the various things that were mounted under the original
+		        # root. 
+		        echo -n $"Recreating /proc, /sys, /dev: "
+		        mount -t proc proc /proc
+		        mount -t sysfs sys /sys
+		        mkdir -p /dev/shm
+		        mount -t tmpfs shm /dev/shm
+		        rm -f /dev/null
+		        cp -Ra /old_temp_root/sysroot/dev/* /dev
+		        mount -t devpts devpts /dev/pts
+		        if [ -d /proc/sys/fs/binfmt_misc ]; then
+		            mount -t binfmt_misc none /proc/sys/fs/binfmt_misc
+		        fi
 
-        success && echo
+		        success && echo
     
-        # These umounts will likely fail, but they clean up the view of 'df'.
-        echo -n $"Cleaning up df output: "
-        umount $TEMP_ROOT_LOCATION/scratch &> /dev/null
-        umount $TEMP_ROOT_LOCATION &> /dev/null
-        umount $STORE_LOCATION &> /dev/null
-        umount -l /old_temp_root &> /dev/null
-        rmdir /old_temp_root &> /dev/null
-        success && echo
+		        # These umounts will likely fail, but they clean up the view of 'df'.
+		        echo -n $"Cleaning up df output: "
+		        umount $TEMP_ROOT_LOCATION/scratch &> /dev/null
+		        umount $TEMP_ROOT_LOCATION &> /dev/null
+		        umount $STORE_LOCATION &> /dev/null
+		        umount -l /old_temp_root &> /dev/null
+		        rmdir /old_temp_root &> /dev/null
+		        success && echo
+			else
+				failure
+				echo
+			fi
+		else
+			failure
+			echo
+		fi
     fi
 }
 

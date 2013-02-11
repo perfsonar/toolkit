@@ -292,7 +292,7 @@ mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolk
 /opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl 2> /dev/null
 
 #Make sure that the owmesh file supports default traceroute options
-/opt/perfsonar_ps/toolkit/scripts/upgrade_owmesh_traceroute
+/opt/perfsonar_ps/toolkit/scripts/3_owmesh_traceroute
 
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
@@ -418,7 +418,7 @@ done
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/set_default_passwords
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/update_administrative_info.pl
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade_owmesh_traceroute
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade/*
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/watcher_log_archive
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/watcher_log_archive_cleanup
 
@@ -434,7 +434,6 @@ done
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/restore_config
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/save_config
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/temp_root.img
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/livecd_upgrade
 
 %files SystemEnvironment
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*

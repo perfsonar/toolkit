@@ -37,7 +37,7 @@ my $CONF_DIRECTORY = "$RealBin/../etc/backingstore.conf.d";
 my $data_store_location;
 my $data_store_device;
 my $data_store_version;
-my $original_cd_location;
+my $live_media_location;
 
 my ($status, $res);
 
@@ -51,11 +51,11 @@ my $conf = $res;
 
 ($status, $res) = load_live_device();
 if ($status != 0) {
-    print "Problem loading original CD: $res";
+    print "Problem loading live device: $res";
     exit -1;
 }
 
-$original_cd_location = $res->{directory};
+$live_media_location = $res->{directory};
 
 ($status, $res) = mount_data_store();
 if ($status != 0) {
@@ -81,7 +81,7 @@ if ($conf->{restore_pre_run}) {
             push @cmd, $script;
             push @cmd, ("-v", $data_store_version);
             push @cmd, ("-s", $data_store_location);
-            push @cmd, ("-c", $original_cd_location);
+            push @cmd, ("-l", $live_media_location);
 
             my $status = system(@cmd);
             if ($status != 0) {
@@ -105,7 +105,7 @@ if ($conf->{store}) {
         if (-d $data_store_location."/NPTools/".$directory) {
             # do nothing since the directory already exists
         }
-        elsif (-d $original_cd_location."/".$directory) {
+        elsif (-d $live_media_location."/".$directory) {
             my ($fh, $filename) = tempfile;
 
             close(*$fh);
@@ -113,7 +113,7 @@ if ($conf->{store}) {
             $Archive::Tar::DEBUG = 1;
 
             # Tar up the directory from the original location
-            chdir($original_cd_location);
+            chdir($live_media_location);
             my @file_list = ();
             find({ wanted => sub { push @file_list, $File::Find::name }, no_chdir => 1 }, ".".$directory);
             Archive::Tar->create_archive($filename, "", @file_list);
@@ -129,7 +129,7 @@ if ($conf->{store}) {
             unlink($filename);
         }
         else {
-            # make an empty directory if it doesn't already exist on the CD
+            # make an empty directory if it doesn't already exist on the live device
             my $error;
 
             mkpath($data_store_location."/NPTools/".$directory, { error => \$error });
@@ -180,7 +180,7 @@ if ($conf->{restore_post_run}) {
             push @cmd, $script;
             push @cmd, ("-v", $data_store_version);
             push @cmd, ("-s", $data_store_location);
-            push @cmd, ("-c", $original_cd_location);
+            push @cmd, ("-l", $live_media_location);
 
             my $status = system(@cmd);
             if ($status != 0) {

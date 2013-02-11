@@ -3,13 +3,13 @@
 # Beginnings of an upgrade script for existing toolkit installations
 
 STORE_LOCATION=
-CD_LOCATION=
+LIVE_LOCATION=
 STORE_VERSION=
 
-while getopts  "c:s:v:" flag
+while getopts  "l:s:v:" flag
 do
     case "$flag" in
-        c) CD_LOCATION=$OPTARG;;
+        l) LIVE_LOCATION=$OPTARG;;
         s) STORE_LOCATION=$OPTARG;;
         v) STORE_VERSION=$OPTARG;;
     esac
@@ -20,7 +20,7 @@ OLD_CONFIG_TARBALL=$STORE_LOCATION/configs.tbz
 OLD_CONFIG_LOCATION=$STORE_LOCATION/NPTools/old_config
 NEW_CONFIG_LOCATION=/
 
-# Only upgrade the <3.2 versions
+# Only upgrade the versions before 3.2
 if [ ! -z "$STORE_VERSION" ]; then
     exit 0
 fi

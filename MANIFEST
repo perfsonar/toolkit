@@ -10,7 +10,6 @@ etc/backingstore.conf.d/etc.conf
 etc/backingstore.conf.d/home.conf
 etc/backingstore.conf.d/initialize_environment.conf
 etc/backingstore.conf.d/logs.conf
-etc/backingstore.conf.d/lookup_service.conf
 etc/backingstore.conf.d/ls_registration_daemon.conf
 etc/backingstore.conf.d/mysql.conf
 etc/backingstore.conf.d/ndt.conf
@@ -20,8 +19,7 @@ etc/backingstore.conf.d/perfsonarbuoy.conf
 etc/backingstore.conf.d/pinger.conf
 etc/backingstore.conf.d/snmp_ma.conf
 etc/backingstore.conf.d/toolkit.conf
-etc/backingstore.conf.d/upgrade_livecd.conf
-etc/backingstore.conf.d/upgrade_owmesh.conf
+etc/backingstore.conf.d/upgrade.conf
 etc/config_daemon-logger.conf
 etc/config_daemon.conf
 etc/default_service_configs/SimpleLSBootStrap-hosts-client.yml
@@ -185,11 +183,13 @@ scripts/initialize_perfsonarbuoy_bwctl_database
 scripts/initialize_perfsonarbuoy_owamp_database
 scripts/initialize_pinger_database
 scripts/initialize_traceroute_ma_database
-scripts/livecd_upgrade/upgrade_3.1.x.sh
-scripts/livecd_upgrade/upgrade_conman_fix.sh
-scripts/livecd_upgrade/upgrade_databases.sh
-scripts/livecd_upgrade/upgrade_fix_cert_serial.sh
-scripts/livecd_upgrade/upgrade_fix_permissions.sh
+scripts/upgrade/upgrade_3.1.x.sh
+scripts/upgrade/upgrade_3.2.x.sh
+scripts/upgrade/upgrade_conman_fix.sh
+scripts/upgrade/upgrade_databases.sh
+scripts/upgrade/upgrade_fix_cert_serial.sh
+scripts/upgrade/upgrade_fix_permissions.sh
+scripts/upgrade/upgrade_owmesh_traceroute.sh
 scripts/manage_users
 scripts/nptoolkit-configure.py
 scripts/pinger_toolkit_init.sql
@@ -221,7 +221,6 @@ scripts/system_environment/increase_cacti_maximum
 scripts/system_environment/increase_owamp_limits
 scripts/temp_root.img
 scripts/update_administrative_info.pl
-scripts/upgrade_owmesh_traceroute
 scripts/watcher_log_archive
 scripts/watcher_log_archive_cleanup
 templates/config/diag_form_html.tmpl
