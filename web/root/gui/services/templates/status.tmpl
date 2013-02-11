@@ -1,6 +1,11 @@
 [% title = "pS-Performance Node" %]
 [% IF site_name; SET title = "${title} For ${site_name}"; END %]
-[% IF country; SET title = "${title} In ${city}, ${state}, ${country}"; END %]
+[% connector = "In"; %]
+[% IF city; SET title = "${title} ${connector} ${city}"; SET connector = ","; END %]
+[% IF state; SET title = " ${title} ${connector} ${state}"; SET connector = ","; END %]
+[% IF country; SET title = " ${title} ${connector} ${country}"; END %]
+
+
 
 [% INCLUDE header.tmpl %]
 
