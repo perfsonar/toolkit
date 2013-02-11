@@ -17,12 +17,16 @@ start() {
 #    	exit
 #    fi
     
+	LOG_LOCATION=/var/log
+	LOG_FILE=$LOG_LOCATION/"mount_scratch_overlay.log"
     STORE_LOCATION=/mnt/store
     TEMP_ROOT_LOCATION=/mnt/temp_root
     TEMP_ROOT_FILE=/opt/perfsonar_ps/toolkit/scripts/temp_root.img
     SCRATCH_FILE=$STORE_LOCATION/NPTools/scratch
     NUM_LOOPS=16
-	
+
+	date > $LOG_FILE
+	uname -a >> $LOG_FILE
     echo -n $"Making more loop devices available... "
     /sbin/MAKEDEV -m $NUM_LOOPS loop &> /dev/null
     if [ -e "/dev/loop$(($NUM_LOOPS-1))" ]; then
@@ -33,19 +37,24 @@ start() {
     fi
 
     echo -n $"Looking for backing store... "
+	echo "Using blkid to find possible data store devices:" >> $LOG_FILE
     # Find any configured block device
     for dev in `blkid -o device -t TYPE='ext3'`; do
+		echo "Mounting ext3 block device: $dev" >> $LOG_FILE
         mount -n -t ext3 $dev $STORE_LOCATION &> /dev/null
     
         if [ $? != 0 ]; then
+			echo "Failed to mount ext3 block device: $dev" >> $LOG_FILE
             umount $STORE_LOCATION &> /dev/null
             continue
         fi
     
         if [  -d $STORE_LOCATION/NPTools ]; then
+			echo "Found data store on: $dev" >> $LOG_FILE
             break
         fi
-    
+		
+    	echo "Unmounting ext3 block device: $dev" >> $LOG_FILE
         umount $STORE_LOCATION &> /dev/null
     done
     
@@ -54,15 +63,19 @@ start() {
         # /dev/sda even though /dev/sda was available, and ext3. To work around
         # this, we manually grot through /proc/partitions looking for ext3
         # devices that blkid didn't display.
-        for i in `cat /proc/partitions | awk '{ print $4 }'`; do
-            if [ -e /dev/$i ]; then
-                mount -n -t ext3 /dev/$i $STORE_LOCATION &> /dev/null
+		echo "Using /proc/partitions to find possible data store devices:" >> $LOG_FILE
+        for dev in `cat /proc/partitions | awk '{ print $4 }'`; do
+            if [ -e /dev/$dev ]; then
+				echo "Mounting ext3 block device: $dev" >> $LOG_FILE
+                mount -n -t ext3 /dev/$dev $STORE_LOCATION &> /dev/null
                 if [ $? == 0 ]; then
                     if [  -d $STORE_LOCATION/NPTools ]; then
+						echo "Found data store on: $dev" >> $LOG_FILE
                         break
                     fi
                 fi
                 umount $STORE_LOCATION &> /dev/null
+				echo "Unmounting ext3 block device: $dev" >> $LOG_FILE
             fi
         done
     fi
