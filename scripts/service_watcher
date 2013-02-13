@@ -769,6 +769,12 @@ sub kill {
 	return (0, "");
 }
 
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 1;
+}
+
 package perfSONAR_PS::ServiceWatcher::OWAMP;
 
 use base 'perfSONAR_PS::ServiceWatcher::Base';
