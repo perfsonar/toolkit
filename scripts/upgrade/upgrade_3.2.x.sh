@@ -37,7 +37,7 @@ ERR=$(($ERR + $?))
 if [ $ERR -eq 0 ]; then
 	cp -f /etc/passwd.new /etc/passwd
 	cp -f /etc/group.new /etc/group
-	cp -f /etc/shadow.net /etc/shadow
+	cp -f /etc/shadow.new /etc/shadow
 else
 	echo "Error: failed to migrate user information."
 fi
