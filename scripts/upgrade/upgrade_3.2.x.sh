@@ -27,11 +27,11 @@ cp -f $LIVE_LOCATION/etc/shadow /etc/shadow.new
 
 UGIDLIMIT=500
 ERR=0
-awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534)' /etc/passwd | grep -v "perfsonar" >> /etc/passwd.new
+awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534)' /etc/passwd | grep -v "perfsonar" | grep -v "npad" >> /etc/passwd.new
 ERR=$(($ERR + $?))
-awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534)' /etc/group | grep -v "perfsonar" >> /etc/group.new
+awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534)' /etc/group | grep -v "perfsonar" | grep -v "npad" >> /etc/group.new
 ERR=$(($ERR + $?))
-awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534) {print $1}' /etc/passwd | grep -v "perfsonar" | tee - | egrep -f - /etc/shadow >> /etc/shadow.new
+awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534) {print $1}' /etc/passwd | grep -v "perfsonar" | grep -v "npad" | tee - | egrep -f - /etc/shadow >> /etc/shadow.new
 ERR=$(($ERR + $?))
 
 if [ $ERR -eq 0 ]; then
@@ -44,3 +44,13 @@ fi
 rm -f /etc/passwd.new &> /dev/null
 rm -f /etc/group.new &> /dev/null
 rm -f /etc/shadow.new &> /dev/null
+
+#Overwrite MA and LS reg daemon files to prevent conflict with new lookup service parameters
+cp -f $LIVE_LOCATION/opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf /opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf
+cp -f $LIVE_LOCATION/opt/perfsonar_ps/traceroute_ma/etc/daemon.conf /opt/perfsonar_ps/traceroute_ma/etc/daemon.conf
+cp -f $LIVE_LOCATION/opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
+
+
+
+
+
