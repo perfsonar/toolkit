@@ -121,7 +121,7 @@ fi
 printf "[SUCCESS]"
 echo ""
 
-#get owamp limits
+#get owamp files
 printf "Restoring owampd files..."
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/owampd/owampd.conf /etc/owampd/owampd.conf 
 if [ "$?" != "0" ]; then
@@ -160,6 +160,19 @@ if [ "$?" != "0" ]; then
     echo "Unable to restore /etc/ntp.conf: $!"
     exit 1
 fi
+printf "[SUCCESS]"
+echo ""
+
+#get cacti data
+printf "Restoring cacti..."
+`mv /var/lib/cacti /var/lib/cacti.old`
+cp -r $TEMP_BAK_DIR/var/lib/cacti /var/lib/cacti 
+if [ "$?" != "0" ]; then
+    echo "Unable to restore /var/lib/cacti"
+    `mv /var/lib/cacti.old /var/lib/cacti`
+    exit 1
+fi
+`rm -rf /var/lib/cacti.old`
 printf "[SUCCESS]"
 echo ""
 

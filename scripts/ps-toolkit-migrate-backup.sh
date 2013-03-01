@@ -28,6 +28,7 @@ mkdir -p $TEMP_BAK_DIR/opt/perfsonar_ps/toolkit/etc
 mkdir -p $TEMP_BAK_DIR/opt/perfsonar_ps/perfsonarbuoy_ma/etc
 mkdir -p $TEMP_BAK_DIR/opt/perfsonar_ps/mesh_config/etc
 mkdir -p $TEMP_BAK_DIR/mysql_data
+mkdir -p $TEMP_BAK_DIR/var/lib
 
 #get users and groups
 printf "Backing-up users..."
@@ -99,7 +100,7 @@ fi
 printf "[SUCCESS]"
 echo ""
 
-#get owamp limits
+#get owamp files
 printf "Backing-up owampd configuration..."
 cp /etc/owampd/owampd.conf $TEMP_BAK_DIR/etc/owampd/owampd.conf 
 if [ "$?" != "0" ]; then
@@ -136,6 +137,16 @@ fi
 cp /etc/ntp.conf  $TEMP_BAK_DIR/etc/ntp.conf 
 if [ "$?" != "0" ]; then
     echo "Unable to copy /etc/ntp.conf"
+    exit 1
+fi
+printf "[SUCCESS]"
+echo ""
+
+#get cacti data
+printf "Backing-up cacti..."
+cp -r /var/lib/cacti $TEMP_BAK_DIR/var/lib/cacti
+if [ "$?" != "0" ]; then
+    echo "Unable to copy /var/lib/cacti"
     exit 1
 fi
 printf "[SUCCESS]"
