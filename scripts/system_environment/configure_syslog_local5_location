@@ -6,9 +6,9 @@
 #######################
 
 # Set 'local5' output location to /var/log/perfsonar/owamp_bwctl.log
-grep ^local5 /etc/syslog.conf &> /dev/null
+grep ^local5 /etc/rsyslog.d/owamp_bwctl-syslog.conf &> /dev/null
 if [ $? != 0 ]; then
-cat >>/etc/syslog.conf <<EOF                                          
+cat >> /etc/rsyslog.d/owamp_bwctl-syslog.conf <<EOF                                          
 # Save bwctl and owamp messages to /var/log/perfsonar/owamp_bwctl.log
 local5.*                                                /var/log/perfsonar/owamp_bwctl.log
 EOF
