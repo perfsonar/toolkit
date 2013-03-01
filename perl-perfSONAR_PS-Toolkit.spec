@@ -415,6 +415,8 @@ done
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/pinger_toolkit_init.sql
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/pinger_toolkit_upgrade.sql
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-backup.sh
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/set_default_passwords
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/update_administrative_info.pl
