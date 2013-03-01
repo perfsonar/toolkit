@@ -16,6 +16,7 @@ Data::UUID
 Data::Validate::Domain
 Data::Validate::IP
 Date::Manip
+DateTime::TimeZone
 Digest::MD5
 English
 Exporter
@@ -60,6 +61,8 @@ Time::HiRes
 Time::Local
 URI::Escape
 XML::LibXML
+XML::Simple
+XML::Twig
 aliased
 base
 lib
