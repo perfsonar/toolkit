@@ -103,7 +103,30 @@ if [ "$?" != "0" ]; then
     echo "Unable to restore /etc/bwctld/bwctld.conf: $!"
     exit 1
 fi
-
+#set iperf ports to defaults in firewall doc if not already set
+BWCTLD_IPERFPORTS=`egrep -i "^iperf_port" /etc/bwctld/bwctld.conf`
+if [ -z "$BWCTLD_IPERFPORTS" ]; then
+    echo "" >> /etc/bwctld/bwctld.conf
+    echo "iperf_port 5001-5200" >> /etc/bwctld/bwctld.conf
+fi
+#set iperf ports to defaults in firewall doc if not already set
+BWCTLD_THRULAYPORTS=`egrep -i "^thrulay_port" /etc/bwctld/bwctld.conf`
+if [ -z "$BWCTLD_THRULAYPORTS" ]; then
+    echo "" >> /etc/bwctld/bwctld.conf
+    echo "thrulay_port 5201-5400" >> /etc/bwctld/bwctld.conf
+fi
+#set iperf ports to defaults in firewall doc if not already set
+BWCTLD_NUTTCPPORTS=`egrep -i "^nuttcp_port" /etc/bwctld/bwctld.conf`
+if [ -z "$BWCTLD_NUTTCPPORTS" ]; then
+    echo "" >> /etc/bwctld/bwctld.conf
+    echo "nuttcp_port 5401-5600" >> /etc/bwctld/bwctld.conf
+fi
+#set iperf ports to defaults in firewall doc if not already set
+BWCTLD_PEERPORTS=`egrep -i "^peer_port" /etc/bwctld/bwctld.conf`
+if [ -z "$BWCTLD_PEERPORTS" ]; then
+    echo "" >> /etc/bwctld/bwctld.conf
+    echo "peer_port 6001-6200" >> /etc/bwctld/bwctld.conf
+fi
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.limits /etc/bwctld/bwctld.limits  
 if [ "$?" != "0" ]; then
     echo "Unable to restore /etc/bwctld/bwctld.limits: $!"
@@ -127,6 +150,12 @@ cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/owampd/owampd.conf /etc/owampd/owampd.conf
 if [ "$?" != "0" ]; then
     echo "Unable to restore /etc/owampd/owampd.conf: $!"
     exit 1
+fi
+# set testports to defaults defined in firewall doc if not already set
+OWAMPD_OWP_TESTPORTS=`egrep -i "^testports" /etc/owampd/owampd.conf`
+if [ -z "$OWAMPD_OWP_TESTPORTS" ]; then
+    echo "" >> /etc/owampd/owampd.conf
+    echo "testports 8760-8960" >> /etc/owampd/owampd.conf
 fi
 
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/owampd/owampd.limits  /etc/owampd/owampd.limits 
@@ -165,14 +194,12 @@ echo ""
 
 #get cacti data
 printf "Restoring cacti..."
-`mv /var/lib/cacti /var/lib/cacti.old`
-cp -r $TEMP_BAK_DIR/var/lib/cacti /var/lib/cacti 
+rm -rf /var/lib/cacti
+cp -r $TEMP_RST_DIR/$TEMP_BAK_NAME/var/lib/cacti /var/lib/cacti 
 if [ "$?" != "0" ]; then
     echo "Unable to restore /var/lib/cacti"
-    `mv /var/lib/cacti.old /var/lib/cacti`
     exit 1
 fi
-`rm -rf /var/lib/cacti.old`
 printf "[SUCCESS]"
 echo ""
 
@@ -182,6 +209,11 @@ cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.con
 if [ "$?" != "0" ]; then
     echo "Unable to restore /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf: $!"
     exit 1
+fi
+# set OWPTestPorts to defaults defined in firewall doc if not already set
+OWMESH_OWP_TESTPORTS=`grep -i "OWPTestPorts" /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf`
+if [ -z "$OWP_TESTPORTS" ]; then
+    echo "OWPTestPorts     8760-8960" >> /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf
 fi
 printf "[SUCCESS]"
 echo ""
