@@ -29,7 +29,7 @@ fi
 rm -rf $TEMP_RST_DIR
 mkdir $TEMP_RST_DIR
 if [ "$?" != "0" ]; then
-    echo "Unable to create temp directory: $!"
+    echo "Unable to create temp directory"
     exit 1
 fi
 
@@ -46,7 +46,7 @@ printf "Restoring users..."
 if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd" ]; then
     cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd >> /etc/passwd 
     if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/passwd: $!"
+        echo "Unable to restore /etc/passwd"
         exit 1
     fi
     awk -F: '{ print $6 }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd | xargs mkdir
@@ -59,7 +59,7 @@ printf "Restoring groups..."
 if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group" ]; then
     cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group >> /etc/group
     if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/group: $!"
+        echo "Unable to restore /etc/group"
         exit 1
     else
         #finish setting permission on home directories now that groups are created
@@ -74,12 +74,37 @@ printf "Restoring passwords..."
 if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow" ]; then
     cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow >> /etc/shadow 
     if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/shadow: $!"
+        echo "Unable to restore /etc/shadow"
         exit 1
     fi
 fi
 printf "[SUCCESS]"
 echo ""
+
+#restore administrator users
+printf "Restoring administrative users..."
+ADMIN_USER_ERROR=""
+if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/wheel_users" ]; then
+    ADMIN_USERS=`cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/wheel_users`
+    if [ -n "$ADMIN_USERS" ]; then
+        ADMIN_USERS_ARR=($ADMIN_USERS)
+        for admin_user in "${ADMIN_USERS_ARR[@]}"
+        do
+            /usr/sbin/usermod -a -Gwheel $admin_user
+            if [ "$?" != "0" ]; then
+                ADMIN_USER_ERROR="${ADMIN_USER_ERROR}Unable to add user $admin_user to wheel. "
+            fi
+        done
+    fi
+fi
+if [ -z "$ADMIN_USER_ERROR" ]; then
+    printf "[SUCCESS]"
+    echo ""
+else
+    printf "[WARN]"
+    echo ""
+    echo " - $ADMIN_USER_ERROR"
+fi
 
 #get administrative info
 printf "Restoring administrative info..."
@@ -90,7 +115,7 @@ if [ -n "$SITE_PROJ_TK_VERS" ]; then
 fi
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/toolkit/etc/administrative_info /opt/perfsonar_ps/toolkit/etc/administrative_info 
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /opt/perfsonar_ps/toolkit/etc/administrative_info: $!"
+    echo "Unable to restore /opt/perfsonar_ps/toolkit/etc/administrative_info"
     exit 1
 fi
 printf "[SUCCESS]"
@@ -100,7 +125,7 @@ echo ""
 printf "Restoring bwctld files..."
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.conf  /etc/bwctld/bwctld.conf
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /etc/bwctld/bwctld.conf: $!"
+    echo "Unable to restore /etc/bwctld/bwctld.conf"
     exit 1
 fi
 #set iperf ports to defaults in firewall doc if not already set
@@ -129,14 +154,14 @@ if [ -z "$BWCTLD_PEERPORTS" ]; then
 fi
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.limits /etc/bwctld/bwctld.limits  
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /etc/bwctld/bwctld.limits: $!"
+    echo "Unable to restore /etc/bwctld/bwctld.limits"
     exit 1
 fi
 
 if [ -f "/etc/bwctld/bwctld.keys" ]; then
     cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.keys /etc/bwctld/bwctld.keys  
     if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/bwctld/bwctld.keys: $!"
+        echo "Unable to restore /etc/bwctld/bwctld.keys"
         exit 1
     fi
 fi
@@ -148,7 +173,7 @@ echo ""
 printf "Restoring owampd files..."
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/owampd/owampd.conf /etc/owampd/owampd.conf 
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /etc/owampd/owampd.conf: $!"
+    echo "Unable to restore /etc/owampd/owampd.conf"
     exit 1
 fi
 # set testports to defaults defined in firewall doc if not already set
@@ -160,7 +185,7 @@ fi
 
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/owampd/owampd.limits  /etc/owampd/owampd.limits 
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /etc/owampd/owampd.limits: $!"
+    echo "Unable to restore /etc/owampd/owampd.limits"
     exit 1
 fi
 printf "[SUCCESS]"
@@ -170,7 +195,7 @@ echo ""
 printf "Restoring enabled services..."
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/toolkit/etc/enabled_services /opt/perfsonar_ps/toolkit/etc/enabled_services 
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /opt/perfsonar_ps/toolkit/etc/enabled_services: $!"
+    echo "Unable to restore /opt/perfsonar_ps/toolkit/etc/enabled_services"
     exit 1
 fi
 printf "[SUCCESS]"
@@ -180,13 +205,13 @@ echo ""
 printf "Restoring NTP configuration..."
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/toolkit/etc/ntp_known_servers /opt/perfsonar_ps/toolkit/etc/ntp_known_servers
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /opt/perfsonar_ps/toolkit/etc/ntp_known_servers: $!"
+    echo "Unable to restore /opt/perfsonar_ps/toolkit/etc/ntp_known_servers"
     exit 1
 fi
 
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/ntp.conf /etc/ntp.conf 
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /etc/ntp.conf: $!"
+    echo "Unable to restore /etc/ntp.conf"
     exit 1
 fi
 printf "[SUCCESS]"
@@ -207,7 +232,7 @@ echo ""
 printf "Restoring scheduled tests..."
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf: $!"
+    echo "Unable to restore /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf"
     exit 1
 fi
 # set OWPTestPorts to defaults defined in firewall doc if not already set
@@ -223,7 +248,7 @@ if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/mesh_config/etc/agent_con
     printf "Restoring mesh configuration..."
     cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf /opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf
     if [ "$?" != "0" ]; then
-        echo "Unable to restore /opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf: $!"
+        echo "Unable to restore /opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf"
         exit 1
     fi
     printf "[SUCCESS]"
@@ -235,7 +260,7 @@ if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/maddash/maddash-server/maddash.yaml" ]
     printf "Restoring MaDDash configuration..."
     cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/maddash/maddash-server/maddash.yaml /etc/maddash/maddash-server/maddash.yaml
     if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/maddash/maddash-server/maddash.yaml: $!"
+        echo "Unable to restore /etc/maddash/maddash-server/maddash.yaml"
         exit 1
     fi
     printf "[SUCCESS]"
@@ -246,7 +271,7 @@ fi
 printf "Restoring bwctl results..."
 mysql -u root bwctl < $TEMP_RST_DIR/$TEMP_BAK_NAME/mysql_data/bwctl.sql
 if [ "$?" != "0" ]; then
-    echo "Unable to restore bwctl MySQL databse: $!"
+    echo "Unable to restore bwctl MySQL databse"
     exit 1
 fi
 printf "[SUCCESS]"
@@ -255,7 +280,7 @@ echo ""
 printf "Restoring owamp results..."
 mysql -u root owamp < $TEMP_RST_DIR/$TEMP_BAK_NAME/mysql_data/owamp.sql
 if [ "$?" != "0" ]; then
-    echo "Unable to restore owamp MySQL databse: $!"
+    echo "Unable to restore owamp MySQL databse"
     exit 1
 fi
 printf "[SUCCESS]"
@@ -264,7 +289,7 @@ echo ""
 printf "Restoring traceroute results..."
 mysql -u root traceroute_ma < $TEMP_RST_DIR/$TEMP_BAK_NAME/mysql_data/traceroute_ma.sql
 if [ "$?" != "0" ]; then
-    echo "Unable to restore traceroute_ma MySQL databse: $!"
+    echo "Unable to restore traceroute_ma MySQL databse"
     exit 1
 fi
 printf "[SUCCESS]"
@@ -273,7 +298,7 @@ echo ""
 printf "Restoring pinger results..."
 mysql -u root pingerMA < $TEMP_RST_DIR/$TEMP_BAK_NAME/mysql_data/pingerMA.sql
 if [ "$?" != "0" ]; then
-    echo "Unable to restore pingerMA MySQL databse: $!"
+    echo "Unable to restore pingerMA MySQL databse"
     exit 1
 fi
 printf "[SUCCESS]"
@@ -282,7 +307,7 @@ echo ""
 printf "Restoring cacti results..."
 mysql -u root cacti < $TEMP_RST_DIR/$TEMP_BAK_NAME/mysql_data/cacti.sql
 if [ "$?" != "0" ]; then
-    echo "Unable to restore cacti MySQL databse: $!"
+    echo "Unable to restore cacti MySQL databse"
     exit 1
 fi
 printf "[SUCCESS]"
