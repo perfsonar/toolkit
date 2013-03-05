@@ -251,6 +251,12 @@ chown apache:perfsonar /var/log/perfsonar/web_admin
 mkdir -p /var/log/cacti
 chown apache /var/log/cacti
 
+#Make sure root is in the wheel group for fresh install. If upgrade, keep user settings
+if [ $1 -eq 1 ] ; then
+    /usr/sbin/usermod -a -Gwheel root
+fi
+
+
 mkdir -p /var/run/web_admin_sessions
 chown apache /var/run/web_admin_sessions
 

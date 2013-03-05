@@ -66,18 +66,15 @@ else
 fi
 
 printf "Backing up administrative users..."
-awk -F: '($1 == "wheel") {print $4}' /etc/group | sed "s/root,*//" | sed s"/,/ /" > $TEMP_BAK_DIR/etc/wheel_users
+awk -F: '($1 == "wheel") {print $4}' /etc/group | sed s"/,/ /" > $TEMP_BAK_DIR/etc/wheel_users
 if [ "$?" != "0" ]; then
     printf "[SUCCESS]"
     echo ""
-    echo " - Note: No non-root user administrators found to be migrated."
+    echo " - Note: No user administrators found to be migrated."
 else
     printf "[SUCCESS]"
     echo ""
 fi
-
-
-
 
 #get administrative info
 printf "Backing-up administrative info..."

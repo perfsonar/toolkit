@@ -46,7 +46,7 @@ rm -f /etc/group.new &> /dev/null
 rm -f /etc/shadow.new &> /dev/null
 
 #restore administrative users
-ADMIN_USERS=`awk -F: '($1 == "wheel") {print $4}' /etc/group | sed "s/root,*//" | sed s"/,/ /"`
+ADMIN_USERS=`awk -F: '($1 == "wheel") {print $4}' /etc/group | sed s"/,/ /"`
 if [ -n "$ADMIN_USERS" ]; then
     ADMIN_USERS_ARR=($ADMIN_USERS)
     for admin_user in "${ADMIN_USERS_ARR[@]}"
@@ -58,6 +58,9 @@ if [ -n "$ADMIN_USERS" ]; then
     done
 fi
 
+#make sure root gets added to wheel
+/usr/sbin/usermod -a -Gwheel root
+
 #Overwrite MA and LS reg daemon files to prevent conflict with new lookup service parameters
 cp -f $LIVE_LOCATION/opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf /opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf
 cp -f $LIVE_LOCATION/opt/perfsonar_ps/traceroute_ma/etc/daemon.conf /opt/perfsonar_ps/traceroute_ma/etc/daemon.conf
@@ -66,7 +69,6 @@ cp -f $LIVE_LOCATION/opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration
 #maintain version information
 grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrative_info > /opt/perfsonar_ps/toolkit/etc/administrative_info.new
 cp /opt/perfsonar_ps/toolkit/etc/administrative_info.new /opt/perfsonar_ps/toolkit/etc/administrative_info
-
 SITE_PROJ_TK_VERS=`grep "site_project=pS-NPToolkit-" $LIVE_LOCATION/opt/perfsonar_ps/toolkit/etc/administrative_info`
 if [ -n "$SITE_PROJ_TK_VERS" ]; then
     echo $SITE_PROJ_TK_VERS >> /opt/perfsonar_ps/toolkit/etc/administrative_info
