@@ -63,7 +63,14 @@ cp -f $LIVE_LOCATION/opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf /opt/perf
 cp -f $LIVE_LOCATION/opt/perfsonar_ps/traceroute_ma/etc/daemon.conf /opt/perfsonar_ps/traceroute_ma/etc/daemon.conf
 cp -f $LIVE_LOCATION/opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
 
+#maintain version information
+grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrative_info > /opt/perfsonar_ps/toolkit/etc/administrative_info.new
+cp /opt/perfsonar_ps/toolkit/etc/administrative_info.new /opt/perfsonar_ps/toolkit/etc/administrative_info
 
+SITE_PROJ_TK_VERS=`grep "site_project=pS-NPToolkit-" $LIVE_LOCATION/opt/perfsonar_ps/toolkit/etc/administrative_info`
+if [ -n "$SITE_PROJ_TK_VERS" ]; then
+    echo $SITE_PROJ_TK_VERS >> /opt/perfsonar_ps/toolkit/etc/administrative_info
+fi
 
 
 
