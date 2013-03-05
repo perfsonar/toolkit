@@ -237,7 +237,7 @@ if [ "$?" != "0" ]; then
 fi
 # set OWPTestPorts to defaults defined in firewall doc if not already set
 OWMESH_OWP_TESTPORTS=`grep -i "OWPTestPorts" /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf`
-if [ -z "$OWP_TESTPORTS" ]; then
+if [ -z "$OWMESH_OWP_TESTPORTS" ]; then
     echo "OWPTestPorts     8760-8960" >> /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf
 fi
 printf "[SUCCESS]"

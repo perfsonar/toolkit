@@ -74,5 +74,10 @@ if [ -n "$SITE_PROJ_TK_VERS" ]; then
     echo $SITE_PROJ_TK_VERS >> /opt/perfsonar_ps/toolkit/etc/administrative_info
 fi
 
+# set OWPTestPorts to defaults defined in firewall doc if not already set
+OWMESH_OWP_TESTPORTS=`grep -i "OWPTestPorts" /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf`
+if [ -z "$OWMESH_OWP_TESTPORTS" ]; then
+    echo "OWPTestPorts     8760-8960" >> /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf
+fi
 
 
