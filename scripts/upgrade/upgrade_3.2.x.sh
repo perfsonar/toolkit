@@ -45,6 +45,19 @@ rm -f /etc/passwd.new &> /dev/null
 rm -f /etc/group.new &> /dev/null
 rm -f /etc/shadow.new &> /dev/null
 
+#restore administrative users
+ADMIN_USERS=`awk -F: '($1 == "wheel") {print $4}' /etc/group | sed "s/root,*//" | sed s"/,/ /"`
+if [ -n "$ADMIN_USERS" ]; then
+    ADMIN_USERS_ARR=($ADMIN_USERS)
+    for admin_user in "${ADMIN_USERS_ARR[@]}"
+    do
+        /usr/sbin/usermod -a -Gwheel $admin_user
+        if [ "$?" != "0" ]; then
+            echo "Unable to add user $admin_user to wheel."
+        fi
+    done
+fi
+
 #Overwrite MA and LS reg daemon files to prevent conflict with new lookup service parameters
 cp -f $LIVE_LOCATION/opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf /opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf
 cp -f $LIVE_LOCATION/opt/perfsonar_ps/traceroute_ma/etc/daemon.conf /opt/perfsonar_ps/traceroute_ma/etc/daemon.conf
