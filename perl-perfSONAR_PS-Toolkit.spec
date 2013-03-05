@@ -19,7 +19,7 @@
 %define crontab_3     cron-owamp_cleaner
 %define crontab_4     cron-save_config
 
-%define relnum 3
+%define relnum 4
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -383,6 +383,7 @@ done
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/delayGraph.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/utilizationGraph.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/bandwidthGraph.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/psTracerouteViewer/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/bwctl/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/regular_testing/index.cgi
