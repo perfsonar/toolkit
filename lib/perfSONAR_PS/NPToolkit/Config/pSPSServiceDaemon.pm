@@ -21,7 +21,7 @@ use Template;
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'CONFIG_FILE', 'SERVICE_NAME', 'ORGANIZATION_NAME', 'LOCATION', 'EXTERNAL_ADDRESS', 'EXTERNAL_ADDRESS_IF_NAME','EXTERNAL_ADDRESS_IPV4','EXTERNAL_ADDRESS_IPV6','PROJECTS', 'LS_REGISTRATION_INTERVAL';
+use fields 'CONFIG_FILE', 'SERVICE_NAME', 'ORGANIZATION_NAME', 'LOCATION', 'EXTERNAL_ADDRESS', 'EXTERNAL_ADDRESS_IF_NAME','EXTERNAL_ADDRESS_IPV4','EXTERNAL_ADDRESS_IPV6','PROJECTS', 'LS_REGISTRATION_INTERVAL', 'CITY', 'REGION', 'COUNTRY', 'ZIP_CODE','LATITUDE','LONGITUDE';
 
 use Params::Validate qw(:all);
 use Storable qw(store retrieve freeze thaw dclone);
@@ -133,6 +133,66 @@ sub get_location {
     my $parameters = validate( @params, { } );
 
     return $self->{LOCATION};
+}
+
+=head2 get_city({ city => 1 })
+Returns the city of the service to advertise in the LS
+=cut
+sub get_city {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{CITY};
+}
+
+=head2 get_state({ city => 1 })
+Returns the region/state of the service to advertise in the LS
+=cut
+sub get_state {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{REGION};
+}
+
+=head2 get_country({ country => 1 })
+Returns the country of the service to advertise in the LS
+=cut
+sub get_country {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{COUNTRY};
+}
+
+=head2 get_zipcode({ country => 1 })
+Returns the zip code of the service to advertise in the LS
+=cut
+sub get_zipcode {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{ZIP_CODE};
+}
+
+=head2 get_latitude({ country => 1 })
+Returns the latitude of the service to advertise in the LS
+=cut
+sub get_latitude {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{LATITUDE};
+}
+
+=head2 get_longitude({ country => 1 })
+Returns the longitude of the service to advertise in the LS
+=cut
+sub get_longitude {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{LONGITUDE};
 }
 
 =head2 get_projects({ location => 1 })
@@ -262,6 +322,90 @@ sub set_location {
     return 0;
 }
 
+=head2 set_city({ city => 1 })
+Sets the city of the service to advertise in the LS
+=cut
+sub set_city {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { city => 1, } );
+
+    my $city = $parameters->{city};
+
+    $self->{CITY} = $city;
+
+    return 0;
+}
+
+=head2 set_state({ state => 1 })
+Sets the state of the service to advertise in the LS
+=cut
+sub set_state {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { state => 1, } );
+
+    my $state = $parameters->{state};
+
+    $self->{REGION} = $state;
+
+    return 0;
+}
+
+=head2 set_country({ country => 1 })
+Sets the country of the service to advertise in the LS
+=cut
+sub set_country {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { country => 1, } );
+
+    my $country = $parameters->{country};
+
+    $self->{COUNTRY} = $country;
+
+    return 0;
+}
+
+=head2 set_zipcode({ country => 1 })
+Sets the zipcode of the service to advertise in the LS
+=cut
+sub set_zipcode {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { zipcode => 1, } );
+
+    my $zipcode = $parameters->{zipcode};
+
+    $self->{ZIP_CODE} = $zipcode;
+
+    return 0;
+}
+
+=head2 set_latitude({ latitude => 1 })
+Sets the latitude of the service to advertise in the LS
+=cut
+sub set_latitude {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { latitude => 1, } );
+
+    my $latitude = $parameters->{latitude};
+
+    $self->{LATITUDE} = $latitude;
+
+    return 0;
+}
+
+=head2 set_longitude({ longitude => 1 })
+Sets the longitude of the service to advertise in the LS
+=cut
+sub set_longitude {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { longitude => 1, } );
+
+    my $longitude = $parameters->{longitude};
+
+    $self->{LONGITUDE} = $longitude;
+
+    return 0;
+}
+
 =head2 set_projects({ projects => 1 })
 Sets the projects of the service to advertise in the gLS
 =cut
@@ -343,6 +487,36 @@ sub save {
                                     "service_name",
                                     "service_description"
                                   ],
+                        },
+                        {
+                            cv => "city",
+                            lv => "CITY",
+                            ov => [],
+                        },
+                        {
+                            cv => "region",
+                            lv => "REGION",
+                            ov => [],
+                        },
+                        {
+                            cv => "country",
+                            lv => "COUNTRY",
+                            ov => [],
+                        },
+                        {
+                            cv => "zip_code",
+                            lv => "ZIP_CODE",
+                            ov => [],
+                        },
+                        {
+                            cv => "latitude",
+                            lv => "LATITUDE",
+                            ov => [],
+                        },
+                        {
+                            cv => "longitude",
+                            lv => "LONGITUDE",
+                            ov => [],
                         },
                         {
                             cv => "site_project",

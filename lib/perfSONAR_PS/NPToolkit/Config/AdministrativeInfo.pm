@@ -121,7 +121,7 @@ sub save {
     }
 
     foreach my $service_config ($ndt_config, $npad_config) {
-        $service_config->set_location( location => $self->{LOCATION} );
+        $service_config->set_location( location => $self->generate_location_string() );
         $service_config->set_administrator_email( administrator_email => $self->{ADMINISTRATOR_EMAIL} );
         $service_config->set_administrator_name( administrator_name => $self->{ADMINISTRATOR_NAME} );
         $service_config->set_organization_name( organization_name => $self->{ORGANIZATION_NAME} );
@@ -132,7 +132,12 @@ sub save {
     }
 
     foreach my $service_config ($pinger_config, $psb_ma_config, $snmp_ma_config, $traceroute_ma_config, $ls_reg_daemon_config) {
-        $service_config->set_location( location => $self->{LOCATION} );
+        $service_config->set_city( city => $self->{CITY} );
+        $service_config->set_state( state => $self->{REGION} );
+        $service_config->set_country( country => $self->{COUNTRY} );
+        $service_config->set_zipcode( zipcode => $self->{ZIP_CODE} );
+        $service_config->set_latitude( latitude => $self->{LATITUDE} );
+        $service_config->set_longitude( longitude => $self->{LONGITUDE} );
         $service_config->set_organization_name( organization_name => $self->{ORGANIZATION_NAME} );
         $service_config->set_projects( projects => \@keywords );
         $res = $service_config->save({ restart_services => $parameters->{restart_services} });
@@ -293,6 +298,23 @@ sub set_longitude {
     $self->{LONGITUDE} = $value;
 
     return 0;
+}
+
+=head2 generate_location_string({})
+Generates a human-readable string with the location
+=cut 
+sub generate_location_string {
+    my ( $self ) = @_;
+    
+    my @loc_fields = ( 'CITY', 'REGION', 'COUNTRY' );
+    my $loc_string = "";
+    foreach my $loc(@loc_fields){
+        next if(!$self->{$loc});
+        $loc_string .= ', ' if($loc_string);
+        $loc_string .= $self->{$loc};
+    }
+
+    return $loc_string;
 }
 
 =head2 add_keyword ({ keyword => 1 })
