@@ -258,6 +258,7 @@ fi
 #get maddash if exists
 if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/maddash/maddash-server/maddash.yaml" ]; then
     printf "Restoring MaDDash configuration..."
+    mkdir -p /etc/maddash/maddash-server/
     cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/maddash/maddash-server/maddash.yaml /etc/maddash/maddash-server/maddash.yaml
     if [ "$?" != "0" ]; then
         echo "Unable to restore /etc/maddash/maddash-server/maddash.yaml"

@@ -20,6 +20,9 @@ if [ `echo "${STORE_VERSION:0:3} < 3.3" | bc` -eq 0 ]; then
     exit 0
 fi
 
+#get admin users prior to replacing group file
+ADMIN_USERS=`awk -F: '($1 == "wheel") {print $4}' /etc/group | sed s"/,/ /g"`
+
 # Attempt to migrate accounts, groups, and passwords files
 cp -f $LIVE_LOCATION/etc/passwd /etc/passwd.new
 cp -f $LIVE_LOCATION/etc/group /etc/group.new
@@ -46,7 +49,6 @@ rm -f /etc/group.new &> /dev/null
 rm -f /etc/shadow.new &> /dev/null
 
 #restore administrative users
-ADMIN_USERS=`awk -F: '($1 == "wheel") {print $4}' /etc/group | sed s"/,/ /"`
 if [ -n "$ADMIN_USERS" ]; then
     ADMIN_USERS_ARR=($ADMIN_USERS)
     for admin_user in "${ADMIN_USERS_ARR[@]}"
