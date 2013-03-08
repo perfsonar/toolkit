@@ -25,6 +25,6 @@ b.ntp.monipe.rnp.br:RNP Time Server #2 - Brazil
 c.ntp.monipe.rnp.br:RNP Time Server #3 - Brazil
 d.ntp.monipe.rnp.br:RNP Time Server #4 - Brazil
 e.ntp.monipe.rnp.br:RNP Time Server #5 - Brazil
-time1.ethz.ch:Eidgenössische Technische Hochschule Zurich -  Zurich, Switzerland
-time2.ethz.ch:Eidgenössische Technische Hochschule Zurich -  Zurich, Switzerland
-time3.ethz.ch:Eidgenössische Technische Hochschule Zurich -  Zurich, Switzerland
+time1.ethz.ch:ETH Zurich -  Zurich, Switzerland
+time2.ethz.ch:ETH Zurich -  Zurich, Switzerland
+time3.ethz.ch:ETH Zurich -  Zurich, Switzerland
