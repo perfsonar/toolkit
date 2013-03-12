@@ -42,72 +42,73 @@ else
 fi
 
 #get users
-printf "Restoring users..."
-if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd" ]; then
-    awk -F: '{ system("/usr/sbin/useradd "($7 == "/bin/false" ? "-M -s /bin/false " : "-m ")$1)}' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd
-    if [ "$?" != "0" ]; then
-        echo "Unable to restore users"
-        exit 1
-    fi 
-fi
-printf "[SUCCESS]"
-echo ""
+EXISTING_USERS=`awk -v LIMIT=500 -F: '($3>=LIMIT) && ($3!=65534)' /etc/passwd`
+if [ -n "$EXISTING_USERS" ]; then
+    echo "WARN: Looks like non-root user accounts were created prior to running this script. Skipping user account restoration to avoid conflicts"
+else
+    printf "Restoring users..."
+    if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd" ]; then
+        cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd >> /etc/passwd 
+        if [ "$?" != "0" ]; then
+            echo "Unable to restore /etc/passwd"
+            exit 1
+        fi
+        awk -F: '{ print $6 }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd | xargs mkdir
+    fi
+    printf "[SUCCESS]"
+    echo ""
 
-#get groups - skipping. create user groups above to avoid conflicts if other accounts created on target host
-#printf "Restoring groups..."
-#if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group" ]; then
-#    cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group >> /etc/group
-#    if [ "$?" != "0" ]; then
-#        echo "Unable to restore /etc/group"
-#        exit 1
-#    else
-#        #finish setting permission on home directories now that groups are created
-#        awk -F: '{ system("chown "$1":"$1" "$6) }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd
-#    fi
-#fi
-#printf "[SUCCESS]"
-#echo ""
+    #get groups
+    printf "Restoring groups..."
+    if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group" ]; then
+        cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group >> /etc/group
+        if [ "$?" != "0" ]; then
+            echo "Unable to restore /etc/group"
+            exit 1
+        else
+            #finish setting permission on home directories now that groups are created
+            awk -F: '{ system("chown "$1":"$1" "$6) }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd
+        fi
+    fi
+    printf "[SUCCESS]"
+    echo ""
 
-#get shadow file
-printf "Restoring passwords..."
-if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow" ]; then
-    USER_MATCH=`awk -F: '{ ORS="\\\|"; print $1 }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow | sed 's/\\\|$//'`
-    if [ -n "USER_MATCH" ]; then
-        grep -v "${USER_MATCH}" /etc/shadow > /etc/shadow.tmp
-        cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow >> /etc/shadow.tmp
+    #get shadow file
+    printf "Restoring passwords..."
+    if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow" ]; then
+        cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow >> /etc/shadow 
         if [ "$?" != "0" ]; then
             echo "Unable to restore /etc/shadow"
             exit 1
         fi
-        rm /etc/shadow.tmp
     fi
-fi
-printf "[SUCCESS]"
-echo ""
-
-#restore administrator users
-printf "Restoring administrative users..."
-ADMIN_USER_ERROR=""
-if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/wheel_users" ]; then
-    ADMIN_USERS=`cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/wheel_users`
-    if [ -n "$ADMIN_USERS" ]; then
-        ADMIN_USERS_ARR=($ADMIN_USERS)
-        for admin_user in "${ADMIN_USERS_ARR[@]}"
-        do
-            /usr/sbin/usermod -a -Gwheel $admin_user
-            if [ "$?" != "0" ]; then
-                ADMIN_USER_ERROR="${ADMIN_USER_ERROR}Unable to add user $admin_user to wheel. "
-            fi
-        done
-    fi
-fi
-if [ -z "$ADMIN_USER_ERROR" ]; then
     printf "[SUCCESS]"
     echo ""
-else
-    printf "[WARN]"
-    echo ""
-    echo " - $ADMIN_USER_ERROR"
+
+    #restore administrator users
+    printf "Restoring administrative users..."
+    ADMIN_USER_ERROR=""
+    if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/wheel_users" ]; then
+        ADMIN_USERS=`cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/wheel_users`
+        if [ -n "$ADMIN_USERS" ]; then
+            ADMIN_USERS_ARR=($ADMIN_USERS)
+            for admin_user in "${ADMIN_USERS_ARR[@]}"
+            do
+                /usr/sbin/usermod -a -Gwheel $admin_user
+                if [ "$?" != "0" ]; then
+                    ADMIN_USER_ERROR="${ADMIN_USER_ERROR}Unable to add user $admin_user to wheel. "
+                fi
+            done
+        fi
+    fi
+    if [ -z "$ADMIN_USER_ERROR" ]; then
+        printf "[SUCCESS]"
+        echo ""
+    else
+        printf "[WARN]"
+        echo ""
+        echo " - $ADMIN_USER_ERROR"
+    fi
 fi
 
 #get administrative info
