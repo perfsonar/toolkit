@@ -71,10 +71,15 @@ echo ""
 #get shadow file
 printf "Restoring passwords..."
 if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow" ]; then
-    cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow >> /etc/shadow 
-    if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/shadow"
-        exit 1
+    USER_MATCH=`awk -F: '{ ORS="\\\|"; print $1 }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow | sed 's/\\\|$//'`
+    if [ -n "USER_MATCH" ]; then
+        grep -v "${USER_MATCH}" /etc/shadow > /etc/shadow.tmp
+        cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow >> /etc/shadow.tmp
+        if [ "$?" != "0" ]; then
+            echo "Unable to restore /etc/shadow"
+            exit 1
+        fi
+        rm /etc/shadow.tmp
     fi
 fi
 printf "[SUCCESS]"
