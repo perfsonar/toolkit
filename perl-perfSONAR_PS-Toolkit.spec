@@ -19,7 +19,7 @@
 %define crontab_3     cron-owamp_cleaner
 %define crontab_4     cron-save_config
 
-%define relnum 5
+%define relnum 6 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
