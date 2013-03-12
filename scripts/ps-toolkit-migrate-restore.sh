@@ -44,30 +44,29 @@ fi
 #get users
 printf "Restoring users..."
 if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd" ]; then
-    cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd >> /etc/passwd 
+    awk -F: '{ system("/usr/sbin/useradd "($7 == "/bin/false" ? "-M -s /bin/false " : "-m ")$1)}' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd
     if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/passwd"
+        echo "Unable to restore users"
         exit 1
-    fi
-    awk -F: '{ print $6 }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd | xargs mkdir
+    fi 
 fi
 printf "[SUCCESS]"
 echo ""
 
-#get groups
-printf "Restoring groups..."
-if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group" ]; then
-    cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group >> /etc/group
-    if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/group"
-        exit 1
-    else
-        #finish setting permission on home directories now that groups are created
-        awk -F: '{ system("chown "$1":"$1" "$6) }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd
-    fi
-fi
-printf "[SUCCESS]"
-echo ""
+#get groups - skipping. create user groups above to avoid conflicts if other accounts created on target host
+#printf "Restoring groups..."
+#if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group" ]; then
+#    cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group >> /etc/group
+#    if [ "$?" != "0" ]; then
+#        echo "Unable to restore /etc/group"
+#        exit 1
+#    else
+#        #finish setting permission on home directories now that groups are created
+#        awk -F: '{ system("chown "$1":"$1" "$6) }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd
+#    fi
+#fi
+#printf "[SUCCESS]"
+#echo ""
 
 #get shadow file
 printf "Restoring passwords..."
