@@ -140,11 +140,11 @@ if [ -z "$BWCTLD_IPERFPORTS" ]; then
     echo "iperf_port 5001-5200" >> /etc/bwctld/bwctld.conf
 fi
 #set iperf ports to defaults in firewall doc if not already set
-BWCTLD_THRULAYPORTS=`egrep -i "^thrulay_port" /etc/bwctld/bwctld.conf`
-if [ -z "$BWCTLD_THRULAYPORTS" ]; then
-    echo "" >> /etc/bwctld/bwctld.conf
-    echo "thrulay_port 5201-5400" >> /etc/bwctld/bwctld.conf
-fi
+#BWCTLD_THRULAYPORTS=`egrep -i "^thrulay_port" /etc/bwctld/bwctld.conf`
+#if [ -z "$BWCTLD_THRULAYPORTS" ]; then
+#    echo "" >> /etc/bwctld/bwctld.conf
+#    echo "thrulay_port 5201-5400" >> /etc/bwctld/bwctld.conf
+#fi
 #set iperf ports to defaults in firewall doc if not already set
 BWCTLD_NUTTCPPORTS=`egrep -i "^nuttcp_port" /etc/bwctld/bwctld.conf`
 if [ -z "$BWCTLD_NUTTCPPORTS" ]; then
