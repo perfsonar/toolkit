@@ -34,10 +34,13 @@ if ($0 =~ /nph-/) {
 }
 #Get this out first so can get out error messages
 print $msg."Content-type: text/html\n\n";
-my $version="6.0, 10/5/2012, Les Cottrell";
+#my $version="6.0, 10/5/2012, Les Cottrell";
 # Added meta tag to reduce robots visting the page and end up producing
 # a measurement as a result (and cache the results for all time in the process)
-
+#my $version="6.1, 2/15/2013, Les Cottrell";
+#Added link to Fixed orbits to find AS's on route between 2 hosts
+my $version="6.2, 2/27/2013, Les Cottrell";
+# Improved the final execution to add timing and various alarm durations.
 ################################################################################
 #Understand the local environment
 use Cwd;
@@ -57,15 +60,16 @@ my $archname=$^O;
 ########################## Get the form action field #########################
 #$form allows one to use a different form action field, e.g.
 #REQUEST_URI is of the form: /cgi-bin/traceroute.pl?choice=yes
-my $temp;
+my ($temp, $bin_dir);
+($temp,$bin_dir,$temp)=split /\//,$ENV{'REQUEST_URI'};
 my $form="<form action='$progname' method='GET'>";
 if($debug>0) {
-  print "REQUEST_URI=$ENV{'REQUEST_URI'}, form=$form<br>\n";
+  print "REQUEST_URI=$ENV{'REQUEST_URI'}, bin_dir=$bin_dir, form=$form<br>\n";
 }
 # **********************  tailor first section as required:- *****************
 # Traceroute options can be customized to reduce (or increase) impact
 # There is no need to set @Tropts unless one is using non-defaults.
-my @Tropts=qw(-m 30); # equivalent default options for traceroute
+my @Tropts=qw(-m 30 -q 3); # equivalent default options for traceroute
 my $start=""; #default value.
 my $max_processes=11;# Maximum # of simultaneously running traceroute processes
                   # 10 gave no alerts for several weeks in May 2000. Set to a
@@ -459,14 +463,14 @@ if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
        <input type='hidden' name='function' value='$function'>
        </form>",
       "Lookup:
-       <a href='http://www.slac.stanford.edu/comp/net/util/nslookup.html'>host name</a> |
-       <a href='http://www.slac.stanford.edu/comp/net/util/mxlookup.html'>mail domain</a> |
        <a href='http://www.networksolutions.com/cgi-bin/whois/whois'>domain name</a> |
        <!--
           <a href='http://cello.cs.uiuc.edu/cgi-bin/slamm/ip2ll/'>latitude & longitude</a> |
        -->
        <a href='http://www.geoiptool.com/'>Locating a Host</a> |
        <a href='http://visualroute.visualware.com/'>visual traceroute</a> |
+       <a href='http://www.fixedorbit.com/trace.htm'>Find AS's between hosts</a> |
+       <a href='http://asn.cymru.com/cgi-bin/whois.cgi'>Find AS of a host</a> |
        <a href='http://www.ietf.org/rfc/rfc2142.txt'>contacting someone</a>
        </td>",
       "<td><b>Related web sites</b><br>",
@@ -582,39 +586,53 @@ if($debug > 0)  {
 # worry about checking the $addr for shell meta-characters. Note also that
 # SIGALRM is carried across the exec thus allowing the timeout to work.
 open(STDERR, '>&STDOUT');# Redirect stderr onto stdout
-alarm(45);	     # Timeout function in case of problems (used to be 45)
+#alarm(45);	     # Timeout function in case of problems (used to be 45)
 if(!($addr=~ /^([\w\.:\-]+)$/)) {#Untaint Check for valid characters
   print "<font color='red'><b>Invalid target = $addr, traceroute aborted!</b></font><br>\n";
   exit 1;
 }
 $addr=$1; #Untaint $addr.
-#print "Executing '$Tr ",join(' ',@Tropts)," $addr'<br>\n";
 if($function eq "traceroute" and $archname ne "solaris") {
-    $temp="140"; #Added the 140 to tracreoute command
-    #to get round the bug in Redhat's traceroute package in which some
-    #MPLS encapsulation info is incorrectly included in the ICMP checksum.
-    #Notification of by pass from Bryson Lee of SLAC.
-    print "Executing exec($Tr, @Tropts, $addr, $temp)\n"; 
-    exec($Tr, @Tropts, $addr, $temp); 
+  $temp="140"; #Added the 140 to tracreoute command
+  #to get round the bug in Redhat's traceroute package in which some
+  #MPLS encapsulation info is incorrectly included in the ICMP checksum.
+  #Notification of by pass from Bryson Lee of SLAC.
+  my @args =($Tr, @Tropts, $addr, $temp);
+  alarm(240);
+  &exec(@args);
 }
 elsif($function eq "tracepath") {
-  print "Executing exec($Tr, $addr)\n";
-  exec($Tr, $addr);
+  my @args=($Tr, $addr);
+  alarm(45);
+  &exec(@args);
 }
 elsif($archname eq "solaris" && $function eq "ping") {
-  print "Executing exec($Tr, @Tropts, $addr, $ping_size, $ping_npackets)\n";
-  exec($Tr, @Tropts, $addr, $ping_size, $ping_npackets);
+  my @args=($Tr, @Tropts, $addr, $ping_size, $ping_npackets);
+  alarm(45);
+  &exec(@args);
 }
-#elsif($function eq "traceroute") {
-#  print "Executing exec($Tr, @Tropts, $addr)\n";
-#  exec($Tr, @Tropts, $addr);
-#}
 elsif($function eq "traceroute" || $function eq "ping" || $function eq "synack") {
-  print "Executing exec($Tr, @Tropts, $addr)\n";
-  exec($Tr, @Tropts, $addr);
+  my @args=($Tr, @Tropts, $addr);
+  alarm(90); 
+  &exec(@args);
 }
 else {
   print "Invalid command $Tr options=@Tropts address=$addr\n";
+}
+######################################################
+#&exec($commmand, @options, $target [,$extra_options])
+#Executes the command with the given options on the given target
+#
+#Examples:
+# &exec("ping", "-c 5 -s 56", "137.138.144.168");
+# &exec("traceroute, "-m 30 -q 1 -w 3", "134.79.230.225", "140");
+sub exec {
+  my @args=@_;
+  print "Executing exec(@args)\n";
+  my $t0=time();
+  system(@args) == 0 or die "Can't system(@args): $?";
+  print "@args took ".(time()-$t0)." secs.\n";
+  return;
 }
 ######################################################
 sub private {
