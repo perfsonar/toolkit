@@ -151,7 +151,7 @@ Administrator Email
 Latitude (Range: -90 to 90. Eg: -32.45, 40.23)
 </td>
 <td>
-<input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_host_latitude" size="20" />
+<input dojoType="dijit.form.NumberTextBox" type="text" id="modify_host_information_host_latitude" data-dojo-props="constraints:{min:-90,max:90, pattern: '00.00;-00.00'}",size="20" />
 </td>
 </tr>
 <tr>
@@ -159,7 +159,7 @@ Latitude (Range: -90 to 90. Eg: -32.45, 40.23)
 Longitude (Range: -180 to 180. Eg: -92.45, 140.23)
 </td>
 <td>
-<input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_host_longitude" size="20" />
+<input dojoType="dijit.form.NumberTextBox" type="text" id="modify_host_information_host_longitude" data-dojo-props="constraints:{min:-180,max:180, pattern: '000.00;-000.00'}" size="20" />
 </td>
 </tr>
 </table>
