@@ -63,11 +63,11 @@ function modify_bwctl_port_range(min_port, max_port) {
 	handle_cgi_ajax_call(null, 'Problem updating port range', true, 'update_bwctl_test_port_range', [min_port, max_port]);
 }
 
-function modify_psb_bwctl_test(test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth) {
+function modify_psb_bwctl_test(test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits) {
 	if (test_id) {
-		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_bwctl_throughput_test', [ test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth ]);
+		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_bwctl_throughput_test', [ test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits ]);
 	} else {
-		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_bwctl_throughput_test', [ description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth ]);
+		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_bwctl_throughput_test', [ description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits ]);
 	}
 }
 
@@ -339,10 +339,10 @@ function __display_pinger_test_dialog(test_id, description, packet_size, packet_
 	dialog.show();
 }
 
-function display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth) {
+function display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits) {
 	// if we're displaying the 'edit' dialog
 	if (test_id) {
-		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth);
+		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits);
 	}
 
 	var psb_bwctl_enabled   = parseInt(dojo.byId('psb_bwctl_enabled').value);
@@ -354,7 +354,7 @@ function display_bwctl_throughput_test_dialog(test_id, description, test_interva
 
 	// if pSB throughput tests are enabled and there are no latency tests that this new test will interfere with
 	if ((pinger_tests == 0 || !pinger_enabled) && (owamp_tests == 0 || !psb_owamp_enabled) && psb_bwctl_enabled) {
-		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth);
+		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits);
 	}
 
 	var title = "Warning: host isn't configured for throughput tests";
@@ -380,17 +380,17 @@ function display_bwctl_throughput_test_dialog(test_id, description, test_interva
 	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "add_test_warning_dialog" ));
 	dojo.connect(dijit.byId('add_test_warning_cancel'), 'onClick', function() { dijit.byId('add_test_warning_dialog').hide(); });
 	dojo.connect(dijit.byId('add_test_warning_add_test'), 'onClick', dojo.hitch(null,
-										function(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth) {
+										function(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits) {
 											dijit.byId('add_test_warning_dialog').hide();
-											return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth);
+											return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits);
 										},
-										test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth)
+										test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits)
 			);
 
 	dialog.show();
 }
 
-function __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth) {
+function __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits) {
 	console.log("display_bwctl_throughput_test_dialog()");
 
 	var title;
@@ -464,6 +464,9 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	dialog_content += "<td>Window Size</td>";
 	dialog_content += "<td><input type='text' dojoType='dijit.form.TextBox' id='configure_test_window_size' size='10' value='"+window_size+"''/></td><td>Megabytes</td>";
 	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>TOS bits (Enter value between 0 to 255)</td><td><input type='text' dojoType='dijit.form.NumberTextBox' data-dojo-props='constraints:{min:0,max:255}' id='configure_test_tos_bits' size='10' value='"+tos_bits+"' /></td>";
+	dialog_content += "</tr>";
 
 	dialog_content += "</table>";
 	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_save'>"+action+"</button>";
@@ -494,7 +497,9 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 											var window_size = dijit.byId('configure_test_window_size').attr('value');
 											var udp_bandwidth = dijit.byId('configure_test_udp_bandwidth').attr('value');
 											test_interval *= test_interval_unit;
-											modify_psb_bwctl_test(test_id, description, test_duration, test_interval, tool, protocol, window_size, udp_bandwidth);
+											var tos_bits = dijit.byId('configure_test_tos_bits').attr('value');
+											console.log ("TOSBit Value:"+tos_bits);
+											modify_psb_bwctl_test(test_id, description, test_duration, test_interval, tool, protocol, window_size, udp_bandwidth, tos_bits);
 											dijit.byId('add_test_dialog').hide();
 										},
 										test_id)

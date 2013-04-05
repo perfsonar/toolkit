@@ -633,7 +633,7 @@ sub show_test {
 }
 
 sub add_bwctl_throughput_test {
-    my ($description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth) = @_;
+    my ($description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits) = @_;
 
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_bwctl_throughput(
@@ -646,6 +646,7 @@ sub add_bwctl_throughput_test {
             duration      => $duration,
             window_size   => $window_size,
             udp_bandwidth => $udp_bandwidth,
+            tos_bits       => $tos_bits
         }
     );
 
@@ -735,7 +736,7 @@ sub update_bwctl_test_port_range {
 }
 
 sub update_bwctl_throughput_test {
-    my ($id, $description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth) = @_;
+    my ($id, $description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits) = @_;
 
     my ( $status, $res );
 
@@ -746,6 +747,7 @@ sub update_bwctl_throughput_test {
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, protocol => $protocol } );
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, udp_bandwidth => $udp_bandwidth } );
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, window_size => $window_size } );
+     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, tos_bits => $tos_bits } );
 
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";

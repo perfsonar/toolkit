@@ -121,6 +121,11 @@ BWUDPBandwidthLimit             [% test_spec.udp_bandwidth %]
 [% IF test_spec.buffer_length.defined %]
 BWBufferLength			[% test_spec.buffer_length %]
 [% END %]
+
+[% IF test_spec.tosbits.defined %]
+BWTosBits             [% test_spec.tosbits %]
+[% END %]
+
 [% END %]
 </TESTSPEC>
 [% END %]
