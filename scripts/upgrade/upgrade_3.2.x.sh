@@ -82,4 +82,8 @@ if [ -z "$OWMESH_OWP_TESTPORTS" ]; then
     echo "OWPTestPorts     8760-8960" >> /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf
 fi
 
+#Reload LD cache
+ldconfig
+
+
 
