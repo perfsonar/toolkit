@@ -236,6 +236,7 @@ templates/config/motd.tmpl
 templates/config/ntp_conf.tmpl
 templates/config/owmesh_conf.tmpl
 templates/config/tcpbw100_html.tmpl
+web/root/admin/administrative_info/data/countries.csv
 web/root/admin/administrative_info/etc/.htaccess
 web/root/admin/administrative_info/etc/logger.conf
 web/root/admin/administrative_info/etc/web_admin.conf
