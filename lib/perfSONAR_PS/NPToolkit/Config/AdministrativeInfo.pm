@@ -132,6 +132,8 @@ sub save {
     }
 
     foreach my $service_config ($pinger_config, $psb_ma_config, $snmp_ma_config, $traceroute_ma_config, $ls_reg_daemon_config) {
+        $service_config->set_administrator_email( administrator_email => $self->{ADMINISTRATOR_EMAIL} );
+        $service_config->set_administrator_name( administrator_name => $self->{ADMINISTRATOR_NAME} );
         $service_config->set_city( city => $self->{CITY} );
         $service_config->set_state( state => $self->{REGION} );
         $service_config->set_country( country => $self->{COUNTRY} );
