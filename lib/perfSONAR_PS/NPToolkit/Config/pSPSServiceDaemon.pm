@@ -21,7 +21,7 @@ use Template;
 
 use base 'perfSONAR_PS::NPToolkit::Config::Base';
 
-use fields 'CONFIG_FILE', 'SERVICE_NAME', 'ORGANIZATION_NAME', 'LOCATION', 'EXTERNAL_ADDRESS', 'EXTERNAL_ADDRESS_IF_NAME','EXTERNAL_ADDRESS_IPV4','EXTERNAL_ADDRESS_IPV6','PROJECTS', 'LS_REGISTRATION_INTERVAL', 'CITY', 'REGION', 'COUNTRY', 'ZIP_CODE','LATITUDE','LONGITUDE';
+use fields 'CONFIG_FILE', 'SERVICE_NAME', 'ORGANIZATION_NAME', 'LOCATION', 'EXTERNAL_ADDRESS', 'EXTERNAL_ADDRESS_IF_NAME','EXTERNAL_ADDRESS_IPV4','EXTERNAL_ADDRESS_IPV6','PROJECTS', 'LS_REGISTRATION_INTERVAL', 'CITY', 'REGION', 'COUNTRY', 'ZIP_CODE','LATITUDE','LONGITUDE', 'ADMINISTRATOR_NAME', 'ADMINISTRATOR_EMAIL';
 
 use Params::Validate qw(:all);
 use Storable qw(store retrieve freeze thaw dclone);
@@ -204,6 +204,28 @@ sub get_projects {
     my $parameters = validate( @params, { } );
 
     return $self->{PROJECTS};
+}
+
+=head2 get_administrator_email({ location => 1 })
+Returns the administrator email of the service to advertise in the gLS
+=cut
+
+sub get_administrator_email {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{ADMINISTRATOR_EMAIL};
+}
+
+=head2 get_administrator_name({ location => 1 })
+Returns the administrator name of the service to advertise in the gLS
+=cut
+
+sub get_administrator_name {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { } );
+
+    return $self->{ADMINISTRATOR_NAME};
 }
 
 =head2 get_ls_registration_interval({ })
@@ -421,6 +443,36 @@ sub set_projects {
     return 0;
 }
 
+=head2 set_administrator_name({ administrator_name => 1 })
+Sets the administrator's name
+=cut
+
+sub set_administrator_name {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { administrator_name => 1, } );
+
+    my $admin_name = $parameters->{administrator_name};
+
+    $self->{ADMINISTRATOR_NAME} = $admin_name;
+
+    return 0;
+}
+
+=head2 set_administrator_email({ administrator_email => 1 })
+Sets the administrator's email 
+=cut
+
+sub set_administrator_email {
+    my ( $self, @params ) = @_;
+    my $parameters = validate( @params, { administrator_email => 1, } );
+
+    my $admin_email = $parameters->{administrator_email};
+
+    $self->{ADMINISTRATOR_EMAIL} = $admin_email;
+
+    return 0;
+}
+
 =head2 last_modified()
     Returns when the site information was last saved.
 =cut
@@ -526,6 +578,16 @@ sub save {
                         {
                             cv => "ls_registration_interval",
                             lv => "LS_REGISTRATION_INTERVAL",
+                            ov => [],
+                        },
+                        {
+                            cv => "full_name",
+                            lv => "ADMINISTRATOR_NAME",
+                            ov => [],
+                        },
+                        {
+                            cv => "administrator_email",
+                            lv => "ADMINISTRATOR_EMAIL",
                             ov => [],
                         }
                     );
@@ -714,6 +776,8 @@ sub reset_state {
     $self->{EXTERNAL_ADDRESS_IPV6}  = $self->psps_config_find_variable({ config => $config, variable => "external_address_ipv6" });
     $self->{ORGANIZATION_NAME} = $self->psps_config_find_variable({ config => $config, variable => "site_name" });
     $self->{LOCATION}          = $self->psps_config_find_variable({ config => $config, variable => "site_location" });
+    $self->{ADMINISTRATOR_NAME} = $self->psps_config_find_variable({ config => $config, variable => "full_name" });
+    $self->{ADMINISTRATOR_EMAIL} = $self->psps_config_find_variable({ config => $config, variable => "administrator_email" });
     $self->{PROJECTS}          = $self->psps_config_find_variable({ config => $config, variable => "site_project" });
     if ($self->{PROJECTS} and ref($self->{PROJECTS}) ne "ARRAY") {
         $self->{PROJECTS} = [ $self->{PROJECTS} ];
@@ -762,6 +826,8 @@ sub save_state {
         external_address_ipv4       => $self->{EXTERNAL_ADDRESS_IPV4},
         external_address_ipv6       => $self->{EXTERNAL_ADDRESS_IPV6},
         projects                    => $self->{PROJECTS},
+        administrator_name          => $self->{ADMINISTRATOR_NAME},
+        administrator_email         => $self->{ADMINISTRATOR_EMAIL},
     );
 
     my $str = freeze( \%state );
@@ -784,6 +850,8 @@ sub restore_state {
     $self->{SERVICE_NAME}                = $state->{service_name};
     $self->{ORGANIZATION_NAME}           = $state->{organization_name};
     $self->{LOCATION}                    = $state->{location};
+    $self->{ADMINISTRATOR_NAME}          = $state->{administrator_name};
+    $self->{ADMINISTRATOR_EMAIL}         = $state->{administrator_email};
     $self->{PROJECTS}                    = $state->{projects};
     $self->{EXTERNAL_ADDRESS}            = $state->{external_address};
     $self->{EXTERNAL_ADDRESS_IF_NAME}    = $state->{external_address_if_name};

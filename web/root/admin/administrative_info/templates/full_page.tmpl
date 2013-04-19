@@ -25,8 +25,16 @@ function handle_modify_host_information() {
 	var country = dijit.byId('modify_host_information_host_country').attr('displayedValue');
         console.log(country);
 	var zipcode = dijit.byId('modify_host_information_host_zipcode').attr('value');
-	var latitude = dijit.byId('modify_host_information_host_latitude').attr('value');
-	var longitude = dijit.byId('modify_host_information_host_longitude').attr('value');
+	var latitude = '';
+	if(dijit.byId('modify_host_information_host_latitude').isValid() &&
+	    !isNaN(dijit.byId('modify_host_information_host_latitude').attr('value'))){
+	    latitude = dijit.byId('modify_host_information_host_latitude').attr('value');
+	}
+	var longitude = '';
+	if(dijit.byId('modify_host_information_host_longitude').isValid() &&
+	    !isNaN(dijit.byId('modify_host_information_host_longitude').attr('value'))){
+	    longitude = dijit.byId('modify_host_information_host_longitude').attr('value');
+	}
 	var organization_name = dijit.byId('modify_host_information_organization_name').attr('value');
 	var administrator_email = dijit.byId('modify_host_information_administrator_email').attr('value');
 	var administrator_name = dijit.byId('modify_host_information_administrator_name').attr('value');
@@ -129,7 +137,7 @@ Country (Please enter ISO3166 2 letter country codes. Eg: US, UK, IN)
 </tr>
 <tr>
 <td>
-ZipCode
+Zip Code
 </td>
 <td>
 <input dojoType="dijit.form.TextBox" type="text" id="modify_host_information_host_zipcode" size="20" />
@@ -157,7 +165,7 @@ Administrator Email
 Latitude (Range: -90 to 90. Eg: -32.45, 40.23)
 </td>
 <td>
-<input dojoType="dijit.form.NumberTextBox" type="text" id="modify_host_information_host_latitude" data-dojo-props="constraints:{min:-90,max:90, pattern: '00.00;-00.00'}",size="20" />
+<input dojoType="dijit.form.NumberTextBox" type="text" id="modify_host_information_host_latitude" data-dojo-props="constraints:{min:-90,max:90, pattern: '##.##;-##.##'}",size="20" />
 </td>
 </tr>
 <tr>
@@ -165,7 +173,7 @@ Latitude (Range: -90 to 90. Eg: -32.45, 40.23)
 Longitude (Range: -180 to 180. Eg: -92.45, 140.23)
 </td>
 <td>
-<input dojoType="dijit.form.NumberTextBox" type="text" id="modify_host_information_host_longitude" data-dojo-props="constraints:{min:-180,max:180, pattern: '000.00;-000.00'}" size="20" />
+<input dojoType="dijit.form.NumberTextBox" type="text" id="modify_host_information_host_longitude" data-dojo-props="constraints:{min:-180,max:180, pattern: '###.##;-###.##'}" size="20" />
 </td>
 </tr>
 </table>
