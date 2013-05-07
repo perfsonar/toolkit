@@ -10,9 +10,13 @@ grep ^local5 /etc/rsyslog.d/owamp_bwctl-syslog.conf &> /dev/null
 if [ $? != 0 ]; then
 cat >> /etc/rsyslog.d/owamp_bwctl-syslog.conf <<EOF                                          
 # Save bwctl and owamp messages to /var/log/perfsonar/owamp_bwctl.log
-local5.*                                                /var/log/perfsonar/owamp_bwctl.log
+local5.*                                                -/var/log/perfsonar/owamp_bwctl.log
 EOF
 fi
+
+# Disable sync on /var/log/messages to save IO
+sed 's/\/var\/log\/messages/-\/var\/log\/messages/g' /etc/rsyslog.conf > /etc/rsyslog.conf.tmp
+mv /etc/rsyslog.conf.tmp /etc/rsyslog.conf
 
 # Make sure that the owamp/bwctl log file gets rotated regularly
 grep owamp_bwctl.log /etc/logrotate.d/syslog &> /dev/null
