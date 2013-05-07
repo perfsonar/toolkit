@@ -18,6 +18,7 @@
 %define crontab_2     cron-cacti_local
 %define crontab_3     cron-owamp_cleaner
 %define crontab_4     cron-save_config
+%define crontab_5     cron-db_cleaner 
 
 %define relnum 8 
 %define disttag pSPS
@@ -221,6 +222,7 @@ install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_2} %{buildroot}/etc/cron.d/%{crontab_2}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 install -D -m 0600 scripts/%{crontab_4} %{buildroot}/etc/cron.d/%{crontab_4}
+install -D -m 0600 scripts/%{crontab_5} %{buildroot}/etc/cron.d/%{crontab_5}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 
@@ -238,6 +240,7 @@ rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_2}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_4}
+rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_5}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 
 %clean
@@ -250,6 +253,13 @@ mkdir -p /var/log/perfsonar/web_admin
 chown apache:perfsonar /var/log/perfsonar/web_admin
 mkdir -p /var/log/cacti
 chown apache /var/log/cacti
+
+mkdir -p /var/lib/perfsonar/db_backups/bwctl
+chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/bwctl
+mkdir -p /var/lib/perfsonar/db_backups/owamp
+chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/owamp
+mkdir -p /var/lib/perfsonar/db_backups/traceroute
+chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/traceroute
 
 #Make sure root is in the wheel group for fresh install. If upgrade, keep user settings
 if [ $1 -eq 1 ] ; then
@@ -376,6 +386,7 @@ done
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 %attr(0644,root,root) /etc/cron.d/%{crontab_2}
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
+%attr(0644,root,root) /etc/cron.d/%{crontab_5}
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/jowping/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
@@ -409,6 +420,9 @@ done
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_5}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cacti_toolkit_init.sql
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_bwctl.sh
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_owamp.sh
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_traceroute.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/discover_external_address
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/get_enabled_services
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_cacti_database

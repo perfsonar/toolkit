@@ -176,8 +176,12 @@ scripts/NPToolkit.version
 scripts/apache-toolkit_web_gui.conf
 scripts/cacti_toolkit_init.sql
 scripts/clean_owampd
+scripts/cleanupdb_bwctl.sh
+scripts/cleanupdb_owamp.sh
+scripts/cleanupdb_traceroute.sh
 scripts/create_backing_store
 scripts/cron-cacti_local
+scripts/cron-db_cleaner
 scripts/cron-owamp_cleaner
 scripts/cron-save_config
 scripts/cron-service_watcher
