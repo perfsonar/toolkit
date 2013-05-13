@@ -739,7 +739,7 @@ function display_add_new_host_dialog(test_id, test_type) {
 		}
 		dialog_content += "<tr>";
 		dialog_content += "<td>Port</td>";
-		dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='The minimum port is 1, and the maxim is 65536.' constraints='{min:1,max:65536}' id='dialog_test_add_host_port' size='10' value='"+port+"''/></td>";
+		dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='The minimum port is 1, and the maximum is 65536.' constraints=\"{min:1,max:65536,pattern:'\#'}\" id='dialog_test_add_host_port' size='10' value='"+port+"''/></td>";
 		dialog_content += "</tr>";
 	}
 
