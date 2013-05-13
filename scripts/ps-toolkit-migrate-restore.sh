@@ -230,6 +230,10 @@ if [ "$?" != "0" ]; then
     echo "Unable to restore /var/lib/cacti"
     exit 1
 fi
+for i in `find /var/lib/cacti -name \*.xml`; do rrdtool restore $i `echo $i |sed s/.xml//g`; rm $i; done
+if [ "$?" != "0" ]; then
+    echo "WARN: No cacti databases restored."
+fi
 printf "[SUCCESS]"
 echo ""
 

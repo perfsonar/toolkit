@@ -160,6 +160,11 @@ if [ "$?" != "0" ]; then
     echo "Unable to copy /var/lib/cacti"
     exit 1
 fi
+#dump rrd data so we can support 32-bit to 64-bit conversions
+for i in `find $TEMP_BAK_DIR/var/lib/cacti -name \*.rrd`; do rrdtool dump $i > $i.xml; rm -f $i; done
+if [ "$?" != "0" ]; then
+    echo "WARN: No cacti databases backed-up."
+fi
 printf "[SUCCESS]"
 echo ""
 
