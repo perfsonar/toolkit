@@ -2,5 +2,5 @@
 #
 # Echos NPToolkit version and exits
 
-echo -n "3.3rc3"
+echo -n "3.3rc4"
 exit 0
