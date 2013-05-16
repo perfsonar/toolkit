@@ -1,0 +1,24 @@
+This directory contains scripts used to generate a custom dojo build. The script will 
+download the specified version of thw dojo toolkit, then build a single file with the 
+packages required by perfSOANR as specited in the ps-toolkit-profile.js file. It will tar 
+that file up with the remainder of the dojo toolkit. It includes the other files so that
+dojo may find any files missed by the includes. Over time, the profile should be updated 
+to include this missing files. This file outlines a few basic tasks that can be done with the scripts.
+
+====================================================================
+Upgrading to a new dojo Version
+====================================================================
+1. Open the file build.sh in a text editor
+2. Change the DOJO_VERSION variable to the new version you want to download.
+3. Save your change
+3. Run build.sh
+4. Commit your changes to svn
+
+====================================================================
+Adding/removing packages to/from the custom build
+====================================================================
+1. Open the file ps-toolkit-profile.js
+2. Update the "dependecies" secion with the required changes
+3. Save your changes
+4. Run build.sh
+5. Commit your changes to svn
