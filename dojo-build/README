@@ -1,6 +1,6 @@
 This directory contains scripts used to generate a custom dojo build. The script will 
 download the specified version of thw dojo toolkit, then build a single file with the 
-packages required by perfSOANR as specited in the ps-toolkit-profile.js file. It will tar 
+packages required by perfSONAR as specited in the ps-toolkit-profile.js file. It will tar 
 that file up with the remainder of the dojo toolkit. It includes the other files so that
 dojo may find any files missed by the includes. Over time, the profile should be updated 
 to include this missing files. This file outlines a few basic tasks that can be done with the scripts.

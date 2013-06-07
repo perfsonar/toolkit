@@ -20,7 +20,7 @@
 %define crontab_4     cron-save_config
 %define crontab_5     cron-db_cleaner 
 
-%define relnum 13 
+%define relnum 14 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -175,8 +175,7 @@ implementation.
 Summary:		pS-Performance Toolkit NetInstall System Configuration
 Group:			Development/Tools
 Requires:		perl-perfSONAR_PS-Toolkit
-#Requires(post):	Internet2-repo
-Requires(post):	Internet2-epel6-repo
+Requires(post):	Internet2-repo
 Requires(post):	bwctl-server
 Requires(post):	owamp-server
 
