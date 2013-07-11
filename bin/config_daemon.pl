@@ -85,13 +85,8 @@ my $logger;
 if ( not defined $LOGGER_CONF or $LOGGER_CONF eq q{} ) {
     use Log::Log4perl qw(:easy);
 
-    my $output_level = $INFO;
-    if ( $DEBUGFLAG ) {
-        $output_level = $DEBUG;
-    }
-
     my %logger_opts = (
-        level  => $output_level,
+        level  => $INFO,
         layout => '%d (%P) %p> %F{1}:%L %M - %m%n',
     );
 
@@ -100,29 +95,15 @@ if ( not defined $LOGGER_CONF or $LOGGER_CONF eq q{} ) {
     }
 
     Log::Log4perl->easy_init( \%logger_opts );
-    $logger = get_logger( "perfSONAR_PS" );
 }
 else {
     use Log::Log4perl qw(get_logger :levels);
 
-    my $output_level = $INFO;
-    if ( $DEBUGFLAG ) {
-        $output_level = $DEBUG;
-    }
-
-    my %logger_opts = (
-        level  => $output_level,
-        layout => '%d (%P) %p> %F{1}:%L %M - %m%n',
-    );
-
-    if ( $LOGOUTPUT ) {
-        $logger_opts{file} = $LOGOUTPUT;
-    }
-
     Log::Log4perl->init( $LOGGER_CONF );
-    $logger = get_logger( "perfSONAR_PS" );
-    $logger->level( $output_level ) if $output_level;
 }
+
+$logger = get_logger( "perfSONAR_PS" );
+$logger->level( $DEBUG ) if $DEBUGFLAG;
 
 # Before daemonizing, set die and warn handlers so that any Perl errors or
 # warnings make it into the logs.
