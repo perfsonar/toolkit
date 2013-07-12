@@ -42,6 +42,7 @@ init_scripts/configure_nic_parameters
 init_scripts/discover_external_address
 init_scripts/generate_cert_init_script
 init_scripts/generate_motd
+init_scripts/livecd_net_config
 init_scripts/mount_scratch_overlay
 init_scripts/services_init_script
 init_scripts/toolkit_config
@@ -193,6 +194,7 @@ scripts/initialize_perfsonarbuoy_bwctl_database
 scripts/initialize_perfsonarbuoy_owamp_database
 scripts/initialize_pinger_database
 scripts/initialize_traceroute_ma_database
+scripts/livecd_net_config.sh
 scripts/manage_users
 scripts/nptoolkit-configure.py
 scripts/pinger_toolkit_init.sql
