@@ -2,7 +2,7 @@
 #
 # Init file to detect network interfaces and install DHCP config
 #
-# chkconfig: 2345 90 01
+# chkconfig: 2345 14 01
 # description: Init file to detect network interfaces and install DHCP config
 #
 
