@@ -157,7 +157,7 @@ if ( $cgi->param( 'key' ) and $cgi->param( 'url' ) ) {
             $title = "Observed Round-Trip Time";
         }
 
-        print "    <script type=\"text/javascript\" src=\"http://www.google.com/jsapi\"></script>\n";
+        print "    <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n";
         print "    <script type=\"text/javascript\">\n";
         print "      google.load(\"visualization\", \"1\", {packages:[\"annotatedtimeline\"]});\n";
         print "      google.setOnLoadCallback(drawChart);\n";
