@@ -234,6 +234,7 @@ install -D -m 0755 init_scripts/%{init_script_5} %{buildroot}/etc/init.d/%{init_
 install -D -m 0755 init_scripts/%{init_script_6} %{buildroot}/etc/init.d/%{init_script_6}
 install -D -m 0755 init_scripts/%{init_script_7} %{buildroot}/etc/init.d/%{init_script_7}
 install -D -m 0755 init_scripts/%{init_script_8} %{buildroot}/etc/init.d/%{init_script_8}
+install -D -m 0755 init_scripts/%{init_script_9} %{buildroot}/etc/init.d/%{init_script_9}
 
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
@@ -456,6 +457,7 @@ done
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_6}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_7}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_8}
+%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_9}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/create_backing_store
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/restore_config
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/save_config
