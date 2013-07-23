@@ -11,6 +11,7 @@ etc/backingstore.conf.d/home.conf
 etc/backingstore.conf.d/initialize_environment.conf
 etc/backingstore.conf.d/logs.conf
 etc/backingstore.conf.d/ls_registration_daemon.conf
+etc/backingstore.conf.d/mesh_config.conf
 etc/backingstore.conf.d/mysql.conf
 etc/backingstore.conf.d/ndt.conf
 etc/backingstore.conf.d/npad.conf
