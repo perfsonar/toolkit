@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>SNMP Query XML Syntax</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Data Queries"
+HREF="data_queries.html"><LINK
+REL="PREVIOUS"
+TITLE="Data Queries"
+HREF="data_queries.html"><LINK
+REL="NEXT"
+TITLE="Script Query XML Syntax"
+HREF="script_query_xml.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="data_queries.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 12. Data Queries</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="script_query_xml.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SNMP_QUERY_XML"
+>SNMP Query XML Syntax</A
+></H1
+><PRE
+CLASS="PROGRAMLISTING"
+>&lt;query&gt;
+   &lt;name&gt;Get SNMP Interfaces&lt;/name&gt;
+   &lt;description&gt;Queries a host for a list of monitorable interfaces&lt;/description&gt;
+   &lt;oid_uptime&gt;.1.3.x.x.x&lt;/oid_uptime&gt;
+   &lt;oid_index&gt;.1.3.6.1.2.1.2.2.1.1&lt;/oid_index&gt;
+   &lt;oid_index_parse&gt;OID/REGEXP:.*\.([0-9]{1,3}\.[0-9]{1,3})$&lt;/oid_index_parse&gt;
+   &lt;oid_num_indexes&gt;.1.3.6.1.2.1.2.1.0&lt;/oid_num_indexes&gt;
+   &lt;index_order&gt;ifDescr:ifName:ifIndex&lt;/index_order&gt;
+   &lt;index_order_type&gt;numeric&lt;/index_order_type&gt;
+   &lt;index_title_format&gt;|chosen_order_field|&lt;/index_title_format&gt;
+
+   &lt;fields&gt;
+      &lt;ifIndex&gt;
+         &lt;name&gt;Index&lt;/name&gt;
+         &lt;method&gt;walk&lt;/method&gt;
+         &lt;source&gt;value&lt;/source&gt;
+         &lt;direction&gt;input&lt;/direction&gt;
+         &lt;oid&gt;.1.3.6.1.2.1.2.2.1.1&lt;/oid&gt;
+      &lt;/ifIndex&gt;
+   &lt;/fields&gt;
+&lt;/query&gt;</PRE
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1365"
+></A
+><P
+><B
+>Table 12-3. SNMP Query XML Field Reference</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="2*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Field</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>query-&gt;name</TD
+><TD
+>(Optional) You can enter a "friendly name" for the SNMP query here. It will not be used by Cacti, and is for identification only.</TD
+></TR
+><TR
+><TD
+>query-&gt;description</TD
+><TD
+>(Optional) You can enter a description for the SNMP query here. It will not be used by Cacti, and is for identification only.</TD
+></TR
+><TR
+><TD
+>query-&gt;oid_uptime</TD
+><TD
+><P
+>New with 0.8.7: If you have another OID that contains timetics, say for example a Java VM.  Then, you can create a data query that specifies an alternate Uptime OID.  To implement this for a data query, simply add the oid_uptime
+							XML parameter to your XML file.  Then, if you select your re-index method to be Uptime Goes Backaward, Cacti will use that OID to detect whether it is time to re-index the host instead  of the standard snmp OID for uptime.</P
+></TD
+></TR
+><TR
+><TD
+>query-&gt;oid_index</TD
+><TD
+><P
+>Every SNMP query must have an OID that represents the index values for the query when walked. As described above, any data query in Cacti must contain a field that uniquely identifies each row returned by the query. In the example above, the oid_index points to the OID of ifIndex in the interface MIB.</P
+><P
+><B
+CLASS="EMPHASIS"
+>Note:</B
+> Starting with version 0.8.6c, Cacti is able to parse unique indexes from the OID itself. While the regular expression used for parsing the value from the OID is defined below, you must still specify an OID that can be walked by Cacti in order to obtain the list of OID's. Any OID defined for one of your input fields should work in this case. The values returned from the snmpwalk walk will be completely disregarded.</P
+></TD
+></TR
+><TR
+><TD
+>query-&gt;oid_index_parse</TD
+><TD
+>This field should only be used if you are trying to parse the unique index from the OID itself. If this field is defined, to obtain a list of indexes, Cacti walks the OID provided in the <SPAN
+CLASS="PROPERTY"
+>oid_index</SPAN
+> field above. It then applies the regular expression provided in this field to the list of OID's that are returned. The matched substrings that remain become the list of indexes for this SNMP query.</TD
+></TR
+><TR
+><TD
+>query-&gt;oid_num_indexes</TD
+><TD
+>An OID that can be queried to determine the total number of available indexes. If specified, this will be used to determine when to automatically recache this SNMP query when it is attached to a device.</TD
+></TR
+><TR
+><TD
+>query-&gt;index_order</TD
+><TD
+>As of version 0.8.6, Cacti will attempt to find the best field to index off of based on whether each row in the query is unique and non-null. If specified, Cacti will perform this check on the fields listed here in the order specified. Only input fields can be specified and multiple fields should be delimited with a colon.</TD
+></TR
+><TR
+><TD
+>query-&gt;index_order_type</TD
+><TD
+><P
+>For sorting purposes, specify whether the index is numeric or alphanumeric.</P
+><P
+><CODE
+CLASS="PARAMETER"
+>numeric</CODE
+>: The indexes in this SNMP query are to be sorted numerically (ie. 1,2,3,10,20,31)</P
+><P
+><CODE
+CLASS="PARAMETER"
+>alphabetic</CODE
+>: The indexes in this SNMP query are to be sorted alphabetically (1,10,2,20,3,31).</P
+></TD
+></TR
+><TR
+><TD
+>query-&gt;index_title_format</TD
+><TD
+>Specify the title format to use when representing an index to the user. Any input field name can be used as a variable if enclosed in pipes (|). The variable <CODE
+CLASS="PARAMETER"
+>|chosen_order_field|</CODE
+> will be substituted with the field chosen by Cacti to index off of (see index_order above).</TD
+></TR
+><TR
+><TD
+>query-&gt;fields</TD
+><TD
+>Each field contained within the SNMP query must be defined under this tag.</TD
+></TR
+><TR
+><TD
+>query-&gt;fields-&gt;ifIndex</TD
+><TD
+>Each defined field in the SNMP query must have a unique name given to it. Do not use spaces or any non-alphanumeric characters, this name must be identifiable within Cacti.</TD
+></TR
+><TR
+><TD
+>query-&gt;fields-&gt;ifIndex-&gt;name</TD
+><TD
+>Here you can specify a "friendly name" for the field. This name will be used by Cacti to help the user identify this field.</TD
+></TR
+><TR
+><TD
+>query-&gt;fields-&gt;ifIndex-&gt;method</TD
+><TD
+><P
+>Tell Cacti how you want it to gather SNMP information for this field.</P
+><P
+><CODE
+CLASS="PARAMETER"
+>get</CODE
+>: The 'get' method performs an snmpget for the OID specified for this field appended by the index values derived from &lt;oid_index&gt;/&lt;oid_index_parse&gt;.</P
+><P
+><CODE
+CLASS="PARAMETER"
+>walk</CODE
+>: The 'walk' method does a walk of the OID specified for this field.</P
+><P
+>If all OIDs belong to the same SNMP table, both methods will return the same values, even though the 'walk' method is typically more efficient.</P
+></TD
+></TR
+><TR
+><TD
+>query-&gt;fields-&gt;ifIndex-&gt;source</TD
+><TD
+><P
+>When Cacti obtains a list for this field, you need to tell it how to derive its value for each row.</P
+><P
+><CODE
+CLASS="PARAMETER"
+>value</CODE
+>: The 'value' option simply returns the result of the snmpget for each row.</P
+><P
+><CODE
+CLASS="PARAMETER"
+>OID/REGEXP:(regexp_match)</CODE
+>: The 'OID/REGEXP:(regexp_match)' can be used when you need to use a POSIX-based regular expression to derive the value from the OID. The most common example of this is to retreive the IP address of an interface, and can be seen in the 'interface.xml' file.</P
+><P
+><CODE
+CLASS="PARAMETER"
+>VALUE/REGEXP:(regexp_match)</CODE
+>: The 'OID/REGEXP:(regexp_match)' option can be used to parse the value based on a regular expression, returning the first match.</P
+><P
+><CODE
+CLASS="PARAMETER"
+>index</CODE
+>: Simply use the value of the index for this row as the value. If the index is being parsed from the OID using the <SPAN
+CLASS="PROPERTY"
+>oid_index_parse</SPAN
+> field, you must specify <CODE
+CLASS="PARAMETER"
+>index</CODE
+> here. Omit the &lt;oid&gt;...&lt;/oid&gt; field, then.</P
+></TD
+></TR
+><TR
+><TD
+>query-&gt;fields-&gt;ifIndex-&gt;direction</TD
+><TD
+><P
+><CODE
+CLASS="PARAMETER"
+>input</CODE
+>: Input values are the "known" values that you will use to derive the output values, this is where the "query" part of SNMP query comes in. When you create a graph based on an SNMP query, Cacti will prompt you to choose the input value to base the graph on.</P
+><P
+><CODE
+CLASS="PARAMETER"
+>output</CODE
+>: Output values are "unknown" values that are returned from the script. An SNMP query may return multiple statistics for a single index. For instance, a single interface could return bytes/sec in, errors, packets/sec, etc.</P
+><P
+>A rule of thumb is that input fields contain semi-static data that is not graphable, while the output fields contain the data that will be graphed.</P
+></TD
+></TR
+><TR
+><TD
+>query-&gt;fields-&gt;ifIndex-&gt;oid</TD
+><TD
+>You must specify the actual OID that corresponds with the field. Each value for this field can be obtained by doing an snmpget on 'oid.(each)snmpindex'.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="data_queries.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="script_query_xml.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Data Queries</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="data_queries.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Script Query XML Syntax</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

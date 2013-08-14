@@ -1,0 +1,1197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Installing Under Windows</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installation"
+HREF="installation.html"><LINK
+REL="PREVIOUS"
+TITLE="Apply Patches"
+HREF="unix_apply_patches.html"><LINK
+REL="NEXT"
+TITLE="Upgrading Cacti"
+HREF="upgrade.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="unix_apply_patches.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="upgrade.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="INSTALL_WINDOWS"
+></A
+>Chapter 3. Installing Under Windows</H1
+><P
+></P
+><P
+><B
+>Software Components Required</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					(Optional) Apache&#62; - This software is optional if running Windows Internet Information Server.
+				</P
+></LI
+><LI
+><P
+>					Cacti - Install from the zip distribution and install in the web root or your choice.
+					Many choose to install into a "Cacti" sub folder.
+				</P
+></LI
+><LI
+><P
+>					Spine - Install from the zip distribution into the <TT
+CLASS="FILENAME"
+>c:\cacti</TT
+>
+					directory.  Make sure your <TT
+CLASS="FILENAME"
+>spine.conf.dist</TT
+> is located in that directory as well.
+				</P
+></LI
+><LI
+><P
+>					RRDTool - Install from the Cacti website.  Install it into the <TT
+CLASS="FILENAME"
+>c:\cacti</TT
+> directory.
+				</P
+></LI
+><LI
+><P
+>					PHP 5.x - Install into the <TT
+CLASS="FILENAME"
+>c:\php</TT
+> folder.  If you choose
+					to install into <TT
+CLASS="FILENAME"
+>c:\Program Files\php</TT
+>, you will have to use 8.3 filenames
+					to reference it's binaries in Cacti.
+				</P
+></LI
+><LI
+><P
+>					MySQL 5.x - Install into the default location.  This is typically
+					<TT
+CLASS="FILENAME"
+>c:\Program Files\MySQL\MySQL Server X.XX</TT
+>.
+				</P
+></LI
+><LI
+><P
+>					(Optional) Cygwin - Download and execute <TT
+CLASS="FILENAME"
+>setup.exe</TT
+> from the Cygwin
+					website.  Keep the <TT
+CLASS="FILENAME"
+>setup.exe</TT
+> file for later use.
+				</P
+></LI
+><LI
+><P
+>					(Optional) Net-SNMP - Install to the <TT
+CLASS="FILENAME"
+>c:\net-snmp</TT
+> directory.  If you
+					choose to use <TT
+CLASS="FILENAME"
+>c:\Program Files\net-snmp</TT
+> you will have tu use 8.3 filenames
+					to reference it's binaries in Cacti.
+				</P
+></LI
+></OL
+><P
+></P
+><P
+><B
+>Configure PHP</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					Add the following directory to the existing Windows System <KBD
+CLASS="USERINPUT"
+>PATH</KBD
+> environment variable:
+					<TT
+CLASS="FILENAME"
+>c:\php</TT
+>.  The Windows path can be accessed via the Control Panel at: System |
+					Advanced | Environment Variables | System Variables.
+				</P
+></LI
+><LI
+><P
+>					Add the following directory to a new Windows System environment variable called <KBD
+CLASS="USERINPUT"
+>PHPRC</KBD
+>:
+					<TT
+CLASS="FILENAME"
+>c:\php</TT
+>.
+				</P
+></LI
+><LI
+><P
+>					Add a new Windows System environment variable called <KBD
+CLASS="USERINPUT"
+>MIBDIRS</KBD
+>
+					set it to <TT
+CLASS="FILENAME"
+>c:\php\extras\mibs</TT
+>
+				</P
+></LI
+><LI
+><P
+>					Rename the file <TT
+CLASS="FILENAME"
+>c:\php\php.ini.dist</TT
+> to <TT
+CLASS="FILENAME"
+>php.ini</TT
+>, and make the
+					following changes to it:
+				</P
+><P
+>					Uncomment the following lines.
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>extension_dir = c:\php\ext
+extension=php_mysql.dll
+extension=php_snmp.dll
+extension=php_sockets.dll
+cgi.force_redirect = 0</KBD
+></PRE
+></LI
+><LI
+><P
+>					In earlier installation guides to PHP, they recommended moving certain DLL's to the <TT
+CLASS="FILENAME"
+>					c:\winnt\system32</TT
+> directory.  If so, you will have to remove those files.  Please
+					review the PHP installation documentation for instructions on removing those files.
+				</P
+></LI
+><LI
+><P
+>					If you want to allow template importing, uncomment the following line:
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>file_uploads = On</KBD
+></PRE
+></LI
+><LI
+><P
+>					Give the user who will be running the scheduled task, modify rights to the <TT
+CLASS="FILENAME"
+>.index</TT
+>
+					file in the location pointed to by the <KBD
+CLASS="USERINPUT"
+>MIBDIRS</KBD
+> Windows System environment variable.
+				</P
+></LI
+></OL
+><P
+></P
+><P
+><B
+>Configure the Webserver (Apache)</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					Make sure you have stopped any IIS web servers before you proceed with Apache installation, or make
+					sure Apache is configured on an alternate port.
+				</P
+></LI
+><LI
+><P
+>					If using Apache 2.x and PHP 5, then add the following lines.
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>LoadModule php5_module c:\php\php5apache2.dll
+AddType application/x-httpd-php .php
+DirectoryIndex index.html index.htm index.php</KBD
+></PRE
+></LI
+></OL
+><P
+></P
+><P
+><B
+>Configure the Webserver (IIS)</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					Start the Internet Information Services (IIS) Manager, right click on the <SPAN
+CLASS="GUILABEL"
+>Default Web Site</SPAN
+> (in most cases) and select <SPAN
+CLASS="GUILABEL"
+>Properties</SPAN
+>.
+				</P
+></LI
+><LI
+><P
+>					Under the <SPAN
+CLASS="GUILABEL"
+>Home Directory</SPAN
+> tab, select <SPAN
+CLASS="GUILABEL"
+>Configuration</SPAN
+>
+					and click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+>. Browse to the path of <TT
+CLASS="FILENAME"
+>php4isapi.dll</TT
+> or
+					<TT
+CLASS="FILENAME"
+>php5isapi.dll</TT
+>, and type in .php as the extension.  Note: if using IIS6,
+					Enable All Verbs and Script Engine.
+				</P
+></LI
+><LI
+><P
+>					Under the <SPAN
+CLASS="GUILABEL"
+>ISAPI Filters</SPAN
+> tab, click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> and browse
+					to the <TT
+CLASS="FILENAME"
+>php4isapi.dll</TT
+> or <TT
+CLASS="FILENAME"
+>php5isapi.dll</TT
+> file. Name the filter
+					"php" and click OK.
+				</P
+></LI
+><LI
+><P
+>					Under the <SPAN
+CLASS="GUILABEL"
+>Documents</SPAN
+> tab, add <TT
+CLASS="FILENAME"
+>index.php</TT
+> to the list.
+				</P
+></LI
+><LI
+><P
+>					If using IIS6, goto <SPAN
+CLASS="GUILABEL"
+>Web Service Extensions</SPAN
+> and add a new Web Service Extension.
+					Name the extension "php", and click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> and browse to the <TT
+CLASS="FILENAME"
+>php4isapi.dll</TT
+>
+					or <TT
+CLASS="FILENAME"
+>php5isapi.dll</TT
+> file, enable <SPAN
+CLASS="GUILABEL"
+>Set Extension</SPAN
+> status to Enable, and click OK.
+				</P
+></LI
+><LI
+><P
+>					Give the IUSR_XXXX and IIS_WPG users read &#38; execute permissions to the file <TT
+CLASS="FILENAME"
+>%windir%\system32\cmd.exe</TT
+>.
+					They will also need read permissions on <TT
+CLASS="FILENAME"
+>cacti_web_root/cacti</TT
+> and it's subfolders.
+				</P
+></LI
+><LI
+><P
+>					If using IIS6, give the IIS_WPG user modify permissions to the folders <TT
+CLASS="FILENAME"
+>cacti_web_root/cacti/log</TT
+>
+					and <TT
+CLASS="FILENAME"
+>cacti_web_root/cacti/rrd</TT
+>.
+				</P
+></LI
+><LI
+><P
+>					Completely stop and start the IIS service using the following commands:
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>net stop iisadmin
+net start w3svc</KBD
+></PRE
+></LI
+></OL
+><P
+></P
+><P
+><B
+>Install Cygwin (optional)</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					Installing a single instance of Cygwin, and using it for all applications that require it is
+					recommended so you do not have different versions of the Cygwin dlls laying around on your system,
+					which can cause conflicts.
+				</P
+></LI
+><LI
+><P
+>					Run <TT
+CLASS="FILENAME"
+>setup.exe</TT
+> you previously download.
+				</P
+></LI
+><LI
+><P
+>					Once you reach the portion of setup entitled Select Packages, install the following:
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>Base (include all items)
+Libs
+	libart_lgpl
+	libfreetype26
+	libpng12
+	zlib
+	openssl
+Utils
+	patch
+Web
+	wget</KBD
+></PRE
+></LI
+><LI
+><P
+>					Add <TT
+CLASS="FILENAME"
+>c:\cygwin\bin</TT
+> to your Windows System PATH environment variable.
+				</P
+></LI
+><LI
+><P
+>					Move <TT
+CLASS="FILENAME"
+>setup.exe</TT
+> to <TT
+CLASS="FILENAME"
+>c:\cygwin</TT
+> for future use.
+				</P
+></LI
+></OL
+><P
+></P
+><P
+><B
+>Install RRDTool</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					Extract the RRDTool zip file from the Cacti web site to <TT
+CLASS="FILENAME"
+>c:\cacti\rrdtool.exe</TT
+>.
+				</P
+></LI
+></OL
+><P
+></P
+><P
+><B
+>Install MySQL</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					Extract the MySQL zip file to a temp directory and run <TT
+CLASS="FILENAME"
+>setup.exe</TT
+>.
+				</P
+></LI
+><LI
+><P
+>					Install MySQL to the default directory, or for the purposes of this manual to the <TT
+CLASS="FILENAME"
+>c:\mysql</TT
+> directory.
+				</P
+></LI
+><LI
+><P
+>					If running an older version of MySQL, start it by running <TT
+CLASS="FILENAME"
+>c:\mysql\bin\winmysqladmin.exe</TT
+>.
+					In more recent versions, this is not required.
+				</P
+></LI
+><LI
+><P
+>					Set a password for the root user
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>cd mysql\bin</KBD
+>
+<SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>mysqladmin --user=root password somepassword</KBD
+>
+<SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>mysqladmin --user=root --password reload</KBD
+></PRE
+></LI
+><LI
+><P
+>					Create the MySQL database:
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>mysqladmin --user=root --password create cacti</KBD
+></PRE
+></LI
+><LI
+><P
+>					Import the default Cacti database:
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>mysql --user=root --password cacti &lt; c:\apache2\htdocs\cacti\cacti.sql</KBD
+></PRE
+></LI
+><LI
+><P
+>					Create a MySQL username and password for Cacti.
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>mysql --user=root --password mysql</KBD
+>
+<SAMP
+CLASS="PROMPT"
+>mysql&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>GRANT ALL ON cacti.* TO cactiuser@localhost IDENTIFIED BY 'somepassword';</KBD
+>
+<SAMP
+CLASS="PROMPT"
+>mysql&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>flush privileges;</KBD
+></PRE
+></LI
+><LI
+><P
+>					If you are running MySQl 4.1 and above, you will need to apply the old password setting in order
+					to authenticate with Cacti.  To make this change, stop the MySQL service and add the following to
+					the Start Parameter field.  Start it again once it has been added.
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>--old-password</KBD
+></PRE
+><P
+>					You will also need to update the cactiuser account with the old password style.
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>UPDATE mysql.user SET Password = OLD_PASSWORD('cactipwd')
+				WHERE Host = 'localhost' AND User = 'cactiuser';</KBD
+>
+<SAMP
+CLASS="PROMPT"
+>mysql&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>FLUSH PRIVILEGES;</KBD
+></PRE
+></LI
+></OL
+><P
+></P
+><P
+><B
+>Install Net-SNMP</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					If you plan to use any hosts with SNMP v2c support, and are using early versions of PHP, you must
+					download and install the <SPAN
+CLASS="APPLICATION"
+>Net-SNMP</SPAN
+> libraries.  <SPAN
+CLASS="APPLICATION"
+>Net-SNMP</SPAN
+>
+					provides installers	to install their product.  However, caution must be taken if you choose to use
+					long file names as Cacti does not them as long file names.  You will have to user 8.3 notation.  For
+					example <TT
+CLASS="FILENAME"
+>c:\Program Files\Net-SNMP\bin</TT
+> becomes <TT
+CLASS="FILENAME"
+>c:\progra~1\net-snmp\bin</TT
+>.
+				</P
+></LI
+></OL
+><P
+></P
+><P
+><B
+>Install <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+></B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					Extract the <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> zip file to <TT
+CLASS="FILENAME"
+>c:\cacti</TT
+> and modify the <TT
+CLASS="FILENAME"
+>spine.conf.dist</TT
+> file to
+					include the following statements.
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>DB_Host	127.0.0.1 or hostname (not localhost)
+DB_Database	cacti
+DB_User		cactiuser
+DB_Password	cacti
+DB_Port		3306</KBD
+></PRE
+><P
+>					All other pre 0.8.6 settings are obsolete.
+				</P
+></LI
+><LI
+><P
+>					<SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> now comes with a binary distribution.  However, we strongly suggest that you install
+					Cygwin and then remove all the DLL files and <TT
+CLASS="FILENAME"
+>sh.exe</TT
+> from the
+					<TT
+CLASS="FILENAME"
+>c:\cacti</TT
+> directory.
+				</P
+></LI
+></OL
+><P
+></P
+><P
+><B
+>Configure Cacti</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					Edit <TT
+CLASS="FILENAME"
+>cacti_web_root/cacti/include/config.php</TT
+> and specify the MySQL user,
+					password, database, and database port for your Cacti configuration.
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>$database_default = "cacti";
+$database_hostname = "localhost";
+$database_username = "cactiuser";
+$database_password = "cacti";
+$database_port = "3306";</KBD
+></PRE
+></LI
+><LI
+><P
+>					Point your web browser to:
+				</P
+><PRE
+CLASS="SCREEN"
+>http://your-server/cacti/</PRE
+><P
+>					Log in using the username and password of admin/admin.  You will be required to change this
+					password immediately.
+				</P
+></LI
+><LI
+><P
+>					From Cacti, go to <SPAN
+CLASS="GUILABEL"
+>Settings</SPAN
+>-&gt;<SPAN
+CLASS="GUILABEL"
+>Paths</SPAN
+> and verify/udate
+					your paths to point to the correct locations.  Recommended examples are posted below.  If you
+					plan on using <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+>, then it is very important that all paths include forward slashes instead
+					of backslashes.
+				</P
+><P
+>				<B
+CLASS="EMPHASIS"
+>PHP Binary Path:</B
+>
+				</P
+><PRE
+CLASS="SCREEN"
+>c:/php/php.exe</PRE
+><P
+>					<B
+CLASS="EMPHASIS"
+>RRDTool Binary Path:</B
+>
+				</P
+><PRE
+CLASS="SCREEN"
+>c:/cacti/rrdtool.exe</PRE
+><P
+>					<B
+CLASS="EMPHASIS"
+>SNMPGET, SNMPWALK, SNMPBULKWALK, SNMPGETNEXT Paths:</B
+>
+				</P
+><PRE
+CLASS="SCREEN"
+>c:/progra~1/net-snmp/bin/snmpget.exe</PRE
+><PRE
+CLASS="SCREEN"
+>c:/progra~1/net-snmp/bin/snmpwalk.exe</PRE
+><PRE
+CLASS="SCREEN"
+>c:/progra~1/net-snmp/bin/snmpbulkwalk.exe</PRE
+><PRE
+CLASS="SCREEN"
+>c:/progra~1/net-snmp/bin/snmpgetnext.exe</PRE
+><P
+>					<B
+CLASS="EMPHASIS"
+>Cacti Logfile Path:</B
+>
+				</P
+><PRE
+CLASS="SCREEN"
+>c:/mycacti/website/cacti/log/cacti.log</PRE
+><P
+>					<B
+CLASS="EMPHASIS"
+><SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> Path:</B
+>
+				</P
+><PRE
+CLASS="SCREEN"
+>c:/cacti/<SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+>.exe</PRE
+></LI
+><LI
+><P
+>					Click on Devices.  Delete the Localhost devices as it intended for Linux environments  In the upper
+					right corner, click Add.  Fill in the following information and then click Add.
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>Description: My Windows localhost
+Hostname: localhost
+Host Template: Windows 2000/XP</KBD
+></PRE
+></LI
+><LI
+><P
+>					You should now be looking at the localhost device screen.  Right under it's name, there should be
+					some SNMP information listed, if not you should double check the SNMP settings on the server and
+					firewall settings.  In the upper right-hand corner, click on Create Graphs for this Host. On the
+					following screen, select a disk partition and network interface.  At the bottom of the page,
+					click on Create.
+				</P
+></LI
+><LI
+><P
+>                    Log into the user account you'll be using  for the scheduled task and  verify starting a Cacti
+					polling cycle works.  Do this by running the following from the command prompt:
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>php c:/cacti_web_root/cacti/poller.php</KBD
+></PRE
+><P
+>					The output should look something like the following:
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>C:\&#62;php c:\inetpub\wwwroot\cacti\poller.php
+OK u:0.00 s:0.06 r:1.32
+OK u:0.00 s:0.06 r:1.32
+OK u:0.00 s:0.16 r:2.59
+OK u:0.00 s:0.17 r:2.62
+10/28/2005 04:57:12 PM - SYSTEM STATS: Time:4.7272 Method:cmd.php Processes:1 Threads:N/A Hosts:1 HostsPerProcess:2 DataSources:4 RRDsProcessed:2</KBD
+></PRE
+><P
+>					After this has ran once, you should have <TT
+CLASS="FILENAME"
+>cacti.log</TT
+> in <TT
+CLASS="FILENAME"
+>/cacti/log/</TT
+>
+					and rrd files in /cacti/rra/.
+				</P
+></LI
+><LI
+><P
+>					You are going to need to schedule a task while logged on as an Administrator.  This task is
+					required to you can run <TT
+CLASS="FILENAME"
+>poller.php</TT
+> every 5 minutes. Make sure the
+					Task Scheduler service is started and follow the steps below to	begin.
+				</P
+><P
+>					<B
+CLASS="EMPHASIS"
+>Note:</B
+> The following instructions are based on Windows XP and Windows Server
+					2003. You should be able to follow these instructions close enough for Windows 2000 as well.
+				</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>							Select <SPAN
+CLASS="GUILABEL"
+>Start</SPAN
+> --&#62; <SPAN
+CLASS="GUILABEL"
+>Settings</SPAN
+> --&#62; <SPAN
+CLASS="GUILABEL"
+>Control Panel</SPAN
+> and double
+							click on  <SPAN
+CLASS="GUILABEL"
+>Scheduled Tasks</SPAN
+>.
+						</P
+></LI
+><LI
+><P
+>							Double click on <SPAN
+CLASS="GUILABEL"
+>Add Scheduled Task</SPAN
+>.
+						</P
+></LI
+><LI
+><P
+>							Click <SPAN
+CLASS="GUILABEL"
+>Next</SPAN
+> and <SPAN
+CLASS="GUILABEL"
+>Browse</SPAN
+> on the following screen. Find <TT
+CLASS="FILENAME"
+>c:\php</TT
+> and select
+							<TT
+CLASS="FILENAME"
+>php.exe</TT
+>.  Choose <SPAN
+CLASS="GUILABEL"
+>Daily</SPAN
+> on and click <SPAN
+CLASS="GUILABEL"
+>Next</SPAN
+>.
+						</P
+></LI
+><LI
+><P
+>							Click <SPAN
+CLASS="GUILABEL"
+>Next</SPAN
+> again without changing the time or date settings.
+						</P
+></LI
+><LI
+><P
+>							When entering a username and password make sure the user has read and write access to the following directories:
+						</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>cacti_web_root/cacti/rra
+cacti_web_root/log</KBD
+></PRE
+><P
+>							Make sure the user has read, write, and execute access to the following directories:
+						</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>c:\php
+c:\php\sapi</KBD
+></PRE
+></LI
+><LI
+><P
+>							Click <SPAN
+CLASS="GUILABEL"
+>Next</SPAN
+> and <SPAN
+CLASS="GUILABEL"
+>Finish</SPAN
+> to close the wizard.
+						</P
+></LI
+><LI
+><P
+>							Right click on the task you just created, and select <SPAN
+CLASS="GUILABEL"
+>Properties</SPAN
+>.
+						</P
+></LI
+><LI
+><P
+>							Select the <SPAN
+CLASS="GUILABEL"
+>Schedule</SPAN
+> tab.
+						</P
+></LI
+><LI
+><P
+>							Make sure <SPAN
+CLASS="GUILABEL"
+>Daily</SPAN
+> is selected and click the <SPAN
+CLASS="GUILABEL"
+>Advanced</SPAN
+> button.
+						</P
+></LI
+><LI
+><P
+>							Check the <SPAN
+CLASS="GUILABEL"
+>Repeat</SPAN
+> checkbox, set it for 5 minutes and set the duration for 24 hours.
+						</P
+></LI
+><LI
+><P
+>							Click <SPAN
+CLASS="GUILABEL"
+>Ok</SPAN
+>
+						</P
+></LI
+><LI
+><P
+>							In the <SPAN
+CLASS="GUILABEL"
+>Run</SPAN
+> textbox enter the following text making sure to use the appropriate paths.
+						</P
+><PRE
+CLASS="SCREEN"
+>c:\php\php.exe c:\mycacti\website\cacti\poller.php</PRE
+><P
+>							The start in box should say <TT
+CLASS="FILENAME"
+>c:\mycacti\website\cacti</TT
+>.
+						</P
+></LI
+></OL
+></LI
+></OL
+><P
+></P
+><P
+><B
+>Apply Patches</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					There are two methods of applying patches to Cacti:
+				</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>							If you have Cygwin installed, then the patch instructions which use wget and patch, will work.
+						</P
+></LI
+><LI
+><P
+>							The other method requires you to visit http://www.cacti.net/downloads/patches/0.8.6h/pre-patched/
+							and manually download and replace the patched files.
+						</P
+></LI
+></OL
+></LI
+><LI
+><P
+>					You might need to reapply file/folder security on the files patched. Double check they are correct.
+				</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="unix_apply_patches.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="upgrade.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Apply Patches</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="installation.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Upgrading Cacti</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

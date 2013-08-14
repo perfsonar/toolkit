@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Reapply Suggested Names to Graphs</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Command Line Scripts"
+HREF="scripts.html"><LINK
+REL="PREVIOUS"
+TITLE="Empty Poller Output Table"
+HREF="cli_poller_output_empty.html"><LINK
+REL="NEXT"
+TITLE="Copy Local Cacti Users"
+HREF="cli_copy_user.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="cli_poller_output_empty.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 20. Command Line Scripts</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="cli_copy_user.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CLI_POLLER_GRAPHS_REAPPLY_NAMES"
+>Reapply Suggested Names to Graphs</A
+></H1
+><P
+>For a general understanding of suggested names used with data queries,
+			please see <A
+HREF="data_queries.html#DATA_QUERIES_ASSOCIATED_GRAPH_TEMPLATES"
+>the Section called <I
+>Associated Graph Templates</I
+> in Chapter 12</A
+>&#62;.
+			Be aware, that changes to the <KBD
+CLASS="USERINPUT"
+>Suggested Names</KBD
+>
+			section of a data query will not automatically be propagated to
+			all existing graphs. This is, where <SPAN
+CLASS="APPLICATION"
+>poller_graphs_reapply_names.php</SPAN
+>
+			drops in. Calling the script with the parameter <KBD
+CLASS="USERINPUT"
+>--help</KBD
+> yields</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q poller_graphs_reapply_names.php --help
+Cacti Reapply Graph Names Script 1.0, Copyright 2004-2013 - The Cacti Group
+
+usage: poller_graphs_reapply_names.php -id=[host_id|All][host_id1|host_id2|...] [-s=[search_string] [-d] [-h] [--help] [-v] [--version]
+
+-id=host_id   - The host_id or 'All' or a pipe delimited list of host_id's
+-s=search_str - A graph template name or graph title to search for
+-d            - Display verbose output during execution
+-v --version  - Display this help message
+-h --help     - Display this help message</PRE
+><P
+>Assume a situation, where the suggested names where changed
+			for the standard data query named <KBD
+CLASS="USERINPUT"
+>SNMP - Get Mounted Partitions</KBD
+>.
+			In this case, you will want to rework all graphs for this data query only. A verbose
+			run will yield</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q poller_graphs_reapply_names.php -id=All -d -s="Used space"
+WARNING: Do not interrupt this script.  Interrupting during rename can cause issues
+DEBUG: There are '6' Graphs to rename
+DEBUG: Graph Name 'Localhost - Used Space - Memory Buffers' starting
+DEBUG: Graph Rename Done for Graph 'Localhost - Used Space - Memory Buffers'
+DEBUG: Graph Name 'Localhost - Used Space - Real Memory' starting
+DEBUG: Graph Rename Done for Graph 'Localhost - Used Space - Real Memory'
+DEBUG: Graph Name 'Localhost - Used Space - Swap Space' starting
+DEBUG: Graph Rename Done for Graph 'Localhost - Used Space - Swap Space'
+DEBUG: Graph Name 'Localhost - Used Space - /' starting
+DEBUG: Graph Rename Done for Graph 'Localhost - Used Space - /'
+DEBUG: Graph Name 'Localhost - Used Space - /sys' starting
+DEBUG: Graph Rename Done for Graph 'Localhost - Used Space - /sys'
+DEBUG: Graph Name 'Localhost - Used Space - /boot' starting
+DEBUG: Graph Rename Done for Graph 'Localhost - Used Space - /boot'</PRE
+><P
+>Please notice my miss-spelling of the word <SPAN
+CLASS="QUOTE"
+>"Space"</SPAN
+>.
+			The <KBD
+CLASS="USERINPUT"
+>-s=</KBD
+> option is not case sensitive.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="cli_poller_output_empty.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="cli_copy_user.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Empty Poller Output Table</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="scripts.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Copy Local Cacti Users</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

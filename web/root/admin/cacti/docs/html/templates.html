@@ -1,0 +1,639 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Templates</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Advanced Topics"
+HREF="advanced_topics.html"><LINK
+REL="PREVIOUS"
+TITLE="Script Query XML Syntax"
+HREF="script_query_xml.html"><LINK
+REL="NEXT"
+TITLE="Graph Templates"
+HREF="graph_templates.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="script_query_xml.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="graph_templates.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="TEMPLATES"
+></A
+>Chapter 13. Templates</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="templates.html#DATA_TEMPLATES"
+>Data Templates</A
+></DT
+><DT
+><A
+HREF="graph_templates.html"
+>Graph Templates</A
+></DT
+><DT
+><A
+HREF="host_templates.html"
+>Host Templates</A
+></DT
+><DT
+><A
+HREF="template_import.html"
+>Import Templates</A
+></DT
+><DT
+><A
+HREF="template_export.html"
+>Export Templates</A
+></DT
+></DL
+></DIV
+><P
+>			The real strength of Cacti is unleashed by using templates.
+			There are three different types of templates with the basic Cacti installation:
+			<B
+CLASS="EMPHASIS"
+>Data Templates</B
+>, <B
+CLASS="EMPHASIS"
+>Graph Templates</B
+> and <B
+CLASS="EMPHASIS"
+>Host Templates</B
+>.
+			While it is perfectly fine to define all data sources and graphs without using
+			Templates at all, the burden of this approach is high. In most installations,
+			there are lots of devices of the same kind. And there are lots of data of the
+			same kind, e.g. traffic information is needed for almost every device.
+			Therefor, the parameters needed to create a traffic rrd file are defined
+			by a <B
+CLASS="EMPHASIS"
+>Data Template</B
+>, in this case known as "Interface - Traffic".
+			These definitions are used by all Traffic-related rrd files.
+		</P
+><P
+>			The same approach is used for defining <B
+CLASS="EMPHASIS"
+>Graph Templates</B
+>.
+			This is done only once. And all parameters defined within such a <B
+CLASS="EMPHASIS"
+>Graph Template</B
+>
+			are copied to all Graphs that are created using this Template.
+		</P
+><P
+>			The last type of Templates are the <B
+CLASS="EMPHASIS"
+>Host Templates</B
+>.
+			They are not related to some rrdtool stuff. The purpose of <B
+CLASS="EMPHASIS"
+>Host Templates</B
+>
+			is to group all Graph Templates and Data Queries (these are explained later)
+			for a given device type. So you will make up a <B
+CLASS="EMPHASIS"
+>Host Template</B
+>
+			e.g. for a specific type of router, switch, host and the like.
+			By assigning the correct <B
+CLASS="EMPHASIS"
+>Host Template</B
+> to each new Device,
+			you'll never forget to create all needed Graphs.
+		</P
+><P
+>There's no need to create all Templates on your own! Apart from the fact,
+		that many common templates are provided out-of-the-box, there's a very simple
+		machnism to <SPAN
+CLASS="GUIMENU"
+>Import Templates</SPAN
+> and to <SPAN
+CLASS="GUIMENU"
+>Export Templates</SPAN
+>.</P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DATA_TEMPLATES"
+>Data Templates</A
+></H1
+><P
+>				In Cacti, a data template provides a skeleton for an actual data source. If you have many data
+				sources that share most of their characteristics, using a data template would probably make sense.
+				No change of a Data Template is propagated to already existing rrd files.
+				But most of them may be changed by using <B
+CLASS="COMMAND"
+>rrdtool tune</B
+> from command line.
+				Pay attention to not append new Data Source Items to already existing rrd files.
+				There's no <B
+CLASS="COMMAND"
+>rrdtool</B
+> command to achieve this!
+			</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CREATING_DATA_TEMPLATES"
+>Creating a Data Template</A
+></H2
+><P
+>					To create a new data template, select <SPAN
+CLASS="GUILABEL"
+>Data Templates</SPAN
+> under the
+					<SPAN
+CLASS="GUILABEL"
+>Templates</SPAN
+> heading and click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+>.
+				</P
+><P
+>					The first thing you must do is give the template a name. This name has nothing to do with the
+					data source name, but is what you will use to identify the template throughout Cacti.
+				</P
+><P
+>					Second,
+					you will notice a list of data source/data source item field names with Use <SPAN
+CLASS="GUILABEL"
+>Per-Data
+					Source Value</SPAN
+> checkboxes next to each one. The nice thing about templates in Cacti is
+					that you can choose whether to template each field on a per-field basis. If you leave the checkbox
+					unchecked, every data source attached to the template will inherit its value from the template. If
+					the checkbox is checked, every data source attached to the template will contain its own value for
+					that particular field. When generating a real data source, you will be prompted to fill those
+					non-templated fields.
+				</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1560"
+></A
+><P
+><B
+>Table 13-1. Data Templates: Field Description of the Data Source Section</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>The name of the Data Source that will be created by using this Template.
+								You can	use the keyword |host_description| in this field, which will be
+								automatically substituted with the current host description.</TD
+></TR
+><TR
+><TD
+>Data Input Method</TD
+><TD
+>Here is where you tell cacti how it is supposed to fetch data
+								for this data source. There are several data input sources that come
+								with cacti, and you can add your own by going to Data Input Methods.
+								If this RRD file is being populated outside of cacti, make sure to
+								leave this field set to "None".</TD
+></TR
+><TR
+><TD
+>Associated RRAs</TD
+><TD
+>You need to associate the data source with at least one RRA
+								so <SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+> knows how often and for how
+								long to keep its data. You will almost always want to select all
+								of these values however so you can render daily, weekly, monthly,
+								and yearly graphs.</TD
+></TR
+><TR
+><TD
+>Step</TD
+><TD
+>This tells <SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+> how many seconds
+								there will be between updates. The default is 300 seconds (5 minutes),
+								and is sufficient for most installations.</TD
+></TR
+><TR
+><TD
+>Data Source Active</TD
+><TD
+>This is a quick and easy to tell Cacti to stop gathering data
+								for this data source. The data source can still be used on graphs,
+								but no data will be fed to it until it is made active again.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>					<B
+CLASS="EMPHASIS"
+>Note:</B
+> For most data templates, you will want to check the <SPAN
+CLASS="GUILABEL"
+>Use
+					Per-Graph Value</SPAN
+> checkbox for the name field so each data source using this template has its
+					own unique name. It also makes sense to enter an inital value in this field that includes the variable
+					|host_description| for organizational purposes.
+				</P
+><P
+>					When you are finished filling in values for the data template, click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+> and
+					you will be presented with a screen similar to the data source edit screen.
+				</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="IMG_DATA_TEMPLATE_NEW"
+></A
+><P
+><B
+>Figure 13-1. Adding a Data Template</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="images/data_template.png"></P
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="DATA_TEMPLATE_ITEMS"
+>Data Source Items</A
+></H3
+><P
+>						Like a graph, a data source can have more than one items. This is useful in situations where a
+						script returns more than piece of data at one time. This also applies to data queries, so you
+						can have a single data template that contains both inbound and outbound traffic, rather than
+						having to create a separate data template for each.
+					</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1600"
+></A
+><P
+><B
+>Table 13-2. Data Templates: Field Description of the Data Source Items Section</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Internal Data Source Name</TD
+><TD
+>This is the name used by <SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+> to identify this particular data source within the RRD file. <SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+> places a limit of 19 alphanumeric characters (plus '_' and '-') on this field.</TD
+></TR
+><TR
+><TD
+>Minimum Value</TD
+><TD
+>Here is where you specify the minimum value that is expected for this data source in the RRD file. If a value lower than the minimum is given, it will be stored as Unknown (U).</TD
+></TR
+><TR
+><TD
+>Maximum Value</TD
+><TD
+><P
+>Here is where you specify the maximum value that is expected for this data source in the RRD file. If a value higher than the maximum is given, it will be stored as Unknown (U).
+									</P
+><P
+><B
+CLASS="EMPHASIS"
+>Note:</B
+> It often makes sense to define
+									a reasonable maximum value here to avoid spikes in case of a COUNTER wrap</P
+></TD
+></TR
+><TR
+><TD
+>Data Source Type</TD
+><TD
+><P
+>Cacti currently supports four types of data that <SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+> can represent for any given data source:
+									</P
+><P
+>COUNTER: is for continuous incrementing counters like the ifInOctets counter in a router. The COUNTER
+														data source assumes that the counter never decreases, except when a counter overflows. It is always a whole INTEGER,
+														floating point numbers are invalid.
+														The update function takes the overflow into account.  The counter is stored as a per-second rate.
+														When the counter overflows, <SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+> checks if the overflow happened at the 32bit or 64bit
+                   										border and acts accordingly by adding an appropriate value to the result.
+									</P
+><P
+>GAUGE: numbers that are not continuously incrementing, e.g. a temperature reading.
+														Floating point numbers are accepted.
+									</P
+><P
+>ABSOLUTE: counters that are reset upon reading
+									</P
+><P
+>DERIVE: like COUNTER but without overflow checks</P
+></TD
+></TR
+><TR
+><TD
+>Heartbeat</TD
+><TD
+>As defined by <SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+>: <SPAN
+CLASS="QUOTE"
+>"The maximum amount of time that can pass before data is entered as "unknown". This field is usually '600' or 2 data gathering intervals"</SPAN
+>.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="CUSTOM_DATA"
+>Custom Data</A
+></H3
+><P
+>						Assuming you selected a data input source on the previous screen, you should now be presented
+						with a <SPAN
+CLASS="GUILABEL"
+>Custom Data</SPAN
+> box. It will show a single line for every single
+						parameter required for that very data input method. This is how the Data Source glues together
+						with the data input method to provide all run time parameters.
+					</P
+><P
+>						Each custom data field is per-field templatable as
+						all of the other data source fields are. Even if you select the <SPAN
+CLASS="GUILABEL"
+>Use Per-Data Source
+						Value</SPAN
+> checkbox, it might be useful to specify a value that will be used as an "inital
+						value" for any data source using this data template.
+					</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="APPLYING_DATA_TEMPLATES"
+>Applying Data Templates to Data Sources</A
+></H2
+><P
+>					Applying a data template to a data source is a very simple process. The first thing you
+					must do is select the data source you want to apply the template to under <SPAN
+CLASS="GUILABEL"
+>Data
+					Sources</SPAN
+>. Under the <SPAN
+CLASS="GUILABEL"
+>Data Template Selection</SPAN
+> box, select
+					the data template that you want to apply to the data source and click <SPAN
+CLASS="GUILABEL"
+>Save</SPAN
+>.
+				</P
+><P
+>					Once the template is applied to the data source, you will notice that you can only change
+					values for the fields that you checked Use <SPAN
+CLASS="GUILABEL"
+>Per-Data Source Value</SPAN
+> for.
+				</P
+><P
+>					<B
+CLASS="EMPHASIS"
+>Now any time a change is made to the data template, it will be automatically
+					propagated to the data sources attached to it.</B
+>
+				</P
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>No change of existing rrd files</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>When changing parameters of a Data Template, existing rrd files
+					will never be changed. If this is required, you will have to apply
+					<B
+CLASS="COMMAND"
+>rrdtool tune</B
+> commands to any related rrd file manually.</P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="script_query_xml.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="graph_templates.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Script Query XML Syntax</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="advanced_topics.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Graph Templates</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

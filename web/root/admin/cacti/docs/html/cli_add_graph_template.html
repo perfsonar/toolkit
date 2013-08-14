@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Associate a Graph Template to an existing Host</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Command Line Scripts"
+HREF="scripts.html"><LINK
+REL="PREVIOUS"
+TITLE="Associate a Data Query to an existing Host"
+HREF="cli_add_data_query.html"><LINK
+REL="NEXT"
+TITLE="Add a New Graph"
+HREF="cli_add_graphs.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="cli_add_data_query.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 20. Command Line Scripts</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="cli_add_graphs.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CLI_ADD_GRAPH_TEMPLATE"
+>Associate a Graph Template to an existing Host</A
+></H1
+><P
+>It is recommended to maintain graph template associations by maintaining
+			host templates. Each time, a graph template is added to a host template,
+			it will automatically associated with all hosts related to that very
+			host template.</P
+><P
+>Nevertheless, it is sometimes suitable to manually associate a certain
+			graph template with a single host only without changing any host template.
+			This is, where the script <TT
+CLASS="FILENAME"
+>add_graph_template.php</TT
+>
+			comes in. First, let's have a look at the whole list of features
+			it provides. Calling the script with the parameter <KBD
+CLASS="USERINPUT"
+>--help</KBD
+> yields</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_graph_template.php --help
+
+Add Graph Template Script 1.0, Copyright 2004-2013 - The Cacti Group
+
+A simple command line utility to associate a graph template with a host in Cacti
+
+usage: add_graph_template.php --host-id=[ID] --graph-template-id=[ID]
+    [--quiet]
+
+Required:
+    --host-id             the numerical ID of the host
+    --graph_template-id   the numerical ID of the graph template to be added
+
+List Options:
+    --list-hosts
+    --list-graph-templates
+    --quiet - batch mode value return</PRE
+><P
+>Let's first stick to the listing options</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_GRAPH_TEMPLATE_LIST_HOSTS"
+>List all Hosts</A
+></H2
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_graph_template.php --list-hosts
+
+Known Hosts: (id, hostname, template, description)
+1       127.0.0.1       8       Localhost
+11      router          3       router.mydomain.com</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_GRAPH_TEMPLATE_LIST_GRAPH_TEMPLATES"
+>List all Graph Template</A
+></H2
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_graph_template.php --list-graph-templates
+
+Known Graph Templates:(id, name)
+2       Interface - Traffic (bits/sec)
+3       ucd/net - Available Disk Space
+4       ucd/net - CPU Usage
+5       Karlnet - Wireless Levels
+6       Karlnet - Wireless Transmissions
+7       Unix - Ping Latency
+8       Unix - Processes
+9       Unix - Load Average
+10      Unix - Logged in Users
+11      ucd/net - Load Average
+...</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_GRAPH_TEMPLATE_EXAMPLE"
+>Add a Graph Template</A
+></H2
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_graph_template.php --host-id=11 --graph-template-id=7
+
+Success: Graph Template associated for host: (11: router) - graph-template: (7: Unix - Ping Latency)</PRE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="cli_add_data_query.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="cli_add_graphs.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Associate a Data Query to an existing Host</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="scripts.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Add a New Graph</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>(Optional) Install and Configure Spine</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing Under Unix"
+HREF="install_unix.html"><LINK
+REL="PREVIOUS"
+TITLE="Install and Configure Cacti"
+HREF="unix_configure_cacti.html"><LINK
+REL="NEXT"
+TITLE="Apply Patches"
+HREF="unix_apply_patches.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="unix_configure_cacti.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Installing Under Unix</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="unix_apply_patches.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="UNIX_CONFIGURE_SPINE"
+>(Optional) Install and Configure <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+></A
+></H1
+><P
+>					<SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> is a very fast poller engine, written in C.
+					It is an optional replacement for cmd.php. If you decide
+					to use it, you will have to install it explicitely. It
+					does not come with cacti itself.
+				</P
+><P
+>					The easiest way is to install <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> using rpm or ports.
+					You will find packages for <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> at the main cacti site
+					or from your distribution.
+				</P
+><P
+>To compile <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+>, please download
+				it to any location of your liking. Then, please issue from the downloaded
+				directory following commands</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>aclocal</PRE
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>libtoolize --force  (glibtoolize --force on Max OS)</PRE
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>autoheader</PRE
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>autoconf</PRE
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>automake</PRE
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>./configure</PRE
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>make</PRE
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>make install</PRE
+><P
+>					Assuming, you've managed to install <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> correctly,
+					you will have to configure it. The configuration file
+					may be placed in the same directory as <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> itself or
+					at /etc/<SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+>.conf.
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>DB_Host	127.0.0.1 or hostname (not localhost)
+DB_Database	cacti
+DB_User		cactiuser
+DB_Password	cacti
+DB_Port		3306</KBD
+></PRE
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="unix_configure_cacti.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="unix_apply_patches.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Install and Configure Cacti</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="install_unix.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Apply Patches</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

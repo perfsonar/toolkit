@@ -1,0 +1,339 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Add a New Device</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Command Line Scripts"
+HREF="scripts.html"><LINK
+REL="PREVIOUS"
+TITLE="Copy Local Cacti Users"
+HREF="cli_copy_user.html"><LINK
+REL="NEXT"
+TITLE="Associate a Data Query to an existing Host"
+HREF="cli_add_data_query.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="cli_copy_user.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 20. Command Line Scripts</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="cli_add_data_query.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CLI_ADD_DEVICE"
+>Add a New Device</A
+></H1
+><P
+>While it is an easy task to add a new device from the panels,
+			this would be a tedious task for creating dozens of hundreds of devices
+			in one turn. This is, where the script <TT
+CLASS="FILENAME"
+>add_device.php</TT
+>
+			comes in. First, let's have a look at the whole list of features
+			it provides. Calling the script with the parameter <KBD
+CLASS="USERINPUT"
+>--help</KBD
+> yields</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_device.php --help
+
+Add Device Script 1.0, Copyright 2004-2013 - The Cacti Group
+
+A simple command line utility to add a device in Cacti
+
+usage: add_device.php --description=[description] --ip=[IP] --template=[ID] [--notes="[]"] [--disable]
+    [--avail=[ping]] --ping_method=[icmp] --ping_port=[N/A, 1-65534] --ping_retries=[2]
+    [--version=[1|2|3]] [--community=] [--port=161] [--timeout=500]
+    [--username= --password=] [--authproto=] [--privpass= --privproto=] [--context=]
+    [--quiet]
+
+Required:
+    --description  the name that will be displayed by Cacti in the graphs
+    --ip           self explanatory (can also be a FQDN)
+Optional:
+    --template     0, is a number (read below to get a list of templates)
+    --notes        '', General information about this host.  Must be enclosed using double quotes.
+    --disable      0, 1 to add this host but to disable checks and 0 to enable it
+    --avail        pingsnmp, [ping][none, snmp, pingsnmp]
+    --ping_method  tcp, icmp|tcp|udp
+    --ping_port    '', 1-65534
+    --ping_retries 2, the number of time to attempt to communicate with a host
+    --version      1, 1|2|3, snmp version
+    --community    '', snmp community string for snmpv1 and snmpv2.  Leave blank for no community
+    --port         161
+    --timeout      500
+    --username     '', snmp username for snmpv3
+    --password     '', snmp password for snmpv3
+    --authproto    '', snmp authentication protocol for snmpv3
+    --privpass     '', snmp privacy passphrase for snmpv3
+    --privproto    '', snmp privacy protocol for snmpv3
+    --context      '', snmp context for snmpv3
+
+List Options:
+    --list-host-templates
+    --list-communities
+    --quiet - batch mode value return</PRE
+><P
+>Wow, that's quite a lot of options. To better understand it's use,
+			let's first stick to the listing options</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_DEVICE_LIST_HOST_TEMPLATE"
+>List all Host Templates</A
+></H2
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_device.php --list-host-templates
+
+Valid Host Templates: (id, name)
+1       Generic SNMP-enabled Host
+3       ucd/net SNMP Host
+4       Karlnet Wireless Bridge
+5       Cisco Router
+6       Netware 4/5 Server
+7       Windows 2000/XP Host
+8       Local Linux Machine</PRE
+><P
+>Why are those <KBD
+CLASS="USERINPUT"
+>Host Templates</KBD
+> of such importance for this
+				script? Well, when using this script to add a new device, there are 3 required
+				parameters. The <KBD
+CLASS="USERINPUT"
+>description</KBD
+> and the <KBD
+CLASS="USERINPUT"
+>device ip address</KBD
+>
+				are of course left to you. But for assigning the correct <KBD
+CLASS="USERINPUT"
+>Host Template Id</KBD
+>,
+				you should first know the correct id of that very parameter. For the purpose of this
+				chapter we assume to add a device that will be associated to a <KBD
+CLASS="USERINPUT"
+>ucd/net SNMP Host</KBD
+>,
+				so the id of <KBD
+CLASS="USERINPUT"
+>3</KBD
+> is required.</P
+><P
+>If you do not want to associate the host to any <KBD
+CLASS="USERINPUT"
+>Host Template Id</KBD
+>, known
+				as host template <SPAN
+CLASS="GUIMENUITEM"
+>None</SPAN
+>, please provide the parameter
+				<KBD
+CLASS="USERINPUT"
+>--template=0</KBD
+> or omit this parameter.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_DEVICE_LIST_COMMUNITIES"
+>List all Community Strings</A
+></H2
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_device.php --list-communities
+
+Known communities are: (community)
+
+public
+snmp-get</PRE
+><P
+>Of course, your list will vary</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_DEVICE_SIMPLE"
+>Create a New Device</A
+></H2
+><P
+>Now, let's set up the most basic command to add a new device. The description shall be
+				<KBD
+CLASS="USERINPUT"
+>"Device Add Test"</KBD
+>, the ip will be given as a FQDN, <KBD
+CLASS="USERINPUT"
+>router.mydomain.com</KBD
+>.
+				As a SNMP enabled device, surely a community string has to be provided; in this case given
+				as <KBD
+CLASS="USERINPUT"
+>public</KBD
+>.
+				In total, this makes the following command</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_device.php --description="Device Add Test" --ip="router.mydomain.com" --template=3 --community="public"
+
+Adding Device Add Test (router.mydomain.com) as "ucd/net SNMP Host" using SNMP v1 with community "public"
+Success - new device-id: (11)</PRE
+><P
+>Please visit <SPAN
+CLASS="GUIMENU"
+>Devices</SPAN
+> to see the result:</P
+><PRE
+CLASS="SCREEN"
+>Description** 		Graphs 	Data Sources 	Status 	Hostname 		Current (ms) 	Average (ms) 	Availability
+Device Add Test 	0 	0 		Unknown router.mydomain.com 	0 		0 		100</PRE
+><P
+>Please use any other combination of parameters in the same way
+				as via the web browser console. You may want to remember the new device id, <KBD
+CLASS="USERINPUT"
+>11</KBD
+>
+				in this case, for the next steps.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="cli_copy_user.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="cli_add_data_query.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Copy Local Cacti Users</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="scripts.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Associate a Data Query to an existing Host</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

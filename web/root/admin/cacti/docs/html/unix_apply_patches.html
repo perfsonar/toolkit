@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Apply Patches</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing Under Unix"
+HREF="install_unix.html"><LINK
+REL="PREVIOUS"
+TITLE="(Optional) Install and Configure Spine"
+HREF="unix_configure_spine.html"><LINK
+REL="NEXT"
+TITLE="Installing Under Windows"
+HREF="install_windows.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="unix_configure_spine.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Installing Under Unix</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="install_windows.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="UNIX_APPLY_PATCHES"
+>Apply Patches</A
+></H1
+><P
+>						Please visit the Cacti website at http://www.cacti.net/download_patches.php
+						If any patch has been released, you will find installation
+						instructions there.
+					</P
+><P
+>						As an example, please find patch installation instructions
+						for cacti 0.8.8 here.
+						Do not apply those patches to recent releases!
+					</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>wget http://www.cacti.net/downloads/patches/0.8.8a/snmpv3_priv_proto_none.patch
+				patch -p1 -N &#60; snmpv3_priv_proto_none.patch</KBD
+></PRE
+><P
+>						You might need to reapply file/folder security
+						on the files patched. Double check they are correct.
+					</P
+><P
+>Please pay attention not to break cacti when using SELinux or using NTFS file security.
+					If you encounter</P
+><P
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>PHP Warning:  include_once(./lib/html_tree.php) [&lt;a href='function.include-once'&gt;function.include-once&lt;/a&gt;]: failed to open stream: Permission denied in /var/www/cacti/graphs.php on line 33, referer: http://localhost/cacti/graphs.php </SAMP
+></P
+><P
+>or the like, it is very likely that your permissions are wrong.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="unix_configure_spine.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="install_windows.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>(Optional) Install and Configure <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="install_unix.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Installing Under Windows</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

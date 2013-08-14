@@ -1,0 +1,679 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Variables</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Reference"
+HREF="reference.html"><LINK
+REL="PREVIOUS"
+TITLE="Reference"
+HREF="reference.html"><LINK
+REL="NEXT"
+TITLE="Host Variables"
+HREF="host_variables.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="reference.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="host_variables.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="VARIABLES"
+></A
+>Chapter 18. Variables</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="variables.html#GRAPH_VARIABLES"
+>Graph Variables</A
+></DT
+><DT
+><A
+HREF="host_variables.html"
+>Host Variables</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="GRAPH_VARIABLES"
+>Graph Variables</A
+></H1
+><P
+>				The following variables can be used in the <SPAN
+CLASS="GUILABEL"
+>Text Format</SPAN
+> and <SPAN
+CLASS="GUILABEL"
+>Value</SPAN
+> graph
+				item fields. Below is a description of each of these variables.
+			</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VARIABLE_DATE_TIME"
+>Date/Time</A
+></H2
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>|date_time|</KBD
+></PRE
+><P
+>					This variable will place the date and time of the last poller run on the graph. It can be used to replicate
+					<SPAN
+CLASS="APPLICATION"
+>MRTG</SPAN
+>'s "graph last updated" feature.
+				</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VARIABLE_DATA_SOURCE_TITLE"
+>Data Source Title</A
+></H2
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>|data_source_title|</KBD
+></PRE
+><P
+>					This variable, |data_source_title|, gets replaced with the name of the data source associated with a particular
+					graph item in a graph template. This change allows the creation of generic
+					graph templates (2-variable line graph, 3-variable stack, etc.)
+					which can be reused with large numbers of data sources.
+					See attached examples to understand usage.
+				</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="DATA_SOURCE_TITLE_TEMPLATE"
+></A
+><P
+><B
+>Figure 18-1. Example of a Graph Template using |data_source_title|</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="images/data_source_title_template.png"></P
+></DIV
+></DIV
+><DIV
+CLASS="FIGURE"
+><A
+NAME="DATA_SOURCE_TITLE_EXAMPLE1"
+></A
+><P
+><B
+>Figure 18-2. Example 1 of a Graph making use of |data_source_title|</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="images/data_source_title_example1.png"></P
+></DIV
+></DIV
+><DIV
+CLASS="FIGURE"
+><A
+NAME="DATA_SOURCE_TITLE_EXAMPLE2"
+></A
+><P
+><B
+>Figure 18-3. Example 2 of a Graph making use of |data_source_title|</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="images/data_source_title_example2.png"></P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VARIABLE_DATA_QUERY"
+>Data Query Fields</A
+></H2
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>|query_field_name|</KBD
+></PRE
+><P
+>					You can place the value of any data query field on the by including this variable. Make sure
+					to substitute "field_name" with the actual data query field name.
+				</P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN2564"
+></A
+><P
+><B
+>Example 18-1. Print the IP Address on a traffic graph</B
+></P
+><P
+>						<KBD
+CLASS="USERINPUT"
+>|query_ifIP|</KBD
+>
+					</P
+></DIV
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN2568"
+></A
+><P
+><B
+>Example 18-2. Print the mount point on net-snmp disk graph</B
+></P
+><P
+>						<KBD
+CLASS="USERINPUT"
+>|query_dskPath|</KBD
+>
+					</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VARIABLE_NTH_PERCENTILE"
+>Nth Percentile</A
+></H2
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>|[0-9]:(bits|bytes):[0-9]:(current|total|max|total_peak|all_max_current|all_max_peak|aggregate_max|aggregate_sum|aggregate_current|aggregate):[0-9]|</KBD
+></PRE
+><P
+>					Nth percentile is often used by hosting providers to bill customers based on their peak traffic usage while
+					ignoring their top (100 - Nth) percent. This way if a customer has a fairly consistent traffic pattern and
+					decides to download a huge file one day, the large spike will be ignored.  Common Nth percentile is 95, which
+					would cut off the top 5% of the traffic.
+				</P
+><P
+>					In Cacti, Nth percentile works just like any other graph variable. To use this variable you must give it five
+					arguments:
+				</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN2578"
+></A
+><P
+><B
+>Table 18-1. Nth Percentile Argument Description</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>[0-9]</CODE
+></TD
+><TD
+>The first argument is a number between 1 and 99.  This number represents the Nth percentile that you would like to calculate.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>(bits|bytes)</CODE
+></TD
+><TD
+>Choose whether you want to represent your Nth percentile in bits or bytes. The only valid values for this field are 'bits' and 'bytes'.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>[0-9]</CODE
+></TD
+><TD
+>This field determines the power of 10 divisor that will be applied to your Nth percentile number. Enter '0' to leave the number alone, '3' for kilo or '6' for mega, etc.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>( current | total | max | total_peak | all_max_current | all_max_peak | aggregate_max | aggregate_sum | aggregate_current | aggregate )</CODE
+></TD
+><TD
+>Nth Percentile Type - Refer to Nth Types</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>[0-9]</CODE
+></TD
+><TD
+>Enter the number of digits to use for floating point precision when printing out the final number. The default value for this field is two decimal places.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN2608"
+></A
+><P
+><B
+>Table 18-2. Nth Percentile Types</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Type</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>current</CODE
+></TD
+><TD
+>Calculates the Nth percentile based off the selected data source on the graph item wich the variable is used.   This type requires a selected Data Source Item in the graph item in which it is defined.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>total</CODE
+></TD
+><TD
+>Calculates the Nth percentile based off the selected data source on the graph item wich the variable is used.  But unlike current, this function totals the Nth percentile results of all same named data source names on the graph.  Example, all traffic_in would have their Nth percentile calculated and then totaled.  This type requires a selected Data Source Item in the graph item in which it is defined.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>max</CODE
+></TD
+><TD
+>Calculates the Nth percentile based off the selected data source on the graph item which the variable is used, but it is important to note that it selects the higher of the values for each row in data source and then uses the resulting set to calculate the Nth percentile.  Example, you have selected a interface data source for traffic_in, this will evaluate traffic_out and traffic_in for that selected data source (rrdtool file) and select the higher of the two values for each row of data.  The resulting max values are used to calculate the Nth percentile value.  This type requires a selected Data Source Item in the graph item in which it is defined.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>total_peak</CODE
+></TD
+><TD
+>Calculates the Nth percentile based on the max for each data source defined on the graph.  Example, the max is taken for each data source defined on the graph, but it's the max of traffic_in or traffic_out for that data source (rrdtool file).  The resulting max values are summed and returned.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>all_max_current</CODE
+></TD
+><TD
+>Calculates the Nth percentile based off the selected data source on the graph item which the variable is used, but it only selects the highest (max) value of all the data source items on the graph. Example, there are 3 data sources defined on the graph, the selected data source is traffic_in, all data sources for traffic_in will be compared against each other and the highest Nth value of all graph items will be selected as the result.  This type requires a selected Data Source Item in the graph item in which it is defined.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>all_max_peak</CODE
+></TD
+><TD
+>Calculates the Nth percentile by selecting the highest (max) calculated max Nth percentile value for each data source (rrdtool file) selected on the graph.  Example, 3 data sources are defined on the graph, for each data source, the max Nth percentile is calculated, and out of the resulting set of values, the highest value is selected and returned.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>aggregate_max</CODE
+></TD
+><TD
+>Calculates the Nth percentile by selecting the highest value for each summed value of like data sources and selecting the maximum value of that set to calculate the Nth percentile value.  Example, you have a graph with 5 traffic_in and 18 traffic_out data sources.  The traffic_in rows are summed together, then the traffic_out rows are summed together, then for each row, the higher of the 2 values is selected.  The Nth percentile is calculated from the resulting maximum values.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>aggregate_sum</CODE
+></TD
+><TD
+>Calculates the Nth percentile by summing all data sources on the graph row for row and calculates the Nth value on the resulting summed data.  Example, you have a graph with 4 traffic_in and 3 traffic_out data sources defined.  All the defined traffic_in and traffic_out are summed together and then the Nth percentile value is calculated from that set.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>aggregate_current</CODE
+></TD
+><TD
+>Calculates the Nth percentile by summing items matching the selected data source name row for row from each data source defined on the graph with the same data source name and then returning the Nth percent value calculated.  Example, you have a graph with 3 traffic_out and 5 traffic_in data sources defined.  The traffic_in is selected on the graph item where this variable is used, so all graph items for traffic_in are summed and then the Nth value is calculated and returned as the variable.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>aggregate</CODE
+></TD
+><TD
+>Calculates the Nth percentile by summing like data source names row for row from each data source defined on the graph and then returning the highest Nth percent value calculated for like data source names.  Example, you have a graph with 3 traffic_out and 5 traffic_in data sources defined.  The traffic_in and traffic_out are summed then the Nth value is calculated and the higher of the 2 values is returned as the variable.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>Concerning aggregate Nth percentile functions and rra definitions: </B
+>All data sources used in a graph MUST have the same rra definitions.  If the number of rows do not match when calculations are attempted, the results may produce errors and invalid results.  Please also be aware the aggregate functions take more memory and processor power when used.  Recommended minimum of 64 megs memory limit for php when querying large ranges or graphs with a large ammount of aggregated data sources.</P
+></BLOCKQUOTE
+></DIV
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN2661"
+></A
+><P
+><B
+>Example 18-3. Output in the following format, for 95th percentile: 42.58 mbit</B
+></P
+><P
+>						<KBD
+CLASS="USERINPUT"
+>|95:bits:6:max:2|</KBD
+>
+					</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VARIABLE_BANDWIDTH_SUMMATION"
+>Bandwidth Summation</A
+></H2
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>|sum:([0-9]|auto):(current|total):([0-9]):([0-9]+|auto)|</KBD
+></PRE
+><P
+>					Bandwidth summation is useful for summing up all values in an RRD file for a given time range. This is typically
+					useful on traffic graphs where you can see a total of all traffic that has gone through an interface in a given
+					time period.
+				</P
+><P
+>					In Cacti, bandwidth summation works just like any other graph variable. To use this variable you must give it three
+					arguments:
+				</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN2671"
+></A
+><P
+><B
+>Table 18-3. Bandwidth Summation Argument Description</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>([0-9]|auto)</CODE
+></TD
+><TD
+>This field determines the power of 10 divisor that will be applied to your number. Enter '0' to leave the number alone, '3' for kilo or '6' for mega, etc. You can also enter 'auto' for this field to have Cacti automatically scale the number and insert the appropriate label.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>(current|total)</CODE
+></TD
+><TD
+>You can choose to calculate the summation based on the current data source or a total of all data sources used on the graph. The only valid values for this field are 'current' and 'total'.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>[0-9]</CODE
+></TD
+><TD
+>Enter the number of digits to use for floating point precision when printing out the final number. The default value for this field is two decimal places.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>([0-9]+|auto)</CODE
+></TD
+><TD
+>Enter the number of seconds in the past to perform the summation calculation for. For instance '86400' for 24 hours, '172800' for 48 hours, etc. You can also enter 'auto' for this field to have Cacti use the graph timespan.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN2697"
+></A
+><P
+><B
+>Example 18-4. Output in the following format: 36.47 GB</B
+></P
+><P
+>						<KBD
+CLASS="USERINPUT"
+>|sum:auto:current:2:auto|</KBD
+>
+					</P
+></DIV
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="host_variables.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Reference</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Host Variables</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

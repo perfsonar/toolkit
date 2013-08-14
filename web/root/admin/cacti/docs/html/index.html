@@ -1,0 +1,668 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>The Cacti Manual</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="NEXT"
+TITLE="Installation"
+HREF="installation.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="BOOK"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="BOOK"
+><A
+NAME="AEN1"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>The Cacti Manual</A
+></H1
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN5"
+></A
+>Ian Berry</H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN8"
+></A
+>Tony Roman</H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN11"
+></A
+>Larry Adams</H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN14"
+></A
+>J.P. Pasnak</H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN17"
+></A
+>Jimmy Conner</H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN20"
+></A
+>Reinhard Scheck</H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN23"
+></A
+>Andreas Braun</H3
+><P
+CLASS="COPYRIGHT"
+><A
+HREF="LICENSE.html"
+>Copyright</A
+> &copy; 2013 The Cacti Group</P
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>I. <A
+HREF="installation.html"
+>Installation</A
+></DT
+><DD
+><DL
+><DT
+>1. <A
+HREF="requirements.html"
+>Requirements</A
+></DT
+><DT
+>2. <A
+HREF="install_unix.html"
+>Installing Under Unix</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="install_unix.html#RPM_PACKAGES"
+>Required Packages for RPM-based Operating Systems</A
+></DT
+><DT
+><A
+HREF="bsd_ports.html"
+>Ports for FreeBSD</A
+></DT
+><DT
+><A
+HREF="unix_configure_php.html"
+>Configure PHP</A
+></DT
+><DT
+><A
+HREF="unix_configure_httpd.html"
+>Configure the Webserver (Apache)</A
+></DT
+><DT
+><A
+HREF="unix_configure_mysql.html"
+>Configure MySQL</A
+></DT
+><DT
+><A
+HREF="unix_configure_cacti.html"
+>Install and Configure Cacti</A
+></DT
+><DT
+><A
+HREF="unix_configure_spine.html"
+>(Optional) Install and Configure <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+></A
+></DT
+><DT
+><A
+HREF="unix_apply_patches.html"
+>Apply Patches</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="install_windows.html"
+>Installing Under Windows</A
+></DT
+><DT
+>4. <A
+HREF="upgrade.html"
+>Upgrading Cacti</A
+></DT
+></DL
+></DD
+><DT
+>II. <A
+HREF="basics.html"
+>Basics</A
+></DT
+><DD
+><DL
+><DT
+>5. <A
+HREF="operating_principles.html"
+>Principles of Operation</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="operating_principles.html#DATA_RETRIEVAL"
+>Data Retrieval</A
+></DT
+><DT
+><A
+HREF="data_storage.html"
+>Data Storage</A
+></DT
+><DT
+><A
+HREF="data_presentation.html"
+>Data Presentation</A
+></DT
+></DL
+></DD
+><DT
+>6. <A
+HREF="graph_overview.html"
+>Graph Overview</A
+></DT
+><DT
+>7. <A
+HREF="graph_howto.html"
+>How to Graph Your Network</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="graph_howto.html#NEW_DEVICE"
+>Creating a Device</A
+></DT
+><DT
+><A
+HREF="new_graphs.html"
+>Creating the Graphs</A
+></DT
+></DL
+></DD
+><DT
+>8. <A
+HREF="graph_viewing.html"
+>Viewing Graphs</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="graph_viewing.html#NEW_GRAPH_TREES"
+>Graph Trees</A
+></DT
+></DL
+></DD
+><DT
+>9. <A
+HREF="user_management.html"
+>User Management</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="user_management.html#EDIT_EXISTING_USER"
+>Editing an existing User</A
+></DT
+><DT
+><A
+HREF="create_new_user.html"
+>Creating a New User</A
+></DT
+><DT
+><A
+HREF="copying_user.html"
+>Copying a user</A
+></DT
+><DT
+><A
+HREF="enable_disable_users.html"
+>Enable/Disable Users</A
+></DT
+><DT
+><A
+HREF="batch_copy_users.html"
+>Batch Copy Users</A
+></DT
+><DT
+><A
+HREF="delete_users.html"
+>Delete Users</A
+></DT
+><DT
+><A
+HREF="guest_access.html"
+>Guest (Anonymous) Access</A
+></DT
+></DL
+></DD
+></DL
+></DD
+><DT
+>III. <A
+HREF="advanced_topics.html"
+>Advanced Topics</A
+></DT
+><DD
+><DL
+><DT
+>10. <A
+HREF="graph_snmp_oid.html"
+>Graph a Single SNMP OID</A
+></DT
+><DT
+>11. <A
+HREF="data_input_methods.html"
+>Data Input Methods</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="data_input_methods.html#NEW_DATA_INPUT_METHOD"
+>Creating a Data Input Method</A
+></DT
+><DT
+><A
+HREF="making_scripts_work_with_cacti.html"
+>Making Your Scripts Work With Cacti</A
+></DT
+></DL
+></DD
+><DT
+>12. <A
+HREF="data_queries.html"
+>Data Queries</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="data_queries.html#NEW_DATA_QUERY"
+>Creating a Data Query</A
+></DT
+><DT
+><A
+HREF="snmp_query_xml.html"
+>SNMP Query XML Syntax</A
+></DT
+><DT
+><A
+HREF="script_query_xml.html"
+>Script Query XML Syntax</A
+></DT
+></DL
+></DD
+><DT
+>13. <A
+HREF="templates.html"
+>Templates</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="templates.html#DATA_TEMPLATES"
+>Data Templates</A
+></DT
+><DT
+><A
+HREF="graph_templates.html"
+>Graph Templates</A
+></DT
+><DT
+><A
+HREF="host_templates.html"
+>Host Templates</A
+></DT
+><DT
+><A
+HREF="template_import.html"
+>Import Templates</A
+></DT
+><DT
+><A
+HREF="template_export.html"
+>Export Templates</A
+></DT
+></DL
+></DD
+><DT
+>14. <A
+HREF="php_script_server.html"
+>PHP Script Server</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="php_script_server.html#USING_SCRIPT_SERVER"
+>Using the Script Server</A
+></DT
+><DT
+><A
+HREF="upgrade_using_hostmib_data_queries.html"
+>Upgrade Steps for the Example HostMib Data Queries</A
+></DT
+><DT
+><A
+HREF="migration_php_scripts_to_script_server.html"
+>Migration of Existing PHP Scripts to Script Server</A
+></DT
+><DT
+><A
+HREF="testing_script_in_script_server.html"
+>Testing Your Script in the Script Server</A
+></DT
+></DL
+></DD
+><DT
+>15. <A
+HREF="using_spine.html"
+><SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+></A
+></DT
+></DL
+></DD
+><DT
+>IV. <A
+HREF="cacti_help.html"
+>Help</A
+></DT
+><DD
+><DL
+><DT
+>16. <A
+HREF="how_to.html"
+>How To</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="how_to.html#SCRIPT_TO_GRAPH"
+>Simplest Method of Going from Script to Graph (Walkthrough)</A
+></DT
+></DL
+></DD
+><DT
+>17. <A
+HREF="faq.html"
+>Frequently Asked Questions</A
+></DT
+></DL
+></DD
+><DT
+>V. <A
+HREF="reference.html"
+>Reference</A
+></DT
+><DD
+><DL
+><DT
+>18. <A
+HREF="variables.html"
+>Variables</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="variables.html#GRAPH_VARIABLES"
+>Graph Variables</A
+></DT
+><DT
+><A
+HREF="host_variables.html"
+>Host Variables</A
+></DT
+></DL
+></DD
+><DT
+>19. <A
+HREF="rrdtool_features.html"
+>RRDTool Specific Features</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="rrdtool_features.html#GPRINT_PRESETS"
+>GPRINT Presets</A
+></DT
+><DT
+><A
+HREF="cdefs.html"
+>CDEFs</A
+></DT
+></DL
+></DD
+><DT
+>20. <A
+HREF="scripts.html"
+>Command Line Scripts</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="scripts.html#CLI_REBUILD_POLLER_CACHE"
+>Rebuild Poller Cache</A
+></DT
+><DT
+><A
+HREF="cli_poller_reindex_hosts.html"
+>Re-Index Hosts</A
+></DT
+><DT
+><A
+HREF="cli_poller_output_empty.html"
+>Empty Poller Output Table</A
+></DT
+><DT
+><A
+HREF="cli_poller_graphs_reapply_names.html"
+>Reapply Suggested Names to Graphs</A
+></DT
+><DT
+><A
+HREF="cli_copy_user.html"
+>Copy Local Cacti Users</A
+></DT
+><DT
+><A
+HREF="cli_add_device.html"
+>Add a New Device</A
+></DT
+><DT
+><A
+HREF="cli_add_data_query.html"
+>Associate a Data Query to an existing Host</A
+></DT
+><DT
+><A
+HREF="cli_add_graph_template.html"
+>Associate a Graph Template to an existing Host</A
+></DT
+><DT
+><A
+HREF="cli_add_graphs.html"
+>Add a New Graph</A
+></DT
+><DT
+><A
+HREF="cli_add_tree.html"
+>Add Items to a Tree</A
+></DT
+><DT
+><A
+HREF="cli_add_perms.html"
+>Add Graph Permissions</A
+></DT
+></DL
+></DD
+><DT
+>21. <A
+HREF="debugging.html"
+>Debugging</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="debugging.html#CHECK_LOG_FILE"
+>Check Cacti Log File</A
+></DT
+><DT
+><A
+HREF="check_data_gathering.html"
+>Check Basic Data Gathering</A
+></DT
+><DT
+><A
+HREF="check_cacti_poller.html"
+>Check cacti's poller</A
+></DT
+><DT
+><A
+HREF="check_mysql_updating.html"
+>Check MySQL updating</A
+></DT
+><DT
+><A
+HREF="check_rrd_updating.html"
+>Check rrd file updating</A
+></DT
+><DT
+><A
+HREF="check_rrd_owner.html"
+>Check rrd file ownership</A
+></DT
+><DT
+><A
+HREF="check_rrd_numbers.html"
+>Check rrd file numbers</A
+></DT
+><DT
+><A
+HREF="check_rrd_graph.html"
+>Check rrdtool graph statement</A
+></DT
+><DT
+><A
+HREF="debug_miscellaneous.html"
+>Miscellaneous</A
+></DT
+><DT
+><A
+HREF="debug_rpm_installation.html"
+>RPM Installation?</A
+></DT
+><DT
+><A
+HREF="check_zero_values.html"
+>Not NaN, but 0 (zero) values?</A
+></DT
+></DL
+></DD
+></DL
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="installation.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Installation</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

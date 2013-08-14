@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Spine</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Advanced Topics"
+HREF="advanced_topics.html"><LINK
+REL="PREVIOUS"
+TITLE="Testing Your Script in the Script Server"
+HREF="testing_script_in_script_server.html"><LINK
+REL="NEXT"
+TITLE="Help"
+HREF="cacti_help.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="testing_script_in_script_server.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="cacti_help.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="USING_SPINE"
+></A
+>Chapter 15. <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+></H1
+><P
+>			<SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> is the fast replacement for cmd.php. It is written in C to ensure ultimate
+			performance for device polling. Expect a decrease in polling time of an order of magnitude.
+			Polling times far less than 60 seconds for about 20,000 data sources are achievable
+			e.g. on a dual XEON system supplied with 4 GB RAM and standard local disks.
+		</P
+><P
+>			When using <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+>, don't change crontab settings! Always use poller.php with crontab!
+			To activate <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> instead of cmd.php, please visit <SPAN
+CLASS="GUILABEL"
+>Settings</SPAN
+>
+			and select the <SPAN
+CLASS="GUILABEL"
+>Poller</SPAN
+> tab. Select <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+>
+			and save. Now, poller.php will use <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> on all subsequent polling cycles.
+		</P
+><P
+>			While <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> is really fast, choosing the correct setup will ensure, that all processor
+			resources are used. Required settings for <SPAN
+CLASS="GUILABEL"
+>Maximum Concurrent Poller Processes</SPAN
+>
+			are 1-2 times the number of CPU cores available for <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+>.
+		</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN2048"
+></A
+><P
+><B
+>Table 15-1. <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> Specific Execution Parameters</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Maximum Threads per Process</TD
+><TD
+>The maximum threads allowed per process.
+						Using a higher number when using <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> will improve performance.
+						Required settings are 10-15. Values above 50 are most often insane
+						and may degrade preformance</TD
+></TR
+><TR
+><TD
+>Number of PHP Script Servers</TD
+><TD
+>The number of concurrent script server processes to run per <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> process.
+						Settings between 1 and 10 are accepted.
+						Script Servers will pre-load a PHP environment.
+						Then, the Script Server Scripts are included into that environment to
+						save the overhead of reloading PHP each and every time.</TD
+></TR
+><TR
+><TD
+>Script and Script Server Timeout Value</TD
+><TD
+>The maximum time that <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> will wait on a script to complete, in units of seconds.
+						If a Script Server Script is terminated due to timeout conditions,
+						the value entered into the rrd file will be NaN</TD
+></TR
+><TR
+><TD
+>The Maximum SNMP OID's Per SNMP Get Request</TD
+><TD
+>The maximum number of snmp get OID's to issue per snmp request.
+						Increasing this value speeds poller performance over slow links.
+						The maximum value is 60 OID's. Please bear in mind, that some
+						type of devices do not accept huge OID numbers and may fail if set above 1.
+						That's why cacti 0.8.7 allows to define this value at device level</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="testing_script_in_script_server.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="cacti_help.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Testing Your Script in the Script Server</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="advanced_topics.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Help</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

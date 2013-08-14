@@ -1,0 +1,379 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Data Input Methods</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Advanced Topics"
+HREF="advanced_topics.html"><LINK
+REL="PREVIOUS"
+TITLE="Graph a Single SNMP OID"
+HREF="graph_snmp_oid.html"><LINK
+REL="NEXT"
+TITLE="Making Your Scripts Work With Cacti"
+HREF="making_scripts_work_with_cacti.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="graph_snmp_oid.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="making_scripts_work_with_cacti.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="DATA_INPUT_METHODS"
+></A
+>Chapter 11. Data Input Methods</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="data_input_methods.html#NEW_DATA_INPUT_METHOD"
+>Creating a Data Input Method</A
+></DT
+><DT
+><A
+HREF="making_scripts_work_with_cacti.html"
+>Making Your Scripts Work With Cacti</A
+></DT
+></DL
+></DIV
+><P
+>			Data input methods allow Cacti to retrieve data to insert into data sources and ultimately put on a graph.
+			There are different ways for Cacti to retrieve data, the most popular being through an external script or from
+			SNMP.
+		</P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="NEW_DATA_INPUT_METHOD"
+>Creating a Data Input Method</A
+></H1
+><P
+>				To create a new data input method, select the <SPAN
+CLASS="GUILABEL"
+>Data Input Methods</SPAN
+> option under
+				the <SPAN
+CLASS="GUILABEL"
+>Management</SPAN
+> heading. Once on that screen, click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> on the
+				right. You will be presented with a few fields to populate on the following screen.
+			</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1202"
+></A
+><P
+><B
+>Table 11-1. Field Description: Data Input Methods</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>Give the data query a name that you will use to identify it. This name will be used throughout Cacti to identify the data input method.</TD
+></TR
+><TR
+><TD
+>Input Type</TD
+><TD
+>Select the type of data input method you are trying to create. Valid options here are 'Script/Command', 'SNMP', 'SNMP Query', and 'Script Query'.</TD
+></TR
+><TR
+><TD
+>Input String</TD
+><TD
+><P
+>This field is only used when the <SPAN
+CLASS="GUILABEL"
+>Input Type</SPAN
+> is set to 'Script/Command'. It specifies the full path to the script including any per data source variables inside &lt;&gt;'s from the user. For instance, if you are passing an IP address to a script, your input string might look something like:</P
+><P
+><B
+CLASS="EMPHASIS"
+>/path/to/script.pl &lt;ip&gt;</B
+></P
+><P
+>When the user creates a data source based on this data input method, they will be prompted for an IP address to pass onto the script.</P
+></TD
+></TR
+><TR
+><TD
+>Output String</TD
+><TD
+>This field is only here for legacy purposes and will probably go away in a future version of Cacti.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>				When you are finished filling in all necessary fields, click the <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+> button to continue. You will
+				be redirected back to the same page, but this time with two new boxes, <SPAN
+CLASS="GUILABEL"
+>Input Fields</SPAN
+> and <SPAN
+CLASS="GUILABEL"
+>Output
+				Fields</SPAN
+>. The <SPAN
+CLASS="GUILABEL"
+>Input Fields</SPAN
+> box is used to define any fields that require information from the
+				user. Any input fields referenced to in the input string must be defined here. The <SPAN
+CLASS="GUILABEL"
+>Output Fields</SPAN
+> box
+				is used to define each field that you expect back from the script. <B
+CLASS="EMPHASIS"
+>All data input methods must have at least one output field
+				defined</B
+>, but may have more for a script.
+			</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DATA_INPUT_FIELDS"
+>Data Input Fields</A
+></H2
+><P
+>					To define a new field, click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> next to the input or output field boxes. You
+					will be presented with some or all of the fields below depending on whether you are adding an input or
+					output field.
+				</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1240"
+></A
+><P
+><B
+>Table 11-2. Field Description: Data Input Fields</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Field/Field Name</TD
+><TD
+>Either select or type in the name of the field you want to define. No spaces or other non-alphanumeric characters (except '-' or '_') should be used in this field.</TD
+></TR
+><TR
+><TD
+>Friendly Name</TD
+><TD
+>Enter a more descriptive name for this field which will be used for identification throughout Cacti.</TD
+></TR
+><TR
+><TD
+>Regular Expression Match (Input Only)</TD
+><TD
+>If you want to enforce a certain regular expression pattern when the user enters a value for this field, enter it here. The regular expression must follow POSIX syntax as it will be passed to PHP's ereg() function.</TD
+></TR
+><TR
+><TD
+>Allow Empty Input (Input Only)</TD
+><TD
+>Select whether you want to allow the user to leave the value of this field blank or not.</TD
+></TR
+><TR
+><TD
+>Special Type Code (Input Only) </TD
+><TD
+>Sometimes Cacti needs to reference a field internally, but needs to rely on more than just the field name. For instance, if your field requires an IP address from the user, you can enter 'management_ip' here and Cacti will fill this field in with the current IP address of the selected host. Valid values for this field are: 'hostname', 'management_ip', 'snmp_community', 'snmp_username', 'snmp_password', and 'snmp_version'.</TD
+></TR
+><TR
+><TD
+>Update RRD File (Output Only)</TD
+><TD
+>Check this box if you want Cacti to insert the return value from this field into the RRD file. Obviously, this box needs to be checked for at least one output field per data input source, but can be left blank to have Cacti store the value in the database instead.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>					When you are finished filling in all necessary fields, click the <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+> button to continue. You
+					will be redirected back to the data input method edit page. From here you can continue to add additional fields, or
+					click <SPAN
+CLASS="GUILABEL"
+>Save</SPAN
+> on this screen when finished.
+				</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="graph_snmp_oid.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="making_scripts_work_with_cacti.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Graph a Single SNMP OID</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="advanced_topics.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Making Your Scripts Work With Cacti</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,341 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Re-Index Hosts</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Command Line Scripts"
+HREF="scripts.html"><LINK
+REL="PREVIOUS"
+TITLE="Command Line Scripts"
+HREF="scripts.html"><LINK
+REL="NEXT"
+TITLE="Empty Poller Output Table"
+HREF="cli_poller_output_empty.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="scripts.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 20. Command Line Scripts</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="cli_poller_output_empty.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CLI_POLLER_REINDEX_HOSTS"
+>Re-Index Hosts</A
+></H1
+><P
+>Re-Indexing is required only for SNMP/Script Data Queries.
+			Remember, that whan applying a Data Query to a Host, a
+			<KBD
+CLASS="USERINPUT"
+>Re-Index Method</KBD
+> has to be chosen. This reindex method
+			governs the automatic re-indexing based on specific events.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN3030"
+></A
+><P
+><B
+>Table 20-1. Re_Index Methods</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Re-Index Method</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Uptime Goes Backwards</TD
+><TD
+>Refers to a system reboot. Cacti will detect
+							if the target has been rebootet by querying
+							sysUptime (.1.3.6.1.2.1.1.3.0).
+							If the current value for the uptime is lower
+							than the previous one (uptime goes backwards),
+							a reboot is assumed and a re-index is performed</TD
+></TR
+><TR
+><TD
+>Index Count Changed</TD
+><TD
+>Refers to a change of the number of indexed
+							items, e.g. interfaces, without checking sysUptime.
+							It is of particular interest in cases, where indexed
+							entries may change without the need of a reboot.
+							As modern operating systems seldom require reboots for
+							system configuration changes, you may want to consider
+							this setting for many cases (e.g. creating of a new
+							filesystem without a reboot). The index to be considered
+							is defined by the according XML file.</TD
+></TR
+><TR
+><TD
+>Verify All Fields</TD
+><TD
+>All index fields of the according XML file are checked
+							for changes. This is of particular interest e.g. in cases, where
+							the index is non-numeric (e.g. a MAC address).</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>If you feel the need for manual re-indexing, you may run it from cli.
+			Calling the script with the parameter <KBD
+CLASS="USERINPUT"
+>--help</KBD
+> yields</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q poller_reindex_hosts.php --help
+Cacti Reindex Host Script 1.2, Copyright 2004-2013 - The Cacti Group
+
+usage: poller_reindex_hosts.php --id=[host_id|All] [--qid=[ID|All]] [--host-descr=[description]]
+                           [-d] [-h] [--help] [-v] [--version]
+
+--id=host_id             - The host_id to have data queries reindexed or 'All' to reindex all hosts
+--qid=query_id           - Only index on a specific data query id; defaults to 'All'
+--host-descr=description - The host description to filter by (SQL filters acknowledged)
+--debug                  - Display verbose output during execution
+-v --version             - Display this help message
+-h --help                - Display this help message</PRE
+><P
+>Running it in debug mode for the host with <KBD
+CLASS="USERINPUT"
+>id=2</KBD
+> may yield</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q poller_reindex_hosts.php -id=2 -d
+WARNING: Do not interrupt this script.  Reindexing can take quite some time
+DEBUG: There are '1' data queries to run
+DEBUG: Data query number '1' host: '2' SNMP Query Id: '1' starting
+DEBUG: Data query number '1' host: '2' SNMP Query Id: '1' ending</PRE
+><P
+>A silent run for all devices is issued by</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q poller_reindex_hosts.php -id=All
+WARNING: Do not interrupt this script.  Reindexing can take quite some time
+.....<SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+></PRE
+><P
+>You may run this script against a specific data query id using <KBD
+CLASS="USERINPUT"
+>--qid=[data query id]</KBD
+> like</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q poller_reindex_hosts.php --id=All --qid=1 -d
+WARNING: Do not interrupt this script.  Reindexing can take quite some time
+DEBUG: There are '3' data queries to run
+DEBUG: Data query number '1' host: '1' SNMP Query Id: '1' starting
+DEBUG: Data query number '1' host: '1' SNMP Query Id: '1' ending
+DEBUG: Data query number '2' host: '2' SNMP Query Id: '1' starting
+DEBUG: Data query number '2' host: '2' SNMP Query Id: '1' ending
+DEBUG: Data query number '3' host: '15' SNMP Query Id: '1' starting
+DEBUG: Data query number '3' host: '15' SNMP Query Id: '1' ending</PRE
+><P
+>It is possible, to select a host based on its host description using <KBD
+CLASS="USERINPUT"
+>--host-descr=[host description]</KBD
+>.
+			It is allowed to apply an SQL filter expression for the description like <KBD
+CLASS="USERINPUT"
+>--qid=some%descr</KBD
+>.
+			Use this parameter in conjunction with either <KBD
+CLASS="USERINPUT"
+>--id=[host id]</KBD
+> or
+			<KBD
+CLASS="USERINPUT"
+>--qid=[data query id]</KBD
+> or both:</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q poller_reindex_hosts.php --id=All --qid=1 --host-descr=ga%f -d
+WARNING: Do not interrupt this script.  Reindexing can take quite some time
+DEBUG: There are '1' data queries to run
+DEBUG: Data query number '1' host: '2' SNMP Query Id: '1' starting
+DEBUG: Data query number '1' host: '2' SNMP Query Id: '1' ending</PRE
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>Stop the Poller during Re-Indexing</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>Re-Indexing interferes with the poller operation.
+				Please make sure, that the poller is not running and will not start
+				during a reindex operation</P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="scripts.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="cli_poller_output_empty.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Command Line Scripts</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="scripts.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Empty Poller Output Table</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

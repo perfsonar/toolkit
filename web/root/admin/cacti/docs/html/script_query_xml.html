@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Script Query XML Syntax</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Data Queries"
+HREF="data_queries.html"><LINK
+REL="PREVIOUS"
+TITLE="SNMP Query XML Syntax"
+HREF="snmp_query_xml.html"><LINK
+REL="NEXT"
+TITLE="Templates"
+HREF="templates.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="snmp_query_xml.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 12. Data Queries</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="templates.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SCRIPT_QUERY_XML"
+>Script Query XML Syntax</A
+></H1
+><PRE
+CLASS="PROGRAMLISTING"
+>&lt;query&gt;
+   &lt;name&gt;Get Unix Mounted Partitions&lt;/name&gt;
+   &lt;description&gt;Queries a list of mounted partitions on a unix-based host with the 'df' command.&lt;/description&gt;
+   &lt;script_path&gt;perl |path_cacti|/scripts/query_unix_partitions.pl&lt;/script_path&gt;
+   &lt;arg_index&gt;index&lt;/arg_index&gt;
+   &lt;arg_query&gt;query&lt;/arg_query&gt;
+   &lt;arg_get&gt;get&lt;/arg_get&gt;
+   &lt;arg_num_indexes&gt;num_indexes&lt;/arg_num_indexes&gt;
+   &lt;output_delimeter&gt;:&lt;/output_delimeter&gt;
+   &lt;index_order&gt;dskDevice:dskMount&lt;/index_order&gt;
+   &lt;index_order_type&gt;alphabetic&lt;/index_order_type&gt;
+   &lt;index_title_format&gt;|chosen_order_field|&lt;/index_title_format&gt;
+
+   &lt;fields&gt;
+      &lt;dskDevice&gt;
+         &lt;name&gt;Device Name&lt;/name&gt;
+         &lt;direction&gt;input&lt;/direction&gt;
+         &lt;query_name&gt;device&lt;/query_name&gt;
+      &lt;/dskDevice&gt;
+   &lt;/fields&gt;
+&lt;/query&gt;</PRE
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1459"
+></A
+><P
+><B
+>Table 12-4. Script Query XML Field Reference</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="2*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Field</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>query-&gt;name</TD
+><TD
+>(Optional) You can enter a "friendly name" for the script query here. It will not be used by Cacti, and is for identification only.</TD
+></TR
+><TR
+><TD
+>query-&gt;description</TD
+><TD
+>(Optional) You can enter a description for the script query here. It will not be used by Cacti, and is for identification only.</TD
+></TR
+><TR
+><TD
+>query-&gt;script_path</TD
+><TD
+>Enter the complete path to the script or executable that is going to handle your script query. When in doubt, specify the pull path to all binaries referenced in this path, the query may not execute otherwise.</TD
+></TR
+><TR
+><TD
+>query-&gt;arg_index</TD
+><TD
+>Enter the argument that is to be passed to the script to retrieve a list of indexes.</TD
+></TR
+><TR
+><TD
+>query-&gt;arg_query</TD
+><TD
+>Enter the argument that is to be passed to the script to retrieve a list of values given a field name.</TD
+></TR
+><TR
+><TD
+>query-&gt;arg_get</TD
+><TD
+>Enter the argument that is to be passed to the script to retrieve a single value given a field name and index value.</TD
+></TR
+><TR
+><TD
+>query-&gt;arg_num_indexes</TD
+><TD
+>Enter the argument that is to be passed to the script to determine the total number of available indexes. If specified, this will be used to determine when to automatically recache this script query when it is attached to a device.</TD
+></TR
+><TR
+><TD
+>query-&gt;output_delimeter</TD
+><TD
+>Enter the one character delimiter that will be used to separate output values. This is only used when you "query" the script in which case it outputs 'index(delimiter)value'.</TD
+></TR
+><TR
+><TD
+>query-&gt;index_order</TD
+><TD
+>As of version 0.8.6, Cacti will attempt to find the best field to index off of based on whether each row in the query is unique and non-null. If specified, Cacti will perform this check on the fields listed here in the order specified. Only input fields can be specified and multiple fields should be delimited with a comma.</TD
+></TR
+><TR
+><TD
+>query-&gt;index_order_type</TD
+><TD
+><P
+>For sorting purposes, specify whether the index is numeric or alphanumeric.</P
+><P
+><CODE
+CLASS="PARAMETER"
+>numeric</CODE
+>: The indexes in this script query are to be sorted numerically (ie. 1,2,3,10,20,31)</P
+><P
+><CODE
+CLASS="PARAMETER"
+>alphabetic</CODE
+>: The indexes in this script query are to be sorted alphabetically (1,10,2,20,3,31).</P
+></TD
+></TR
+><TR
+><TD
+>query-&gt;index_title_format</TD
+><TD
+>Specify the title format to use when representing an index to the user. Any input field name can be used as a variable if enclosed in pipes (|). The variable <CODE
+CLASS="PARAMETER"
+>|chosen_order_field|</CODE
+> will be substituted with the field chosen by Cacti to index off of (see index_order above).</TD
+></TR
+><TR
+><TD
+>query-&gt;fields</TD
+><TD
+>Each field contained within the script query must be defined under this tag.</TD
+></TR
+><TR
+><TD
+>query-&gt;fields-&gt;dskDevice</TD
+><TD
+>Each defined field in the script query must have a unique name given to it. Do not use spaces or any non-alphanumeric characters, this name must be identifiable within Cacti.</TD
+></TR
+><TR
+><TD
+>query-&gt;fields-&gt;dskDevice-&gt;name</TD
+><TD
+>Here you can specify a "friendly name" for the field. This name will be used by Cacti to help the user identify this field.</TD
+></TR
+><TR
+><TD
+>query-&gt;fields-&gt;dskDevice-&gt;direction</TD
+><TD
+><P
+><CODE
+CLASS="PARAMETER"
+>input</CODE
+>: Input values are the "known" values that you will use to derive the output values, this is where the "query" part of script query comes in. When you create a graph based on a script query, Cacti will prompt you to choose the input value to base the graph on.</P
+><P
+><CODE
+CLASS="PARAMETER"
+>output</CODE
+>: Output values are "unknown" values that are returned from the script. A script query may return multiple statistics for a single index. For instance, a single partition could return free disk space, total disk space, fragmentation percentage, etc.</P
+><P
+>A rule of thumb is that input fields contain semi-static data that is not graphable, while the output fields contain the data that will be graphed.</P
+></TD
+></TR
+><TR
+><TD
+>query-&gt;fields-&gt;dskDevice-&gt;query_name</TD
+><TD
+>Enter the name that Cacti must use when asking the script for information about this field. For instance, the following should return values: '(script_name) query (query_name)'.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="snmp_query_xml.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="templates.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SNMP Query XML Syntax</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="data_queries.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Templates</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

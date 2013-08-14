@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Check cacti's poller</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Debugging"
+HREF="debugging.html"><LINK
+REL="PREVIOUS"
+TITLE="Check Basic Data Gathering"
+HREF="check_data_gathering.html"><LINK
+REL="NEXT"
+TITLE="Check MySQL updating"
+HREF="check_mysql_updating.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="check_data_gathering.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 21. Debugging</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="check_mysql_updating.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CHECK_CACTI_POLLER"
+>Check cacti's poller</A
+></H1
+><P
+>First make sure that crontab always shows poller.php.
+			This program will either call cmd.php, the PHP based poller
+			 _or_ cactid, the fast alternative, written in C.
+			 Define the poller you're using at
+			 <KBD
+CLASS="USERINPUT"
+>Settings</KBD
+>, <KBD
+CLASS="USERINPUT"
+>Poller</KBD
+>.
+			 Cactid has to be implemented seperately, it does not
+			 come with cacti by default.</P
+><P
+>Now, clear <TT
+CLASS="FILENAME"
+>./log/cacti.log</TT
+>
+			(or rename it to get a fresh start)</P
+><P
+>Then, change <KBD
+CLASS="USERINPUT"
+>Settings</KBD
+>, <KBD
+CLASS="USERINPUT"
+>Poller Logging Level</KBD
+>
+			to DEBUG for _one_ polling cycle. You may rename
+			this log as well to avoid more stuff added to it with
+			subsequent polling cycles.</P
+><P
+>Now, find the host/data source in question.
+			The <KBD
+CLASS="USERINPUT"
+>Host[&lt;id&gt;]</KBD
+>
+			is given numerically, the &lt;id&gt; being a specific
+			number for that host. Find this &lt;id&gt;
+			from the <KBD
+CLASS="USERINPUT"
+>Devices</KBD
+> menue when
+			editing the host: The url contains a string like</P
+><PRE
+CLASS="SCREEN"
+>id=&lt;id&gt;</PRE
+><P
+>Check, whether the output is as expected.
+			If not, check your script (e.g. <TT
+CLASS="FILENAME"
+>/full/path/to/perl</TT
+>).
+			If ok, proceed to next step</P
+><P
+>This procedure may be replaced by running the
+			poller manually for the failing host only.
+			To do so, you need the &lt;id&gt;, again.
+			If you're using cmd.php, set the DEBUG logging level as
+			defined above and run</P
+><PRE
+CLASS="SCREEN"
+>php -q cmd.php &lt;id&gt; &lt;id&gt;</PRE
+><P
+>If you're using cactid, you may override
+			logging level when calling the poller:</P
+><PRE
+CLASS="SCREEN"
+>./cactid --verbosity=5 &lt;id&gt; &lt;id&gt;</PRE
+><P
+>All output is printed to STDOUT in both cases.
+			This procdure allows for repeated tests without waiting
+			for the next polling interval. And there's no need to manually
+			search for the failing host between hundreds of lines of output.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="check_data_gathering.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="check_mysql_updating.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Check Basic Data Gathering</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="debugging.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Check MySQL updating</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

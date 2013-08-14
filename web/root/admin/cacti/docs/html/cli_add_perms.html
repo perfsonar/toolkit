@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Add Graph Permissions</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Command Line Scripts"
+HREF="scripts.html"><LINK
+REL="PREVIOUS"
+TITLE="Add Items to a Tree"
+HREF="cli_add_tree.html"><LINK
+REL="NEXT"
+TITLE="Debugging"
+HREF="debugging.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="cli_add_tree.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 20. Command Line Scripts</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="debugging.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CLI_ADD_PERMS"
+>Add Graph Permissions</A
+></H1
+><P
+>This script is used to specify special graph permissions to users.
+			The list of parameters is displyed as usual when calling the script with
+			the parameter <KBD
+CLASS="USERINPUT"
+>--help</KBD
+></P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_perms.php --help
+
+Add Permissions Script 1.0, Copyright 2004-2013 - The Cacti Group
+
+A simple command line utility to add permissions to tree items in Cacti
+
+usage: add_perms.php [ --user-id=[ID] ]
+    --item-type=[graph|tree|host|graph_template]
+    --item-id [--quiet]
+
+Where item-id is the id of the object of type item-type
+List Options:
+    --list-users
+    --list-trees
+    --list-graph-templates
+    --list-graphs --host-id=[ID]</PRE
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_PERMS_LIST_USERS"
+>List Users</A
+></H2
+><P
+>The list of users is retrieved by calling the script with the parameter
+				<KBD
+CLASS="USERINPUT"
+>--list-users</KBD
+>. It goes like</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_perms.php --list-users
+
+Known Users:
+id      username        full_name
+1       admin   Administrator
+3       guest   Guest Account</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_PERMS_LIST_TREES"
+>List Trees</A
+></H2
+><P
+>The list of trees is retrieved by calling the script with the parameter
+				<KBD
+CLASS="USERINPUT"
+>--list-trees</KBD
+>. It goes like</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_perms.php --list-trees
+
+Known Trees:
+id      sort method                     name
+1       Manual Ordering (No Sorting)    Default Tree</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_PERMS_LIST_GRAPH_TEMPLATES"
+>List Graph Templates</A
+></H2
+><P
+>The list of available graph templates is retrieved by calling the script with the parameter
+				<KBD
+CLASS="USERINPUT"
+>--list-graph-templates</KBD
+>. It goes like</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_perms.php --list-graph-templates
+
+Known Graph Templates:(id, name)
+2       Interface - Traffic (bits/sec)
+3       ucd/net - Available Disk Space
+4       ucd/net - CPU Usage
+5       Karlnet - Wireless Levels
+6       Karlnet - Wireless Transmissions
+7       Unix - Ping Latency
+8       Unix - Processes
+9       Unix - Load Average
+...</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_PERMS_LIST_GRAPHS"
+>List Graphs for given Hosts</A
+></H2
+><P
+>To be able to add a permissions to a specific Graph,
+				the id of that very graph is required.
+				Thus, a <KBD
+CLASS="USERINPUT"
+>--list-graphs --host-id=[id]</KBD
+> option was implemented</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_perms.php --list-graphs --host-id=1
+
+Known Host Graphs: (id, name, template)
+1       Localhost - Memory Usage        	Linux - Memory Usage
+2       Localhost - Load Average        	Unix - Load Average
+3       Localhost - Logged in Users     	Unix - Logged in Users
+4       Localhost - Processes   		Unix - Processes
+5       Localhost - Traffic - eth0      	Interface - Traffic (bits/sec, 95th Percentile)
+33      Localhost - Used Space - Memory Buffers Host MIB - Available Disk Space
+34      Localhost - Used Space - Real Memory    Host MIB - Available Disk Space
+35      Localhost - Used Space - Swap Space     Host MIB - Available Disk Space
+36      Localhost - Used Space - /      	Host MIB - Available Disk Space
+37      Localhost - Used Space - /sys   	Host MIB - Available Disk Space
+38      Localhost - Used Space - /boot  	Host MIB - Available Disk Space</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_PERMS_USER"
+>Add Graph Permissions to specific Users</A
+></H2
+><P
+>There are various ways to define graph permissions
+				to specific users. First, we will add graph permissions
+				for a given host. This is done using the parameter
+				<KBD
+CLASS="USERINPUT"
+>--item-type=host</KBD
+> as follows</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_perms.php --user-id=4 --item-type=host --item-id=1</PRE
+><P
+><KBD
+CLASS="USERINPUT"
+>--user-id=4</KBD
+> must specify an existing users.
+				Else, an error message will be printed. As <KBD
+CLASS="USERINPUT"
+>--item-type=host</KBD
+> is given,
+				<KBD
+CLASS="USERINPUT"
+>--item-id=1</KBD
+> must specify a valid host. Again, if no host
+				with this specific id exists, an error message will be printed.
+				No output is produced on successful operations.</P
+><P
+>Next, we will add graph permissions
+				for a given tree. This is done using the parameter
+				<KBD
+CLASS="USERINPUT"
+>--item-type=tree</KBD
+> as follows</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_perms.php --user-id=4 --item-type=tree --item-id=1</PRE
+><P
+><KBD
+CLASS="USERINPUT"
+>--user-id=4</KBD
+> must specify an existing users.
+				Else, an error message will be printed. As <KBD
+CLASS="USERINPUT"
+>--item-type=tree</KBD
+> is given,
+				<KBD
+CLASS="USERINPUT"
+>--item-id=1</KBD
+> must specify a valid tree (the <SPAN
+CLASS="GUIMENUITEM"
+>Default Tree</SPAN
+>
+				in this case). Again, if no tree
+				with this specific id exists, an error message will be printed.
+				No output is produced on successful operations.</P
+><P
+>Adding graph permissions
+				for a given graph template is done using the parameter
+				<KBD
+CLASS="USERINPUT"
+>--item-type=graph_template</KBD
+> as follows</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_perms.php --user-id=4 --item-type=graph_template --item-id=25</PRE
+><P
+><KBD
+CLASS="USERINPUT"
+>--user-id=4</KBD
+> must specify an existing users.
+				Else, an error message will be printed. As <KBD
+CLASS="USERINPUT"
+>--item-type=graph_template</KBD
+> is given,
+				<KBD
+CLASS="USERINPUT"
+>--item-id=1</KBD
+> must specify a valid graph_template (the <SPAN
+CLASS="GUIMENUITEM"
+>Interface - Traffic (bytes/sec)</SPAN
+>
+				in this case). Again, if no graph template
+				with this specific id exists, an error message will be printed.
+				No output is produced on successful operations.</P
+><P
+>Last but not least we add graph permissions
+				for a given graph by using the parameter
+				<KBD
+CLASS="USERINPUT"
+>--item-type=graph</KBD
+> as follows</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_perms.php --user-id=4 --item-type=graph --item-id=8</PRE
+><P
+><KBD
+CLASS="USERINPUT"
+>--user-id=4</KBD
+> must specify an existing users.
+				Else, an error message will be printed. As <KBD
+CLASS="USERINPUT"
+>--item-type=graph</KBD
+> is given,
+				<KBD
+CLASS="USERINPUT"
+>--item-id=1</KBD
+> must specify a valid graph.
+				Again, if no graph template
+				with this specific id exists, an error message will be printed.
+				No output is produced on successful operations.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="cli_add_tree.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="debugging.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Add Items to a Tree</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="scripts.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Debugging</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Configure PHP</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing Under Unix"
+HREF="install_unix.html"><LINK
+REL="PREVIOUS"
+TITLE="Ports for FreeBSD"
+HREF="bsd_ports.html"><LINK
+REL="NEXT"
+TITLE="Configure the Webserver (Apache)"
+HREF="unix_configure_httpd.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="bsd_ports.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Installing Under Unix</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="unix_configure_httpd.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="UNIX_CONFIGURE_PHP"
+>Configure PHP</A
+></H1
+><P
+>Please ensure, that PHP support is either builtin or installed for the
+					following PHP extension modules:</P
+><P
+></P
+><UL
+><LI
+><P
+>								<SPAN
+CLASS="APPLICATION"
+>mysql</SPAN
+> (For configuration, see note below)
+							</P
+></LI
+><LI
+><P
+>								<SPAN
+CLASS="APPLICATION"
+>SNMP</SPAN
+> (For configuration, see note below)
+							</P
+></LI
+><LI
+><P
+>								<SPAN
+CLASS="APPLICATION"
+>XML</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								<SPAN
+CLASS="APPLICATION"
+>Session</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								<SPAN
+CLASS="APPLICATION"
+>Sockets</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								<SPAN
+CLASS="APPLICATION"
+>LDAP</SPAN
+> (Required only when using LDAP authentication)
+							</P
+></LI
+><LI
+><P
+>								<SPAN
+CLASS="APPLICATION"
+>GD</SPAN
+> (Required only for some Plugins)
+							</P
+></LI
+></UL
+><P
+> You may run the following command to get the list of all
+					available PHP modules</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>php -m</KBD
+></PRE
+><P
+>Please verify, that the modules are installed and configured correctly.
+					There are several ways to do so, please consult <A
+HREF="http://www.php.net/manual/en/configuration.php"
+TARGET="_top"
+>PHP configuration instructions</A
+>
+					for a complete description.</P
+><P
+>					We will continue using the most recommended way of configuring php extension modules.
+					Please find the file <TT
+CLASS="FILENAME"
+>/etc/php.ini</TT
+>
+					and make the following changes to it:
+					</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>extension_dir = /etc/php.d</KBD
+></PRE
+><P
+>						This will enable PHP to find more configuration directives in that very directory. Other distros point to <TT
+CLASS="FILENAME"
+>/usr/lib/php/modules</TT
+> instead. In each case, you should locate e.g. <TT
+CLASS="FILENAME"
+>mysql.so</TT
+> in that directory.
+					</P
+><P
+>						Activate the <SPAN
+CLASS="APPLICATION"
+>MySQL</SPAN
+> extension
+						via /etc/php.d/mysql.ini
+					</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>; Enable mysql extension module
+extension=mysql.so</KBD
+></PRE
+><P
+>						Activate the <SPAN
+CLASS="APPLICATION"
+>SNMP</SPAN
+> extension
+						via /etc/php.d/snmp.ini
+					</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>; Enable snmp extension module
+extension=snmp.so</KBD
+></PRE
+><P
+>						If you want to allow template importing, uncomment the following line:
+					</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>file_uploads = On</KBD
+></PRE
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="bsd_ports.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="unix_configure_httpd.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Ports for FreeBSD</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="install_unix.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configure the Webserver (Apache)</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

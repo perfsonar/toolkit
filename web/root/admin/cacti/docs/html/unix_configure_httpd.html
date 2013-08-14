@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Configure the Webserver (Apache)</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing Under Unix"
+HREF="install_unix.html"><LINK
+REL="PREVIOUS"
+TITLE="Configure PHP"
+HREF="unix_configure_php.html"><LINK
+REL="NEXT"
+TITLE="Configure MySQL"
+HREF="unix_configure_mysql.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="unix_configure_php.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Installing Under Unix</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="unix_configure_mysql.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="UNIX_CONFIGURE_HTTPD"
+>Configure the Webserver (Apache)</A
+></H1
+><P
+>						Please find the file <TT
+CLASS="FILENAME"
+>/etc/httpd/conf/httpd.conf</TT
+>
+						or equivalent and make the following changes to it:
+					</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+># Load config files from the config directory "/etc/httpd/conf.d".
+Include conf.d/*.conf</KBD
+></PRE
+><P
+>						Now, please locate the PHP configuration file at
+						<TT
+CLASS="FILENAME"
+>/etc/httpd/conf.d/php.conf</TT
+>
+					</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+># PHP is an HTML-embedded scripting language which attempts to make it
+# easy for developers to write dynamically generated webpages.
+LoadModule php_module modules/libphp.so
+#
+# Cause the PHP interpreter to handle files with a .php extension.
+AddHandler php-script .php
+AddType text/html .php
+#
+# Add index.php to the list of files that will be served as directory
+# indexes.
+DirectoryIndex index.php</KBD
+></PRE
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="unix_configure_php.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="unix_configure_mysql.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Configure PHP</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="install_unix.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configure MySQL</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

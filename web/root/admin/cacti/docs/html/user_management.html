@@ -1,0 +1,470 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>User Management</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Basics"
+HREF="basics.html"><LINK
+REL="PREVIOUS"
+TITLE="Viewing Graphs"
+HREF="graph_viewing.html"><LINK
+REL="NEXT"
+TITLE="Creating a New User"
+HREF="create_new_user.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="graph_viewing.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="create_new_user.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="USER_MANAGEMENT"
+></A
+>Chapter 9. User Management</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="user_management.html#EDIT_EXISTING_USER"
+>Editing an existing User</A
+></DT
+><DT
+><A
+HREF="create_new_user.html"
+>Creating a New User</A
+></DT
+><DT
+><A
+HREF="copying_user.html"
+>Copying a user</A
+></DT
+><DT
+><A
+HREF="enable_disable_users.html"
+>Enable/Disable Users</A
+></DT
+><DT
+><A
+HREF="batch_copy_users.html"
+>Batch Copy Users</A
+></DT
+><DT
+><A
+HREF="delete_users.html"
+>Delete Users</A
+></DT
+><DT
+><A
+HREF="guest_access.html"
+>Guest (Anonymous) Access</A
+></DT
+></DL
+></DIV
+><P
+>			In addition to giving you the tools to create sophisticated graphs, Cacti enables you to create users
+			that are tailored specifically to their requirements. Each user has certain settings such as login
+			actions, as well as graph viewing settings. There are also two levels of permissions control, realm
+			permissions and graph permissions which enable you to control what the user can see and change.
+		</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="IMG_USER_LIST"
+></A
+><P
+><B
+>Figure 9-1. User Management</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="images/user_management_list.png"></P
+></DIV
+></DIV
+><P
+>			Out of the box, there are two users that come with every Cacti installation. The "admin" user, is the
+			main user that by default has access to see and change everything in Cacti. This is the user that you
+			first login with in Cacti, and is probably a good idea to keep around unless you know otherwise. The
+			second user is the "guest" user, which controls which areas/graphs are allowed for unauthenticated
+			users. By default this user only has rights to view, but not change all graphs. This enables any
+			unauthenticated user to visit 'graph_view.php' and view your graphs. This behavior can be changed by
+			either changing the realm permissions for the "guest" user, or disabling the guest user altogether
+			under <SPAN
+CLASS="GUILABEL"
+>Cacti Settings</SPAN
+>.  By default in 0.8.7 and later, the "guest" user is not
+			set in the setting, effectively disabling "guest" (Unauthenticated) access to Cacti.
+		</P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="EDIT_EXISTING_USER"
+>Editing an existing User</A
+></H1
+><P
+>				To edit an existing user, select the <SPAN
+CLASS="GUILABEL"
+>User Management</SPAN
+> item under the
+				<SPAN
+CLASS="GUILABEL"
+>Utilities</SPAN
+> heading on the Cacti menu. Once at the user management screen,
+				click username of the user you wish to edit. You will see a screen that looks similar to the image below.
+			</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="IMG_USER_EDIT"
+></A
+><P
+><B
+>Figure 9-2. Editing a User</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="images/user_management_edit.png"></P
+></DIV
+></DIV
+><P
+>				At minimum, you must specify a <SPAN
+CLASS="GUILABEL"
+>User Name</SPAN
+> and
+				a <SPAN
+CLASS="GUILABEL"
+>Password</SPAN
+> for each user. Each user field is described in more detail
+				below. In addition to these fields, each user can have their own realm permissions", graph
+				permissions, and graph settings. Each of these items are described in this section of the
+				manual.
+			</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN974"
+></A
+><P
+><B
+>Table 9-1. Field Description: User Management</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>User Name</TD
+><TD
+>This field contains the actual login name for the user. There are no character limits this field, but it would make sense to keep it to alphanumeric characters to maintain simplicity.</TD
+></TR
+><TR
+><TD
+>Full Name</TD
+><TD
+>(Optional) You can use this field as a more descriptive identifier for the user. It is currently only used for display on the user management page.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>Enter the password for the user twice, once in each text box. Keep in mind that passwords are case sensitive and the password will remain unchanged if the boxes are both left empty.</TD
+></TR
+><TR
+><TD
+>Account Options</TD
+><TD
+>There are currently two account related options that can be set for each user. The first, 'User Must Change Password at Next Login', forces a password change immediately after the user logs in. The second option, 'Allow this User to Keep Custom Graph Settings', dictates whether the user can maintain their own custom graph viewing settings which includes expanding and collapsing trees.</TD
+></TR
+><TR
+><TD
+>Graph Options</TD
+><TD
+>There are three permission related options that can be set for each user here. The 'User Has Rights to {Tree,List,Preview} View' checkboxes dictate which graph viewing areas the user can see.</TD
+></TR
+><TR
+><TD
+>Login Options</TD
+><TD
+>These options dictate what occurs immediately after the user logs in. The first option, 'Show the page that user pointed their browser to.' will point the user to whatever page they were heading to before being interrupted by the login page. The 'Show the default console screen.' option will always point the user to 'index.php' after a successful login. The last option, 'Show the default graph screen.' will point the user to 'graph_view.php' after a successful login.</TD
+></TR
+><TR
+><TD
+>Authentication Realm</TD
+><TD
+>Multiple types of users can exist in Cacti.  This setting allows you to specify a user for use with Local, Web Basic or LDAP Authentication.  Template users must be Local.  </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="REALM_PERMISSIONS"
+>Realm Permissions</A
+></H2
+><P
+>					Realm permissions control which areas of Cacti a user can access. You can edit a user's realm
+					permissions by selecting <SPAN
+CLASS="GUILABEL"
+>User Management</SPAN
+> and choosing the user you
+					want to edit the permissions for. The <SPAN
+CLASS="GUILABEL"
+>Realm Permissions</SPAN
+> box will be displayed
+					in the lower part of the screen. Each "realm" is a grouping that represents common tasks in Cacti,
+					making it easier to fine tune each user's access.
+				</P
+><P
+>					If you want to create a user that can only view graphs, you should select the <SPAN
+CLASS="GUILABEL"
+>View
+					Graphs</SPAN
+> realm and leave everything else unchecked. See the <SPAN
+CLASS="GUILABEL"
+>Graph
+					Permissions</SPAN
+> section for more information about how to fine tune this even more on a per-graph
+					basis. Conversely, if the user needs to access the console, they will need <SPAN
+CLASS="GUILABEL"
+>Console
+					Access</SPAN
+> and any additional realms that you see fit.
+				</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="GRAPH_PERMISSIONS"
+>Graph Permissions</A
+></H2
+><P
+>					Graph permissions control which graphs a user is allowed to view, it does not apply to editing graphs.
+					You can edit a user's graph permissions by selecting <SPAN
+CLASS="GUILABEL"
+>User Management</SPAN
+> and choosing
+					the user you want to edit the permissions for. Now select the <SPAN
+CLASS="GUILABEL"
+>Graph Permissions</SPAN
+> tab
+					to view this user's graph permissions. There are three different ways that you can apply graph permissions,
+					by graph, by host, or by graph template. This works by allowing or denying the user to all graphs associated
+					with the particular group. So you can deny a user to a single graph, all graphs associated with a particular
+					host, or all graphs associated with a particular graph template. Combining these three types of assigning
+					graph permissions results in a very powerful graph policy editor.
+				</P
+><P
+>					Each assignment type contains a <SPAN
+CLASS="GUILABEL"
+>Default Policy</SPAN
+> dropdown which can be used to control
+					whether the user should be allowed to view everything or be denied from everything by default in the particular
+					group. It is very important to remember that these policies are evaluated in the order: graph, host, graph
+					template. Therefore, if you set graph's default policy to <SPAN
+CLASS="GUILABEL"
+>Deny</SPAN
+>, but kept host and graph
+					template at <SPAN
+CLASS="GUILABEL"
+>Allow</SPAN
+>, the user's effective policy would be <SPAN
+CLASS="GUILABEL"
+>Deny</SPAN
+> since
+					the graph assignment type is evaluated first. You typically either want to set all default policies to
+					<SPAN
+CLASS="GUILABEL"
+>Deny</SPAN
+> for a restrictive user, or <SPAN
+CLASS="GUILABEL"
+>Allow</SPAN
+> for a non-restrictive user.
+					If you thoroughly understand Cacti's graph permissions system, these default policies can be combined to provide
+					very complex results.
+				</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="GRAPH_SETTINGS"
+>Graph Settings</A
+></H2
+><P
+>					Cacti stores certain graph viewing settings for each user, which enables each user to view graphs in an optimal
+					way. These preferences controls things such as the preview graph size or the default graph viewing mode to use.
+					In addition to managing these settings here under user management, each user can change their own settings by
+					clicking on the <SPAN
+CLASS="GUILABEL"
+>Graphs</SPAN
+> tab and selecting the <SPAN
+CLASS="GUILABEL"
+>Settings</SPAN
+> tab on the
+					following page. If you want to prevent a user from being able to keep their own graph preferences, uncheck the
+					<SPAN
+CLASS="GUILABEL"
+>Allow this User to Keep Custom Graph Settings</SPAN
+> checkbox in user management. The user will be
+					presented with an "Access Denied" error message if they attempt to click the <SPAN
+CLASS="GUILABEL"
+>Settings</SPAN
+> tab
+					when this box is checked.
+				</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="graph_viewing.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="create_new_user.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Viewing Graphs</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="basics.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Creating a New User</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

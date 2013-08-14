@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Testing Your Script in the Script Server</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PHP Script Server"
+HREF="php_script_server.html"><LINK
+REL="PREVIOUS"
+TITLE="Migration of Existing PHP Scripts to Script Server"
+HREF="migration_php_scripts_to_script_server.html"><LINK
+REL="NEXT"
+TITLE="Spine"
+HREF="using_spine.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="migration_php_scripts_to_script_server.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 14. PHP Script Server</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="using_spine.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="TESTING_SCRIPT_IN_SCRIPT_SERVER"
+>Testing Your Script in the Script Server</A
+></H1
+><P
+>				To test your script in the script server, simply follow the instructions below.  When you have
+				finished you testing, simply type "quit" &lt;cr&lt; at the Script Server command line to exit the
+				script server.
+			</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>						Start the script server - You can do this by typing the following command:
+					</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>php &lt;path_cacti&gt;/script_server.php</KBD
+></PRE
+><P
+>						<B
+CLASS="EMPHASIS"
+>NOTE</B
+>: Due to a bug in Windows implementation of PHP, you must type the full path name to the <TT
+CLASS="FILENAME"
+>script_server.php</TT
+> file.
+					</P
+></LI
+><LI
+><P
+>						Type in your command - Using the example from above, you would type in the following:
+					</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>script server&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>&lt;path_myfunction&gt; my_function argument1 argument2 ...</KBD
+></PRE
+><P
+>						In the Windows environment, your example could be the following:
+					</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>script server&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>c:\wwwroot\cacti\scripts\ss_myfunction.php ss_myfunction localhost public 1 get duddle</KBD
+></PRE
+></LI
+><LI
+><P
+>						If your function is operating properly, you should get a result.
+					</P
+></LI
+><LI
+><P
+>						To quit the script server, simply type "quit" &lt;cr&gt; at the command line.
+					</P
+></LI
+></OL
+><P
+>				<B
+CLASS="EMPHASIS"
+>NOTE</B
+>: If there are errors in your script, you must restart the script server before
+				your retest your code.
+			</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="migration_php_scripts_to_script_server.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="using_spine.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Migration of Existing PHP Scripts to Script Server</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="php_script_server.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

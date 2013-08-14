@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Associate a Data Query to an existing Host</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Command Line Scripts"
+HREF="scripts.html"><LINK
+REL="PREVIOUS"
+TITLE="Add a New Device"
+HREF="cli_add_device.html"><LINK
+REL="NEXT"
+TITLE="Associate a Graph Template to an existing Host"
+HREF="cli_add_graph_template.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="cli_add_device.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 20. Command Line Scripts</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="cli_add_graph_template.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CLI_ADD_DATA_QUERY"
+>Associate a Data Query to an existing Host</A
+></H1
+><P
+>It is recommended to maintain data query associations by maintaining
+			host templates. Each time, a data query is added to a host template,
+			it will automatically associated with all hosts related to that very
+			host template. The data query will be executed as well; this way the
+			snmp cache will be filled with all values related to that query.</P
+><P
+>Nevertheless, it is sometimes suitable to manually associate a certain
+			data query with a single host only without changing any host template.
+			This is, where the script <TT
+CLASS="FILENAME"
+>add_data_query.php</TT
+>
+			comes in. First, let's have a look at the whole list of features
+			it provides. Calling the script with the parameter <KBD
+CLASS="USERINPUT"
+>--help</KBD
+> yields</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_data_query.php --help
+
+Add Data Query Script 1.0, Copyright 2004-2013 - The Cacti Group
+
+A simple command line utility to add a data query to an existing device in Cacti
+
+usage: add_data_query.php --host-id=[ID] --data-query-id=[dq_id] --reindex-method=[method] [--quiet]
+
+Required:
+    --host-id         the numerical ID of the host
+    --data-query-id   the numerical ID of the data_query to be added
+    --reindex-method  the reindex method to be used for that data query
+                      0|None   = no reindexing
+                      1|Uptime = Uptime goes Backwards
+                      2|Index  = Index Count Changed
+                      3|Fields = Verify all Fields
+List Options:
+    --list-hosts
+    --list-data-queries
+    --quiet - batch mode value return
+
+If the data query was already associated, it will be reindexed.</PRE
+><P
+>Let's first stick to the listing options</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_DATA_QUERY_LIST_HOSTS"
+>List all Hosts</A
+></H2
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_data_query.php --list-hosts
+
+Known Hosts: (id, hostname, template, description)
+1       127.0.0.1       8       Localhost
+11      router          3       router.mydomain.com</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_DATA_QUERY_LIST_DATA_QUERIES"
+>List all Data Queries</A
+></H2
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_data_query.php --list-data-queries
+
+Known SNMP Queries:(id, name)
+1       SNMP - Interface Statistics
+2       ucd/net -  Get Monitored Partitions
+3       Karlnet - Wireless Bridge Statistics
+4       Netware - Get Available Volumes
+6       Unix - Get Mounted Partitions
+7       Netware - Get Processor Information
+8       SNMP - Get Mounted Partitions
+9       SNMP - Get Processor Information</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_DATA_QUERY_EXAMPLE"
+>Add a Data Query</A
+></H2
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_data_query.php --host-id=11 --data-query-id=1 --reindex-method=fields
+
+Success - Host (11: router.mydomain.com) data query (1: SNMP - Interface Statistics) reindex method (3: Verify All Fields)</PRE
+><P
+>This example shows the use of a string <CODE
+CLASS="PARAMETER"
+>"fields"</CODE
+> for specifying the reindex method. As given
+			by the help text, the use of the numeric value of <CODE
+CLASS="PARAMETER"
+>"3"</CODE
+> would have given
+			the exact same result. When visiting the device edit panel, you will find non-zero values for the data query status
+			column, e.g. <B
+CLASS="EMPHASIS"
+>Success [41 Items, 5 Rows]</B
+>.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="cli_add_device.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="cli_add_graph_template.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Add a New Device</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="scripts.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Associate a Graph Template to an existing Host</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

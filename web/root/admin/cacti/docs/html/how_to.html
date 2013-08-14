@@ -1,0 +1,941 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>How To</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Help"
+HREF="cacti_help.html"><LINK
+REL="PREVIOUS"
+TITLE="Help"
+HREF="cacti_help.html"><LINK
+REL="NEXT"
+TITLE="Frequently Asked Questions"
+HREF="faq.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="cacti_help.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="faq.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="HOW_TO"
+></A
+>Chapter 16. How To</H1
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SCRIPT_TO_GRAPH"
+>Simplest Method of Going from Script to Graph (Walkthrough)</A
+></H1
+><DIV
+CLASS="AUTHORBLURB"
+><A
+NAME="AEN2080"
+></A
+><P
+>					<B
+CLASS="EMPHASIS"
+>Written by Kevin der Kinderen, <A
+HREF="http://kdeuja.com/~kevin/"
+TARGET="_top"
+>http://kdeuja.com/~kevin/</A
+></B
+>
+				</P
+></DIV
+><P
+>				This HOWTO walks you through the simplest steps of graphing the output of a single value from a script.
+				As a new user of cacti, I had a difficult time understanding how to graph anything that wasn't canned with
+				the original load. After a lot of playing around, I came up with these procedures which can be built upon for
+				more sophisticated collections and graphs.
+			</P
+><P
+>				I do not use templates in this HOWTO. Templates provide a significant advantage if you are graphing the output
+				for multiple instances or creating graphs for multiple hosts. They help to maintain consistency and simplify
+				setup.
+			</P
+><P
+>				The example here is not realistic, but can be used and expanded upon as a model for creating your own graphs.
+			</P
+><P
+>				I've not put a lot of explanations in the procedures. Refer to the Cacti manual for more details.
+			</P
+><P
+>				Have a tested script ready to go. I used the following script located in <TT
+CLASS="FILENAME"
+>/home/cactiuser/bin</TT
+>
+				called <TT
+CLASS="FILENAME"
+>random2.pl</TT
+>:
+			</P
+><PRE
+CLASS="PROGRAMLISTING"
+>#!/usr/bin/perl -w
+
+print int(rand(10));</PRE
+><P
+>				This script simply prints out a random integer between 0 and 9 every time it's called.
+			</P
+><P
+></P
+><P
+><B
+>The minimal steps to create a graph from a script are simply:</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>						Create a Data Input Method to tell Cacti how to call the script and what to expect from it.
+					</P
+></LI
+><LI
+><P
+>						Create a Data Source to tell cacti how and where the data will be stored.
+					</P
+></LI
+><LI
+><P
+>						Create a Graph to tell cacti how the data will be presented in graph form.
+					</P
+></LI
+><LI
+><P
+>						Add Graph to Graph View so you can view the graph.
+					</P
+></LI
+><LI
+><P
+>						View the Graph
+					</P
+></LI
+></OL
+><P
+></P
+><P
+><B
+>The details are below:</B
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>						Create Data Input Method
+					</P
+><P
+></P
+><UL
+><LI
+><P
+>								Click the <SPAN
+CLASS="GUILABEL"
+>Console</SPAN
+> tab at the top
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Data Input Methods</SPAN
+> under <SPAN
+CLASS="GUILABEL"
+>Management</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Name: Random 2 Input
+							</P
+></LI
+><LI
+><P
+>								Input Type: Script/Command
+							</P
+></LI
+><LI
+><P
+>								Input String: /home/cactiuser/bin/random2.pl
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful." at the top of the page.
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> by Output Fields (there are no input fields for this example)
+							</P
+></LI
+><LI
+><P
+>								Field [Output]: random_number
+							</P
+></LI
+><LI
+><P
+>								Friendly Name: Random Number
+							</P
+></LI
+><LI
+><P
+>								Update RRD File: checked
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful." and random_number listed under <SPAN
+CLASS="GUILABEL"
+>Output Fields</SPAN
+>.
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Save</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful." and Random Input listed in <SPAN
+CLASS="GUILABEL"
+>Data Input Methods</SPAN
+>.
+							</P
+></LI
+></UL
+></LI
+><LI
+><P
+>						Create a Data Source
+					</P
+><P
+></P
+><UL
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Data Sources</SPAN
+> under <SPAN
+CLASS="GUILABEL"
+>Management</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> in the top right
+							</P
+></LI
+><LI
+><P
+>								The <SPAN
+CLASS="GUILABEL"
+>Data Template</SPAN
+> Section should be None and None, we're not using templates for this example.
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>.
+							</P
+></LI
+><LI
+><P
+>								Name: random2ds
+							</P
+></LI
+><LI
+><P
+>								Data Source Path: blank (Cacti will fill this in)
+							</P
+></LI
+><LI
+><P
+>								Data Input Source: Random 2 Input (this is the data input method you created in step 1)
+							</P
+></LI
+><LI
+><P
+>								Highlight each of the Associated RRA's using control-click
+							</P
+></LI
+><LI
+><P
+>								Step: 300 (300 seconds = 5 minutes)
+							</P
+></LI
+><LI
+><P
+>								Data Source Active: checked
+							</P
+></LI
+><LI
+><P
+>								Describe the Data Source Item inside the RRA by...
+							</P
+></LI
+><LI
+><P
+>								Internal Data Source Name: random_number
+							</P
+></LI
+><LI
+><P
+>								Minimum Value: 0
+							</P
+></LI
+><LI
+><P
+>								Maximum Value: 0
+							</P
+></LI
+><LI
+><P
+>								Data Source Type: GAUGE
+							</P
+></LI
+><LI
+><P
+>								Heartbeat: 600
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful." at the top and the Data Source Path should now have a value (my example &lt;path_rra&gt;/random_number_286.rrd)
+							</P
+></LI
+><LI
+><P
+>								Click Turn On Data Source Debugging Mode to see the results of this step.
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Save</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful" and your new Data Source listed.
+							</P
+></LI
+></UL
+></LI
+><LI
+><P
+>						Create Graph
+					</P
+><P
+></P
+><UL
+><LI
+><P
+>								Select <SPAN
+CLASS="GUILABEL"
+>Graph Management</SPAN
+> under <SPAN
+CLASS="GUILABEL"
+>Management</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Selected Graph Template: None
+							</P
+></LI
+><LI
+><P
+>								Host: None
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Title: RANDOM NUMBERS
+							</P
+></LI
+><LI
+><P
+>								Image Format: PNG
+							</P
+></LI
+><LI
+><P
+>								Height: 120
+							</P
+></LI
+><LI
+><P
+>								Width: 500
+							</P
+></LI
+><LI
+><P
+>								Auto Scale: checked
+							</P
+></LI
+><LI
+><P
+>								Auto Scale Options: Use --alt-autoscale-max
+							</P
+></LI
+><LI
+><P
+>								Logarithmic Scaling: unchecked
+							</P
+></LI
+><LI
+><P
+>								Rigid Boundaries: unchecked
+							</P
+></LI
+><LI
+><P
+>								Auto Padding: checked
+							</P
+></LI
+><LI
+><P
+>								Allow Graph Export: checked
+							</P
+></LI
+><LI
+><P
+>								Upper Limit: 100
+							</P
+></LI
+><LI
+><P
+>								Lower Limit: 0
+							</P
+></LI
+><LI
+><P
+>								Base Value: 1000
+							</P
+></LI
+><LI
+><P
+>								Unit Value: blank
+							</P
+></LI
+><LI
+><P
+>								Unit Exponent Value: 0
+							</P
+></LI
+><LI
+><P
+>								Vertical Label: Random Number
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful."
+							</P
+></LI
+><LI
+><P
+>								If you click "Turn On Graph Debug Mode." now you will see: "Error: can't make a graph without contents." We need to add Graph Items:
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> by <SPAN
+CLASS="GUILABEL"
+>Graph Items</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Data Source: (from list) No Host - random2ds (random_number)
+							</P
+></LI
+><LI
+><P
+>								Color: 0000FF (Blue)
+							</P
+></LI
+><LI
+><P
+>								Graph Item Type: LINE2
+							</P
+></LI
+><LI
+><P
+>								Consolidation Function: AVERAGE
+							</P
+></LI
+><LI
+><P
+>								CDEF Function: None
+							</P
+></LI
+><LI
+><P
+>								Value: blank
+							</P
+></LI
+><LI
+><P
+>								GPRINT Type: Normal
+							</P
+></LI
+><LI
+><P
+>								Text Format: blank
+							</P
+></LI
+><LI
+><P
+>								Insert Hard Return: unchecked
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful.", Item #1 listed and a graph under debug (probably with nothing in it yet)
+							</P
+></LI
+><LI
+><P
+>								To add a legend, click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> by <SPAN
+CLASS="GUILABEL"
+>Graph Items</SPAN
+> again
+							</P
+></LI
+><LI
+><P
+>								Data Source: No Host - random2ds (random_number)
+							</P
+></LI
+><LI
+><P
+>								Color: None
+							</P
+></LI
+><LI
+><P
+>								Graph Item Type: GPRINT
+							</P
+></LI
+><LI
+><P
+>								Consolidation Function: LAST
+							</P
+></LI
+><LI
+><P
+>								CDEF Function: None
+							</P
+></LI
+><LI
+><P
+>								Value: blank
+							</P
+></LI
+><LI
+><P
+>								GPRINT Type: Normal
+							</P
+></LI
+><LI
+><P
+>								Text Format: Cur:
+							</P
+></LI
+><LI
+><P
+>								Insert Hard Return: unchecked
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful." and the graph will have a legend showing the current value. Note: your integer random number has been averaged over the past 5 minutes. At the bottom of the page, click save.
+							</P
+></LI
+><LI
+><P
+>								At the bottom of the page, click <SPAN
+CLASS="GUILABEL"
+>Save</SPAN
+>.
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful." and your graph listed.
+							</P
+></LI
+></UL
+></LI
+><LI
+><P
+>						Add graph to the graph view
+					</P
+><P
+></P
+><UL
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Graph Trees</SPAN
+> under <SPAN
+CLASS="GUILABEL"
+>Management</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								We'll create a tree called "test" to place our graph
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Name: test
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful"
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> beside <SPAN
+CLASS="GUILABEL"
+>Tree Items</SPAN
+> (to add our graph to this tree)
+							</P
+></LI
+><LI
+><P
+>								Under Tree Items [graph]...
+							</P
+></LI
+><LI
+><P
+>								Graph: RANDOM NUMBERS (we named this in step 3)
+							</P
+></LI
+><LI
+><P
+>								Round Robin Archive: Daily (5 Minute Average)
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful." and RANDOM NUMBERS listed under <SPAN
+CLASS="GUILABEL"
+>Tree Items</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Click <SPAN
+CLASS="GUILABEL"
+>Save</SPAN
+>
+							</P
+></LI
+><LI
+><P
+>								Should see "Save Successful." and test listed under <SPAN
+CLASS="GUILABEL"
+>Graph Trees</SPAN
+>
+							</P
+></LI
+></UL
+></LI
+><LI
+><P
+>						View Graph
+					</P
+><P
+></P
+><UL
+><LI
+><P
+>								Select <SPAN
+CLASS="GUILABEL"
+>Graphs</SPAN
+> tab
+							</P
+></LI
+><LI
+><P
+>								Select tree view (Tree beside settings tab)
+							</P
+></LI
+><LI
+><P
+>								Select test tree on left
+							</P
+></LI
+><LI
+><P
+>								You may see "Random Graph" but no graph. It takes two or three polls (10 - 15 minutes) to see a graph. I believe poll 1 to create the rrd, poll 2 to get the first data point and poll 3 to have graphable points.
+							</P
+></LI
+><LI
+><P
+>								While waiting, you can click the RANDOM NUMBERS graph. You'll see	place holders for 4 graphs. Select [source] under Daily (5 Minute Average). You'll see the source for the call to rrdtool graph. Give it a sanity check.
+							</P
+></LI
+><LI
+><P
+>								Now be patient. Hit your refresh button every few minutes. After the first poll I got a few empty graphs.	A few minutes later data started showing up.
+							</P
+></LI
+></UL
+></LI
+></OL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="cacti_help.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="faq.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Help</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="cacti_help.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Frequently Asked Questions</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

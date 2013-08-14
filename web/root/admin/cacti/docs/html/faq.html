@@ -1,0 +1,863 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Frequently Asked Questions</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Help"
+HREF="cacti_help.html"><LINK
+REL="PREVIOUS"
+TITLE="How To"
+HREF="how_to.html"><LINK
+REL="NEXT"
+TITLE="Reference"
+HREF="reference.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="how_to.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="reference.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="FAQ"
+></A
+>Chapter 17. Frequently Asked Questions</H1
+><DIV
+CLASS="QANDASET"
+><DL
+><DT
+>1. <A
+HREF="faq.html#AEN2376"
+>Using Cacti</A
+></DT
+><DD
+><DL
+><DT
+> <A
+HREF="faq.html#AEN2379"
+>							How do I create traffic graphs?
+						</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="faq.html#AEN2406"
+>General</A
+></DT
+><DD
+><DL
+><DT
+> <A
+HREF="faq.html#AEN2409"
+>							I get a "Undefined variable: _SERVER" error message from Cacti.
+						</A
+></DT
+><DT
+> <A
+HREF="faq.html#AEN2414"
+>							I get a "Call to undefined function: mysql_connect()" error message from Cacti.
+						</A
+></DT
+><DT
+> <A
+HREF="faq.html#AEN2419"
+>							I have forgotten my 'admin' password to Cacti, how do I reset it?
+						</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="faq.html#AEN2430"
+>Monitoring</A
+></DT
+><DD
+><DL
+><DT
+> <A
+HREF="faq.html#AEN2433"
+>							I am polling thousands of items and poller.php takes more than 5 minutes to run.
+						</A
+></DT
+><DT
+> <A
+HREF="faq.html#AEN2441"
+>							I changed x, and now some of my graphs are not updating.
+						</A
+></DT
+><DT
+> <A
+HREF="faq.html#AEN2448"
+>							I am using <SPAN
+CLASS="APPLICATION"
+>Redhat 8.0</SPAN
+> and SNMP is not working.
+						</A
+></DT
+><DT
+> <A
+HREF="faq.html#AEN2455"
+>							How do I configure <SPAN
+CLASS="APPLICATION"
+>net-snmp</SPAN
+> so it will work with Cacti?
+						</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="faq.html#AEN2466"
+>Graphs</A
+></DT
+><DD
+><DL
+><DT
+> <A
+HREF="faq.html#AEN2469"
+>							I just installed Cacti and all of my graphs appear as broken images.
+						</A
+></DT
+><DT
+> <A
+HREF="faq.html#AEN2482"
+>							My graphs render, but they do not contain any data.
+						</A
+></DT
+><DT
+> <A
+HREF="faq.html#AEN2494"
+>							A lot of my graphs contain long ifAlias names, but they are being truncated to 15 characters.
+						</A
+></DT
+><DT
+> <A
+HREF="faq.html#AEN2502"
+>							One of my devices rebooted and now I have a huge spike on my graph!
+						</A
+></DT
+><DT
+> <A
+HREF="faq.html#AEN2511"
+>							RRDTool Says: ERROR: unknown option '--slope-mode' or RRDTool Says: ERROR: Garbage ':39:24 To 2005/10/22 16:39:24\c' after command: COMMENT:From 2005/10/21 16:39:24 To 2005/10/22 16:39:24\c
+						</A
+></DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="faq.html#AEN2515"
+>Windows Related</A
+></DT
+><DD
+><DL
+><DT
+> <A
+HREF="faq.html#AEN2518"
+>							I get a "Fatal error: Cannot redeclare title_trim()" error message from Cacti.
+						</A
+></DT
+></DL
+></DD
+></DL
+><DIV
+CLASS="QANDADIV"
+><H3
+><A
+NAME="AEN2376"
+></A
+>1. Using Cacti</H3
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2379"
+></A
+><B
+> </B
+>							How do I create traffic graphs?
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							Before you can create traffic graphs, Cacti must have working SNMP support. One way to do this is to compile
+							PHP with SNMP support built in, many times you can install the 'php-snmp' package to do this. The second option
+							is to have Cacti call the snmpget and snmpwalk binaries from your ucd-snmp or <SPAN
+CLASS="APPLICATION"
+>net-snmp</SPAN
+>
+							installation. You can use the about page to determine whether to are using "built-in" or "external" SNMP support.
+						</P
+><P
+>							Now that you have working SNMP support, follow these steps.
+						</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Click <SPAN
+CLASS="GUILABEL"
+>Devices</SPAN
+> on Cacti's menu.</P
+></LI
+><LI
+><P
+>Click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> to add a new device.</P
+></LI
+><LI
+><P
+>Type a description, hostname, management IP, and SNMP community. Make sure to select "Generic SNMP-enabled Host" under <SPAN
+CLASS="GUILABEL"
+>Host Template</SPAN
+> and click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>.</P
+></LI
+><LI
+><P
+>Click <SPAN
+CLASS="GUILABEL"
+>Create Graphs for this Host</SPAN
+> at the top of the page.</P
+></LI
+><LI
+><P
+>You should see one or more interfaces listed under the <SPAN
+CLASS="GUILABEL"
+>Data Query [SNMP - Interface Statistics]</SPAN
+> box. Place a check next to each interface that you want to graph. Below the box, select type of graph that you want to create (bits, bytes, summation, etc).</P
+></LI
+><LI
+><P
+>Click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>, and <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+> again on the following screen to create your graphs.</P
+></LI
+></OL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="QANDADIV"
+><H3
+><A
+NAME="AEN2406"
+></A
+>2. General</H3
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2409"
+></A
+><B
+> </B
+>							I get a "Undefined variable: _SERVER" error message from Cacti.
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							Cacti 0.8.6 and above requires that you have at least PHP 4.1 or greater installed.
+						</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2414"
+></A
+><B
+> </B
+>							I get a "Call to undefined function: mysql_connect()" error message from Cacti.
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							Your installation of PHP does not have MySQL installed or enabled. On binary-based distributions, make
+							sure you have the 'php-mysql' package installed. Also make sure that 'extension=mysql.so' is uncommented
+							in your php.ini file.
+						</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2419"
+></A
+><B
+> </B
+>							I have forgotten my 'admin' password to Cacti, how do I reset it?
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							To reset the admin account password back to the default of 'admin', connect to your Cacti database at the
+							command line.
+						</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>mysql -u root -p cacti</KBD
+></PRE
+><P
+>							Now execute the following SQL:
+						</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>mysql&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>update user_auth set password=md5('admin') where username='admin';</KBD
+></PRE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="QANDADIV"
+><H3
+><A
+NAME="AEN2430"
+></A
+>3. Monitoring</H3
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2433"
+></A
+><B
+> </B
+>							I am polling thousands of items and poller.php takes more than 5 minutes to run.
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							Give <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+>, the fast replacement for poller.php a try. Unlike poller.php, <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> is written in c and makes use
+							of pthreads. On a typical installation, it is not uncommon for <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+> to poll about 500 items in less then 10
+							seconds.
+						</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2441"
+></A
+><B
+> </B
+>							I changed x, and now some of my graphs are not updating.
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							The best thing to do here is to force Cacti to rebuild its poller cache. To do this click <SPAN
+CLASS="GUILABEL"
+>Utilities</SPAN
+> on the Cacti menu, and select <SPAN
+CLASS="GUILABEL"
+>Clear Poller Cache</SPAN
+>.
+						</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2448"
+></A
+><B
+> </B
+>							I am using <SPAN
+CLASS="APPLICATION"
+>Redhat 8.0</SPAN
+> and SNMP is not working.
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							<SPAN
+CLASS="APPLICATION"
+>Redhat 8.0</SPAN
+> comes with a broken php-snmp package. Updating your 'php-snmp' and 'net-snmp'
+							packages to their latest versions should fix this problem.
+						</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2455"
+></A
+><B
+> </B
+>							How do I configure <SPAN
+CLASS="APPLICATION"
+>net-snmp</SPAN
+> so it will work with Cacti?
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							Run <B
+CLASS="COMMAND"
+>snmpconf -g basic_setup</B
+> and follow the prompts. Also check that the file being used by snmpd
+							is the correct config file. For Redhat Linux, snmpconf creates the <TT
+CLASS="FILENAME"
+>/etc/snmpd.conf</TT
+>, but snmpd
+							uses <TT
+CLASS="FILENAME"
+>/etc/snmpd/snmpd.conf</TT
+>.
+						</P
+><P
+>							If this doesn't work a very simple config file is:
+						</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+># contact
+syslocation Something
+syscontact "root@someone.com"
+
+# auth
+rocommunity public
+
+# disk monitoring
+disk /</KBD
+></PRE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="QANDADIV"
+><H3
+><A
+NAME="AEN2466"
+></A
+>4. Graphs</H3
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2469"
+></A
+><B
+> </B
+>							I just installed Cacti and all of my graphs appear as broken images.
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							For you to actually get graph images, poller.php must run at least once so it can create .rrd files in Cacti's 'rra/'
+							directory. Double check that you configured your <TT
+CLASS="FILENAME"
+>/etc/crontab</TT
+> file to execute poller.php every
+							five minutes. Also make sure that the user poller.php runs as has permission to create new files in Cacti's 'rra/'
+							directory.
+						</P
+><P
+>							If all of your settings appear correct, try running poller.php manually by cd'ing to Cacti's directory and typing:
+						</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>php poller.php</KBD
+></PRE
+><P
+>							If you have files in your 'rra/' directory, but your graphs still appear as broken images, you should enable graph
+							debug mode see exactly why the graphs are not rendering. To do this go into Cacti, select <SPAN
+CLASS="GUILABEL"
+>Graph Management</SPAN
+>
+							from the menu, select any graph listed, and select <SPAN
+CLASS="GUILABEL"
+>Turn On Graph Debug Mode</SPAN
+>.
+						</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2482"
+></A
+><B
+> </B
+>							My graphs render, but they do not contain any data.
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							More often than not, this problem's cause is permissions. For instance if you run poller.php manually as root for testing, any
+							.rrd files that it creates will be owned by root. Now when poller.php runs from cron, it will not be able to update these .rrd
+							files because they are owned by root. You can double check the owner of your .rrd files by running the following command in
+							your Cacti directory:
+						</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>ls -al rra/</KBD
+></PRE
+><P
+>							If only some of your graphs are not updating correctly, double check the <SPAN
+CLASS="GUILABEL"
+>Maximum Value</SPAN
+> field for all data
+							sources used by these graphs. If the value being fed to the .rrd file exceeds its <SPAN
+CLASS="GUILABEL"
+>Maximum Value</SPAN
+>, RRDTool
+							will insert an <SPAN
+CLASS="GUILABEL"
+>Unknown</SPAN
+> and you will see no data on the graph.
+						</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2494"
+></A
+><B
+> </B
+>							A lot of my graphs contain long ifAlias names, but they are being truncated to 15 characters.
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							Cacti does this by default to better control graph title formatting. You can change this limit, by going to <SPAN
+CLASS="GUILABEL"
+>Cacti
+							Settings</SPAN
+> on the Cacti menu, selecting the <SPAN
+CLASS="GUILABEL"
+>Visual</SPAN
+> tab, and changing the value for <SPAN
+CLASS="GUILABEL"
+>Data
+							Queries - Maximum Field Length</SPAN
+>.
+						</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2502"
+></A
+><B
+> </B
+>							One of my devices rebooted and now I have a huge spike on my graph!
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							This occurs because the reboot causes SNMP's counters to reset, which can cause a rather large spike on the graph when
+							<SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+> tries to determine the change between the new small counter value and the large
+							previous value. One way to combat this issue is to specify realistic maximum values for your data sources.
+							<SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+> will ignore any value that is larger than the maximum value.
+						</P
+><P
+>							If you already have a spike on one or more of your graphs, there is a really <A
+HREF="http://cricket.sourceforge.net/contrib/files/killspike2"
+TARGET="_top"
+>useful Perl script</A
+> that will remove them for you.
+						</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2511"
+></A
+><B
+> </B
+>							RRDTool Says: ERROR: unknown option '--slope-mode' or RRDTool Says: ERROR: Garbage ':39:24 To 2005/10/22 16:39:24\c' after command: COMMENT:From 2005/10/21 16:39:24 To 2005/10/22 16:39:24\c
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							This occurs because the version of RRDTool that you are running does not match the RRDTool version Cacti is configured to use.  Double check your Cacti Settings and make sure that the RRDTool version matches what version of RRDTool you are running.
+						</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="QANDADIV"
+><H3
+><A
+NAME="AEN2515"
+></A
+>5. Windows Related</H3
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2518"
+></A
+><B
+> </B
+>							I get a "Fatal error: Cannot redeclare title_trim()" error message from Cacti.
+						</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>							Contrary to previous versions of Cacti, you must not put Cacti in your PHP include path. Check your <TT
+CLASS="FILENAME"
+>php.ini</TT
+> file to make sure there is not something like <KBD
+CLASS="USERINPUT"
+>include_path = C:/Apache2/htdocs/cacti</KBD
+>.
+						</P
+></DIV
+></DIV
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="how_to.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="reference.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>How To</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="cacti_help.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Reference</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

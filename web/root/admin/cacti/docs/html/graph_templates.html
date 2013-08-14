@@ -1,0 +1,701 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Graph Templates</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Templates"
+HREF="templates.html"><LINK
+REL="PREVIOUS"
+TITLE="Templates"
+HREF="templates.html"><LINK
+REL="NEXT"
+TITLE="Host Templates"
+HREF="host_templates.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="templates.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 13. Templates</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="host_templates.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="GRAPH_TEMPLATES"
+>Graph Templates</A
+></H1
+><P
+>				In Cacti, a graph template provides a skeleton for an actual graph. If you have many graphs that
+				share most of their characteristics, using a graph template would probably make sense. After a
+				graph is attached to a particular graph template, all changes made to the graph template will
+				propagate out to all of its graphs, unless <SPAN
+CLASS="GUILABEL"
+>Use Per-Graph Value</SPAN
+> has been checked.
+			</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CREATING_GRAPH_TEMPLATES"
+>Creating a Graph Template</A
+></H2
+><P
+>					To create a new graph template, select <SPAN
+CLASS="GUILABEL"
+>Graph Templates</SPAN
+> under the
+					<SPAN
+CLASS="GUILABEL"
+>Templates</SPAN
+> heading and click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+>.
+				</P
+><P
+>					The first thing you must do is give the template a name. This name has nothing to do with
+					the graph title, but is what you will use to identify the template throughout Cacti.
+					Second, you will notice a list of graph field names with Use Per-Graph Value checkboxes
+					next to each one. The nice thing about templates in Cacti is that you can choose whether
+					to template each field on a per-field basis. If you leave the checkbox uncheked, every
+					graph attached to the template will inherit its value from the template. If the checkbox
+					is checked, every graph attached to the template will contain its own value for that
+					particular field.
+				</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1670"
+></A
+><P
+><B
+>Table 13-3. Field Description: Graph Templates</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Title</TD
+><TD
+><P
+>The title of the graph within Cacti and the title that will be printed on the actual graph itself.</P
+><P
+><B
+CLASS="EMPHASIS"
+>Note:</B
+> You can use the keyword |host_description| in this field, which will be automatically substituted with the current host description.</P
+></TD
+></TR
+><TR
+><TD
+>Image Format</TD
+><TD
+>Choose whether you would prefer to output your graph images in PNG or SVG. GIF is supported only with rrdtool 1.0.x and has been deleted from rrdtool 1.2.x and later</TD
+></TR
+><TR
+><TD
+>Height</TD
+><TD
+>The height of the graph area in pixels</TD
+></TR
+><TR
+><TD
+>Width</TD
+><TD
+>The width of the graph area in pixels</TD
+></TR
+><TR
+><TD
+>Slope Mode</TD
+><TD
+>RRDtool graphs are composed of stair case curves by default.
+								This is in line with the way RRDtool
+           						calculates its data. Some people favor a more "organic" look for their graphs.
+           						<SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+> version 1.2 and above
+								support smoothing of graphs, know as <SPAN
+CLASS="GUILABEL"
+>slope mode</SPAN
+>.</TD
+></TR
+><TR
+><TD
+>Auto Scale</TD
+><TD
+>Enable auto scale for the graph. This option must be check to use the next two options. Upper/Lower limit values are ignored when using autoscale since these boundaries are determined automatically.</TD
+></TR
+><TR
+><TD
+>Auto Scale Options</TD
+><TD
+><P
+>Choose whether you would like to use
+								<P
+></P
+><UL
+><LI
+><P
+>--alt-autoscale (ignoring given limits),</P
+></LI
+><LI
+><P
+>--alt-autoscale-max (accepting a lower limit),</P
+></LI
+><LI
+><P
+>--alt-autoscale-min (accepting an upper limit, requires rrdtool 1.2.x) or</P
+></LI
+><LI
+><P
+>--alt-autoscale (accepting both limits, rrdtool default) on the graph.</P
+></LI
+></UL
+>
+								The <A
+HREF="http://oss.oetiker.ch/rrdtool/doc/rrdgraph.en.html"
+TARGET="_top"
+>RRDTool graph manual</A
+> says:</P
+><P
+>       <B
+CLASS="EMPHASIS"
+>Limits</B
+></P
+><P
+>           [-u|--upper-limit value] [-l|--lower-limit value] [-r|--rigid]</P
+><P
+>           By default the graph will be autoscaling so that it will adjust the y-axis to the range of the data.
+           You can change this behaviour by explicitly setting the limits. The displayed y-axis will then range
+           at least from lower-limit to upper-limit. Autoscaling will still permit those boundaries to be
+           stretched unless the rigid option is set.&#13;</P
+><P
+>           [-A|--alt-autoscale]</P
+><P
+>           Sometimes the default algorithm for selecting the y-axis scale is not satisfactory. Normally the
+           scale is selected from a predefined set of ranges and this fails miserably when you need to graph
+           something like "260 + 0.001 * sin(x)". This option calculates the minimum and maximum y-axis from the
+           actual minimum and maximum data values. Our example would display slightly less than "260-0.001" to
+           slightly more than "260+0.001" (this feature was contributed by Sasha Mikheev).&#13;</P
+><P
+>           [-J|--alt-autoscale-min]</P
+><P
+>           Where "--alt-autoscale" will modify both the absolute maximum AND minimum values, this option will
+           only affect the minimum value. The maximum value, if not defined on the command line, will be 0. This
+           option can be useful when graphing router traffic when the WAN line uses compression, and thus the
+           throughput may be higher than the WAN line speed.&#13;</P
+><P
+>           [-M|--alt-autoscale-max]</P
+><P
+>           Where "--alt-autoscale" will modify both the absolute maximum AND minimum values, this option will
+           only affect the maximum value. The minimum value, if not defined on the command line, will be 0. This
+           option can be useful when graphing router traffic when the WAN line uses compression, and thus the
+           throughput may be higher than the WAN line speed.</P
+></TD
+></TR
+><TR
+><TD
+>Logarithmic Scaling</TD
+><TD
+>Choose if you want logarithmic y-axis scaling.</TD
+></TR
+><TR
+><TD
+>Scientific Units for Logarithmic Scaling</TD
+><TD
+>This option is not available for rrdtool-1.0.x. For linear graphs,
+								scientific units (in magnitudes of k=kilo, M=mega, ...) is default. But
+								for logarithmic graphs, exponential notation is default.
+								Choose if you want logarithmic y-axis scaling and scientific units.</TD
+></TR
+><TR
+><TD
+>Rigid Boundaries Mode</TD
+><TD
+>From the RRDTool manual
+								<SPAN
+CLASS="QUOTE"
+>"Normally rrdgraph will automatically expand the lower and upper
+								limit if the graph contains a value outside the valid range.
+								With this option you can disable this behavior"</SPAN
+>.</TD
+></TR
+><TR
+><TD
+>Auto Padding</TD
+><TD
+>If you have ever created RRDTool-based graphs manually,
+								you may have realized how annoying it can be to get text to
+								line up properly. With this option Cacti will do its best to
+								make the columns on your graph legend line up. This option
+								works best when your graph legend has a consistent number of columns.</TD
+></TR
+><TR
+><TD
+>Allow Graph Export</TD
+><TD
+>If you choose to use Cacti's static HTML/image export, you can
+								choose whether you want each individual graph to be exported.</TD
+></TR
+><TR
+><TD
+>Upper Limit</TD
+><TD
+>The maximum value that will be displayed on the y-axis.
+								This value is ignored is auto-scaling is turned on.</TD
+></TR
+><TR
+><TD
+>Lower Limit</TD
+><TD
+>The minimum value that will be displayed on the y-axis.
+								This value is ignored is auto-scaling is turned on.</TD
+></TR
+><TR
+><TD
+>Base Value</TD
+><TD
+>Whether you want to base the y-axis labels on 1000 or 1024.
+								This field will typically be set to 1024 for memory and 1000
+								for traffic measurements.</TD
+></TR
+><TR
+><TD
+>Unit Grid Value</TD
+><TD
+>Sets the unit value for the y-axis (--y-grid). You should probably
+								keep the unit short as to keep it readable.</TD
+></TR
+><TR
+><TD
+>Unit Exponent Value</TD
+><TD
+>Sets the 10^e scaling of the y-axis. Valid values for
+								this field are between -18 and 18. For example, you could use
+								3 to display everything in 'k' (kilo) or -6 to display everything in 'u' (micro).</TD
+></TR
+><TR
+><TD
+>Vertical Label</TD
+><TD
+>The text to print on the left edge of the graph. Usually
+								is the units the data on the graph is measured in.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>					<B
+CLASS="EMPHASIS"
+>Note:</B
+> For most graph templates, you will want to check the Use
+					<SPAN
+CLASS="GUILABEL"
+>Per-Graph Value</SPAN
+> checkbox for the title field so each graph using this
+					template has its own unique title. It also makes sense to enter an initial value in this
+					field that includes the variable |host_description| for organizational purposes.
+				</P
+><P
+>					When you are finished filling in values for the graph template, click <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+>
+					and you will be presented with a page similar to the graph edit page.
+				</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="IMG_GRAPH_TEMPLATE_NEW"
+></A
+><P
+><B
+>Figure 13-2. Adding a Graph Template</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="images/graph_template.png"></P
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="GRAPH_ITEMS"
+>Graph Items</A
+></H3
+><P
+>						The first thing you should do is create graph items for this graph template, just like for a regular graph.
+						One difference you will notice is that the <SPAN
+CLASS="GUILABEL"
+>Data Sources</SPAN
+> dropdown will contain a list
+						of data template items rather than data source items. It is important that Cacti can make this association
+						here, so that Cacti doesn't have to make unnecessary assumptions later.
+					</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1775"
+></A
+><P
+><B
+>Table 13-4. Field Description: Graph Template Items</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Data Source</TD
+><TD
+>If this graph item is to represent some sort of data, you must select a your data source here. Keep in mind that not all graph items have a data source. Graph item types such as COMMENT, VRULE, and HRULE typically do not.</TD
+></TR
+><TR
+><TD
+>Color</TD
+><TD
+>Depending on the graph item type, you can select a color for the graph item. This field only applies to the graph item types AREA, STACK, LINE1, LINE2, and LINE3.</TD
+></TR
+><TR
+><TD
+>Opacity/Alpha Channel</TD
+><TD
+>For a colored graph item, you may optionally select an opacity (alpha channel).
+									This option is not available with rrdtool-1.0.x.</TD
+></TR
+><TR
+><TD
+>Graph Item Type</TD
+><TD
+><P
+>This field is important because it defines what kind of graph item this is. Types such as AREA, STACK, LINE1, LINE2, and LINE3 are used to represent data on the graph, while COMMENT and GPRINT are used put on the legend. The LEGEND type is specific to Cacti only and can be used if you want to Cacti to automatically create a GPRINT-LAST/GPRINT-AVERAGE/GPRINT-MAXIMUM graph item for you.</P
+><P
+><B
+CLASS="EMPHASIS"
+>Note:</B
+>: You must always put an AREA item before using STACK or your graph will not render.</P
+></TD
+></TR
+><TR
+><TD
+>Consolidation Function</TD
+><TD
+>This tells <SPAN
+CLASS="APPLICATION"
+>RRDTool</SPAN
+> which consolidation function to use when representing this data on the graph. You will typically use AVERAGE for most things on the graph area, and LAST/MAXIMUM as well for GPRINT items.</TD
+></TR
+><TR
+><TD
+>CDEF Function</TD
+><TD
+>If you want to apply a CDEF function to the graph item, select one here. Check out the CDEF section  of the manual for more information.</TD
+></TR
+><TR
+><TD
+>Value</TD
+><TD
+>This field is only used with the HRULE/VRULE graph item types. Type any valid integer to draw the line at for HRULE or the time of the day HH:MM for VRULE.</TD
+></TR
+><TR
+><TD
+>GPRINT Type</TD
+><TD
+>If this item is a GPRINT, you can choose how you want the number to be formatted. You can add your own in the GPRINT Presets section of Cacti.</TD
+></TR
+><TR
+><TD
+>Text Format</TD
+><TD
+>You can enter text to be displayed on the legend here. This field is applicable for all graph item types except for the virtual LEGEND type.</TD
+></TR
+><TR
+><TD
+>Hard Return</TD
+><TD
+>Check this box to force graph items onto the next line.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="GRAPH_ITEM_INPUTS"
+>Graph Item Inputs</A
+></H3
+><P
+>						After creating graph items for your template, you will need to create some graph item inputs. Graph item inputs are
+						unique to graph templates because of the large number of items they sometimes contain. Graph item inputs enable you to
+						take one graph item field, and associate it with multiple graph items.
+					</P
+><P
+>						To create a new graph item input, click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+> on the right of the <SPAN
+CLASS="GUILABEL"
+>Graph Item
+						Inputs</SPAN
+> box. There are various fields that must be filled in for every graph item input:
+					</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1825"
+></A
+><P
+><B
+>Table 13-5. Field Description: Graph Template Items</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>This will be the name used to identify the graph item input on both the graph template and graph edit pages.</TD
+></TR
+><TR
+><TD
+>Description</TD
+><TD
+>(Optional) This description will be displayed on the graph edit page of any graph using this template if specified.</TD
+></TR
+><TR
+><TD
+>Field Type</TD
+><TD
+>You must choose the field that you are going to associate with one or more graph items.</TD
+></TR
+><TR
+><TD
+>Associated Graph Items</TD
+><TD
+>Choose one or more graph items to associate with the field selected for "Field Type". When the user specifies a value for the field, it will be applied to all of the items you select here.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="APPLYING_GRAPH_TEMPLATES"
+>Applying Graph Templates to Graphs</A
+></H2
+><P
+>					Applying a graph template to a graph is a very simple process. The first thing you must do is select the graph you
+					want to apply the template to under <SPAN
+CLASS="GUILABEL"
+>Graph Management</SPAN
+>. Under the <SPAN
+CLASS="GUILABEL"
+>Graph Template
+					Selection</SPAN
+> box, select the graph template that you want to apply to the graph and click
+					<SPAN
+CLASS="GUILABEL"
+>Save</SPAN
+>. If this is a new graph or the graph and graph template contains an equal number of
+					graph items, the graph template will be automatically applied. If number of graph items varies from the graph to
+					the target graph template, you will be propmted with a warning that your graph will be changed.
+				</P
+><P
+>					Once the template is applied to the graph, you will notice that you can only change values for the fields that
+					you checked Use Per-Graph Value for. You will also notice a new box, called <SPAN
+CLASS="GUILABEL"
+>Graph Item Inputs</SPAN
+>.
+					This is where you can specify values for the graph items inputs that you defined in the graph template. The values
+					specified here will be applied to each graph item tied to the graph item input.
+				</P
+><P
+>					<B
+CLASS="EMPHASIS"
+>Now any time a change is made to the graph template, it will be automatically propagated to the graphs
+					attached to it.</B
+>
+				</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="templates.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="host_templates.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Templates</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="templates.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Host Templates</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

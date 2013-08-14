@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Empty Poller Output Table</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Command Line Scripts"
+HREF="scripts.html"><LINK
+REL="PREVIOUS"
+TITLE="Re-Index Hosts"
+HREF="cli_poller_reindex_hosts.html"><LINK
+REL="NEXT"
+TITLE="Reapply Suggested Names to Graphs"
+HREF="cli_poller_graphs_reapply_names.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="cli_poller_reindex_hosts.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 20. Command Line Scripts</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="cli_poller_graphs_reapply_names.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CLI_POLLER_OUTPUT_EMPTY"
+>Empty Poller Output Table</A
+></H1
+><P
+>During normal poller operation, all retrieved results
+			are intermediately stored in the table named <CODE
+CLASS="STRUCTNAME"
+>poller_output</CODE
+>
+			After execution of <SPAN
+CLASS="APPLICATION"
+>cmd.php</SPAN
+> or <SPAN
+CLASS="APPLICATION"
+>Spine</SPAN
+>,
+			this table holds all results. The <SPAN
+CLASS="APPLICATION"
+>poller.php</SPAN
+> finally
+			issues all <SPAN
+CLASS="APPLICATION"
+>rrdtool update</SPAN
+> operations. Thus,
+			after polling has completed, the table should be empty.</P
+><P
+>Conditions may arise, where the table is not (completely) emptied.
+			The most often known issue is lack of php memory. In those cases, the
+			table is bigger than the php memory size, thus not all items are handled
+			correctly. If that issue occurs, you may save all pending updates
+			<B
+CLASS="EMPHASIS"
+>after increasing PHP memory appropriately</B
+> by running
+			this very script. Calling the script with the parameter <KBD
+CLASS="USERINPUT"
+>--help</KBD
+> yields</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q poller_output_empty.php --help
+Cacti Empty Poller Output Table Script 1.0, Copyright 2004-2013 - The Cacti Group
+
+usage: poller_output_empty.php [-h] [--help] [-v] [--version]
+
+-v --version  - Display this help message
+-h --help     - Display this help message</PRE
+><P
+>You see, no parameter is required for operating successfully.
+			Under normal circumstances, running this script should yield</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q poller_output_empty.php
+There were 0, RRD updates made this pass
+<SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+></PRE
+><P
+>In case, you hit the poller process or if the table was really
+			not fully processed, you may find</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q poller_output_empty.php
+OK u:0.00 s:0.00 r:0.04
+OK u:0.00 s:0.00 r:0.04
+OK u:0.00 s:0.00 r:0.04
+OK u:0.00 s:0.00 r:0.04
+OK u:0.00 s:0.00 r:0.04
+OK u:0.00 s:0.00 r:0.04
+OK u:0.00 s:0.00 r:0.04
+OK u:0.00 s:0.00 r:0.04
+OK u:0.00 s:0.00 r:0.04
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.00 r:0.05
+OK u:0.00 s:0.01 r:0.06
+There were 21, RRD updates made this pass
+<SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+></PRE
+><P
+>If logging level verbosity was switched to <KBD
+CLASS="USERINPUT"
+>DEBUG</KBD
+>
+			you may find additional debug messages that usually show up in
+			<TT
+CLASS="FILENAME"
+>cacti.log</TT
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="cli_poller_reindex_hosts.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="cli_poller_graphs_reapply_names.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Re-Index Hosts</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="scripts.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Reapply Suggested Names to Graphs</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

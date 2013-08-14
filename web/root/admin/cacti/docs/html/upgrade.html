@@ -1,0 +1,307 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Upgrading Cacti</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installation"
+HREF="installation.html"><LINK
+REL="PREVIOUS"
+TITLE="Installing Under Windows"
+HREF="install_windows.html"><LINK
+REL="NEXT"
+TITLE="Basics"
+HREF="basics.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="install_windows.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="basics.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="UPGRADE"
+></A
+>Chapter 4. Upgrading Cacti</H1
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>					Backup the old Cacti database.
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>mysqldump -l --add-drop-table cacti &gt; mysql.cacti</KBD
+></PRE
+><P
+>					Note: You will probably have to specify the -u and -p flags for the MySQL username and password. This user
+					must have permission to read from Cacti's database or you will end up with an empty backup.
+				</P
+></LI
+><LI
+><P
+>					Backup the old Cacti directory.
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>mv cacti cacti_old</KBD
+></PRE
+></LI
+><LI
+><P
+>					Extract the distribution tarball.
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>tar xzvf cacti-version.tar.gz</KBD
+></PRE
+></LI
+><LI
+><P
+>					Rename the new Cacti directory to match the old one.
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>mv cacti-version cacti</KBD
+></PRE
+></LI
+><LI
+><P
+>					Edit <TT
+CLASS="FILENAME"
+>include/config.php</TT
+> and specify the MySQL user, password and database for your Cacti configuration.
+				</P
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>$database_type = "mysql";
+$database_default = "cacti";
+$database_hostname = "localhost";
+$database_username = "cactiuser";
+$database_password = "cacti";</KBD
+></PRE
+></LI
+><LI
+><P
+>					Copy the *.rrd files from the old Cacti directory.
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>cp cacti_old/rra/* cacti/rra/</KBD
+></PRE
+></LI
+><LI
+><P
+>					Copy any relevant custom scripts from the old Cacti directory.  Some script are updated between versions.  Therefore, make sure you only over write if the scripts either don't exist or are newer than the distribution's.
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>cp -u cacti_old/scripts/* cacti/scripts/</KBD
+></PRE
+></LI
+><LI
+><P
+>					Copy any relevant custom resource XML files from the old Cacti directory.  Some resource XML files are updated between versions.  Therefore, make sure you only over write if the XML files either don't exist or are newer than the distribution's.
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>cp -u -R cacti_old/resource/* cacti/resource/</KBD
+></PRE
+></LI
+><LI
+><P
+>					Set the appropriate permissions on Cacti's directories for graph/log generation. You
+					should execute these commands from inside Cacti's directory to change the permissions.
+				</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+> <KBD
+CLASS="USERINPUT"
+>chown -R cactiuser rra/ log/</KBD
+></PRE
+><P
+>					(Enter a valid username for cactiuser, this user will also be used in the next step for data
+					gathering.)
+				</P
+></LI
+><LI
+><P
+>					Point your web browser to:
+				</P
+><A
+NAME="AEN648"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+>						http://your-server/cacti/
+					</P
+></BLOCKQUOTE
+><P
+>					Follow the on-screen instructions so your database can be updated to the new version.
+				</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="install_windows.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="basics.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Installing Under Windows</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="installation.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Basics</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

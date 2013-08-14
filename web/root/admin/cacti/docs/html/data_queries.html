@@ -1,0 +1,386 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Data Queries</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Advanced Topics"
+HREF="advanced_topics.html"><LINK
+REL="PREVIOUS"
+TITLE="Making Your Scripts Work With Cacti"
+HREF="making_scripts_work_with_cacti.html"><LINK
+REL="NEXT"
+TITLE="SNMP Query XML Syntax"
+HREF="snmp_query_xml.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="making_scripts_work_with_cacti.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="snmp_query_xml.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="DATA_QUERIES"
+></A
+>Chapter 12. Data Queries</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="data_queries.html#NEW_DATA_QUERY"
+>Creating a Data Query</A
+></DT
+><DT
+><A
+HREF="snmp_query_xml.html"
+>SNMP Query XML Syntax</A
+></DT
+><DT
+><A
+HREF="script_query_xml.html"
+>Script Query XML Syntax</A
+></DT
+></DL
+></DIV
+><P
+>			Data queries are not a replacement for data input methods in Cacti. Instead they provide an easy way to
+			query, or list data based upon an index, making the data easier to graph. The most common use of a data query
+			within Cacti is to retrieve a list of network interfaces via SNMP. If you want to graph the traffic of a network
+			interface, first Cacti must retrieve a list of interfaces on the host. Second, Cacti can use that
+			information to create the necessary graphs and data sources. Data queries are only concerned with the
+			first step of the process, that is obtaining a list of network interfaces and not creating the graphs/data
+			sources for them. While listing network interfaces is a common use for data queries, they also have other
+			uses such as listing partitions, processors, or even cards in a router.
+		</P
+><P
+>			One requirement for any data query in Cacti, is that it has some unique value that defines each row in the list.
+			This concept follows that of a 'primary key' in SQL, and makes sure that each row in the list can be uniquely
+			referenced. Examples of these index values are 'ifIndex' for SNMP network interfaces or the device name for
+			partitions.
+		</P
+><P
+>			There are two types of data queries that you will see referred to throughout Cacti. They are script
+			queries and SNMP queries. Script and SNMP queries are virtually identical in their functionality and
+			only differ in how they obtain their information. A script query will call an external command or
+			script and an SNMP query will make an SNMP call to retrieve a list of data.
+		</P
+><P
+>			All data queries have two parts, the XML file and the definition within Cacti. An XML file must be
+			created for each query, that defines where each piece of information is and how to retrieve it. This
+			could be thought of as the actual query. The second part is a definition within Cacti, which tells
+			Cacti where to find the XML file and associates the data query with one or more graph templates.
+		</P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="NEW_DATA_QUERY"
+>Creating a Data Query</A
+></H1
+><P
+>				Once you have created the XML file that defines your data query, you must add the data query
+				within Cacti. To do this you must click on <SPAN
+CLASS="GUILABEL"
+>Data Queries</SPAN
+> under the <SPAN
+CLASS="GUILABEL"
+>Data
+				Gathering</SPAN
+> heading, and select <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+>. You will be prompted for some
+				basic information about the data query, described in more detail below.
+			</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1309"
+></A
+><P
+><B
+>Table 12-1. Field Description: Data Queries</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>Give the data query a name that you will use to identify it. This name will be used throughout Cacti when presented with a list of data queries.</TD
+></TR
+><TR
+><TD
+>Description</TD
+><TD
+>(Optional) Enter a more detailed description of the data query including the information it queries or additional requirements.</TD
+></TR
+><TR
+><TD
+>XML Path</TD
+><TD
+>Fill in the full path to the XML file that defines this query. You can optionally use the &lt;path_cacti&gt;  variable that will be substituted with the full path to Cacti. On the next screen, Cacti will check to make sure that it can find the XML file.</TD
+></TR
+><TR
+><TD
+>Data Input Method</TD
+><TD
+>This is how you tell Cacti to handle the data it receives from the data query. Typically, you will select "Get SNMP Data (Indexed)" for an SNMP query and "Get Script Data (Indexed)" for a script query.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>				When you are finished filling in all necessary fields, click the <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+> button
+				to continue. You will be redirected back to the same page, but this time with some additional
+				information to fill in. If you receive a red warning that says 'XML File Does Not Exist', correct
+				the value specified in the 'XML Path' field.
+			</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DATA_QUERIES_ASSOCIATED_GRAPH_TEMPLATES"
+>Associated Graph Templates</A
+></H2
+><P
+>					Every data query must have at least one graph template associated with it, and possibly
+					more depending on the number of output fields specified in the XML file. This is where
+					you get to choose what kind of graphs to generate from this query. For instance, the
+					interface data query has multiple graph template associations, used to graph traffic,
+					errors, or packets. To add a new graph template association, simply click <SPAN
+CLASS="GUILABEL"
+>Add</SPAN
+>
+					at the right of the <SPAN
+CLASS="GUILABEL"
+>Associated Graph Templates</SPAN
+> box. You will be presented
+					with a few fields to fill in:
+				</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1338"
+></A
+><P
+><B
+>Table 12-2. Field Description: Associated Graph Templates</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>Give a name describing what kind of data you are trying to represent or graph. When the user creates a graph using this data query, they will see a list of graph template associations that they will have to choose from.</TD
+></TR
+><TR
+><TD
+>Graph Template</TD
+><TD
+>Choose the actual graph template that you want to make the association with.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>					When you are finished filling in these fields, click the <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+> button.
+					You will be redirected back to the same page with some additional information to fill in. Cacti
+					will make a list of each data template referenced to in your selected graph template and display
+					them under the <SPAN
+CLASS="GUILABEL"
+>Associated Data Templates</SPAN
+> box. For each data source item
+					listed, you must selected the data query output field that corresponds with it. <B
+CLASS="EMPHASIS"
+>Do not forget to
+					check the checkbox to the right of each selection, or your settings will not be saved.</B
+>
+				</P
+><P
+>					The <SPAN
+CLASS="GUILABEL"
+>Suggested Values</SPAN
+> box gives you a way to control field values of data sources and graphs
+					created using this data query. If you specify multiple suggested values for the same field, Cacti will evaluate
+					them in order which you can control using the up or down arrow icons. For more information about valid field names
+					and variables, read the section on suggested values.
+				</P
+><P
+>					When you are finished filling in all necessary fields on this form, click the <SPAN
+CLASS="GUILABEL"
+>Save</SPAN
+> button to
+					return to the data queries edit screen. Repeat the steps under this heading as many times as necessary to represent
+					all data in your XML file. When you are finished with this, you should be ready to start adding your data query to
+					hosts.
+				</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="making_scripts_work_with_cacti.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="snmp_query_xml.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Making Your Scripts Work With Cacti</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="advanced_topics.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SNMP Query XML Syntax</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

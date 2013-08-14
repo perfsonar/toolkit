@@ -1,0 +1,559 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Add Items to a Tree</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Command Line Scripts"
+HREF="scripts.html"><LINK
+REL="PREVIOUS"
+TITLE="Add a New Graph"
+HREF="cli_add_graphs.html"><LINK
+REL="NEXT"
+TITLE="Add Graph Permissions"
+HREF="cli_add_perms.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="cli_add_graphs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 20. Command Line Scripts</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="cli_add_perms.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CLI_ADD_TREE"
+>Add Items to a Tree</A
+></H1
+><P
+>Now, that we've created some nice graphs, they should be put
+			the graph trees. This is done using <TT
+CLASS="FILENAME"
+>add_tree.php</TT
+>.
+			As you will notice soon, it is possible to even add header items,
+			hosts and graphs to a tree as well as adding a new tree itself.
+			But let us first see the help output.
+			Calling the script with the parameter <KBD
+CLASS="USERINPUT"
+>--help</KBD
+> yields</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --help
+
+Add Tree Script 1.0, Copyright 2004-2013 - The Cacti Group
+
+A simple command line utility to add objects to a tree in Cacti
+
+usage: add_tree.php  --type=[tree|node] [type-options] [--quiet]
+
+Tree options:
+    --name=[Tree Name]
+    --sort-method=[manual|alpha|natural|numeric]
+
+Node options:
+    --node-type=[header|host|graph]
+    --tree-id=[ID]
+    [--parent-node=[ID] [Node Type Options]]
+
+Header node options:
+    --name=[Name]
+
+Host node options:
+    --host-id=[ID]
+    [--host-group-style=[1|2]]
+    (host group styles:
+     1 = Graph Template,
+     2 = Data Query Index)
+
+Graph node options:
+    --graph-id=[ID]
+    [--rra-id=[ID]]
+
+List Options:
+    --list-hosts
+    --list-trees
+    --list-nodes --tree-id=[ID]
+    --list-rras
+    --list-graphs --host-id=[ID]</PRE
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_TREE_LIST_HOSTS"
+>List Hosts</A
+></H2
+><P
+>The first try is dedicated to the list option
+				<KBD
+CLASS="USERINPUT"
+>--list-hosts</KBD
+>. It goes like</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --list-hosts
+
+Known Hosts: (id, hostname, template, description)
+1       127.0.0.1       	8       Localhost
+2       gandalf 		3       gandalf
+...
+11      router.mydomain.com	3       Device Add Test</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_TREE_LIST_TREES"
+>List Trees</A
+></H2
+><P
+>Now, let us
+	           <KBD
+CLASS="USERINPUT"
+>--list-trees</KBD
+>. It goes like</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --list-trees
+
+Known Trees:
+id      sort method                     name
+1       Manual Ordering (No Sorting)    Default Tree</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_TREE_LIST_NODES"
+>List Nodes</A
+></H2
+><P
+>Listing all existend node of a given tree is done by</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --list-nodes --tree-id=1
+
+Known Tree Nodes:
+type    id      text
+Host    7       127.0.0.1       Graph Template
+Host    9       gandalf 	Graph Template
+Host    12      gandalf 	Graph Template</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_TREE_LIST_RRAS"
+>List RRAs</A
+></H2
+><P
+>For special tree add options, you will require the id of
+				the RRA definition to completly specify the add request. That's
+				why the corresponding <KBD
+CLASS="USERINPUT"
+>--list-rras</KBD
+> option is
+				implemented. It goes this way</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --list-rras
+
+Known RRAs:
+id      steps   rows    timespan        name
+1       1       600     86400           Daily (5 Minute Average)
+2       6       700     604800          Weekly (30 Minute Average)
+3       24      775     2678400         Monthly (2 Hour Average)
+4       288     797     33053184        Yearly (1 Day Average)</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_TREE_LIST_GRAPHS"
+>List Graphs for given Hosts</A
+></H2
+><P
+>To be able to add a Graph, the id of that very graph is required.
+				Thus, a <KBD
+CLASS="USERINPUT"
+>--list-graphs --host-id=[id]</KBD
+> option was implemented</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --list-graphs --host-id=1
+
+Known Host Graphs: (id, name, template)
+1       Localhost - Memory Usage        	Linux - Memory Usage
+2       Localhost - Load Average        	Unix - Load Average
+3       Localhost - Logged in Users     	Unix - Logged in Users
+4       Localhost - Processes   		Unix - Processes
+5       Localhost - Traffic - eth0      	Interface - Traffic (bits/sec, 95th Percentile)
+33      Localhost - Used Space - Memory Buffers Host MIB - Available Disk Space
+34      Localhost - Used Space - Real Memory    Host MIB - Available Disk Space
+35      Localhost - Used Space - Swap Space     Host MIB - Available Disk Space
+36      Localhost - Used Space - /      	Host MIB - Available Disk Space
+37      Localhost - Used Space - /sys   	Host MIB - Available Disk Space
+38      Localhost - Used Space - /boot  	Host MIB - Available Disk Space</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_TREE_TREE"
+>Add a new Tree</A
+></H2
+><P
+>Cacti comes with a single tree, named
+				<SPAN
+CLASS="GUIMENUITEM"
+>Default Tree</SPAN
+>. Console entry
+				<SPAN
+CLASS="GUIMENU"
+>Graph Trees</SPAN
+> is used to add more trees. With
+				<TT
+CLASS="FILENAME"
+>add_tree.php</TT
+>, you may now do so from command line as well:</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --type=tree --name="Test Tree Add" --sort-method=manual
+
+Tree Created - tree-id: (6)</PRE
+><P
+>Verify this from console, <SPAN
+CLASS="GUIMENU"
+>Graph Trees</SPAN
+>
+				to find</P
+><PRE
+CLASS="SCREEN"
+>Default Tree
+Test Tree Add</PRE
+><P
+>as expected.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_TREE_HEADER"
+>Add a new Header Node to a Tree</A
+></H2
+><P
+>Now, that a new tree has been created, you may want to add
+				a new header to that very tree. Use</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --type=node --node-type=header --tree-id=6 --name="Header Test"
+
+Added Node node-id: (21)</PRE
+><P
+>You will want to save the id returned if willing to add further
+				nodes to exactly this new Header Node</P
+><P
+>Please pay attention, that it is currently not possible to
+				add another header with the same options even if this is possible
+				from console</P
+><P
+>But it is possible to add a subheader to an already defined header.
+				Even in this case, the <KBD
+CLASS="USERINPUT"
+>name</KBD
+> has to be unique</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --type=node --node-type=header --tree-id=6 --parent-node=21  --name="SubHeader Test"
+
+Added Node node-id: (22)</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_TREE_HOST"
+>Add a new Host Node to a Tree</A
+></H2
+><P
+>We will distinguish several options adding a host to a tree.
+				First, let's add a Host directly to a tree. For this example, we use
+				the tree id returned from adding our own <KBD
+CLASS="USERINPUT"
+>Test Tree Add</KBD
+>
+				known with <KBD
+CLASS="USERINPUT"
+>id=6</KBD
+></P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --type=node --node-type=host --tree-id=6 --host-id=1
+
+Added Node node-id: (23)</PRE
+><P
+>As no <KBD
+CLASS="USERINPUT"
+>--parent-node</KBD
+> was given, this host
+				is directly added to the tree itself. If you wish to add a host to
+				a (sub)header, please specify as follows</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --type=node --node-type=host --tree-id=6 --parent-node=21 --host-id=1
+
+Added Node node-id: (24)</PRE
+><P
+>Both example come without a <KBD
+CLASS="USERINPUT"
+>--host-group-style</KBD
+> option.
+				For those cases, <KBD
+CLASS="USERINPUT"
+>Graph Template</KBD
+> host group style is default.
+				Here's an example for providing a host group option of
+				<KBD
+CLASS="USERINPUT"
+>Data Query Index</KBD
+> instead</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --type=node --node-type=host --tree-id=6 --parent-node=22 --host-id=1 --host-group-style=2
+
+Added Node node-id: (25)</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLI_ADD_TREE_GRAPH"
+>Add a new Graph Node to a Tree</A
+></H2
+><P
+>Like above, instead of hosts it is possible to add a single
+				graph to a tree or a (sub)header of any tree. Of course, you again will
+				require the <KBD
+CLASS="USERINPUT"
+>id</KBD
+> of the tree and optionally of the
+				<KBD
+CLASS="USERINPUT"
+>header</KBD
+>. This results in</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --type=node --node-type=graph --tree-id=6 --graph-id=5
+
+Added Node node-id: (26)</PRE
+><P
+>Like above, this graph now was added directly to the tree itself.
+				To add a graph to a header, proceed as follows</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --type=node --node-type=graph --tree-id=6 --parent-node=21 --graph-id=5
+
+Added Node node-id: (27)</PRE
+><P
+>In both cases, no explicit <KBD
+CLASS="USERINPUT"
+>--rra-id</KBD
+>
+				was given. This will default to the <SPAN
+CLASS="GUIMENUITEM"
+>Daily (5 Minute Average)</SPAN
+>.
+				Specify any other <KBD
+CLASS="USERINPUT"
+>--rra-id</KBD
+> as given</P
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>shell&gt;</SAMP
+>php -q add_tree.php --type=node --node-type=graph --tree-id=6 --parent-node=21 --graph-id=1 --rra-id=4
+
+Added Node node-id: (28)</PRE
+><P
+>to provide the <KBD
+CLASS="USERINPUT"
+>--rra-id</KBD
+> for a rra of
+				<SPAN
+CLASS="GUIMENUITEM"
+>Yearly (1 Day Average)</SPAN
+>.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="cli_add_graphs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="cli_add_perms.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Add a New Graph</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="scripts.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Add Graph Permissions</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

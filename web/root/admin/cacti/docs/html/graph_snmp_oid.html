@@ -1,0 +1,292 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Graph a Single SNMP OID</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="The Cacti Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Advanced Topics"
+HREF="advanced_topics.html"><LINK
+REL="PREVIOUS"
+TITLE="Advanced Topics"
+HREF="advanced_topics.html"><LINK
+REL="NEXT"
+TITLE="Data Input Methods"
+HREF="data_input_methods.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="manual.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Cacti Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="advanced_topics.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="data_input_methods.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="GRAPH_SNMP_OID"
+></A
+>Chapter 10. Graph a Single SNMP OID</H1
+><P
+>			When dealing with SNMP-enabled devices, there are often times when you want to graph the value of a single
+			OID. This tutorial explains how to do this in Cacti. It also assumes that you have the "SNMP - Generic OID
+			Template" graph template, which is now included in Cacti as of version 0.8.5. If you do not see this
+			template listed under <SPAN
+CLASS="GUILABEL"
+>Graph Templates</SPAN
+>, download the template from the Cacti website
+			in XML form and import it using the <SPAN
+CLASS="GUILABEL"
+>Import Templates</SPAN
+> menu item.
+		</P
+><P
+>			To start the process of creating a new graph for your OID, click the <SPAN
+CLASS="GUILABEL"
+>New Graphs</SPAN
+> menu
+			item and select the host that contains the target OID from the dropdown. Under the <SPAN
+CLASS="GUILABEL"
+>Graph
+			Templates</SPAN
+> box, you will see a dropdown on the last line that reads <SPAN
+CLASS="GUILABEL"
+>(Select a graph
+			type to create)</SPAN
+>. From this dropdown, choose "SNMP - Generic OID Template" and click the
+			<SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+> button at the bottom of the page.
+		</P
+><P
+>			You will be presented with several fields that will require input before the new graph can be created.
+			They are described in more detail below.
+		</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1148"
+></A
+><P
+><B
+>Table 10-1. Field Description: SNMP - Generic OID Template</B
+></P
+><TABLE
+BORDER="1"
+FRAME="border"
+RULES="all"
+CLASS="CALSTABLE"
+><COL
+WIDTH="1*"><COL
+WIDTH="3*"><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+>Name</TH
+><TH
+ALIGN="CENTER"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>(Graph) Title</TD
+><TD
+>The title that is to be used for the new graph. It is generally a good idea to keep |host_description| in the title, as to make the graph easier to identify later.</TD
+></TR
+><TR
+><TD
+>(Graph) Vertical Label</TD
+><TD
+>The text that will be printed along the y-axis of the graph. It is generally used to describe units, such as 'bytes' or 'percent'.</TD
+></TR
+><TR
+><TD
+>(Graph Items) Legend Color</TD
+><TD
+>The color that will be used to represent the data on the graph.</TD
+></TR
+><TR
+><TD
+>(Graph Items) Opacity/Alpha Channel</TD
+><TD
+>This optionally provides an opacity (not available with rrdtool-1.0.x) for a colored item.</TD
+></TR
+><TR
+><TD
+>(Graph Items) Legend Text</TD
+><TD
+>The text that will be used to describe the data on the graph legend.</TD
+></TR
+><TR
+><TD
+>(Data Source) Name</TD
+><TD
+>The title that is to be used for the new data source. It is generally a good idea to keep |host_description| in the title, as to make the data source easier to identify later.</TD
+></TR
+><TR
+><TD
+>(Data Source) Maximum Value [snmp_oid]</TD
+><TD
+>The maximum value that will be accepted from the OID. Make sure you choose a value that is reasonable for the data you are trying to graph because anything larger than the maximum will be ignored. If you are graphing a percentage, you should use '100' as the value should never exceed this.</TD
+></TR
+><TR
+><TD
+>(Data Source) Data Source Type [snmp_oid]</TD
+><TD
+>How the data from the OID should be stored by RRDTool and interpreted on the graph. If the value of the OID represents the actual data, you should use <SPAN
+CLASS="GUILABEL"
+>GAUGE</SPAN
+> for this field. If the OID value is a constantly incrementing number, you should use <SPAN
+CLASS="GUILABEL"
+>COUNTER</SPAN
+> for this field. The two remaining field values, <SPAN
+CLASS="GUILABEL"
+>DERIVE</SPAN
+> and <SPAN
+CLASS="GUILABEL"
+>ABSOLUTE</SPAN
+> can be ignored in most situations.</TD
+></TR
+><TR
+><TD
+>(Custom Data) OID</TD
+><TD
+>The actual SNMP OID to graph. It is typically a good idea to enter the number OID here as opposed to using MIB names. For instance, to get the number of open files on a Netware server, you would use ".1.3.6.1.4.1.23.2.28.2.7.0" as the OID.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>			When finished filling in values for these fields, click the <SPAN
+CLASS="GUILABEL"
+>Create</SPAN
+> button. Your new graph can
+			now be accessed through the <SPAN
+CLASS="GUILABEL"
+>Graph Management</SPAN
+> page or the <SPAN
+CLASS="GUILABEL"
+>Graphs</SPAN
+> tab
+			inside of Cacti.
+		</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="advanced_topics.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="data_input_methods.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Advanced Topics</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="advanced_topics.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Data Input Methods</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
