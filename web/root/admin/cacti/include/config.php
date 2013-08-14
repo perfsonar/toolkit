@@ -27,7 +27,7 @@ $database_type = "mysql";
 $database_default = "cacti";
 $database_hostname = "localhost";
 $database_username = "cactiuser";
-$database_password = "cactiuser";
+$database_password = "12NPT00LK1T";
 $database_port = "3306";
 $database_ssl = false;
 
@@ -36,7 +36,7 @@ $database_ssl = false;
    ex: if your cacti install as at http://serverip/cacti/ this
    would be set to /cacti/
 */
-//$url_path = "/cacti/";
+$url_path = "/toolkit/gui/cacti/";
 
 /* Default session name - Session name must contain alpha characters */
 //$cacti_session_name = "Cacti";

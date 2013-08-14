@@ -106,6 +106,8 @@ function form_save() {
 
 				/* sort the tree using the algorithm chosen by the user */
 				sort_tree(SORT_TYPE_TREE, $tree_id, $_POST["sort_type"]);
+
+                                $last_line = system("sudo /etc/init.d/snmpMA.sh restart &> /dev/null", $retval);
 			}else{
 				raise_message(2);
 			}

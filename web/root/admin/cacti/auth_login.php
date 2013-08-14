@@ -47,11 +47,11 @@ if (read_config_option("auth_method") == "2") {
 		$username = str_replace("\\", "\\\\", $_SERVER["HTTP_REDIRECT_REMOTE_USER"]);
 
 	}else{
-		/* No user - Bad juju! */
-		$username = "";
-		cacti_log("ERROR: No username passed with Web Basic Authentication enabled.", false, "AUTH");
-		auth_display_custom_error_message("Web Basic Authentication configured, but no username was passed from the web server.  Please make sure you have authentication enabled on the web server.");
-		exit;
+#		/* No user - Bad juju! */
+#		$username = "";
+#		cacti_log("ERROR: No username passed with Web Basic Authentication enabled.", false, "AUTH");
+#		auth_display_custom_error_message("Web Basic Authentication configured, but no username was passed from the web server.  Please make sure you have authentication enabled on the web server.");
+#		exit;
 	}
 }else{
 	if ($action == "login") {
@@ -71,6 +71,8 @@ $user_enabled = 1;
 $ldap_error = false;
 $ldap_error_message = "";
 $realm = 0;
+$user = array();
+
 if ($action == 'login') {
 	switch (read_config_option("auth_method")) {
 	case "0":
@@ -79,12 +81,18 @@ if ($action == 'login') {
 
 		break;
 	case "2":
-		/* Web Basic Auth */
-		$copy_user = true;
-		$user_auth = true;
-		$realm = 2;
-		/* Locate user in database */
-		$user = db_fetch_row("SELECT * FROM user_auth WHERE username = " . $cnn_id->qstr($username) . " AND realm = 2");
+                if (isset($_SERVER["PHP_AUTH_USER"])) {
+			$username = str_replace("\\", "\\\\", $_SERVER["PHP_AUTH_USER"]);
+
+			/* Web Basic Auth */
+			$copy_user = true;
+			$user_auth = true;
+			$realm = 2;
+			/* Locate user in database */
+			$user = db_fetch_row("SELECT * FROM user_auth WHERE username = '" . $username . "' AND realm = 2");
+		} else if (read_config_option("guest_user") != "0") {
+			$user_auth = true;
+		}
 
 		break;
 	case "3":
@@ -220,6 +228,8 @@ if ($action == 'login') {
 				} elseif (sizeof(db_fetch_assoc("SELECT realm_id FROM user_auth_realm WHERE realm_id = 8 AND user_id = " . $_SESSION["sess_user_id"])) == 0) {
 					header("Location: graph_view.php");
 				} else {
+                                        # XXX hack to "fix" the double-login issue
+                                        $referer = "index.php";
 					header("Location: $referer");
 				}
 
