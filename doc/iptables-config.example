@@ -1,0 +1,227 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# convenience for logging things we want to specifically deny
+#-N DENYLOG
+#-A DENYLOG -j LOG --log-prefix DENIED_HOST:
+#-A DENYLOG -j DROP
+#-A INPUT -j DENYLOG -s <someipORnetwork>
+
+# Allow Loopback
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Accept ICMP/TCP/UDP as a default
+-A INPUT -p icmp --icmp-type any -j ACCEPT
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# =-=-=-=-=-=- Core Services =-=-=-=-=-=-
+
+# Incoming Web - TCP Ports 80 and 443
+-A INPUT -m tcp -p tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A OUTPUT -m tcp -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --dport 443 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A OUTPUT -m tcp -p tcp --sport 443 -m state --state ESTABLISHED -j ACCEPT
+
+# Outgoing Web - TCP Ports 80 and 443
+-A OUTPUT -m tcp -p tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 443 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 443 -m state --state ESTABLISHED -j ACCEPT
+
+# NTP (Incoming and Outgoing) - UDP Port 123
+-A INPUT -p udp --dport 123 -m udp -j ACCEPT
+-A OUTPUT -p udp --dport 123 -m udp -j ACCEPT
+
+# Outgoing DNS - UDP Port 53
+-A OUTPUT -p udp --dport 53 -m udp -j ACCEPT
+-A INPUT -p udp --sport 53 -m udp -j ACCEPT
+
+# Incoming SSH - TCP Port 22
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 22 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 22 -j ACCEPT 
+
+# Outgoing SSH - TCP Port 22
+-A OUTPUT -m tcp -p tcp --dport 22 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
+
+# SSH Throttling 
+#-A INPUT -p tcp --dport 22 --syn -m limit --limit 1/m --limit-burst 3 -j ACCEPT
+#-A INPUT -p tcp --dport 22 --syn -j DROP
+
+# =-=-=-=-=-=- Measurement Tools =-=-=-=-=-=-
+
+# Ping/Traceroute/Tracepath - Allow Outside to inside
+-A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+-A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT
+-A OUTPUT -p icmp --icmp-type time-exceeded -j ACCEPT
+-A OUTPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
+
+# Ping/Traceroute/Tracepath - Allow Inside to outside
+-A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+-A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
+-A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT
+-A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
+
+# UDP Traceroute (Incoming and Outgoing)
+-A INPUT -m udp -p udp --dport 33434:33534 -j ACCEPT
+-A OUTPUT -m udp -p udp --sport 33434:33534 -j ACCEPT
+
+# NPAD Control (Incoming)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 8000 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 8000 -j ACCEPT 
+
+# NPAD Test (Incoming and Outgoing)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 8001:8020 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 8001:8020 -j ACCEPT 
+-A OUTPUT -m tcp -p tcp --dport 8001:8020 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 8001:8020 -m state --state ESTABLISHED -j ACCEPT
+
+# NDT Control (Incoming)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 7123 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 7123 -j ACCEPT 
+
+# NDT Test (Incoming and Outgoing)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 3001:3003 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 3001:3003 -j ACCEPT 
+-A OUTPUT -m tcp -p tcp --dport 3001:3003 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 3001:3003 -m state --state ESTABLISHED -j ACCEPT
+
+# OWAMP Control (Incoming and Outgoing)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 861 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 861 -j ACCEPT 
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 861 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 861 -j ACCEPT 
+
+# OWAMP Test (Incoming and Outgoing)
+-A INPUT -m udp -p udp --dport 8760:9960 -j ACCEPT 
+-A OUTPUT -m udp -p udp --sport 8760:9960 -j ACCEPT 
+-A OUTPUT -m udp -p udp --dport 8760:9960 -j ACCEPT
+-A INPUT -m udp -p udp --sport 8760:9960 -j ACCEPT
+
+# BWCTL Control (Incoming and Outgoing)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 4823 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 4823 -j ACCEPT 
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 4823 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 4823 -j ACCEPT 
+
+# BWCTL Peer (Incoming and Outgoing, TCP and UDP)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 6001:6200 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 6001:6200 -j ACCEPT 
+-A OUTPUT -m tcp -p tcp --dport 6001:6200 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 6001:6200 -m state --state ESTABLISHED -j ACCEPT
+
+-A INPUT -m udp -p udp --dport 6001:6200 -j ACCEPT 
+-A OUTPUT -m udp -p udp --sport 6001:6200 -j ACCEPT 
+-A OUTPUT -m udp -p udp --dport 6001:6200 -j ACCEPT
+-A INPUT -m udp -p udp --sport 6001:6200 -j ACCEPT
+
+# BWCTL Test (Incoming and Outgoing, TCP and UDP)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 5000:5600 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 5000:5600 -j ACCEPT 
+-A OUTPUT -m tcp -p tcp --dport 5000:5600 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 5000:5600 -m state --state ESTABLISHED -j ACCEPT
+
+-A INPUT -m udp -p udp --dport 5000:5600 -j ACCEPT 
+-A OUTPUT -m udp -p udp --sport 5000:5600 -j ACCEPT 
+-A OUTPUT -m udp -p udp --dport 5000:5600 -j ACCEPT
+-A INPUT -m udp -p udp --sport 5000:5600 -j ACCEPT
+
+# BWCTL Test [Historic] (Incoming and Outgoing, TCP and UDP)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 10101:10300 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 10101:10300 -j ACCEPT 
+-A OUTPUT -m tcp -p tcp --dport 10101:10300 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 10101:10300 -m state --state ESTABLISHED -j ACCEPT
+
+-A INPUT -m udp -p udp --dport 10101:10300 -j ACCEPT 
+-A OUTPUT -m udp -p udp --sport 10101:10300 -j ACCEPT 
+-A OUTPUT -m udp -p udp --dport 10101:10300 -j ACCEPT
+-A INPUT -m udp -p udp --sport 10101:10300 -j ACCEPT
+
+# =-=-=-=-=-=- Measurement Middleware =-=-=-=-=-=-
+
+# perfSONAR gLS Echo (Incoming and Outgoing, TCP and UDP)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 7 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 7 -j ACCEPT 
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 7 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 7 -j ACCEPT 
+
+-A INPUT -m udp -p udp --dport 7 -j ACCEPT 
+-A OUTPUT -m udp -p udp --sport 7 -j ACCEPT 
+-A OUTPUT -m udp -p udp --dport 7 -j ACCEPT
+-A INPUT -m udp -p udp --sport 7 -j ACCEPT
+
+# perfSONAR SNMP MA (Incoming)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 8065 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 8065 -j ACCEPT 
+
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 9990 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 9990 -j ACCEPT 
+
+# perfSONAR Traceroute Control (Incoming and Outgoing)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 8086 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 8086 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 8086 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 8086 -m state --state ESTABLISHED -j ACCEPT
+
+# perfSONAR Traceroute Testing (Incoming and Outgoing)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 8087 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 8087 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 8087 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 8087 -m state --state ESTABLISHED -j ACCEPT
+
+-A INPUT -m udp -p udp --dport 8087 -j ACCEPT 
+-A OUTPUT -m udp -p udp --sport 8087 -j ACCEPT 
+-A OUTPUT -m udp -p udp --dport 8087 -j ACCEPT
+-A INPUT -m udp -p udp --sport 8087 -j ACCEPT
+
+# perfSONAR PingER Control and Testing (Incoming and Outgoing)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 8075 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 8075 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 8075 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 8075 -m state --state ESTABLISHED -j ACCEPT
+
+-A INPUT -m udp -p udp --dport 8075 -j ACCEPT 
+-A OUTPUT -m udp -p udp --sport 8075 -j ACCEPT 
+-A OUTPUT -m udp -p udp --dport 8075 -j ACCEPT
+-A INPUT -m udp -p udp --sport 8075 -j ACCEPT
+
+# perfSONAR perfSONAR-BUOY Web Service (Incoming)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 8065 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 8065 -j ACCEPT
+
+# perfSONAR perfSONAR-BUOY Control (Incoming and Outgoing)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 8569:8570 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 8569:8570 -j ACCEPT 
+-A OUTPUT -m tcp -p tcp --dport 8569:8570 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 8569:8570 -m state --state ESTABLISHED -j ACCEPT
+
+# perfSONAR Lookup Service (Incoming and Outgoing)
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 8090 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 8090 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 8090 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 8090 -m state --state ESTABLISHED -j ACCEPT
+
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 8095 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 8095 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 8095 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 8095 -m state --state ESTABLISHED -j ACCEPT
+
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 9995 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 9995 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 9995 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 9995 -m state --state ESTABLISHED -j ACCEPT
+
+# log before we drop whatever is left.
+# -A INPUT -j LOG --log-prefix DROPPED_PACKET:
+
+# Drop the rest
+
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+
+COMMIT
+
+
