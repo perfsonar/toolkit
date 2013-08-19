@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-=head1 name
+=head1 NAME
 
 serviceTest.cgi - Test out a perfSONAR service (usually a MA) by doing a simple
 query and attempting the visualize data (where applicable).
@@ -16,74 +16,47 @@ available for the data type).
 =cut
 
 use CGI;
+use HTML::Template;
 use XML::LibXML;
 use Socket;
 use Data::Validate::IP qw(is_ipv4);
 use Net::IP;
+use HTML::Entities;
 use English qw( -no_match_vars );
-use Template;
-use Config::General;
-use Log::Log4perl qw(get_logger :easy :levels);
-
-use Data::Dumper;
 
 use FindBin qw($RealBin);
 my $basedir = "$RealBin/";
-use lib "$RealBin/../../../../lib";
-
-use lib "/usr/local/perfSONAR-PS/perfSONAR_PS-PingER/lib";
+use lib "$RealBin/../lib";
 
 use perfSONAR_PS::Client::MA;
 use perfSONAR_PS::Common qw( extract find );
 use perfSONAR_PS::Utils::ParameterValidation;
 use perfSONAR_PS::Client::PingER;
 
-my $config_file = $basedir . '/etc/web_admin.conf';
-my $conf_obj = Config::General->new( -ConfigFile => $config_file );
-our %conf = $conf_obj->getall;
-
-$conf{template_directory} = "templates" unless ( $conf{template_directory} );
-$conf{template_directory} = $basedir . "/" . $conf{template_directory} unless ( $conf{template_directory} =~ /^\// );
-
-if ( $conf{logger_conf} ) {
-    unless ( $conf{logger_conf} =~ /^\// ) {
-        $conf{logger_conf} = $basedir . "/etc/" . $conf{logger_conf};
-    }
-
-    Log::Log4perl->init( $conf{logger_conf} );
-}
-else {
-
-    # If they've not specified a logger, send it all to /dev/null
-    Log::Log4perl->easy_init( { level => $DEBUG, file => "/dev/null" } );
-}
-
-our $logger = get_logger( "perfSONAR_PS::WebGUI::ServiceTest::PingERGraph" );
-if ( $conf{debug} ) {
-    $logger->level( $DEBUG );
-}
-
+my $template = q{};
 my $cgi      = CGI->new();
 print $cgi->header();
 
 my $service;
 if ( $cgi->param( 'url' ) ) {
-    $service = $cgi->param( 'url' );
+    $service = HTML::Entities::encode($cgi->param( 'url' ));
 }
 else {
-    my $html = errorPage("Service URL not provided.");
-    print $html;
+    $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+    $template->param( ERROR => "Service URL not provided." );
+    print $template->output;
     exit( 1 );
 }
 
 my $eventType;
 if ( $cgi->param( 'eventType' ) ) {
-    $eventType = $cgi->param( 'eventType' );
+    $eventType = HTML::Entities::encode($cgi->param( 'eventType' ));
     $eventType =~ s/(\s|\n)*//g;
 }
 else {
-    my $html = errorPage("Service eventType not provided.");
-    print $html;
+    $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+    $template->param( ERROR => "Service eventType not provided." );
+    print $template->output;
     exit( 1 );
 }
 
@@ -117,8 +90,9 @@ elsif ( $eventType eq "http://ggf.org/ns/nmwg/tools/pinger/2.0/" or $eventType e
     $subject .= "    </pinger:subject>\n";
 }
 else {
-    my $html = errorPage("Unrecognized eventType: \"" . $eventType . "\".");
-    print $html;
+    $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+    $template->param( ERROR => "Unrecognized eventType: \"" . $eventType . "\"." );
+    print $template->output;
     exit( 1 );
 }
 
@@ -131,40 +105,44 @@ my $result = $ma->metadataKeyRequest(
 );
 
 unless ( $#{ $result->{"metadata"} } > -1 ) {
-    my $html = errorPage("MA <b><i>" . $service . "</i></b> did not return the expected response, is it functioning?");
-    print $html;
+    $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+    $template->param( ERROR => "MA <b><i>" . $service . "</i></b> did not return the expected response, is it functioning?" );
+    print $template->output;
     exit( 1 );
 }
 
 my $metadata = q{};
 eval { $metadata = $parser->parse_string( $result->{"metadata"}->[0] ); };
 if ( $EVAL_ERROR ) {
-    my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-    print $html;
+    $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+    $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+    print $template->output;
     exit( 1 );
 }
 
 my $et = extract( find( $metadata->getDocumentElement, ".//nmwg:eventType", 1 ), 0 );
 
 if ( $et eq "error.ma.storage" ) {
-    my $html = errorPage("MA <b><i>" . $service . "</i></b> did not return the expected response, be sure it is configured and populated with data.");
-    print $html;
-    exit( 1 );
+    $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+    $template->param( ERROR => "MA <b><i>" . $service . "</i></b> did not return the expected response, be sure it is configured and populated with data." );
 }
 else {
     if ( $eventType eq "http://ggf.org/ns/nmwg/characteristic/utilization/2.0" ) {
+        $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_utilization.tmpl" );
+
         my %lookup = ();
         foreach my $d ( @{ $result->{"data"} } ) {
             my $data = q{};
             eval { $data = $parser->parse_string( $d ); };
             if ( $EVAL_ERROR ) {
-                my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-                print $html;
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
                 exit( 1 );
             }
 
             my $metadataIdRef = $data->getDocumentElement->getAttribute( "metadataIdRef" );
-            my $key           = extract( find( $data->getDocumentElement, ".//nmwg:parameter[\@name=\"maKey\"]", 1 ), 0 );
+            my $key = extract( find( $data->getDocumentElement, ".//nmwg:parameter[\@name=\"maKey\"]", 1 ), 0 );
             if ( $key ) {
                 $lookup{$metadataIdRef}{"key1"} = $key if $metadataIdRef;
                 $lookup{$metadataIdRef}{"key2"} = q{};
@@ -184,22 +162,23 @@ else {
             my $metadata = q{};
             eval { $metadata = $parser->parse_string( $md ); };
             if ( $EVAL_ERROR ) {
-                my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-                print $html;
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
                 exit( 1 );
             }
 
             my $metadataId = $metadata->getDocumentElement->getAttribute( "id" );
             my $dir        = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:direction", 1 ), 0 );
-            my $host       = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:hostName", 1 ), 0 );            
+            my $host       = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:hostName", 1 ), 0 );
             if ( is_ipv4( $host ) ) {
                 my $iaddr = Socket::inet_aton( $host );
                 if ( defined $iaddr and $iaddr ) {
                     $host = gethostbyaddr( $iaddr, Socket::AF_INET );
                 }
-            }     
-            
-            my $name       = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:ifName", 1 ), 0 );
+            }
+
+            my $name = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:ifName", 1 ), 0 );
             if ( $list{$host}{$name} ) {
                 if ( $dir eq "in" ) {
                     $list{$host}{$name}->{"key1_1"}    = $lookup{$metadataId}{"key1"};
@@ -224,10 +203,10 @@ else {
                     $temp{"key2_2"}    = $lookup{$metadataId}{"key2"};
                     $temp{"key2_type"} = $lookup{$metadataId}{"type"};
                 }
-                $temp{"hostName"}      = $host;
-                $temp{"ifName"}        = $name;
-                $temp{"ifIndex"}       = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:ifIndex", 1 ), 0 );
-                $temp{"ipAddress"}     = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:ipAddress", 1 ), 0 );
+                $temp{"hostName"}  = $host;
+                $temp{"ifName"}    = $name;
+                $temp{"ifIndex"}   = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:ifIndex", 1 ), 0 );
+                $temp{"ipAddress"} = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:ipAddress", 1 ), 0 );
                 unless ( is_ipv4( $temp{"ipAddress"} ) ) {
                     unless ( &Net::IP::ip_is_ipv6( $temp{"ipAddress"} ) ) {
                         my $packed_ip = gethostbyname( $temp{"ipAddress"} );
@@ -251,7 +230,7 @@ else {
                     }
                 }
 
-                $temp{"capacity"}  = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:capacity",  1 ), 0 );
+                $temp{"capacity"} = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:interface/nmwgt:capacity", 1 ), 0 );
 
                 if ( $temp{"capacity"} ) {
                     $temp{"capacity"} /= 1000000;
@@ -278,42 +257,33 @@ else {
 
                 push @interfaces,
                     {
-                    address   => $list{$host}{$name}->{"ipAddress"},
-                    host      => $list{$host}{$name}->{"hostName"},
-                    ifname    => $list{$host}{$name}->{"ifName"},
-                    ifindex   => $list{$host}{$name}->{"ifIndex"},
-                    desc      => $list{$host}{$name}->{"ifDescription"},
-                    ifaddress => $list{$host}{$name}->{"ifAddress"},
-                    capacity  => $list{$host}{$name}->{"capacity"},
-                    key1type  => $list{$host}{$name}->{"key1_type"},
-                    key11     => $list{$host}{$name}->{"key1_1"},
-                    key12     => $list{$host}{$name}->{"key1_2"},
-                    key2type  => $list{$host}{$name}->{"key2_type"},
-                    key21     => $list{$host}{$name}->{"key2_1"},
-                    key22     => $list{$host}{$name}->{"key2_2"},
-                    count     => $counter,
-                    service   => $service
+                    ADDRESS   => $list{$host}{$name}->{"ipAddress"},
+                    HOST      => $list{$host}{$name}->{"hostName"},
+                    IFNAME    => $list{$host}{$name}->{"ifName"},
+                    IFINDEX   => $list{$host}{$name}->{"ifIndex"},
+                    DESC      => $list{$host}{$name}->{"ifDescription"},
+                    IFADDRESS => $list{$host}{$name}->{"ifAddress"},
+                    CAPACITY  => $list{$host}{$name}->{"capacity"},
+                    KEY1TYPE  => $list{$host}{$name}->{"key1_type"},
+                    KEY11     => $list{$host}{$name}->{"key1_1"},
+                    KEY12     => $list{$host}{$name}->{"key1_2"},
+                    KEY2TYPE  => $list{$host}{$name}->{"key2_type"},
+                    KEY21     => $list{$host}{$name}->{"key2_1"},
+                    KEY22     => $list{$host}{$name}->{"key2_2"},
+                    COUNT     => $counter,
+                    SERVICE   => $service
                     };
 
                 $counter++;
             }
         }
 
-        my %vars = (
-            eventtype  => $eventType,
-            service    => $service,
-            interfaces => \@interfaces
+        $template->param(
+            EVENTTYPE  => $eventType,
+            SERVICE    => $service,
+            INTERFACES => \@interfaces
         );
 
-        my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} );
-
-	my $html;
-
-	$tt->process( "serviceTest_utilization.tmpl", \%vars, \$html ) or die $tt->error();
-
-	print $html;
-
-	exit ( 0 );
     }
     elsif ($eventType eq "http://ggf.org/ns/nmwg/tools/iperf/2.0"
         or $eventType eq "http://ggf.org/ns/nmwg/characteristics/bandwidth/acheiveable/2.0"
@@ -321,19 +291,21 @@ else {
         or $eventType eq "http://ggf.org/ns/nmwg/characteristics/bandwidth/achievable/2.0" )
     {
         my $sec = time;
+        $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_psb_bwctl.tmpl" );
 
         my %lookup = ();
         foreach my $d ( @{ $result->{"data"} } ) {
             my $data = q{};
             eval { $data = $parser->parse_string( $d ); };
             if ( $EVAL_ERROR ) {
-                my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-                print $html;
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
                 exit( 1 );
             }
 
             my $metadataIdRef = $data->getDocumentElement->getAttribute( "metadataIdRef" );
-            my $key           = extract( find( $data->getDocumentElement, ".//nmwg:parameter[\@name=\"maKey\"]", 1 ), 0 );
+            my $key = extract( find( $data->getDocumentElement, ".//nmwg:parameter[\@name=\"maKey\"]", 1 ), 0 );
             $lookup{$metadataIdRef} = $key if $key and $metadataIdRef;
         }
 
@@ -343,8 +315,9 @@ else {
             my $metadata = q{};
             eval { $metadata = $parser->parse_string( $md ); };
             if ( $EVAL_ERROR ) {
-                my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-                print $html;
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
                 exit( 1 );
             }
 
@@ -433,7 +406,9 @@ else {
             my $parser     = XML::LibXML->new();
 
             my $subject = "<nmwg:key id=\"key-1\"><nmwg:parameters id=\"parameters-key-1\"><nmwg:parameter name=\"maKey\">" . $lookup{$metadataId} . "</nmwg:parameter></nmwg:parameters></nmwg:key>";
-            my $time    = 604800;
+
+            # Default time is 7 Days = 60 sec * 60 min * 24 hours * 7 days
+            my $time    = 60 * 60 * 24 * 7;
 
             my $result = $ma->setupDataRequest(
                 {
@@ -447,8 +422,9 @@ else {
             my $doc1 = q{};
             eval { $doc1 = $parser->parse_string( $result->{"data"}->[0] ); };
             if ( $EVAL_ERROR ) {
-                my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-                print $html;
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
                 exit( 1 );
             }
 
@@ -538,51 +514,51 @@ else {
         for ( my $x = 1; $x < 13; $x++ ) {
 
             if ( $stmonth == $x ) {
-                push @smon, { value => $x, name => $mon[$x], selected => 1 };
+                push @smon, { VALUE => $x, NAME => $mon[$x], SELECTED => 1 };
             }
             else {
-                push @smon, { value => $x, name => $mon[$x] };
+                push @smon, { VALUE => $x, NAME => $mon[$x] };
             }
         }
         for ( my $x = 1; $x < 32; $x++ ) {
             if ( $stday == $x ) {
-                push @sday, { value => $x, name => $x, selected => 1 };
+                push @sday, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @sday, { value => $x, name => $x };
+                push @sday, { VALUE => $x, NAME => $x };
             }
         }
         for ( my $x = 2000; $x < 2016; $x++ ) {
             if ( $styear == $x ) {
-                push @syear, { value => $x, name => $x, selected => 1 };
+                push @syear, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @syear, { value => $x, name => $x };
+                push @syear, { VALUE => $x, NAME => $x };
             }
         }
 
         for ( my $x = 1; $x < 13; $x++ ) {
             if ( $dtmonth == $x ) {
-                push @dmon, { value => $x, name => $mon[$x], selected => 1 };
+                push @dmon, { VALUE => $x, NAME => $mon[$x], SELECTED => 1 };
             }
             else {
-                push @dmon, { value => $x, name => $mon[$x] };
+                push @dmon, { VALUE => $x, NAME => $mon[$x] };
             }
         }
         for ( my $x = 1; $x < 32; $x++ ) {
             if ( $dtday == $x ) {
-                push @dday, { value => $x, name => $x, selected => 1 };
+                push @dday, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @dday, { value => $x, name => $x };
+                push @dday, { VALUE => $x, NAME => $x };
             }
         }
         for ( my $x = 2000; $x < 2016; $x++ ) {
             if ( $dtyear == $x ) {
-                push @dyear, { value => $x, name => $x, selected => 1 };
+                push @dyear, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @dyear, { value => $x, name => $x };
+                push @dyear, { VALUE => $x, NAME => $x };
             }
         }
 
@@ -599,53 +575,53 @@ else {
                     if ( exists $set->{"active"} and $set->{"active"} ) {
                         push @pairs,
                             {
-                            saddress       => $set->{"saddr"},
-                            shost          => $set->{"src"},
-                            daddress       => $set->{"daddr"},
-                            dhost          => $set->{"dst"},
-                            protocol       => $set->{"protocol"},
-                            timeduration   => $set->{"timeDuration"},
-                            bufferlength   => $set->{"bufferLength"},
-                            windowsize     => $set->{"windowSize"},
-                            interval       => $set->{"interval"},
-                            bandwidthlimit => $set->{"bandwidthLimit"},
-                            key            => $set->{"key"},
-                            count          => $counter,
-                            service        => $service,
-                            key2           => $hostMap{ $set->{"key"} }->[0],
-                            bidir          => $bidir
+                            SADDRESS       => $set->{"saddr"},
+                            SHOST          => $set->{"src"},
+                            DADDRESS       => $set->{"daddr"},
+                            DHOST          => $set->{"dst"},
+                            PROTOCOL       => $set->{"protocol"},
+                            TIMEDURATION   => $set->{"timeDuration"},
+                            BUFFERLENGTH   => $set->{"bufferLength"},
+                            WINDOWSIZE     => $set->{"windowSize"},
+                            INTERVAL       => $set->{"interval"},
+                            BANDWIDTHLIMIT => $set->{"bandwidthLimit"},
+                            KEY            => $set->{"key"},
+                            COUNT          => $counter,
+                            SERVICE        => $service,
+                            KEY2           => $hostMap{ $set->{"key"} }->[0],
+                            BIDIR          => $bidir
                             };
                         $counter++;
                     }
                     else {
                         push @histPairs,
                             {
-                            saddress       => $set->{"saddr"},
-                            shost          => $set->{"src"},
-                            daddress       => $set->{"daddr"},
-                            dhost          => $set->{"dst"},
-                            protocol       => $set->{"protocol"},
-                            timeduration   => $set->{"timeDuration"},
-                            bufferlength   => $set->{"bufferLength"},
-                            windowsize     => $set->{"windowSize"},
-                            interval       => $set->{"interval"},
-                            bandwidthlimit => $set->{"bandwidthLimit"},
-                            key            => $set->{"key"},
-                            count          => $counter,
-                            service        => $service,
-                            key2           => $hostMap{ $set->{"key"} }->[0],
-                            smon           => \@smon,
-                            sday           => \@sday,
-                            syear          => \@syear,
-                            dmon           => \@dmon,
-                            dday           => \@dday,
-                            dyear          => \@dyear,
-                            bidir          => $bidir
+                            SADDRESS       => $set->{"saddr"},
+                            SHOST          => $set->{"src"},
+                            DADDRESS       => $set->{"daddr"},
+                            DHOST          => $set->{"dst"},
+                            PROTOCOL       => $set->{"protocol"},
+                            TIMEDURATION   => $set->{"timeDuration"},
+                            BUFFERLENGTH   => $set->{"bufferLength"},
+                            WINDOWSIZE     => $set->{"windowSize"},
+                            INTERVAL       => $set->{"interval"},
+                            BANDWIDTHLIMIT => $set->{"bandwidthLimit"},
+                            KEY            => $set->{"key"},
+                            COUNT          => $counter,
+                            SERVICE        => $service,
+                            KEY2           => $hostMap{ $set->{"key"} }->[0],
+                            SMON           => \@smon,
+                            SDAY           => \@sday,
+                            SYEAR          => \@syear,
+                            DMON           => \@dmon,
+                            DDAY           => \@dday,
+                            DYEAR          => \@dyear,
+                            BIDIR          => $bidir
                             };
                         $counter++;
                     }
                     foreach my $hm ( @{ $hostMap{ $set->{"key"} } } ) {
-                        $mark{ $hm } = 1 if $hm;
+                        $mark{$hm} = 1 if $hm;
                     }
                 }
             }
@@ -655,9 +631,9 @@ else {
         my $datacounter = 0;
         my $max         = 0;
         foreach my $d ( sort keys %data ) {
-            next if $data{$d}{"out"}{"count"} == 0 and $data{$d}{"in"}{"count"} == 0;           
+            next if $data{$d}{"out"}{"count"} == 0 and $data{$d}{"in"}{"count"} == 0;
             my $din  = 0;
-            my $dout = 0;            
+            my $dout = 0;
             $din  = ( $data{$d}{"in"}{"total"} / $data{$d}{"in"}{"count"} )   if $data{$d}{"in"}{"count"};
             $dout = ( $data{$d}{"out"}{"total"} / $data{$d}{"out"}{"count"} ) if $data{$d}{"out"}{"count"};
             $max  = $din                                                      if $din > $max;
@@ -671,43 +647,33 @@ else {
             $g->{"out"} /= $temp->{"scale"};
         }
 
-        my %vars = ( 
-            eventtype   => $eventType,
-            service     => $service,
-            histpairs   => \@histPairs,
-            pairs       => \@pairs,
-            graphtotal  => $datacounter,
-            graph       => \@graph,
-            graphprefix => $temp->{"mod"}
+        $template->param(
+            EVENTTYPE   => $eventType,
+            SERVICE     => $service,
+            HISTPAIRS   => \@histPairs,
+            PAIRS       => \@pairs,
+            GRAPHTOTAL  => $datacounter,
+            GRAPH       => \@graph,
+            GRAPHPREFIX => $temp->{"mod"}
         );
-
-	my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
-
-	my $html;
-
-        $tt->process( "serviceTest_psb_bwctl.tmpl", \%vars, \$html ) or die $tt->error();
-
-	print STDERR Dumper(\%vars);
-
-        print $html;
-
-        exit( 0 );
     }
     elsif ( $eventType eq "http://ggf.org/ns/nmwg/tools/owamp/2.0" or $eventType eq "http://ggf.org/ns/nmwg/characteristic/delay/summary/20070921" ) {
         my $sec = time;
+        $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_psb_owamp.tmpl" );
 
         my %lookup = ();
         foreach my $d ( @{ $result->{"data"} } ) {
             my $data = q{};
             eval { $data = $parser->parse_string( $d ); };
             if ( $EVAL_ERROR ) {
-                my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-                print $html;
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
                 exit( 1 );
             }
 
             my $metadataIdRef = $data->getDocumentElement->getAttribute( "metadataIdRef" );
-            my $key           = extract( find( $data->getDocumentElement, ".//nmwg:parameter[\@name=\"maKey\"]", 1 ), 0 );
+            my $key = extract( find( $data->getDocumentElement, ".//nmwg:parameter[\@name=\"maKey\"]", 1 ), 0 );
             $lookup{$metadataIdRef} = $key if $key and $metadataIdRef;
         }
 
@@ -717,8 +683,9 @@ else {
             my $metadata = q{};
             eval { $metadata = $parser->parse_string( $md ); };
             if ( $EVAL_ERROR ) {
-                my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-                print $html;
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
                 exit( 1 );
             }
 
@@ -806,7 +773,9 @@ else {
             my $parser     = XML::LibXML->new();
 
             my $subject = "<nmwg:key id=\"key-1\"><nmwg:parameters id=\"parameters-key-1\"><nmwg:parameter name=\"maKey\">" . $lookup{$metadataId} . "</nmwg:parameter></nmwg:parameters></nmwg:key>";
-            my $time    = 43200;
+
+            # Default time is 12 hours = 60 secs * 60 mins * 12 hours
+            my $time    = 60 * 60 * 12;
 
             my $result = $ma->setupDataRequest(
                 {
@@ -820,8 +789,9 @@ else {
             my $doc1 = q{};
             eval { $doc1 = $parser->parse_string( $result->{"data"}->[0] ); };
             if ( $EVAL_ERROR ) {
-                my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-                print $html;
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
                 exit( 1 );
             }
 
@@ -908,51 +878,51 @@ else {
         for ( my $x = 1; $x < 13; $x++ ) {
 
             if ( $stmonth == $x ) {
-                push @smon, { value => $x, name => $mon[$x], selected => 1 };
+                push @smon, { VALUE => $x, NAME => $mon[$x], SELECTED => 1 };
             }
             else {
-                push @smon, { value => $x, name => $mon[$x] };
+                push @smon, { VALUE => $x, NAME => $mon[$x] };
             }
         }
         for ( my $x = 1; $x < 32; $x++ ) {
             if ( $stday == $x ) {
-                push @sday, { value => $x, name => $x, selected => 1 };
+                push @sday, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @sday, { value => $x, name => $x };
+                push @sday, { VALUE => $x, NAME => $x };
             }
         }
         for ( my $x = 2000; $x < 2016; $x++ ) {
             if ( $styear == $x ) {
-                push @syear, { value => $x, name => $x, selected => 1 };
+                push @syear, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @syear, { value => $x, name => $x };
+                push @syear, { VALUE => $x, NAME => $x };
             }
         }
 
         for ( my $x = 1; $x < 13; $x++ ) {
             if ( $dtmonth == $x ) {
-                push @dmon, { value => $x, name => $mon[$x], selected => 1 };
+                push @dmon, { VALUE => $x, NAME => $mon[$x], SELECTED => 1 };
             }
             else {
-                push @dmon, { value => $x, name => $mon[$x] };
+                push @dmon, { VALUE => $x, NAME => $mon[$x] };
             }
         }
         for ( my $x = 1; $x < 32; $x++ ) {
             if ( $dtday == $x ) {
-                push @dday, { value => $x, name => $x, selected => 1 };
+                push @dday, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @dday, { value => $x, name => $x };
+                push @dday, { VALUE => $x, NAME => $x };
             }
         }
         for ( my $x = 2000; $x < 2016; $x++ ) {
             if ( $dtyear == $x ) {
-                push @dyear, { value => $x, name => $x, selected => 1 };
+                push @dyear, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @dyear, { value => $x, name => $x };
+                push @dyear, { VALUE => $x, NAME => $x };
             }
         }
 
@@ -969,41 +939,41 @@ else {
                     if ( exists $set->{"active"} and $set->{"active"} ) {
                         push @pairs,
                             {
-                            saddress => $set->{"saddr"},
-                            shost    => $set->{"src"},
-                            daddress => $set->{"daddr"},
-                            dhost    => $set->{"dst"},
-                            key      => $set->{"key"},
-                            count    => $counter,
-                            service  => $service,
-                            key2     => $hostMap{ $set->{"key"} }->[0],
-                            bidir    => $bidir
+                            SADDRESS => $set->{"saddr"},
+                            SHOST    => $set->{"src"},
+                            DADDRESS => $set->{"daddr"},
+                            DHOST    => $set->{"dst"},
+                            KEY      => $set->{"key"},
+                            COUNT    => $counter,
+                            SERVICE  => $service,
+                            KEY2     => $hostMap{ $set->{"key"} }->[0],
+                            BIDIR    => $bidir
                             };
                         $counter++;
                     }
                     else {
                         push @histPairs,
                             {
-                            saddress => $set->{"saddr"},
-                            shost    => $set->{"src"},
-                            daddress => $set->{"daddr"},
-                            dhost    => $set->{"dst"},
-                            key      => $set->{"key"},
-                            count    => $counter,
-                            service  => $service,
-                            key2     => $hostMap{ $set->{"key"} }->[0],
-                            smon     => \@smon,
-                            sday     => \@sday,
-                            syear    => \@syear,
-                            dmon     => \@dmon,
-                            dday     => \@dday,
-                            dyear    => \@dyear,
-                            bidir    => $bidir
+                            SADDRESS => $set->{"saddr"},
+                            SHOST    => $set->{"src"},
+                            DADDRESS => $set->{"daddr"},
+                            DHOST    => $set->{"dst"},
+                            KEY      => $set->{"key"},
+                            COUNT    => $counter,
+                            SERVICE  => $service,
+                            KEY2     => $hostMap{ $set->{"key"} }->[0],
+                            SMON     => \@smon,
+                            SDAY     => \@sday,
+                            SYEAR    => \@syear,
+                            DMON     => \@dmon,
+                            DDAY     => \@dday,
+                            DYEAR    => \@dyear,
+                            BIDIR    => $bidir
                             };
                         $counter++;
                     }
                     foreach my $hm ( @{ $hostMap{ $set->{"key"} } } ) {
-                        $mark{ $hm } = 1 if $hm;
+                        $mark{$hm} = 1 if $hm;
                     }
                 }
             }
@@ -1020,53 +990,38 @@ else {
         my @matrixHeader = ();
         my @matrix       = ();
         foreach my $h1 ( sort keys %colspan ) {
-            push @matrixHeader, { name => $h1 };
+            push @matrixHeader, { NAME => $h1 };
             my @temp = ();
             foreach my $h2 ( sort keys %colspan ) {
                 $data{$h1}{$h2}{"min"} = "*" unless $data{$h1}{$h2}{"min"};
                 $data{$h1}{$h2}{"max"} = "*" unless $data{$h1}{$h2}{"max"};
-                push @temp, { minvalue => $data{$h1}{$h2}{"min"}, maxvalue => $data{$h1}{$h2}{"max"} };
+                push @temp, { MINVALUE => $data{$h1}{$h2}{"min"}, MAXVALUE => $data{$h1}{$h2}{"max"} };
             }
-            push @matrix, { name => $h1, matrixcols => \@temp };
+            push @matrix, { NAME => $h1, MATRIXCOLS => \@temp };
         }
 
-        my %vars = (
-            eventtype     => $eventType,
-            service       => $service,
-            pairs         => \@pairs,
-            histpairs     => \@histPairs,
-            matrixcolspan => ( scalar( keys %colspan ) + 1 ),
-            matrixheader  => \@matrixHeader,
-            matrix        => \@matrix
+        $template->param(
+            EVENTTYPE     => $eventType,
+            SERVICE       => $service,
+            PAIRS         => \@pairs,
+            HISTPAIRS     => \@histPairs,
+            MATRIXCOLSPAN => ( scalar( keys %colspan ) + 1 ),
+            MATRIXHEADER  => \@matrixHeader,
+            MATRIX        => \@matrix
         );
-
-        my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
-
-        my $html;
-
-        $tt->process( "serviceTest_psb_owamp.tmpl", \%vars, \$html ) or die $tt->error();
-
-        print $html;
-
-        exit( 0 );
     }
     elsif ( $eventType eq "http://ggf.org/ns/nmwg/tools/pinger/2.0/" or $eventType eq "http://ggf.org/ns/nmwg/tools/pinger/2.0" ) {
         my $sec = time;
+        $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_pinger.tmpl" );
 
         my %lookup = ();
         foreach my $d ( @{ $result->{"data"} } ) {
             my $data = q{};
             eval { $data = $parser->parse_string( $d ); };
             if ( $EVAL_ERROR ) {
-                my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-                print $html;
-                exit( 1 );
-            }
-
-            my $eT = extract( find( $metadata->getDocumentElement, "./nmwg:eventType", 1 ), 0 );
-            if ( $eT eq "http://schemas.perfsonar.net/status/failure/metadatakey/1.0/" ) {
-                my $html = errorPage("No PingER tests scheduled for PingER MA <b><i>" . $service . "</i></b>." );
-                print $html;
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
                 exit( 1 );
             }
 
@@ -1085,14 +1040,23 @@ else {
             my $metadata = q{};
             eval { $metadata = $parser->parse_string( $md ); };
             if ( $EVAL_ERROR ) {
-                my $html = errorPage("Could not parse XML response from MA <b><i>" . $service . "</i></b>.");
-                print $html;
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "Could not parse XML response from MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
+                exit( 1 );
+            }
+
+            my $eT = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:endPointPair/nmwg:eventType", 1 ), 0 );
+            if ( $et eq "http://schemas.perfsonar.net/status/failure/metadatakey/1.0/" ) {
+                $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+                $template->param( ERROR => "No PingER tests scheduled for PingER MA <b><i>" . $service . "</i></b>." );
+                print $template->output;
                 exit( 1 );
             }
 
             my $metadataId = $metadata->getDocumentElement->getAttribute( "id" );
-            
-            my $src        = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:endPointPair/nmwgt:src",             1 ), 0 );
+
+            my $src   = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:endPointPair/nmwgt:src", 1 ), 0 );
             my $saddr = q{};
             my $shost = q{};
 
@@ -1119,7 +1083,7 @@ else {
                 $saddr = $src unless $saddr;
             }
 
-            my $dst        = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:endPointPair/nmwgt:dst",             1 ), 0 );
+            my $dst   = extract( find( $metadata->getDocumentElement, "./*[local-name()='subject']/nmwgt:endPointPair/nmwgt:dst", 1 ), 0 );
             my $daddr = q{};
             my $dhost = q{};
             if ( is_ipv4( $dst ) ) {
@@ -1144,7 +1108,7 @@ else {
                 }
                 $daddr = $dst unless $daddr;
             }
-            
+
             my $packetsize = extract( find( $metadata->getDocumentElement, "./*[local-name()='parameters']/nmwg:parameter[\@name=\"packetSize\"]", 1 ), 0 );
 
             my %temp = ();
@@ -1154,15 +1118,16 @@ else {
             $temp{"saddr"}      = $saddr;
             $temp{"daddr"}      = $daddr;
             $temp{"packetsize"} = $packetsize ? $packetsize : 1000;
-            $list{$src}{$dst}   = \%temp;
-
             $temp{"active"}     = 0;
+
+            # Default time is 4 hours = 60 secs * 60 mins * 4 hours
+            my $timeLength    = 60 * 60 * 4;
 
             # is there data in the last 4 hours (needs to be longer, but this makes it slow enough...)
             my $ma = new perfSONAR_PS::Client::PingER( { instance => $service } );
             my $result = $ma->setupDataRequest(
                 {
-                    start => ( $sec - 14400 ),
+                    start => ( $sec - $timeLength ),
                     end   => $sec,
                     keys  => [ $lookup{$metadataId} ],
                     cf    => "AVERAGE"
@@ -1191,7 +1156,6 @@ else {
                 }
             }
             $list{$src}{$dst} = \%temp;
-
         }
 
         my ( $stsec, $stmin, $sthour, $stday, $stmonth, $styear ) = localtime();
@@ -1222,125 +1186,120 @@ else {
         for ( my $x = 1; $x < 13; $x++ ) {
 
             if ( $stmonth == $x ) {
-                push @smon, { value => $x, name => $mon[$x], selected => 1 };
+                push @smon, { VALUE => $x, NAME => $mon[$x], SELECTED => 1 };
             }
             else {
-                push @smon, { value => $x, name => $mon[$x] };
+                push @smon, { VALUE => $x, NAME => $mon[$x] };
             }
         }
         for ( my $x = 1; $x < 32; $x++ ) {
             if ( $stday == $x ) {
-                push @sday, { value => $x, name => $x, selected => 1 };
+                push @sday, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @sday, { value => $x, name => $x };
+                push @sday, { VALUE => $x, NAME => $x };
             }
         }
         for ( my $x = 2000; $x < 2016; $x++ ) {
             if ( $styear == $x ) {
-                push @syear, { value => $x, name => $x, selected => 1 };
+                push @syear, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @syear, { value => $x, name => $x };
+                push @syear, { VALUE => $x, NAME => $x };
             }
         }
 
         for ( my $x = 1; $x < 13; $x++ ) {
             if ( $dtmonth == $x ) {
-                push @dmon, { value => $x, name => $mon[$x], selected => 1 };
+                push @dmon, { VALUE => $x, NAME => $mon[$x], SELECTED => 1 };
             }
             else {
-                push @dmon, { value => $x, name => $mon[$x] };
+                push @dmon, { VALUE => $x, NAME => $mon[$x] };
             }
         }
         for ( my $x = 1; $x < 32; $x++ ) {
             if ( $dtday == $x ) {
-                push @dday, { value => $x, name => $x, selected => 1 };
+                push @dday, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @dday, { value => $x, name => $x };
+                push @dday, { VALUE => $x, NAME => $x };
             }
         }
         for ( my $x = 2000; $x < 2016; $x++ ) {
             if ( $dtyear == $x ) {
-                push @dyear, { value => $x, name => $x, selected => 1 };
+                push @dyear, { VALUE => $x, NAME => $x, SELECTED => 1 };
             }
             else {
-                push @dyear, { value => $x, name => $x };
+                push @dyear, { VALUE => $x, NAME => $x };
             }
         }
 
-        my @pairs   = ();
-        my @histpairs   = ();
-
-        my $counter = 0;
+        my @pairs     = ();
+        my @histpairs = ();
+        my $counter   = 0;
         foreach my $src ( sort keys %list ) {
             foreach my $dst ( sort keys %{ $list{$src} } ) {
-		my $p_time = $sec - 43200;
+
+                # Default time is 12 hours = 60 secs * 60 mins * 12 hours
+                my $timeLength  = 60 * 60 * 12;
+
+                my $p_time = $sec - $timeLength;
                 my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = gmtime( $p_time );
                 my $p_start = sprintf "%04d-%02d-%02dT%02d:%02d:%02d", ( $year + 1900 ), ( $mon + 1 ), $mday, $hour, $min, $sec;
-                $p_time += 43200;
+                $p_time += $timeLength;
                 ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = gmtime( $p_time );
                 my $p_end = sprintf "%04d-%02d-%02dT%02d:%02d:%02d", ( $year + 1900 ), ( $mon + 1 ), $mday, $hour, $min, $sec;
 
                 if ( $list{$src}{$dst}->{"active"} ) {
                     push @pairs,
                         {
-                        key      => $list{$src}{$dst}->{"key"},
-                        shost    => $list{$src}{$dst}->{"src"},
-                        saddress => $list{$src}{$dst}->{"saddr"},,
-                        dhost    => $list{$src}{$dst}->{"dst"},
-                        daddress => $list{$src}{$dst}->{"daddr"},
-                        count    => $counter,
-                        service  => $service
+                        KEY      => $list{$src}{$dst}->{"key"},
+                        SHOST    => $list{$src}{$dst}->{"src"},
+                        SADDRESS => $list{$src}{$dst}->{"saddr"},
+                        ,
+                        DHOST    => $list{$src}{$dst}->{"dst"},
+                        DADDRESS => $list{$src}{$dst}->{"daddr"},
+                        COUNT    => $counter,
+                        SERVICE  => $service
                         };
-		} else {
+                }
+                else {
                     push @histpairs,
                         {
-                        key      => $list{$src}{$dst}->{"key"},
-                        shost    => $list{$src}{$dst}->{"src"},
-                        saddress => $list{$src}{$dst}->{"saddr"},,
-                        dhost    => $list{$src}{$dst}->{"dst"},
-                        daddress => $list{$src}{$dst}->{"daddr"},
-                        count    => $counter,
-                        service  => $service,
-			smon     => \@smon,
-			sday     => \@sday,
-			syear    => \@syear,
-			dmon     => \@dmon,
-			dday     => \@dday,
-			dyear    => \@dyear
+                        KEY      => $list{$src}{$dst}->{"key"},
+                        SHOST    => $list{$src}{$dst}->{"src"},
+                        SADDRESS => $list{$src}{$dst}->{"saddr"},
+                        ,
+                        DHOST    => $list{$src}{$dst}->{"dst"},
+                        DADDRESS => $list{$src}{$dst}->{"daddr"},
+                        COUNT    => $counter,
+                        SERVICE  => $service,
+                        SMON     => \@smon,
+                        SDAY     => \@sday,
+                        SYEAR    => \@syear,
+                        DMON     => \@dmon,
+                        DDAY     => \@dday,
+                        DYEAR    => \@dyear
                         };
-	 	}
-
+                }
                 $counter++;
             }
         }
 
-        my %vars = (
-            eventtype => $eventType,
-            service   => $service,
-            pairs     => \@pairs,
-	    histpairs => \@histpairs
-
+        $template->param(
+            EVENTTYPE => $eventType,
+            SERVICE   => $service,
+            PAIRS     => \@pairs,
+            HISTPAIRS => \@histpairs
         );
-
-        my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
-
-        my $html;
-
-        $tt->process( "serviceTest_pinger.tmpl", \%vars, \$html ) or die $tt->error();
-
-        print $html;
-
-        exit( 0 );
     }
     else {
-        my $html = errorPage("Unrecognized eventType: \"" . $eventType . "\".");
-	print $html;
-	exit( 1 );
+        $template = HTML::Template->new( filename => "$RealBin/../etc/serviceTest_error.tmpl" );
+        $template->param( ERROR => "Unrecognized eventType: \"" . $eventType . "\"." );
     }
 }
+
+print $template->output;
 
 =head2 scaleValue ( { value } )
 
@@ -1368,21 +1327,6 @@ sub scaleValue {
         $result{"mod"}   = "G";
     }
     return \%result;
-}
-
-sub errorPage {
-    my ($msg) = @_;
-
-    my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
-
-    my $html;
-
-    my %vars = ();
-    $vars{error_msg} = $msg;
-
-    $tt->process( "serviceTest_error.tmpl", \%vars, \$html ) or die $tt->error();
-
-    return $html;
 }
 
 =head2 bwctlTestParamsEqual ( { test1, test2 } )
@@ -1475,17 +1419,17 @@ __END__
 
 =head1 SEE ALSO
 
-L<CGI>, L<Template>, L<XML::LibXML>, L<Socket>, L<Data::Validate::IP>,
+L<CGI>, L<HTML::Template>, L<XML::LibXML>, L<Socket>, L<Data::Validate::IP>,
 L<English>, L<Net::IP>, L<perfSONAR_PS::Client::MA>,
 L<perfSONAR_PS::Common>, L<perfSONAR_PS::Utils::ParameterValidation>
 
-To join the 'perfSONAR-PS' mailing list, please visit:
+To join the 'perfSONAR-PS Users' mailing list, please visit:
 
-  https://mail.internet2.edu/wws/info/i2-perfsonar
+  https://lists.internet2.edu/sympa/info/perfsonar-ps-users
 
 The perfSONAR-PS subversion repository is located at:
 
-  https://svn.internet2.edu/svn/perfSONAR-PS
+  http://anonsvn.internet2.edu/svn/perfSONAR-PS/trunk
 
 Questions and comments can be directed to the author, or the mailing list.  Bugs,
 feature requests, and improvements can be directed here:
@@ -1494,7 +1438,7 @@ feature requests, and improvements can be directed here:
 
 =head1 VERSION
 
-$Id: serviceTest.cgi 3619 2009-08-24 17:29:41Z zurawski $
+$Id: serviceTest.cgi 5708 2013-08-14 23:58:58Z sowmya $
 
 =head1 AUTHOR
 
@@ -1516,7 +1460,7 @@ limitations under the License.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2007-2009, Internet2
+Copyright (c) 2007-2010, Internet2
 
 All rights reserved.
 
