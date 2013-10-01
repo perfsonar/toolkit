@@ -22,7 +22,6 @@ use lib "/usr/local/perfSONAR-PS/perfSONAR_PS-PingER/lib";
 
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address reverse_dns_multi resolve_address_multi );
 use perfSONAR_PS::Client::gLS::Keywords;
-use perfSONAR_PS::Client::Parallel::gLS;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 use perfSONAR_PS::NPToolkit::Config::BWCTL;
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
@@ -232,7 +231,7 @@ sub reset_state {
     }
 
     $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
-    ( $status, $res ) = $testing_conf->init( { perfsonarbuoy_conf_template => $conf{perfsonarbuoy_conf_template}, perfsonarbuoy_conf_file => $conf{perfsonarbuoy_conf_file}, pinger_landmarks_file => $conf{pinger_landmarks_file} } );
+    ( $status, $res ) = $testing_conf->init( { local_mesh_config_file => $conf{local_mesh_config_file} } );
     if ( $status != 0 ) {
         return ( $status, "Problem reading testing configuration: $res" );
     }
@@ -1052,11 +1051,7 @@ sub lookup_servers {
 
     my $test = $res;
 
-    if ($conf{"use_cache"}) {
-        ($status, $res) = lookup_servers_cache($test->{type}, $keyword);
-    } else {
-        ($status, $res) = lookup_servers_gls($test->{type}, $keyword);
-    }
+    ($status, $res) = lookup_servers_cache($test->{type}, $keyword);
 
     if ($status != 0) {
         $error_msg = $res;
@@ -1168,80 +1163,6 @@ sub lookup_servers {
 
     $status_msg = "";
     return display_body();
-}
-
-sub lookup_servers_gls {
-    my ( $service_type, $keyword ) = @_;
-
-    my @hosts = ();
-
-    my $gls = perfSONAR_PS::Client::Parallel::gLS->new( {} );
-
-    my $parser = XML::LibXML->new();
-
-    $logger->debug( "lookup_servers_gls($service_type, $keyword)" );
-
-    unless ( $gls->{ROOTS} ) {
-        $logger->info( "No gLS Roots found!" );
-        $error_msg = "Error looking up hosts";
-        return display_body();
-    }
-
-    my @eventTypes = ();
-    if ( $service_type eq "pinger" ) {
-        push @eventTypes, "http://ggf.org/ns/nmwg/tools/ping/1.0";
-    }
-    elsif ( $service_type eq "bwctl/throughput" ) {
-        push @eventTypes, "http://ggf.org/ns/nmwg/tools/bwctl/1.0";
-    }
-    elsif ( $service_type eq "owamp" ) {
-        push @eventTypes, "http://ggf.org/ns/nmwg/tools/owamp/1.0";
-    }
-    else {
-        $error_msg = "Unknown server type specified";
-        return (-1, $error_msg);
-    }
-
-    my @keywords = ( "project:" . $keyword );
-
-    my $result;
-    my $start_time = time;
-    $result = $gls->getLSLocation( { eventTypes => \@eventTypes, keywords => \@keywords } );
-    my $end_time = time;
-
-    unless ( $result ) {
-        $lookup_info = undef;
-        $error_msg   = "Problem looking up hosts";
-        return (-1, $error_msg);
-    }
-
-    foreach my $s ( @{$result} ) {
-        my $doc = $parser->parse_string( $s );
-
-        my $res;
-
-        my $name = findvalue( $doc->getDocumentElement, ".//*[local-name()='name']", 0 );
-        my $description = findvalue( $doc->getDocumentElement, ".//*[local-name()='description']", 0 );
-
-        my @addrs = ();
-        $res = find( $doc->getDocumentElement, ".//*[local-name()='address']", 0 );
-        foreach my $c ( $res->get_nodelist ) {
-            my $contact = extract( $c, 0 );
-
-            $logger->info( "Adding $contact to address list" );
-
-            push @addrs, $contact;
-        }
-
-        my %service_info = ();
-        $service_info{"name"} = $name;
-        $service_info{"description"} = $description;
-        $service_info{"addresses"}   = \@addrs;
-
-        push @hosts, \%service_info;
-    }
-
-    return (0, { hosts => \@hosts, check_time => time });
 }
 
 sub lookup_servers_cache {
