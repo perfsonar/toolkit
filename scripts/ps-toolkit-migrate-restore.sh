@@ -234,6 +234,7 @@ for i in `find /var/lib/cacti -name \*.xml`; do rrdtool restore $i `echo $i |sed
 if [ "$?" != "0" ]; then
     echo "WARN: No cacti databases restored."
 fi
+chown -R apache:apache /var/lib/cacti/*
 printf "[SUCCESS]"
 echo ""
 
