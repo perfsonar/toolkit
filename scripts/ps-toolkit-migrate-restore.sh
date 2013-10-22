@@ -163,7 +163,7 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-if [ -f "/etc/bwctld/bwctld.keys" ]; then
+if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.keys" ]; then
     cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.keys /etc/bwctld/bwctld.keys  
     if [ "$?" != "0" ]; then
         echo "Unable to restore /etc/bwctld/bwctld.keys"
