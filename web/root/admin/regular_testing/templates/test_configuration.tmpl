@@ -59,7 +59,7 @@
 	</tr>
 	[% END %]
 	<tr>
-	<td style="width: 200px">TOS Bits</td><td>[% IF current_test.parameters.tos_bits %]  [% current_test.parameters.tos_bits %] [% END %] </td>
+	<td style="width: 200px">TOS Bits</td><td>[% IF current_test.parameters.tos_bits %]  [% current_test.parameters.tos_bits %] [% ELSE %] 0 [% END %] </td>
 	</tr>
 	<tr>
 	<td colspan="2"><a href="#" onClick='display_bwctl_throughput_test_dialog("[% current_test.id %]", "[% current_test.description %]", "[% current_test.parameters.test_interval %]", "[% current_test.parameters.duration %]", "[% current_test.parameters.tool %]", "[% current_test.parameters.protocol %]", "[% current_test.parameters.window_size %]", "[% current_test.parameters.udp_bandwidth %]", "[% current_test.parameters.tos_bits %]")'>Edit Test Parameters</a></td>
