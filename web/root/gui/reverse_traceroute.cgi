@@ -2,7 +2,7 @@
 ###############################################################################
 use strict;
 $ENV{PATH}='/bin:/usr/bin:/sbin:/usr/local/bin:/usr/local/etc:/usr/sbin:/usr/local/sbin';#For untainting
-
+my $t00=time();
 ########################## Testing ##############################################
 # For testing from command line you need to set some environment variables, 
 # e.g. assuming you are using the tcsh shell
@@ -39,8 +39,15 @@ print $msg."Content-type: text/html\n\n";
 # a measurement as a result (and cache the results for all time in the process)
 #my $version="6.1, 2/15/2013, Les Cottrell";
 #Added link to Fixed orbits to find AS's on route between 2 hosts
-my $version="6.2, 2/27/2013, Les Cottrell";
+#my $version="6.2, 2/27/2013, Les Cottrell";
 # Improved the final execution to add timing and various alarm durations.
+#my $version="6.3, 5/2/2013, Les Cottrell";
+# Added ability provide extra options, such as ASN or number of hops info.
+# Only for the intrepid.  Example:
+# http://www-wanmon.slac.stanford.edu/cgi-bin/traceroute.pl?options=-m 5 -A
+my $version="6.4, 8/29/2013, Jason Zurawski, Les Cottrell";
+# Enabled jumbo frames
+# When making a significant change, please notify: i2-perfsonar@internet2.edu
 ################################################################################
 #Understand the local environment
 use Cwd;
@@ -56,7 +63,6 @@ my $ipaddr=gethostbyname6($hostname);
 my $site="";#Allows us to special case SLAC's configuration
 if($hostname=~/\.slac\.stanford\.edu/) {$site="slac";}
 my $archname=$^O;
-
 ########################## Get the form action field #########################
 #$form allows one to use a different form action field, e.g.
 #REQUEST_URI is of the form: /cgi-bin/traceroute.pl?choice=yes
@@ -89,14 +95,14 @@ my $Sy;
 my $Tr = 'traceroute'; # Usually works
 ################# SLAC site specific ##################################
 if($site eq "slac") {
-  @Tropts = qw(-m 30 -q 1 -w 3);#options for SLAC traceroute, comment if uncertain
   if($archname eq "solaris") {
     $Sy="/afs/slac/package/pinger/old/synack/sun4x_56/synack";
   }
   else {
     $Sy ="/afs/slac/package/pinger/old/synack/i386_linux22/synack";
+    @Tropts = qw(-m 30 -q 1 -w 3 -A);#options for SLAC traceroute, comment if uncertain
   }
-  $to="cottrell\@slac.stanford.edu,spiers\@slac.stanford.edu";
+  $to="cottrell\@slac.stanford.edu,jlarson\@slac.stanford.edu";
 }
 else {$Sy=$Tr;} #Only support synack at SLAC
 #######################################################################
@@ -154,6 +160,7 @@ else                             {$function="traceroute";}
 my @pairs=split(/&/,$query);
 my $ping_size="56";
 my $probe=""; #Can be overwritten (to -I) by probe=ICMP for traceroute
+my @options=();
 foreach my $pair (@pairs) {
   my ($name,$value)=split(/=/,$pair);
   $name=lc($name);
@@ -182,13 +189,23 @@ foreach my $pair (@pairs) {
   }
   elsif($name eq "debug") {$debug=$value;}
   elsif($name eq "size")  {
-    $ping_size=$value;
-    if($ping_size eq "") {$ping_size=56;}
-    if(!($ping_size =~ /\d+/)) {
-      $err .= "Size must be positive integer.<br>\n";
+    #$ping_size=$value;
+    #if($ping_size eq "") {$ping_size=56;}
+    #if(!($ping_size =~ /\d+/)) {
+    #  $err .= "Size must be positive integer.<br>\n";
+    if($value eq "") {
+      $ping_size=56;
     }
-    elsif (($ping_size < 56) || ($ping_size > 1400)) {
-      $err .= "Size must be >= 56 & <= 1400.<br>\n";
+    #elsif (($ping_size < 56) || ($ping_size > 1400)) {
+    #  $err .= "Size must be >= 56 & <= 1400.<br>\n";
+    elsif ($value =~ /^(\d+)$/) {
+      $ping_size = $1;
+      if ($ping_size > 8972) {
+        $err .= "Size must be <= 8972.<br>\n";
+      }
+    }
+    else {
+      $err .= "Size must be positive integer.<br>\n";
     }
   }
   elsif($name eq "probe") {
@@ -200,12 +217,30 @@ foreach my $pair (@pairs) {
       $err .= "ipv='$ipv' is invalid, if supplied  must equal 6 or 4<br>\n";
     }
   }
+  elsif($name eq "options") {
+    my @arguments=(split/%20/,$value);
+    for my $arg(@arguments) {
+      if($arg=~/^(-\w+)$/) {#option name
+        push(@options, $1);
+      }
+      elsif ($arg=~/^(\d*\.*\d*)$/) {#option value
+        push(@options, $1);
+      }
+      #elsif ($arg="") {;} 
+      else {
+        $err.="Invalid characters ($arg) found in options string=";
+        for my $token (@arguments) {$err.="$token ";}
+        $err.="\n";
+        last;
+      }
+    }  
+  }
 }
 ###########################################################################
 #Add in the ICMP option if requested
 my $ping_npackets="";
 if($function eq "traceroute") {if($probe ne "") {push (@Tropts,$probe);}}
-################################################################################
+###########################################################################
 # Build the executable function for ping
 elsif($function eq "ping") {
   $Tr="ping";
@@ -214,7 +249,7 @@ elsif($function eq "ping") {
   }
   else {@Tropts=("-c 5","-s $ping_size");}
 }
-################################################################################
+##########################################################################
 # Build the executable function for synack
 elsif($function =~ /synack/) {
   if ($function =~ /synack -p (\d{1,3})/) {
@@ -225,16 +260,16 @@ elsif($function =~ /synack/) {
   }
   $Tr=$Sy;
 }
-#############################################################################
+#########################################################################
 # Build the executable function for tracepath
 elsif($function eq "tracepath") {
   $Tr="tracepath";
   @Tropts="";
 }
-#############################################################################
+#########################################################################
 #Keep track of last request
 my $last="/tmp/$function".".pl.time"; # file to be 'touched' to note last time email sent.
-################################################################################
+#########################################################################
 #Clean up the target address.
 $addr =~ s/\%([a-fA-F0-9][a-fA-F0-9])/pack('H2',$1)/eg; #De-webify %xx stuff
 $addr =~ s/\%([a-fA-F0-9][a-fA-F0-9])/pack('H2',$1)/eg; #De-webify %xx stuff
@@ -256,7 +291,7 @@ if($addr=~/.\@./) {#Looks like an email address, provide guidance
   $err.="Looks like an email address (i.e. name\@mail_domain),".
         " needs to be host name or address (e.g. must not include \@).<br>\n";
 }
-##################################################################################
+#####################################################################
 #Complete the name and address of the target host
 my @target=split(/\./,$addr); my $target_domain;
 my $ipv6=0;
@@ -361,7 +396,7 @@ if($host=~/in-addr\.btopenworld\.com/) {
         "btopenworld.com. Thank you.\n";
       exit 4;
 }
-#######################################################################################
+#########################################################################
 # As a security measure we do not allow a remote host in a different
 # domain to do a traceroute to
 # a host within the same domain as the web server. One concern is that
@@ -421,7 +456,7 @@ if($host eq "") {$host="host with no DNS entry";}
 print "<html>\n<head>\n<title>$msg</title>\n"
     . "<meta name='robots' content='noindex,nofollow'>\n"
     . "</head>\n<body>\n";
-##################################################################################
+#######################################################
 # *** Sites may want to tailor the following statement to meet their needs. ******
 if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
   if($debug>=0) {
@@ -484,7 +519,7 @@ if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
       "</tr></table></div>\n";
   }
 }
-# *** end of second and last part of tailoring ************************************
+# *** end of second and last part of tailoring *******************************
 if($function ne "ping") {
   if($debug>=0) {
     print "<table bgcolor='yellow'><tr><td align='center'><font color=red><b>\n",
@@ -592,6 +627,7 @@ if(!($addr=~ /^([\w\.:\-]+)$/)) {#Untaint Check for valid characters
   exit 1;
 }
 $addr=$1; #Untaint $addr.
+push(@Tropts, @options);
 if($function eq "traceroute" and $archname ne "solaris") {
   $temp="140"; #Added the 140 to tracreoute command
   #to get round the bug in Redhat's traceroute package in which some
@@ -630,8 +666,24 @@ sub exec {
   my @args=@_;
   print "Executing exec(@args)\n";
   my $t0=time();
-  system(@args) == 0 or die "Can't system(@args): $?";
-  print "@args took ".(time()-$t0)." secs.\n";
+  #system(@args) == 0 or die "Can't system(@args): $?";
+  my $exitcode = system(@args);
+  if ( $exitcode == 0 ) {
+     # Exit was normal
+  }
+  elsif ( $exitcode == 1) {
+     die "Responses not seen --- Can't system(@args): $?"
+  }
+  elsif ( $exitcode == 2 ) {
+     die "Error in command --- Can't system(@args): $?"
+  }
+  elsif ( $exitcode == 256 ) {
+     die "Operation timed out --- Can't system(@args): $?"
+  }
+  else {
+     die "Other error code seen --- Can't system(@args): $?"
+  }
+  print "@args took ".(time()-$t0)."secs. Total time=".(time()-$t00)."secs.\n";
   return;
 }
 ######################################################
