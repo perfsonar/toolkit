@@ -126,6 +126,7 @@ my $chosen_interface;
 my $ipv4_interface;
 my $ipv6_interface;
 my $interface_speed;
+my $interface_mtu;
 
 my @all_ips = ();
 foreach my $iface ( keys %$ips_by_iface ) {
@@ -242,6 +243,7 @@ unless ( $chosen_address and $ipv6_address ) {
 #get the interface speed
 if($chosen_interface){
     $interface_speed = get_interface_speed({interface_name => $chosen_interface});
+    $interface_mtu = get_interface_mtu({interface_name => $chosen_interface});
 }
 
 if ($chosen_address) {
@@ -274,6 +276,7 @@ if ( $external_address_config->init() == 0 ) {
     $external_address_config->set_primary_ipv6_iface( { iface => $ipv6_interface } );
     $external_address_config->set_primary_ipv4_iface( { iface => $ipv4_interface } );
     $external_address_config->set_primary_iface_speed( { speed => $interface_speed } );
+    $external_address_config->set_primary_iface_mtu( { mtu => $interface_mtu } );
 
     $external_address_config->save( { restart_services => $RESTART_SERVICES } );
 }

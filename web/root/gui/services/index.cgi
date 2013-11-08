@@ -170,7 +170,7 @@ $vars{admin_email}     = $administrative_info_conf->get_administrator_email();
 $logger->debug("Grabbing primary address");
 $vars{external_address}     = $external_address_conf->get_primary_address();
 $logger->debug("Grabbing MTU of primary address");
-$vars{mtu}     = $external_address_conf->get_primary_address_mtu();
+$vars{mtu}     = $external_address_conf->get_primary_iface_mtu();
 $logger->debug("Checking if NTP is synced");
 $vars{ntp_sync_status}     = $ntpinfo->is_synced();
 $logger->debug("Checking if globally registered");
