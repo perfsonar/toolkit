@@ -1,5 +1,10 @@
 # /etc/ntp.conf, configuration for NTP
-
+# by default act only as a basic NTP client
+restrict -4 default nomodify nopeer noquery notrap
+restrict -6 default nomodify nopeer noquery notrap
+# allow NTP messages from the loopback address, useful for debugging
+restrict 127.0.0.1
+restrict ::1
 logfile /var/log/ntpd
 driftfile /var/lib/ntp/ntp.drift
 statsdir  /var/lib/ntp/
