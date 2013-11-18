@@ -1,0 +1,4 @@
+#!/bin/bash
+
+iptables-restore < /opt/perfsonar_ps/toolkit/etc/firewall.conf
+iptables-save

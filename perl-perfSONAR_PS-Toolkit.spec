@@ -8,6 +8,7 @@
 %define init_script_3 discover_external_address
 %define init_script_4 generate_motd
 %define init_script_5 configure_nic_parameters
+%define init_script_5_1 configure_firewall
 
 # The following init scripts are only enabled when the LiveCD is being used
 %define init_script_6 mount_scratch_overlay
@@ -231,6 +232,7 @@ install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
 install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_script_4}
 install -D -m 0755 init_scripts/%{init_script_5} %{buildroot}/etc/init.d/%{init_script_5}
+install -D -m 0755 init_scripts/%{init_script_5_1} %{buildroot}/etc/init.d/%{init_script_5_1}
 install -D -m 0755 init_scripts/%{init_script_6} %{buildroot}/etc/init.d/%{init_script_6}
 install -D -m 0755 init_scripts/%{init_script_7} %{buildroot}/etc/init.d/%{init_script_7}
 install -D -m 0755 init_scripts/%{init_script_8} %{buildroot}/etc/init.d/%{init_script_8}
@@ -336,12 +338,14 @@ chkconfig --add %{init_script_2}
 chkconfig --add %{init_script_3}
 chkconfig --add %{init_script_4}
 chkconfig --add %{init_script_5}
+chkconfig --add %{init_script_5_1}
 
 chkconfig %{init_script_1} on
 chkconfig %{init_script_2} on
 chkconfig %{init_script_3} on
 chkconfig %{init_script_4} on
 chkconfig %{init_script_5} on
+chkconfig %{init_script_5_1} on
 
 # apache needs to be on for the toolkit to work
 chkconfig --level 2345 httpd on
@@ -416,11 +420,13 @@ done
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_5}
+%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_5_1}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_1}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_5}
+%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_5_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cacti_toolkit_init.sql
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_bwctl.sh
