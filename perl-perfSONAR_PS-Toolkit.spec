@@ -420,7 +420,6 @@ done
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_5}
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_5_1}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_1}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
