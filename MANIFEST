@@ -35,6 +35,7 @@ etc/discover_external_address-logger.conf
 etc/discover_external_address.conf
 etc/enabled_services
 etc/external_addresses
+etc/firewall.conf
 etc/ntp_known_servers
 etc/service_watcher-logger.conf
 etc/service_watcher.conf
@@ -66,7 +67,6 @@ lib/perfSONAR_PS/Datatypes/EventTypes/Ops.pm
 lib/perfSONAR_PS/Datatypes/EventTypes/Status.pm
 lib/perfSONAR_PS/Datatypes/EventTypes/Tools.pm
 lib/perfSONAR_PS/Datatypes/Message.pm
-lib/perfSONAR_PS/HostInfo/Base.pm
 lib/perfSONAR_PS/Messages.pm
 lib/perfSONAR_PS/NPToolkit/BackingStore/Config.pm
 lib/perfSONAR_PS/NPToolkit/BackingStore/Utils.pm
@@ -154,9 +154,6 @@ lib/perfSONAR_PS/PINGER_DATATYPES/v2_0/pinger/Message/Metadata/Parameters.pm
 lib/perfSONAR_PS/PINGER_DATATYPES/v2_0/pinger/Message/Metadata/Subject.pm
 lib/perfSONAR_PS/PINGER_DATATYPES/v2_0/select/Message/Metadata/Parameters.pm
 lib/perfSONAR_PS/PINGER_DATATYPES/v2_0/select/Message/Metadata/Subject.pm
-lib/perfSONAR_PS/ServiceInfo/Base.pm
-lib/perfSONAR_PS/ServiceInfo/perfSONAR_PS.pm
-lib/perfSONAR_PS/ServiceWatcher/Base.pm
 lib/perfSONAR_PS/Transport.pm
 lib/perfSONAR_PS/Utils/Closest.pm
 lib/perfSONAR_PS/Utils/Config/BWCTL.pm
@@ -181,6 +178,7 @@ scripts/clean_owampd
 scripts/cleanupdb_bwctl.sh
 scripts/cleanupdb_owamp.sh
 scripts/cleanupdb_traceroute.sh
+scripts/configure_firewall
 scripts/create_backing_store
 scripts/cron-cacti_local
 scripts/cron-db_cleaner
@@ -198,9 +196,9 @@ scripts/initialize_traceroute_ma_database
 scripts/livecd_net_config.sh
 scripts/manage_users
 scripts/nptoolkit-configure.py
+scripts/perfsonar_recover.sh
 scripts/pinger_toolkit_init.sql
 scripts/pinger_toolkit_upgrade.sql
-scripts/perfsonar_recover.sh
 scripts/ps-toolkit-migrate-backup.sh
 scripts/ps-toolkit-migrate-restore.sh
 scripts/restore_config

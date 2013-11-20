@@ -21,7 +21,7 @@
 %define crontab_4     cron-save_config
 %define crontab_5     cron-db_cleaner 
 
-%define relnum  2 
+%define relnum  3 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -200,6 +200,8 @@ Requires(post):	rsyslog
 Requires(post):	setup
 Requires(post):	smartmontools
 Requires(post):	sudo
+Requires(post): system-config-firewall-base
+
 %description SystemEnvironment
 Tunes and configures the system according to performance and security best
 practices.
@@ -350,6 +352,8 @@ chkconfig --level 2345 httpd on
 chkconfig --level 345 iptables on
 
 /opt/perfsonar_ps/toolkit/scripts/initialize_databases 2> /dev/null
+
+#configure firewall
 /opt/perfsonar_ps/toolkit/scripts/configure_firewall 2> /dev/null
 
 %post LiveCD
@@ -378,6 +382,7 @@ for script in %{install_base}/scripts/system_environment/*; do
 		$script upgrade
 	fi
 done
+
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
@@ -471,6 +476,7 @@ done
 
 %files SystemEnvironment
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
+%attr(0444,perfsonar,perfsonar) %{install_base}/etc/firewall_rules
 
 %changelog
 * Tue Oct 02 2012 asides@es.net 3.3-1
