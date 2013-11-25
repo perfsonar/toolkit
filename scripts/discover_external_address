@@ -30,7 +30,7 @@ use Data::Dumper;
 
 use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
-use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces get_ips get_interface_addresses get_interface_speed);
+use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces get_ips get_interface_addresses get_interface_speed get_interface_mtu);
 use perfSONAR_PS::Utils::DNS qw( reverse_dns_multi );
 
 my $default_config        = "/opt/perfsonar_ps/toolkit/etc/discover_external_address.conf";
