@@ -1,7 +1,7 @@
 #!/bin/bash
 
 iptables-restore < /opt/perfsonar_ps/toolkit/etc/firewall.conf
-
+ip6tables-restore < /opt/perfsonar_ps/toolkit/etc/firewall_v6.conf
 
 bwctlparams=("iperf_port" "nuttcp_port" "peer_port")
 owampparams=("testports")
@@ -19,14 +19,19 @@ addPortRuleFromFile(){
 		cmd1="iptables -I INPUT 1 -m udp -p udp --sport $portrange -j ACCEPT"
 		cmd2="iptables -I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport $portrange -j ACCEPT"
 		cmd3="iptables -I INPUT 1 -m state --state ESTABLISHED -m tcp -p tcp --sport $portrange -j ACCEPT"
-		echo $cmd0
-		echo $cmd1
-		echo $cmd2
-		echo $cmd3
+                cmd4="ip6tables -I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT"
+                cmd5="ip6tables -I INPUT 1 -m udp -p udp --sport $portrange -j ACCEPT"
+                cmd6="ip6tables -I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport $portrange -j ACCEPT"
+                cmd7="ip6tables -I INPUT 1 -m state --state ESTABLISHED -m tcp -p tcp --sport $portrange -j ACCEPT"
+
 		$cmd0
 		$cmd1
 		$cmd2
 		$cmd3
+		$cmd4
+		$cmd5	
+		$cmd6
+		$cmd7
 	done 
 }
 
@@ -34,3 +39,4 @@ addPortRuleFromFile $bwctlfile $bwctlparams
 addPortRuleFromFile $owampfile $owampparams
 
 iptables-save
+ip6tables-save
