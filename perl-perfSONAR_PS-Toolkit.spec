@@ -21,7 +21,7 @@
 %define crontab_4     cron-save_config
 %define crontab_5     cron-db_cleaner 
 
-%define relnum  3 
+%define relnum  4 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -127,6 +127,7 @@ Requires:		mod_auth_shadow
 Requires:		mod_ssl
 Requires:		nscd
 Requires:		ntp
+Requires:		fail2ban
 
 # Anaconda requires a Requires(post) to ensure that packages are installed before the %post section is run...
 Requires(post):	perl
@@ -476,7 +477,6 @@ done
 
 %files SystemEnvironment
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
-%attr(0444,perfsonar,perfsonar) %{install_base}/etc/firewall_rules
 
 %changelog
 * Tue Oct 02 2012 asides@es.net 3.3-1
