@@ -36,6 +36,7 @@ etc/discover_external_address.conf
 etc/enabled_services
 etc/external_addresses
 etc/firewall.conf
+etc/firewall_v6.conf
 etc/ntp_known_servers
 etc/service_watcher-logger.conf
 etc/service_watcher.conf

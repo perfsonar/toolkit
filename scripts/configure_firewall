@@ -12,11 +12,11 @@ owampfile="/etc/owampd/owampd.conf"
 addPortRuleFromFile(){
 	file=$1
 	shift
-	params=("$@")
+	local params=( `echo "$2"` )
 	for i in "${params[@]}"
 	do
 		portrange=`awk -v search="^$i" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
-		if [ ! -z "$portrange ]; then
+		if [ ! -z "$portrange" ]; then
 			cmd0="iptables -I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT"
 			cmd1="iptables -I INPUT 1 -m udp -p udp --sport $portrange -j ACCEPT"
 			cmd2="iptables -I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport $portrange -j ACCEPT"
@@ -38,8 +38,10 @@ addPortRuleFromFile(){
 	done 
 }
 
-addPortRuleFromFile $bwctlfile $bwctlparams
-addPortRuleFromFile $owampfile $owampparams
+p=`echo ${bwctlparams[@]}`
+addPortRuleFromFile "$bwctlfile" "$p"
+p=`echo ${owampparams[@]}`
+addPortRuleFromFile "$owampfile" "$p"
 
 iptables-save
 ip6tables-save
