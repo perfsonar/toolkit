@@ -21,7 +21,7 @@
 %define crontab_4     cron-save_config
 %define crontab_5     cron-db_cleaner 
 
-%define relnum  5 
+%define relnum  6 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -128,6 +128,8 @@ Requires:		mod_ssl
 Requires:		nscd
 Requires:		ntp
 Requires:		fail2ban
+
+Obsoletes:		perl-perfSONAR_PS-TopologyService
 
 # Anaconda requires a Requires(post) to ensure that packages are installed before the %post section is run...
 Requires(post):	perl
