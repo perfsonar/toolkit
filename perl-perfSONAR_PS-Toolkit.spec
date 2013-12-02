@@ -346,6 +346,7 @@ chkconfig %{init_script_3} on
 chkconfig %{init_script_4} on
 chkconfig %{init_script_5} on
 
+chkconfig fail2ban on
 # apache needs to be on for the toolkit to work
 chkconfig --level 2345 httpd on
 
