@@ -189,7 +189,7 @@ sub save_config {
     if ($status != 0) {
         $error_msg = "Problem saving configuration: $res";
     } else {
-        ( $status, $res ) = $bwctl_conf->save( { restart_services => 1 } );
+        ( $status, $res ) = $bwctl_conf->save( { restart_services => 1, config_firewall => 1 } );
         if ($status != 0) {
             $error_msg = "Problem saving configuration: $res";
         } else {
