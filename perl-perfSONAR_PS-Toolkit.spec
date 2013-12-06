@@ -21,7 +21,7 @@
 %define crontab_4     cron-save_config
 %define crontab_5     cron-db_cleaner 
 
-%define relnum  7 
+%define relnum  8 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -354,6 +354,7 @@ chkconfig --level 2345 httpd on
 
 #starting iptables
 chkconfig --level 345 iptables on
+chkconfig --level 345 ip6tables on
 
 /opt/perfsonar_ps/toolkit/scripts/initialize_databases 2> /dev/null
 
