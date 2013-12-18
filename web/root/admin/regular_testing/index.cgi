@@ -231,7 +231,7 @@ sub reset_state {
     }
 
     $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
-    ( $status, $res ) = $testing_conf->init( { local_mesh_config_file => $conf{local_mesh_config_file} } );
+    ( $status, $res ) = $testing_conf->init( { regular_testing_config_file => $conf{regular_testing_config_file} } );
     if ( $status != 0 ) {
         return ( $status, "Problem reading testing configuration: $res" );
     }
