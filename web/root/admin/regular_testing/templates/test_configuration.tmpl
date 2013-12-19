@@ -37,6 +37,7 @@
 	<tr>
 	<td style="width: 200px">Bandwidth Tester</td>
 	<td>
+		[% IF current_test.parameters.tool == "iperf3" %]Iperf3[% END %]
 		[% IF current_test.parameters.tool == "iperf" %]Iperf[% END %]
 		[% IF current_test.parameters.tool == "nuttcp" %]nuttcp[% END %]
 		[% IF current_test.parameters.tool == "thrulay" %]Thrulay[% END %]
