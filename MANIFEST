@@ -204,6 +204,7 @@ lib/perfSONAR_PS/RegularTesting/Results/TracerouteTestHop.pm
 lib/perfSONAR_PS/RegularTesting/Schedulers/Base.pm
 lib/perfSONAR_PS/RegularTesting/Schedulers/RegularInterval.pm
 lib/perfSONAR_PS/RegularTesting/Schedulers/Streaming.pm
+lib/perfSONAR_PS/RegularTesting/Target.pm
 lib/perfSONAR_PS/RegularTesting/Test.pm
 lib/perfSONAR_PS/RegularTesting/Tests/Base.pm
 lib/perfSONAR_PS/RegularTesting/Tests/Bwctl.pm
@@ -213,6 +214,7 @@ lib/perfSONAR_PS/RegularTesting/Tests/BwpingOwamp.pm
 lib/perfSONAR_PS/RegularTesting/Tests/Bwtraceroute.pm
 lib/perfSONAR_PS/RegularTesting/Tests/Powstream.pm
 lib/perfSONAR_PS/RegularTesting/Utils.pm
+lib/perfSONAR_PS/RegularTesting/Utils/ConfigFile.pm
 lib/perfSONAR_PS/RegularTesting/Utils/SerializableObject.pm
 lib/perfSONAR_PS/ServiceInfo/Base.pm
 lib/perfSONAR_PS/ServiceInfo/perfSONAR_PS.pm
