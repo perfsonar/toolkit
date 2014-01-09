@@ -132,6 +132,7 @@ my $config_daemon = perfSONAR_PS::NPToolkit::ConfigManager::ConfigDaemon->new();
                                           address        => $conf{"address"},
                                           port           => $conf{"port"},
                                           access_control => $conf{"access"},
+                                          firewall_script => $conf{"firewall_script"}
                                       });
 if ($status != 0) {
     $logger->error("Problem starting up configuration daemon: $res");

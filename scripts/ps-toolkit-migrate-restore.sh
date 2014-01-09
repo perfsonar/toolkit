@@ -163,7 +163,7 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-if [ -f "/etc/bwctld/bwctld.keys" ]; then
+if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.keys" ]; then
     cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.keys /etc/bwctld/bwctld.keys  
     if [ "$?" != "0" ]; then
         echo "Unable to restore /etc/bwctld/bwctld.keys"
@@ -234,6 +234,7 @@ for i in `find /var/lib/cacti -name \*.xml`; do rrdtool restore $i `echo $i |sed
 if [ "$?" != "0" ]; then
     echo "WARN: No cacti databases restored."
 fi
+chown -R apache:apache /var/lib/cacti/*
 printf "[SUCCESS]"
 echo ""
 

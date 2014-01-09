@@ -21,11 +21,11 @@
 %define crontab_4     cron-save_config
 %define crontab_5     cron-db_cleaner 
 
-%define relnum 1 
+%define relnum  9 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
-Version:		3.3.1
+Version:		3.3.2
 Release:		%{relnum}.%{disttag}
 Summary:		perfSONAR_PS Toolkit
 License:		Distributable, see LICENSE
@@ -127,6 +127,9 @@ Requires:		mod_auth_shadow
 Requires:		mod_ssl
 Requires:		nscd
 Requires:		ntp
+Requires:		fail2ban
+
+Obsoletes:		perl-perfSONAR_PS-TopologyService
 
 # Anaconda requires a Requires(post) to ensure that packages are installed before the %post section is run...
 Requires(post):	perl
@@ -200,6 +203,8 @@ Requires(post):	rsyslog
 Requires(post):	setup
 Requires(post):	smartmontools
 Requires(post):	sudo
+Requires(post): system-config-firewall-base
+
 %description SystemEnvironment
 Tunes and configures the system according to performance and security best
 practices.
@@ -343,10 +348,18 @@ chkconfig %{init_script_3} on
 chkconfig %{init_script_4} on
 chkconfig %{init_script_5} on
 
+chkconfig fail2ban on
 # apache needs to be on for the toolkit to work
 chkconfig --level 2345 httpd on
 
+#starting iptables
+chkconfig --level 345 iptables on
+chkconfig --level 345 ip6tables on
+
 /opt/perfsonar_ps/toolkit/scripts/initialize_databases 2> /dev/null
+
+#configure firewall
+/opt/perfsonar_ps/toolkit/scripts/configure_firewall 2> /dev/null
 
 %post LiveCD
 # The toolkit_config init script is only enabled when the LiveCD is being used
@@ -374,6 +387,7 @@ for script in %{install_base}/scripts/system_environment/*; do
 		$script upgrade
 	fi
 done
+
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
@@ -426,6 +440,7 @@ done
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_bwctl.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_owamp.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_traceroute.sh
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_firewall
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/discover_external_address
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/get_enabled_services
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_cacti_database
