@@ -637,7 +637,6 @@ sub add_bwctl_throughput_test {
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_bwctl_throughput(
         {
-            mesh_type     => "star",
             description   => $description,
             tool          => $tool,
             protocol      => $protocol,
@@ -766,7 +765,6 @@ sub add_owamp_test {
 
     my ( $status, $res ) = $testing_conf->add_test_owamp(
         {
-            mesh_type        => "star",
             description      => $description,
             packet_interval  => $packet_interval,
             loss_threshold   => $loss_threshold,
@@ -824,7 +822,6 @@ sub add_traceroute_test {
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_traceroute(
         {
-            mesh_type     => "star",
             description   => $description,
             test_interval => $test_interval,
             packet_size   => $packet_size,
