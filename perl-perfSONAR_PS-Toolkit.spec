@@ -21,7 +21,7 @@
 %define crontab_4     cron-save_config
 %define crontab_5     cron-db_cleaner 
 
-%define relnum  9 
+%define relnum  10 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -128,6 +128,8 @@ Requires:		mod_ssl
 Requires:		nscd
 Requires:		ntp
 Requires:		fail2ban
+Requires:		iptables
+Requires:		iptables-ipv6
 
 Obsoletes:		perl-perfSONAR_PS-TopologyService
 
