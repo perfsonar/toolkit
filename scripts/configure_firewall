@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #Insert new rules
-iptables-restore < /opt/perfsonar_ps/toolkit/etc/firewall.conf
-ip6tables-restore < /opt/perfsonar_ps/toolkit/etc/firewall_v6.conf
+cp /opt/perfsonar_ps/toolkit/etc/firewall.conf /etc/sysconfig/iptables
+cp /opt/perfsonar_ps/toolkit/etc/firewall_v6.conf /etc/sysconfig/ip6tables
 
 #Determine BWCTL and OWAMP ports
 bwctlparams=("iperf_port" "nuttcp_port" "peer_port")
@@ -18,15 +18,10 @@ addPortRuleFromFile(){
 	do
 		portrange=`awk -v search="^$i" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
 		if [ ! -z "$portrange" ]; then
-			cmd0="iptables -I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT"
-			cmd1="iptables -I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT"
-			cmd2="ip6tables -I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT"
-			cmd3="ip6tables -I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT"
-
-			$cmd0
-			$cmd1
-			$cmd2
-			$cmd3
+			echo "-I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT" >> /etc/sysconfig/iptables 
+			echo "-I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT" >> /etc/sysconfig/iptables 
+			echo "-I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT" >> /etc/sysconfig/ip6tables
+			echo "-I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT" >> /etc/sysconfig/ip6tables
 		fi
 	done 
 }
@@ -35,7 +30,5 @@ p=`echo ${bwctlparams[@]}`
 addPortRuleFromFile "$bwctlfile" "$p"
 p=`echo ${owampparams[@]}`
 addPortRuleFromFile "$owampfile" "$p"
-
-#Save results
-/etc/init.d/iptables save
-/etc/init.d/ip6tables save
+echo "COMMIT" >> /etc/sysconfig/iptables
+echo "COMMIT" >> /etc/sysconfig/ip6tables
