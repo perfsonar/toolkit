@@ -21,7 +21,7 @@
 %define crontab_4     cron-save_config
 %define crontab_5     cron-db_cleaner 
 
-%define relnum  11 
+%define relnum  12 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -360,9 +360,6 @@ chkconfig ip6tables on
 
 /opt/perfsonar_ps/toolkit/scripts/initialize_databases 2> /dev/null
 
-#configure firewall
-/opt/perfsonar_ps/toolkit/scripts/configure_firewall 2> /dev/null
-
 %post LiveCD
 # The toolkit_config init script is only enabled when the LiveCD is being used
 # so it gets enabled as part of the kickstart.
@@ -442,7 +439,6 @@ done
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_bwctl.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_owamp.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_traceroute.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_firewall
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/discover_external_address
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/get_enabled_services
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_cacti_database

@@ -179,7 +179,6 @@ scripts/clean_owampd
 scripts/cleanupdb_bwctl.sh
 scripts/cleanupdb_owamp.sh
 scripts/cleanupdb_traceroute.sh
-scripts/configure_firewall
 scripts/create_backing_store
 scripts/cron-cacti_local
 scripts/cron-db_cleaner
@@ -210,6 +209,7 @@ scripts/system_environment/add_dbxml_path
 scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path
 scripts/system_environment/configure_bwctld_log_location
+scripts/system_environment/configure_firewall
 scripts/system_environment/configure_ntpd
 scripts/system_environment/configure_sysctl
 scripts/system_environment/configure_syslog_local5_location
