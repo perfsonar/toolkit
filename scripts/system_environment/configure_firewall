@@ -1,5 +1,21 @@
 #!/bin/bash
 
+#backup old versions
+if [ -f /etc/sysconfig/iptables ]; then
+    FILE_NUM=0
+    while [ -f "/etc/sysconfig/iptables.bak.${FILE_NUM}" ]; do
+        let FILE_NUM=FILE_NUM+1
+    done
+    mv /etc/sysconfig/iptables /etc/sysconfig/iptables.bak.${FILE_NUM}
+fi
+if [ -f /etc/sysconfig/ip6tables ]; then
+    FILE_NUM=0
+    while [ -f "/etc/sysconfig/ip6tables.bak.${FILE_NUM}" ]; do
+        let FILE_NUM=FILE_NUM+1
+    done
+    mv /etc/sysconfig/ip6tables /etc/sysconfig/ip6tables.bak.${FILE_NUM}
+fi
+
 #Insert new rules
 cp /opt/perfsonar_ps/toolkit/etc/firewall.conf /etc/sysconfig/iptables
 cp /opt/perfsonar_ps/toolkit/etc/firewall_v6.conf /etc/sysconfig/ip6tables
