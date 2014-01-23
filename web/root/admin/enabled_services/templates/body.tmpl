@@ -82,8 +82,8 @@ function handle_reset_response(response, io_args) {
 }
 
 function select_bandwidth_services() {
-	var bandwidth_services = [ "perfsonarbuoy_bwctl", "perfsonarbuoy_ma", "ndt", "npad", "bwctl"  ];
-	var latency_services = [ "perfsonarbuoy_owamp", "perfsonarbuoy_ma", "pinger", "owamp" ];
+	var bandwidth_services = [ "regular_testing", "perfsonarbuoy_ma", "ndt", "npad", "bwctl"  ];
+	var latency_services = [ "regular_testing", "perfsonarbuoy_ma", "pinger", "owamp" ];
 	var disabled_services = [ "snmp_ma" ];
 
 	dojo.byId('nptoolkit_is_modified').value = 1;
@@ -124,8 +124,8 @@ function select_bandwidth_services() {
 }
 
 function select_latency_services() {
-	var bandwidth_services = [ "perfsonarbuoy_bwctl", "perfsonarbuoy_ma", "ndt", "npad", "bwctl"  ];
-	var latency_services = [ "perfsonarbuoy_owamp", "perfsonarbuoy_ma", "pinger", "owamp" ];
+	var bandwidth_services = [ "regular_testing, "perfsonarbuoy_ma", "ndt", "npad", "bwctl"  ];
+	var latency_services = [ "regular_testing, "perfsonarbuoy_ma", "pinger", "owamp" ];
 	var disabled_services = [ "snmp_ma" ];
 
 	dojo.byId('nptoolkit_is_modified').value = 1;
@@ -194,19 +194,14 @@ function select_latency_services() {
 	<td>Enables this host to perform scheduled ping tests. These tests will periodically ping configured hosts giving administrators a view of the latency from their site over time.</td>
 	</tr>
 	<tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="perfsonarbuoy_bwctl" name="perfsonarbuoy_bwctl" [% IF services.perfsonarbuoy_bwctl.enabled %] checked="checked" [% END %] /></td>
-	<td>perfSONAR-BUOY Throughput Testing</td>
-	<td>Enables this host to perform scheduled throughput tests. These tests will run periodically giving administrators a view of the throughput to and from their site over time.</td>
-	</tr>
-	<tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="perfsonarbuoy_owamp" name="perfsonarbuoy_owamp" [% IF services.perfsonarbuoy_owamp.enabled %] checked="checked" [% END %] /></td>
-	<td>perfSONAR-BUOY Latency Testing</td>
-	<td>Enables this host to perform scheduled one-way loss and latency tests. These tests will run periodically giving administrators a view of loss as well as latency from their site over time.</td>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="regular_testing" name="regular_testing" [% IF services.regular_testing.enabled %] checked="checked" [% END %] /></td>
+	<td>Regular Testing</td>
+	<td>Enables this host to perform scheduled tests. These tests will run periodically giving administrators a view of the network performance to and from their site over time.</td>
 	</tr>
 	<tr>
 	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="perfsonarbuoy_ma" name="perfsonarbuoy_ma" [% IF services.perfsonarbuoy_ma.enabled %] checked="checked" [% END %] /></td>
 	<td>perfSONAR-BUOY Measurement Archive</td>
-	<td>Makes available the data collected by the perfSONAR-BUOY Latency and Throughput tests.</td>
+	<td>Makes available the data collected by the One-Way Latency and Throughput tests.</td>
 	</tr>
 	<tr>
 	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="ndt" name="ndt" [% IF services.ndt.enabled %] checked="checked" [% END %] /></td>
@@ -242,13 +237,7 @@ function select_latency_services() {
 	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="traceroute_ma" name="traceroute_ma" [% IF services.traceroute_ma.enabled %] checked="checked" [% END %] /></td>
 	<td>Traceroute MA</td>
 	<td>Makes available results of data collected by scheduled traceroute tests</td>
-        </tr>
-    <tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="traceroute_scheduler" name="traceroute_scheduler" [% IF services.traceroute_scheduler.enabled %] checked="checked" [% END %] /></td>
-	<td>Traceroute Scheduler</td>
-	<td>Enables this host to run scheduled traceroute tests.</td>
-        </tr>
-
+    </tr>
 </table>
 [% END %]
 </form>

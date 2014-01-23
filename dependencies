@@ -10,7 +10,6 @@ Carp
 Class::Accessor
 Class::Fields
 Class::MOP::Class
-Clone::Fast
 Config::General
 Cwd
 DBI
@@ -22,7 +21,6 @@ Date::Manip
 DateTime
 DateTime::Format::ISO8601
 DateTime::TimeZone
-Devel::Size
 Digest::MD5
 English
 Exporter
@@ -37,11 +35,12 @@ FreezeThaw
 Getopt::Long
 HTML::Entities
 HTTP::Response
-HTTPS
 IO::File
 IO::Interface
+IO::Select
 IO::Socket
 IO::Socket::SSL
+IPC::Open3
 IPC::Run
 JSON
 JSON::XS
@@ -61,7 +60,6 @@ Net::Ping
 Net::Server
 Net::Traceroute
 NetAddr::IP
-NetLogger
 POSIX
 Params::Validate
 RPC::XML::Client
@@ -74,6 +72,7 @@ Socket6
 Socket::GetAddrInfo
 Statistics::Descriptive
 Storable
+Symbol
 Template
 Time::HiRes
 Time::Local
@@ -84,6 +83,7 @@ XML::Simple
 XML::Twig
 aliased
 base
+constant
 lib
 psTracerouteUtils
 utf8
