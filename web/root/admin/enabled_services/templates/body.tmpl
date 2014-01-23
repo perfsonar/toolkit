@@ -124,8 +124,8 @@ function select_bandwidth_services() {
 }
 
 function select_latency_services() {
-	var bandwidth_services = [ "regular_testing, "perfsonarbuoy_ma", "ndt", "npad", "bwctl"  ];
-	var latency_services = [ "regular_testing, "perfsonarbuoy_ma", "pinger", "owamp" ];
+	var bandwidth_services = [ "regular_testing", "perfsonarbuoy_ma", "ndt", "npad", "bwctl"  ];
+	var latency_services = [ "regular_testing", "perfsonarbuoy_ma", "pinger", "owamp" ];
 	var disabled_services = [ "snmp_ma" ];
 
 	dojo.byId('nptoolkit_is_modified').value = 1;
