@@ -317,6 +317,9 @@ mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolk
 #Make sure that the owmesh file supports default traceroute options. Must run for clean install and upgrades.
 /opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_owmesh_traceroute.sh
 
+#Make sure that the owmesh file supports default traceroute options. Must run for clean install and upgrades.
+/opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_regular_tests
+
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
 # so we'll put that in the "maybe" category.

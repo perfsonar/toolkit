@@ -300,6 +300,7 @@ scripts/upgrade/upgrade_databases.sh
 scripts/upgrade/upgrade_fix_cert_serial.sh
 scripts/upgrade/upgrade_fix_permissions.sh
 scripts/upgrade/upgrade_owmesh_traceroute.sh
+scripts/upgrade/upgrade_regular_tests
 scripts/watcher_log_archive
 scripts/watcher_log_archive_cleanup
 templates/config/diag_form_html.tmpl
