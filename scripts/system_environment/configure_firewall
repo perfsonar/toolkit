@@ -2,18 +2,26 @@
 
 #backup old versions
 if [ -f /etc/sysconfig/iptables ]; then
-    FILE_NUM=0
-    while [ -f "/etc/sysconfig/iptables.bak.${FILE_NUM}" ]; do
-        let FILE_NUM=FILE_NUM+1
-    done
-    mv /etc/sysconfig/iptables /etc/sysconfig/iptables.bak.${FILE_NUM}
+    grep "perfSONAR Toolkit Firewall Config v1.0" /etc/sysconfig/iptables &> /dev/null
+    if [ $? != 0 ]; then
+       FILE_NUM=0
+       while [ -f "/etc/sysconfig/iptables.bak.${FILE_NUM}" ]; do
+           let FILE_NUM=FILE_NUM+1
+        done
+
+        mv /etc/sysconfig/iptables /etc/sysconfig/iptables.bak.${FILE_NUM}
+    fi
 fi
 if [ -f /etc/sysconfig/ip6tables ]; then
-    FILE_NUM=0
-    while [ -f "/etc/sysconfig/ip6tables.bak.${FILE_NUM}" ]; do
-        let FILE_NUM=FILE_NUM+1
-    done
-    mv /etc/sysconfig/ip6tables /etc/sysconfig/ip6tables.bak.${FILE_NUM}
+    grep "perfSONAR Toolkit Firewall Config v1.0" /etc/sysconfig/ip6tables &> /dev/null
+    if [ $? != 0 ]; then
+       FILE_NUM=0
+       while [ -f "/etc/sysconfig/ip6tables.bak.${FILE_NUM}" ]; do
+           let FILE_NUM=FILE_NUM+1
+        done
+
+        mv /etc/sysconfig/ip6tables /etc/sysconfig/ip6tables.bak.${FILE_NUM}
+    fi
 fi
 
 #Insert new rules
@@ -48,3 +56,4 @@ p=`echo ${owampparams[@]}`
 addPortRuleFromFile "$owampfile" "$p"
 echo "COMMIT" >> /etc/sysconfig/iptables
 echo "COMMIT" >> /etc/sysconfig/ip6tables
+
