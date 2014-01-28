@@ -21,7 +21,7 @@ use lib "$RealBin/../../../../lib";
 use lib "/usr/local/perfSONAR-PS/perfSONAR_PS-PingER/lib";
 
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address reverse_dns_multi resolve_address_multi );
-use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces );
+use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces get_interface_addresses );
 use perfSONAR_PS::Client::gLS::Keywords;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 use perfSONAR_PS::NPToolkit::Config::BWCTL;
@@ -259,7 +259,16 @@ sub fill_variables {
     fill_variables_hosts( $vars );
     fill_variables_status( $vars );
 
-    my @interfaces = get_ethernet_interfaces();
+    my @interfaces = ();
+
+    foreach my $iface (get_ethernet_interfaces()) {
+        my %iface_desc = (
+            name => $iface,
+            ips => get_interface_addresses({ interface => $iface }),
+        );
+
+        push @interfaces, \%iface_desc;
+    }
 
     $vars->{interfaces}     = \@interfaces;
     $vars->{is_modified}    = $is_modified;
@@ -941,7 +950,7 @@ sub update_pinger_test {
 
     save_state();
 
-    $status_msg = "Test updated";
+    $status_msg = "Test updated: $local_interface";
     return display_body();
 }
 

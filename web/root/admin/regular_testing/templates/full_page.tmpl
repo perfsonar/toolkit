@@ -293,7 +293,7 @@ function __display_pinger_test_dialog(test_id, description, packet_size, packet_
 	dialog_content += "<select id='configure_test_local_interface' dojoType='dijit.form.FilteringSelect' autocomplete='false' >";
 	dialog_content += "	<option value='' "; if (local_interface == "" || local_interface == null) { dialog_content += "selected" }; dialog_content += ">Default</option>";
         [% FOREACH iface IN interfaces %]
-	dialog_content += "	<option value='[% iface %]' "; if (local_interface == "[% iface %]") { dialog_content += "selected" }; dialog_content += ">[% iface %]</option>";
+	dialog_content += "	<option value='[% iface.name %]' "; if (local_interface == "[% iface.name %]") { dialog_content += "selected" }; dialog_content += ">[% iface.name %] ([% iface.ips.join(", ") %])</option>";
         [% END %]
 	dialog_content += "</select>";
 	dialog_content += "</td>";
@@ -434,7 +434,7 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	dialog_content += "<select id='configure_test_local_interface' dojoType='dijit.form.FilteringSelect' autocomplete='false' >";
 	dialog_content += "	<option value='' "; if (local_interface == "" || local_interface == null) { dialog_content += "selected" }; dialog_content += ">Default</option>";
         [% FOREACH iface IN interfaces %]
-	dialog_content += "	<option value='[% iface %]' "; if (local_interface == "[% iface %]") { dialog_content += "selected" }; dialog_content += ">[% iface %]</option>";
+	dialog_content += "	<option value='[% iface.name %]' "; if (local_interface == "[% iface.name %]") { dialog_content += "selected" }; dialog_content += ">[% iface.name %] ([% iface.ips.join(", ") %])</option>";
         [% END %]
 	dialog_content += "</select>";
 	dialog_content += "</td>";
@@ -609,7 +609,7 @@ function __display_owamp_test_dialog(test_id, description, packet_interval, pack
 	dialog_content += "<select id='configure_test_local_interface' dojoType='dijit.form.FilteringSelect' autocomplete='false' >";
 	dialog_content += "	<option value='' "; if (local_interface == "" || local_interface == null) { dialog_content += "selected" }; dialog_content += ">Default</option>";
         [% FOREACH iface IN interfaces %]
-	dialog_content += "	<option value='[% iface %]' "; if (local_interface == "[% iface %]") { dialog_content += "selected" }; dialog_content += ">[% iface %]</option>";
+	dialog_content += "	<option value='[% iface.name %]' "; if (local_interface == "[% iface.name %]") { dialog_content += "selected" }; dialog_content += ">[% iface.name %] ([% iface.ips.join(", ") %])</option>";
         [% END %]
 	dialog_content += "</select>";
 	dialog_content += "</td>";
@@ -661,7 +661,7 @@ function __display_owamp_test_dialog(test_id, description, packet_interval, pack
 	dialog.show();
 }
 
-function display_traceroute_test_dialog(test_id, description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol) {
+function display_traceroute_test_dialog(test_id, description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol, local_interface) {
 	var title;
 	var action;
 	if (test_id) {
@@ -688,7 +688,7 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 	dialog_content += "<select id='configure_test_local_interface' dojoType='dijit.form.FilteringSelect' autocomplete='false' >";
 	dialog_content += "	<option value='' "; if (local_interface == "" || local_interface == null) { dialog_content += "selected" }; dialog_content += ">Default</option>";
         [% FOREACH iface IN interfaces %]
-	dialog_content += "	<option value='[% iface %]' "; if (local_interface == "[% iface %]") { dialog_content += "selected" }; dialog_content += ">[% iface %]</option>";
+	dialog_content += "	<option value='[% iface.name %]' "; if (local_interface == "[% iface.name %]") { dialog_content += "selected" }; dialog_content += ">[% iface.name %] ([% iface.ips.join(", ") %])</option>";
         [% END %]
 	dialog_content += "</select>";
 	dialog_content += "</td>";
