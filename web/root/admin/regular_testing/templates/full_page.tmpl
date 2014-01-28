@@ -87,11 +87,11 @@ function modify_pinger_test(test_id, description, packet_size, packet_count, pac
 	}
 }
 
-function modify_traceroute_test(test_id, description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol, local_interface) {
+function modify_traceroute_test(test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface) {
 	if (test_id) {
-		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_traceroute_test', [ test_id, description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol, local_interface ]);
+		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_traceroute_test', [ test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface ]);
 	} else {
-		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_traceroute_test', [ description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol, local_interface ]);
+		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_traceroute_test', [ description, test_interval, packet_size, first_ttl, max_ttl, local_interface ]);
 	}
 }
 
@@ -661,7 +661,7 @@ function __display_owamp_test_dialog(test_id, description, packet_interval, pack
 	dialog.show();
 }
 
-function display_traceroute_test_dialog(test_id, description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol, local_interface) {
+function display_traceroute_test_dialog(test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface) {
 	var title;
 	var action;
 	if (test_id) {
@@ -710,33 +710,12 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='The minimum size packet is 20 bytes (IP header). The maximum is 9000.' constraints='{min:20,max:9000}' id='configure_test_packet_size' size='10' value='"+packet_size+"''/></td><td>Bytes</td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
-	dialog_content += "<td>Time between packets</td>";
-	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='false' invalidMessage='The minimum time between packets must be 0 or greater' constraints='{min:0}' id='configure_test_pause' size='10' value='"+pause+"''/></td><td>Seconds</td>";
-	dialog_content += "</tr>";
-	dialog_content += "<tr>";
-    dialog_content += "<td>Timeout for test</td>";
-	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='All tests must be given a timeout greater than 0' id='configure_test_timeout' size='10' constraints='{min:1}' value='"+timeout+"'></input></td><td>Seconds</td>";
-	dialog_content += "</tr>";
-	dialog_content += "<tr>";
-	dialog_content += "<td>Timeout for individual hops</td>";
-	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='All tests must be given a wait time greater than 0' id='configure_test_waittime' size='10' constraints='{min:1}' value='"+waittime+"'></input></td><td>Seconds</td>";
-	dialog_content += "</tr>";
-	dialog_content += "<tr>";
 	dialog_content += "<td>First Hop to Report</td>";
 	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.NumberTextBox' required='false' invalidMessage='The minimum hop must be 0 or greater' constraints='{min:0}' id='configure_test_first_ttl' size='10' value='"+first_ttl+"''/></td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Maximum Number of Hops</td>";
 	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.NumberTextBox' required='false' invalidMessage='The maximum hop count must be 1 or greater' constraints='{min:1}' id='configure_test_max_ttl' size='10' value='"+max_ttl+"''/></td>";
-	dialog_content += "</tr>";
-	dialog_content += "<tr>";
-	dialog_content += "<td>Protocol</td>";
-	dialog_content += "<td>";
-	dialog_content += "<select id='configure_test_protocol' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='"+protocol+"'>";
-	dialog_content += "	<option value='udp' "; if (protocol == 'udp') { dialog_content += "selected='selected'" }; dialog_content += ">UDP</option>";
-	dialog_content += "	<option value='icmp' "; if (protocol == 'icmp') { dialog_content += "selected='selected'" }; dialog_content += ">ICMP</option>";
-	dialog_content += "</select>";
-	dialog_content += "</td>";
 	dialog_content += "</tr>";
 	dialog_content += "</table>";
 	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_save'>"+action+"</button>";
@@ -753,14 +732,10 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 											var test_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
 											test_interval *= test_unit;
 											var packet_size = dijit.byId('configure_test_packet_size').attr('value');
-											var timeout = dijit.byId('configure_test_timeout').attr('value');
-											var waittime = dijit.byId('configure_test_waittime').attr('value');
 											var first_ttl = dijit.byId('configure_test_first_ttl').attr('value');
 											var max_ttl = dijit.byId('configure_test_max_ttl').attr('value');
-											var pause = dijit.byId('configure_test_pause').attr('value');
-											var protocol = dijit.byId('configure_test_protocol').attr('value');
 											var local_interface = dijit.byId('configure_test_local_interface').attr('value');
-											modify_traceroute_test(test_id, description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol, local_interface);
+											modify_traceroute_test(test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface);
 											dijit.byId('add_test_dialog').hide();
 										},
 										test_id)

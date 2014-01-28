@@ -834,7 +834,7 @@ sub update_owamp_test {
 }
 
 sub add_traceroute_test {
-    my ($description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol, $local_interface) = @_;
+    my ($description, $test_interval, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
 
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_traceroute(
@@ -842,12 +842,8 @@ sub add_traceroute_test {
             description   => $description,
             test_interval => $test_interval,
             packet_size   => $packet_size,
-            timeout       => $timeout,
-            waittime      => $waittime,
             first_ttl     => $first_ttl,
             max_ttl       => $max_ttl,
-            pause       => $pause,
-            protocol      => $protocol,
             local_interface => $local_interface,
         }
     );
