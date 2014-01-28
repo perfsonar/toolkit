@@ -21,6 +21,7 @@ use lib "$RealBin/../../../../lib";
 use lib "/usr/local/perfSONAR-PS/perfSONAR_PS-PingER/lib";
 
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address reverse_dns_multi resolve_address_multi );
+use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces );
 use perfSONAR_PS::Client::gLS::Keywords;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 use perfSONAR_PS::NPToolkit::Config::BWCTL;
@@ -258,6 +259,9 @@ sub fill_variables {
     fill_variables_hosts( $vars );
     fill_variables_status( $vars );
 
+    my @interfaces = get_ethernet_interfaces();
+
+    $vars->{interfaces}     = \@interfaces;
     $vars->{is_modified}    = $is_modified;
     $vars->{error_message}  = $error_msg;
     $vars->{status_message} = $status_msg;
@@ -632,7 +636,7 @@ sub show_test {
 }
 
 sub add_bwctl_throughput_test {
-    my ($description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits) = @_;
+    my ($description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits, $local_interface) = @_;
 
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_bwctl_throughput(
@@ -644,7 +648,8 @@ sub add_bwctl_throughput_test {
             duration      => $duration,
             window_size   => $window_size,
             udp_bandwidth => $udp_bandwidth,
-            tos_bits       => $tos_bits
+            tos_bits       => $tos_bits,
+            local_interface => $local_interface
         }
     );
 
@@ -734,7 +739,7 @@ sub update_bwctl_test_port_range {
 }
 
 sub update_bwctl_throughput_test {
-    my ($id, $description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits) = @_;
+    my ($id, $description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits, $local_interface) = @_;
 
     my ( $status, $res );
 
@@ -745,7 +750,8 @@ sub update_bwctl_throughput_test {
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, protocol => $protocol } );
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, udp_bandwidth => $udp_bandwidth } );
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, window_size => $window_size } );
-     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, tos_bits => $tos_bits } );
+    ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, tos_bits => $tos_bits } );
+    ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, local_interface => $local_interface } );
 
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";
@@ -761,7 +767,7 @@ sub update_bwctl_throughput_test {
 }
 
 sub add_owamp_test {
-    my ($description, $packet_interval, $packet_padding, $session_packets, $sample_packets, $bucket_width, $loss_threshold) = @_;
+    my ($description, $packet_interval, $packet_padding, $session_packets, $sample_packets, $bucket_width, $loss_threshold, $local_interface) = @_;
 
     my ( $status, $res ) = $testing_conf->add_test_owamp(
         {
@@ -772,6 +778,7 @@ sub add_owamp_test {
             sample_count     => $sample_packets,
             packet_padding   => $packet_padding,
             bucket_width     => $bucket_width,
+            local_interface => $local_interface,
         }
     );
 
@@ -791,7 +798,7 @@ sub add_owamp_test {
 }
 
 sub update_owamp_test {
-    my ($id, $description, $packet_interval, $packet_padding, $session_packets, $sample_packets, $bucket_width, $loss_threshold) = @_;
+    my ($id, $description, $packet_interval, $packet_padding, $session_packets, $sample_packets, $bucket_width, $loss_threshold, $local_interface) = @_;
 
     my ( $status, $res );
 
@@ -802,6 +809,7 @@ sub update_owamp_test {
     ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, loss_threshold => $loss_threshold } );
     ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, session_count  => $session_packets } );
     ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, sample_count => $sample_packets } );
+    ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, local_interface => $local_interface } );
 
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";
@@ -817,7 +825,7 @@ sub update_owamp_test {
 }
 
 sub add_traceroute_test {
-    my ($description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol) = @_;
+    my ($description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol, $local_interface) = @_;
 
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_traceroute(
@@ -831,6 +839,7 @@ sub add_traceroute_test {
             max_ttl       => $max_ttl,
             pause       => $pause,
             protocol      => $protocol,
+            local_interface => $local_interface,
         }
     );
 
@@ -850,7 +859,7 @@ sub add_traceroute_test {
 }
 
 sub update_traceroute_test {
-    my ($id, $description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol) = @_;
+    my ($id, $description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol, $local_interface) = @_;
 
     my ( $status, $res );
 
@@ -863,6 +872,7 @@ sub update_traceroute_test {
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, max_ttl => $max_ttl } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, pause => $pause } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, protocol => $protocol } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, local_interface => $local_interface } );
 
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";
@@ -878,7 +888,7 @@ sub update_traceroute_test {
 }
 
 sub add_pinger_test {
-    my ($description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_offset, $ttl) = @_;
+    my ($description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_offset, $ttl, $local_interface) = @_;
 
     my ( $status, $res ) = $testing_conf->add_test_pinger(
         {
@@ -889,6 +899,7 @@ sub add_pinger_test {
             test_interval   => $test_interval,
             test_offset     => $test_offset,
             ttl             => $ttl,
+            local_interface => $local_interface,
         }
     );
 
@@ -908,7 +919,7 @@ sub add_pinger_test {
 }
 
 sub update_pinger_test {
-    my ($id, $description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_offset, $ttl) = @_;
+    my ($id, $description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_offset, $ttl, $local_interface) = @_;
 
     my ( $status, $res );
 
@@ -919,6 +930,7 @@ sub update_pinger_test {
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, test_interval => $test_interval } );
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, test_offset => $test_offset } );
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, ttl => $ttl } );
+    ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, local_interface => $local_interface } );
 
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";
