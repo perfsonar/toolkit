@@ -27,6 +27,17 @@ server saturn.es.net iburst
 EOF
 fi
 
+grep restrict /etc/ntp.conf &> /dev/null
+if [ $? != 0 ]; then
+cat >>/etc/ntp.conf <<EOF
+# by default act only as a basic NTP client
+restrict -4 default nomodify nopeer noquery notrap
+restrict -6 default nomodify nopeer noquery notrap
+# allow NTP messages from the loopback address, useful for debugging
+restrict 127.0.0.1
+restrict ::1
+EOF
+fi
 
 ####################
 # Configure default NTP servers for first boot.

@@ -1,0 +1,59 @@
+#!/bin/bash
+
+#backup old versions
+if [ -f /etc/sysconfig/iptables ]; then
+    grep "perfSONAR Toolkit Firewall Config v1.0" /etc/sysconfig/iptables &> /dev/null
+    if [ $? != 0 ]; then
+       FILE_NUM=0
+       while [ -f "/etc/sysconfig/iptables.bak.${FILE_NUM}" ]; do
+           let FILE_NUM=FILE_NUM+1
+        done
+
+        mv /etc/sysconfig/iptables /etc/sysconfig/iptables.bak.${FILE_NUM}
+    fi
+fi
+if [ -f /etc/sysconfig/ip6tables ]; then
+    grep "perfSONAR Toolkit Firewall Config v1.0" /etc/sysconfig/ip6tables &> /dev/null
+    if [ $? != 0 ]; then
+       FILE_NUM=0
+       while [ -f "/etc/sysconfig/ip6tables.bak.${FILE_NUM}" ]; do
+           let FILE_NUM=FILE_NUM+1
+        done
+
+        mv /etc/sysconfig/ip6tables /etc/sysconfig/ip6tables.bak.${FILE_NUM}
+    fi
+fi
+
+#Insert new rules
+cp /opt/perfsonar_ps/toolkit/etc/firewall.conf /etc/sysconfig/iptables
+cp /opt/perfsonar_ps/toolkit/etc/firewall_v6.conf /etc/sysconfig/ip6tables
+
+#Determine BWCTL and OWAMP ports
+bwctlparams=("iperf_port" "nuttcp_port" "peer_port")
+owampparams=("testports")
+
+bwctlfile="/etc/bwctld/bwctld.conf"
+owampfile="/etc/owampd/owampd.conf"
+
+addPortRuleFromFile(){
+	file=$1
+	local params=( `echo "$2"` )
+	for i in "${params[@]}"
+	do
+		portrange=`awk -v search="^$i" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
+		if [ ! -z "$portrange" ]; then
+			echo "-I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT" >> /etc/sysconfig/iptables 
+			echo "-I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT" >> /etc/sysconfig/iptables 
+			echo "-I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT" >> /etc/sysconfig/ip6tables
+			echo "-I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT" >> /etc/sysconfig/ip6tables
+		fi
+	done 
+}
+
+p=`echo ${bwctlparams[@]}`
+addPortRuleFromFile "$bwctlfile" "$p"
+p=`echo ${owampparams[@]}`
+addPortRuleFromFile "$owampfile" "$p"
+echo "COMMIT" >> /etc/sysconfig/iptables
+echo "COMMIT" >> /etc/sysconfig/ip6tables
+
