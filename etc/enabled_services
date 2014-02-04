@@ -10,3 +10,4 @@ ssh_enabled=disabled
 hls_enabled=enabled
 traceroute_ma=enabled
 traceroute_scheduler=enabled
+regular_testing_enabled=enabled

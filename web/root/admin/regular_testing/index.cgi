@@ -21,8 +21,8 @@ use lib "$RealBin/../../../../lib";
 use lib "/usr/local/perfSONAR-PS/perfSONAR_PS-PingER/lib";
 
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address reverse_dns_multi resolve_address_multi );
+use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces get_interface_addresses );
 use perfSONAR_PS::Client::gLS::Keywords;
-use perfSONAR_PS::Client::Parallel::gLS;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 use perfSONAR_PS::NPToolkit::Config::BWCTL;
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
@@ -232,7 +232,7 @@ sub reset_state {
     }
 
     $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
-    ( $status, $res ) = $testing_conf->init( { perfsonarbuoy_conf_template => $conf{perfsonarbuoy_conf_template}, perfsonarbuoy_conf_file => $conf{perfsonarbuoy_conf_file}, pinger_landmarks_file => $conf{pinger_landmarks_file} } );
+    ( $status, $res ) = $testing_conf->init( { regular_testing_config_file => $conf{regular_testing_config_file} } );
     if ( $status != 0 ) {
         return ( $status, "Problem reading testing configuration: $res" );
     }
@@ -259,6 +259,18 @@ sub fill_variables {
     fill_variables_hosts( $vars );
     fill_variables_status( $vars );
 
+    my @interfaces = ();
+
+    foreach my $iface (get_ethernet_interfaces()) {
+        my %iface_desc = (
+            name => $iface,
+            ips => get_interface_addresses({ interface => $iface }),
+        );
+
+        push @interfaces, \%iface_desc;
+    }
+
+    $vars->{interfaces}     = \@interfaces;
     $vars->{is_modified}    = $is_modified;
     $vars->{error_message}  = $error_msg;
     $vars->{status_message} = $status_msg;
@@ -633,12 +645,11 @@ sub show_test {
 }
 
 sub add_bwctl_throughput_test {
-    my ($description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits) = @_;
+    my ($description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits, $local_interface) = @_;
 
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_bwctl_throughput(
         {
-            mesh_type     => "star",
             description   => $description,
             tool          => $tool,
             protocol      => $protocol,
@@ -646,7 +657,8 @@ sub add_bwctl_throughput_test {
             duration      => $duration,
             window_size   => $window_size,
             udp_bandwidth => $udp_bandwidth,
-            tos_bits       => $tos_bits
+            tos_bits       => $tos_bits,
+            local_interface => $local_interface
         }
     );
 
@@ -736,7 +748,7 @@ sub update_bwctl_test_port_range {
 }
 
 sub update_bwctl_throughput_test {
-    my ($id, $description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits) = @_;
+    my ($id, $description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits, $local_interface) = @_;
 
     my ( $status, $res );
 
@@ -747,7 +759,8 @@ sub update_bwctl_throughput_test {
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, protocol => $protocol } );
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, udp_bandwidth => $udp_bandwidth } );
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, window_size => $window_size } );
-     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, tos_bits => $tos_bits } );
+    ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, tos_bits => $tos_bits } );
+    ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, local_interface => $local_interface } );
 
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";
@@ -763,11 +776,10 @@ sub update_bwctl_throughput_test {
 }
 
 sub add_owamp_test {
-    my ($description, $packet_interval, $packet_padding, $session_packets, $sample_packets, $bucket_width, $loss_threshold) = @_;
+    my ($description, $packet_interval, $packet_padding, $session_packets, $sample_packets, $bucket_width, $loss_threshold, $local_interface) = @_;
 
     my ( $status, $res ) = $testing_conf->add_test_owamp(
         {
-            mesh_type        => "star",
             description      => $description,
             packet_interval  => $packet_interval,
             loss_threshold   => $loss_threshold,
@@ -775,6 +787,7 @@ sub add_owamp_test {
             sample_count     => $sample_packets,
             packet_padding   => $packet_padding,
             bucket_width     => $bucket_width,
+            local_interface => $local_interface,
         }
     );
 
@@ -794,7 +807,7 @@ sub add_owamp_test {
 }
 
 sub update_owamp_test {
-    my ($id, $description, $packet_interval, $packet_padding, $session_packets, $sample_packets, $bucket_width, $loss_threshold) = @_;
+    my ($id, $description, $packet_interval, $packet_padding, $session_packets, $sample_packets, $bucket_width, $loss_threshold, $local_interface) = @_;
 
     my ( $status, $res );
 
@@ -805,6 +818,7 @@ sub update_owamp_test {
     ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, loss_threshold => $loss_threshold } );
     ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, session_count  => $session_packets } );
     ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, sample_count => $sample_packets } );
+    ( $status, $res ) = $testing_conf->update_test_owamp( { test_id => $id, local_interface => $local_interface } );
 
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";
@@ -820,21 +834,17 @@ sub update_owamp_test {
 }
 
 sub add_traceroute_test {
-    my ($description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol) = @_;
+    my ($description, $test_interval, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
 
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_traceroute(
         {
-            mesh_type     => "star",
             description   => $description,
             test_interval => $test_interval,
             packet_size   => $packet_size,
-            timeout       => $timeout,
-            waittime      => $waittime,
             first_ttl     => $first_ttl,
             max_ttl       => $max_ttl,
-            pause       => $pause,
-            protocol      => $protocol,
+            local_interface => $local_interface,
         }
     );
 
@@ -854,7 +864,7 @@ sub add_traceroute_test {
 }
 
 sub update_traceroute_test {
-    my ($id, $description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol) = @_;
+    my ($id, $description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol, $local_interface) = @_;
 
     my ( $status, $res );
 
@@ -867,6 +877,7 @@ sub update_traceroute_test {
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, max_ttl => $max_ttl } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, pause => $pause } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, protocol => $protocol } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, local_interface => $local_interface } );
 
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";
@@ -882,7 +893,7 @@ sub update_traceroute_test {
 }
 
 sub add_pinger_test {
-    my ($description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_offset, $ttl) = @_;
+    my ($description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_offset, $ttl, $local_interface) = @_;
 
     my ( $status, $res ) = $testing_conf->add_test_pinger(
         {
@@ -893,6 +904,7 @@ sub add_pinger_test {
             test_interval   => $test_interval,
             test_offset     => $test_offset,
             ttl             => $ttl,
+            local_interface => $local_interface,
         }
     );
 
@@ -912,7 +924,7 @@ sub add_pinger_test {
 }
 
 sub update_pinger_test {
-    my ($id, $description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_offset, $ttl) = @_;
+    my ($id, $description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_offset, $ttl, $local_interface) = @_;
 
     my ( $status, $res );
 
@@ -923,6 +935,7 @@ sub update_pinger_test {
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, test_interval => $test_interval } );
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, test_offset => $test_offset } );
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, ttl => $ttl } );
+    ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, local_interface => $local_interface } );
 
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";
@@ -933,7 +946,7 @@ sub update_pinger_test {
 
     save_state();
 
-    $status_msg = "Test updated";
+    $status_msg = "Test updated: $local_interface";
     return display_body();
 }
 
@@ -1052,11 +1065,7 @@ sub lookup_servers {
 
     my $test = $res;
 
-    if ($conf{"use_cache"}) {
-        ($status, $res) = lookup_servers_cache($test->{type}, $keyword);
-    } else {
-        ($status, $res) = lookup_servers_gls($test->{type}, $keyword);
-    }
+    ($status, $res) = lookup_servers_cache($test->{type}, $keyword);
 
     if ($status != 0) {
         $error_msg = $res;
@@ -1168,80 +1177,6 @@ sub lookup_servers {
 
     $status_msg = "";
     return display_body();
-}
-
-sub lookup_servers_gls {
-    my ( $service_type, $keyword ) = @_;
-
-    my @hosts = ();
-
-    my $gls = perfSONAR_PS::Client::Parallel::gLS->new( {} );
-
-    my $parser = XML::LibXML->new();
-
-    $logger->debug( "lookup_servers_gls($service_type, $keyword)" );
-
-    unless ( $gls->{ROOTS} ) {
-        $logger->info( "No gLS Roots found!" );
-        $error_msg = "Error looking up hosts";
-        return display_body();
-    }
-
-    my @eventTypes = ();
-    if ( $service_type eq "pinger" ) {
-        push @eventTypes, "http://ggf.org/ns/nmwg/tools/ping/1.0";
-    }
-    elsif ( $service_type eq "bwctl/throughput" ) {
-        push @eventTypes, "http://ggf.org/ns/nmwg/tools/bwctl/1.0";
-    }
-    elsif ( $service_type eq "owamp" ) {
-        push @eventTypes, "http://ggf.org/ns/nmwg/tools/owamp/1.0";
-    }
-    else {
-        $error_msg = "Unknown server type specified";
-        return (-1, $error_msg);
-    }
-
-    my @keywords = ( "project:" . $keyword );
-
-    my $result;
-    my $start_time = time;
-    $result = $gls->getLSLocation( { eventTypes => \@eventTypes, keywords => \@keywords } );
-    my $end_time = time;
-
-    unless ( $result ) {
-        $lookup_info = undef;
-        $error_msg   = "Problem looking up hosts";
-        return (-1, $error_msg);
-    }
-
-    foreach my $s ( @{$result} ) {
-        my $doc = $parser->parse_string( $s );
-
-        my $res;
-
-        my $name = findvalue( $doc->getDocumentElement, ".//*[local-name()='name']", 0 );
-        my $description = findvalue( $doc->getDocumentElement, ".//*[local-name()='description']", 0 );
-
-        my @addrs = ();
-        $res = find( $doc->getDocumentElement, ".//*[local-name()='address']", 0 );
-        foreach my $c ( $res->get_nodelist ) {
-            my $contact = extract( $c, 0 );
-
-            $logger->info( "Adding $contact to address list" );
-
-            push @addrs, $contact;
-        }
-
-        my %service_info = ();
-        $service_info{"name"} = $name;
-        $service_info{"description"} = $description;
-        $service_info{"addresses"}   = \@addrs;
-
-        push @hosts, \%service_info;
-    }
-
-    return (0, { hosts => \@hosts, check_time => time });
 }
 
 sub lookup_servers_cache {

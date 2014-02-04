@@ -63,35 +63,35 @@ function modify_bwctl_port_range(min_port, max_port) {
 	handle_cgi_ajax_call(null, 'Problem updating port range', true, 'update_bwctl_test_port_range', [min_port, max_port]);
 }
 
-function modify_psb_bwctl_test(test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits) {
+function modify_psb_bwctl_test(test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits, local_interface) {
 	if (test_id) {
-		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_bwctl_throughput_test', [ test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits ]);
+		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_bwctl_throughput_test', [ test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits, local_interface ]);
 	} else {
-		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_bwctl_throughput_test', [ description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits ]);
+		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_bwctl_throughput_test', [ description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits, local_interface ]);
 	}
 }
 
-function modify_psb_owamp_test(test_id, description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold) {
+function modify_psb_owamp_test(test_id, description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold, local_interface) {
 	if (test_id) {
-		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_owamp_test', [ test_id, description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold ]);
+		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_owamp_test', [ test_id, description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold, local_interface ]);
 	} else {
-		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_owamp_test', [ description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold ]);
+		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_owamp_test', [ description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold, local_interface ]);
 	}
 }
 
-function modify_pinger_test(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl) {
+function modify_pinger_test(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface) {
 	if (test_id != null) {
-		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_pinger_test', [ test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl ]);
+		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_pinger_test', [ test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface ]);
 	} else {
-		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_pinger_test', [ description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl ]);
+		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_pinger_test', [ description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface ]);
 	}
 }
 
-function modify_traceroute_test(test_id, description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol) {
+function modify_traceroute_test(test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface) {
 	if (test_id) {
-		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_traceroute_test', [ test_id, description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol ]);
+		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_traceroute_test', [ test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface ]);
 	} else {
-		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_traceroute_test', [ description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol ]);
+		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_traceroute_test', [ description, test_interval, packet_size, first_ttl, max_ttl, local_interface ]);
 	}
 }
 
@@ -212,10 +212,10 @@ function display_bwctl_port_configuration_dialog(min_port, max_port) {
 	dialog.show();
 }
 
-function display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl) {
+function display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface) {
 	// if we're displaying the 'edit' dialog
 	if (test_id) {
-		return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl);
+		return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface);
 	}
 
 	var psb_bwctl_enabled   = parseInt(dojo.byId('psb_bwctl_enabled').value);
@@ -227,7 +227,7 @@ function display_pinger_test_dialog(test_id, description, packet_size, packet_co
 
 	// if PingER is enabled and there are no throughput tests that will interfere
 	if ((throughput_tests == 0 || !psb_bwctl_enabled) && pinger_enabled) {
-		return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl);
+		return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface);
 	}
 
 	var title = "Warning: host isn't configured for ping tests";
@@ -255,15 +255,15 @@ function display_pinger_test_dialog(test_id, description, packet_size, packet_co
 	dojo.connect(dijit.byId('add_test_warning_add_test'), 'onClick', dojo.hitch(null,
 										function(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl) {
 											dijit.byId('add_test_warning_dialog').hide();
-											return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl);
+											return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface);
 										},
-										test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl)
+										test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface)
 			);
 
 	dialog.show();
 }
 
-function __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl) {
+function __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface) {
 	var title;
 	var action;
 	if (test_id) {
@@ -286,6 +286,17 @@ function __display_pinger_test_dialog(test_id, description, packet_size, packet_
 	dialog_content += "<tr>";
 	dialog_content += "<td>Description</td>";
 	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must be given a description' id='configure_test_description' size='100' value='"+description+"'></input></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Interface</td>";
+	dialog_content += "<td>";
+	dialog_content += "<select id='configure_test_local_interface' dojoType='dijit.form.FilteringSelect' autocomplete='false' >";
+	dialog_content += "	<option value='' "; if (local_interface == "" || local_interface == null) { dialog_content += "selected" }; dialog_content += ">Default</option>";
+        [% FOREACH iface IN interfaces %]
+	dialog_content += "	<option value='[% iface.name %]' "; if (local_interface == "[% iface.name %]") { dialog_content += "selected" }; dialog_content += ">[% iface.name %] ([% iface.ips.join(", ") %])</option>";
+        [% END %]
+	dialog_content += "</select>";
+	dialog_content += "</td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Time Between Tests</td>";
@@ -327,10 +338,11 @@ function __display_pinger_test_dialog(test_id, description, packet_size, packet_
 											var packet_interval = dijit.byId('configure_test_packet_interval').attr('value');
 											var test_interval = dijit.byId('configure_test_test_interval').attr('value');
 											var test_interval_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
+											var local_interface    = dijit.byId('configure_test_local_interface').attr('value');
 											var test_offset = 0;
 											var ttl = 255;
 											test_interval *= test_interval_unit;
-											modify_pinger_test(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl);
+											modify_pinger_test(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface);
 											dijit.byId('add_test_dialog').hide();
 										},
 										test_id)
@@ -339,10 +351,10 @@ function __display_pinger_test_dialog(test_id, description, packet_size, packet_
 	dialog.show();
 }
 
-function display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits) {
+function display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface) {
 	// if we're displaying the 'edit' dialog
 	if (test_id) {
-		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits);
+		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
 	}
 
 	var psb_bwctl_enabled   = parseInt(dojo.byId('psb_bwctl_enabled').value);
@@ -354,7 +366,7 @@ function display_bwctl_throughput_test_dialog(test_id, description, test_interva
 
 	// if pSB throughput tests are enabled and there are no latency tests that this new test will interfere with
 	if ((pinger_tests == 0 || !pinger_enabled) && (owamp_tests == 0 || !psb_owamp_enabled) && psb_bwctl_enabled) {
-		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits);
+		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
 	}
 
 	var title = "Warning: host isn't configured for throughput tests";
@@ -382,7 +394,7 @@ function display_bwctl_throughput_test_dialog(test_id, description, test_interva
 	dojo.connect(dijit.byId('add_test_warning_add_test'), 'onClick', dojo.hitch(null,
 										function(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits) {
 											dijit.byId('add_test_warning_dialog').hide();
-											return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits);
+											return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
 										},
 										test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits)
 			);
@@ -390,7 +402,7 @@ function display_bwctl_throughput_test_dialog(test_id, description, test_interva
 	dialog.show();
 }
 
-function __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits) {
+function __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface) {
 	console.log("display_bwctl_throughput_test_dialog()");
 
 	var title;
@@ -415,6 +427,17 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	dialog_content += "<tr>";
 	dialog_content += "<td>Description</td>";
 	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must be given a description' id='configure_test_description' size='100' value='"+description+"'></input></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Interface</td>";
+	dialog_content += "<td>";
+	dialog_content += "<select id='configure_test_local_interface' dojoType='dijit.form.FilteringSelect' autocomplete='false' >";
+	dialog_content += "	<option value='' "; if (local_interface == "" || local_interface == null) { dialog_content += "selected" }; dialog_content += ">Default</option>";
+        [% FOREACH iface IN interfaces %]
+	dialog_content += "	<option value='[% iface.name %]' "; if (local_interface == "[% iface.name %]") { dialog_content += "selected" }; dialog_content += ">[% iface.name %] ([% iface.ips.join(", ") %])</option>";
+        [% END %]
+	dialog_content += "</select>";
+	dialog_content += "</td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Time Between Tests</td>";
@@ -499,7 +522,8 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 											test_interval *= test_interval_unit;
 											var tos_bits = dijit.byId('configure_test_tos_bits').attr('value');
 											console.log ("TOSBit Value:"+tos_bits);
-											modify_psb_bwctl_test(test_id, description, test_duration, test_interval, tool, protocol, window_size, udp_bandwidth, tos_bits);
+											var local_interface = dijit.byId('configure_test_local_interface').attr('value');
+											modify_psb_bwctl_test(test_id, description, test_duration, test_interval, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
 											dijit.byId('add_test_dialog').hide();
 										},
 										test_id)
@@ -507,10 +531,10 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	dialog.show();
 }
 
-function display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets) {
+function display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface) {
 	// if we're displaying the 'edit' dialog
 	if (test_id) {
-		return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets);
+		return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
 	}
 
 	var psb_bwctl_enabled   = parseInt(dojo.byId('psb_bwctl_enabled').value);
@@ -522,7 +546,7 @@ function display_owamp_test_dialog(test_id, description, packet_interval, packet
 
 	// if pSB owamp is enabled and there are no throughput tests that will interfere
 	if ((throughput_tests == 0 || !psb_bwctl_enabled) && psb_owamp_enabled) {
-		return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets);
+		return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
 	}
 
 	var title = "Warning: host isn't configured for one-way latency tests";
@@ -550,7 +574,7 @@ function display_owamp_test_dialog(test_id, description, packet_interval, packet
 	dojo.connect(dijit.byId('add_test_warning_add_test'), 'onClick', dojo.hitch(null,
 										function(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets) {
 											dijit.byId('add_test_warning_dialog').hide();
-											return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets);
+											return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
 										},
 										test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets)
 			);
@@ -558,7 +582,7 @@ function display_owamp_test_dialog(test_id, description, packet_interval, packet
 	dialog.show();
 }
 
-function __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets) {
+function __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface) {
 	var title;
 	var action;
 	if (test_id) {
@@ -578,6 +602,17 @@ function __display_owamp_test_dialog(test_id, description, packet_interval, pack
 	dialog_content += "<tr>";
 	dialog_content += "<td>Description</td>";
 	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must be given a description' id='configure_test_description' size='100' value='"+description+"'></input></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Interface</td>";
+	dialog_content += "<td>";
+	dialog_content += "<select id='configure_test_local_interface' dojoType='dijit.form.FilteringSelect' autocomplete='false' >";
+	dialog_content += "	<option value='' "; if (local_interface == "" || local_interface == null) { dialog_content += "selected" }; dialog_content += ">Default</option>";
+        [% FOREACH iface IN interfaces %]
+	dialog_content += "	<option value='[% iface.name %]' "; if (local_interface == "[% iface.name %]") { dialog_content += "selected" }; dialog_content += ">[% iface.name %] ([% iface.ips.join(", ") %])</option>";
+        [% END %]
+	dialog_content += "</select>";
+	dialog_content += "</td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Packet Rate</td>";
@@ -610,13 +645,14 @@ function __display_owamp_test_dialog(test_id, description, packet_interval, pack
 											var packet_rate = dijit.byId('configure_test_packet_rate').attr('value');
 											var packet_size = dijit.byId('configure_test_packet_size').attr('value');
 											var description = dijit.byId('configure_test_description').attr('value');
+											var local_interface = dijit.byId('configure_test_local_interface').attr('value');
 											var packet_interval = 1.0/packet_rate;
 											var session_packets = 10800 * packet_rate; // 3 hours
 											var sample_packets = 60 * packet_rate; // 1 minute
 											var bucket_width = 0.0001;
 											var loss_threshold = 10;
 											var packet_padding = packet_size - 20;
-											modify_psb_owamp_test(test_id, description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold);
+											modify_psb_owamp_test(test_id, description, packet_interval, packet_padding, session_packets, sample_packets, bucket_width, loss_threshold, local_interface);
 											dijit.byId('add_test_dialog').hide();
 										},
 										test_id)
@@ -625,7 +661,7 @@ function __display_owamp_test_dialog(test_id, description, packet_interval, pack
 	dialog.show();
 }
 
-function display_traceroute_test_dialog(test_id, description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol) {
+function display_traceroute_test_dialog(test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface) {
 	var title;
 	var action;
 	if (test_id) {
@@ -647,6 +683,17 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must be given a description' id='configure_test_description' size='100' value='"+description+"'></input></td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
+	dialog_content += "<td>Interface</td>";
+	dialog_content += "<td>";
+	dialog_content += "<select id='configure_test_local_interface' dojoType='dijit.form.FilteringSelect' autocomplete='false' >";
+	dialog_content += "	<option value='' "; if (local_interface == "" || local_interface == null) { dialog_content += "selected" }; dialog_content += ">Default</option>";
+        [% FOREACH iface IN interfaces %]
+	dialog_content += "	<option value='[% iface.name %]' "; if (local_interface == "[% iface.name %]") { dialog_content += "selected" }; dialog_content += ">[% iface.name %] ([% iface.ips.join(", ") %])</option>";
+        [% END %]
+	dialog_content += "</select>";
+	dialog_content += "</td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
 	dialog_content += "<td>Time Between Tests</td>";
 	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}'  id='configure_test_test_interval' size='10' value='"+display_test_interval+"' /></td>";
 	dialog_content += "<td>";
@@ -663,33 +710,12 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='The minimum size packet is 20 bytes (IP header). The maximum is 9000.' constraints='{min:20,max:9000}' id='configure_test_packet_size' size='10' value='"+packet_size+"''/></td><td>Bytes</td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
-	dialog_content += "<td>Time between packets</td>";
-	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='false' invalidMessage='The minimum time between packets must be 0 or greater' constraints='{min:0}' id='configure_test_pause' size='10' value='"+pause+"''/></td><td>Seconds</td>";
-	dialog_content += "</tr>";
-	dialog_content += "<tr>";
-    dialog_content += "<td>Timeout for test</td>";
-	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='All tests must be given a timeout greater than 0' id='configure_test_timeout' size='10' constraints='{min:1}' value='"+timeout+"'></input></td><td>Seconds</td>";
-	dialog_content += "</tr>";
-	dialog_content += "<tr>";
-	dialog_content += "<td>Timeout for individual hops</td>";
-	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='All tests must be given a wait time greater than 0' id='configure_test_waittime' size='10' constraints='{min:1}' value='"+waittime+"'></input></td><td>Seconds</td>";
-	dialog_content += "</tr>";
-	dialog_content += "<tr>";
 	dialog_content += "<td>First Hop to Report</td>";
 	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.NumberTextBox' required='false' invalidMessage='The minimum hop must be 0 or greater' constraints='{min:0}' id='configure_test_first_ttl' size='10' value='"+first_ttl+"''/></td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Maximum Number of Hops</td>";
 	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.NumberTextBox' required='false' invalidMessage='The maximum hop count must be 1 or greater' constraints='{min:1}' id='configure_test_max_ttl' size='10' value='"+max_ttl+"''/></td>";
-	dialog_content += "</tr>";
-	dialog_content += "<tr>";
-	dialog_content += "<td>Protocol</td>";
-	dialog_content += "<td>";
-	dialog_content += "<select id='configure_test_protocol' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='"+protocol+"'>";
-	dialog_content += "	<option value='udp' "; if (protocol == 'udp') { dialog_content += "selected='selected'" }; dialog_content += ">UDP</option>";
-	dialog_content += "	<option value='icmp' "; if (protocol == 'icmp') { dialog_content += "selected='selected'" }; dialog_content += ">ICMP</option>";
-	dialog_content += "</select>";
-	dialog_content += "</td>";
 	dialog_content += "</tr>";
 	dialog_content += "</table>";
 	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_save'>"+action+"</button>";
@@ -706,13 +732,10 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 											var test_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
 											test_interval *= test_unit;
 											var packet_size = dijit.byId('configure_test_packet_size').attr('value');
-											var timeout = dijit.byId('configure_test_timeout').attr('value');
-											var waittime = dijit.byId('configure_test_waittime').attr('value');
 											var first_ttl = dijit.byId('configure_test_first_ttl').attr('value');
 											var max_ttl = dijit.byId('configure_test_max_ttl').attr('value');
-											var pause = dijit.byId('configure_test_pause').attr('value');
-											var protocol = dijit.byId('configure_test_protocol').attr('value');
-											modify_traceroute_test(test_id, description, test_interval, packet_size, timeout, waittime, first_ttl, max_ttl, pause, protocol);
+											var local_interface = dijit.byId('configure_test_local_interface').attr('value');
+											modify_traceroute_test(test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface);
 											dijit.byId('add_test_dialog').hide();
 										},
 										test_id)
