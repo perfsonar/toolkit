@@ -33,7 +33,7 @@
 <br><div style="color:red">This host has PingER tests configured (Ping), but PingER is disabled.</div>
 [% END; END %]
 
-[% IF owamp_port_range > 0 && owamp_port_usage > owamp_port_range %]
+[% IF owamp_port_range && owamp_port_range > 0 && owamp_port_usage > owamp_port_range %]
 <br><div style="color:red">This host has owamp test ports configured ([% owamp_ports.min_port %]-[% owamp_ports.max_port %]). However, based on the number of hosts being tested against, at least [% owamp_port_usage %] ports need to be available.</div>
 [% END %]
 
@@ -106,10 +106,10 @@
 
 </div>
 
-<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_bwctl_throughput_test_dialog(null, '', 14400, 20, 'iperf', 'tcp', 0, 0, 0);" value="Add New Throughput Test">
-<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_pinger_test_dialog(null, '', 1000, 10, 1, 300, 0, 255);" value="Add New Ping Test">
-<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_owamp_test_dialog(null, '', 0.1, 0, 108000, 6000, 0.001, 10)" value="Add New One-Way Delay Test">
-<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_traceroute_test_dialog(null, '', 600, 40, 30, 5, 0, 64, 0, 'udp')" value="Add New Traceroute Test">
+<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_bwctl_throughput_test_dialog(null, '', 14400, 20, 'iperf', 'tcp', 0, 0, 0, '');" value="Add New Throughput Test">
+<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_pinger_test_dialog(null, '', 1000, 10, 1, 300, 0, 255, '');" value="Add New Ping Test">
+<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_owamp_test_dialog(null, '', 0.1, 0, 108000, 6000, 0.001, 10, '')" value="Add New One-Way Delay Test">
+<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_traceroute_test_dialog(null, '', 600, 40, 0, 64, '')" value="Add New Traceroute Test">
 <br>
 
 [% IF owamp_tests > 0 %]

@@ -31,14 +31,8 @@ my $SNMP_MA_pid                = "/var/run/snmp_ma.pid";
 my $SNMP_MA_pname           = "daemon.pl";
 my $pSB_MA_pid                 = "/var/run/perfsonarbuoy_ma.pid";
 my $pSB_MA_pname            = "daemon.pl";
-my $pSB_bwctl_master_pid    = "/var/lib/perfsonar/perfsonarbuoy_ma/bwctl/bwmaster.pid";
-my $pSB_bwctl_master_pname      = "bwmaster";
-my $pSB_bwctl_collector_pid     = "/var/lib/perfsonar/perfsonarbuoy_ma/bwctl/upload/bwcollector.pid";
-my $pSB_bwctl_collector_pname   = "bwcollector";
-my $pSB_owamp_master_pid        = "/var/lib/perfsonar/perfsonarbuoy_ma/owamp/powmaster.pid";
-my $pSB_owamp_master_pname      = "powmaster";
-my $pSB_owamp_collector_pid     = "/var/lib/perfsonar/perfsonarbuoy_ma/owamp/upload/powcollector.pid";
-my $pSB_owamp_collector_pname   = "powcollector";
+my $regular_testing_pid     = "/var/run/regular_testing.pid";
+my $regular_testing_pname   = "daemon";
 my $ls_registration_daemon_pid = "/var/run/ls_registration_daemon.pid";
 my $ls_registration_daemon_init_script = "ls_registration_daemon";
 #my $ls_registration_daemon_pname = "ls_registration_daemon.pl";
@@ -54,10 +48,6 @@ my $config_daemon_init_script  = "config_daemon";
 my $config_daemon_pname        = "config_daemon";
 my $traceroute_MA_pid           = "/var/run/traceroute_ma.pid";
 my $traceroute_MA_pname         = "daemon.pl";
-my $traceroute_scheduler_pid    = "/var/run/traceroute-scheduler.pid";
-my $traceroute_scheduler_pname      = "traceroute_sche";
-my $traceroute_master_pid    = "/var/run/traceroute-master.pid";
-my $traceroute_master_pname      = "traceroute_mas";
 my $simple_ls_bootstrap_pid    = "/var/run/SimpleLSBootStrapClientDaemon.pid";
 my $simple_ls_bootstrap_init_script    = "simple_ls_bootstrap_client";
 my $simple_ls_bootstrap_pname      = "SimpleLSBoot"; 
@@ -131,14 +121,8 @@ my $snmp_ma = perfSONAR_PS::ServiceWatcher::SNMP_MA->new();
 $snmp_ma->init( pid_files => $SNMP_MA_pid, process_names => $SNMP_MA_pname );
 my $psb_ma = perfSONAR_PS::ServiceWatcher::pSB_MA->new();
 $psb_ma->init( pid_files => $pSB_MA_pid, process_names => $pSB_MA_pname );
-my $psb_bwctl_master = perfSONAR_PS::ServiceWatcher::pSB_bwctl_master->new();
-$psb_bwctl_master->init( pid_files => $pSB_bwctl_master_pid, process_names => $pSB_bwctl_master_pname );
-my $psb_bwctl_collector = perfSONAR_PS::ServiceWatcher::pSB_bwctl_collector->new();
-$psb_bwctl_collector->init( pid_files => $pSB_bwctl_collector_pid, process_names => $pSB_bwctl_collector_pname );
-my $psb_owamp_master = perfSONAR_PS::ServiceWatcher::pSB_owamp_master->new();
-$psb_owamp_master->init( pid_files => $pSB_owamp_master_pid, process_names => $pSB_owamp_master_pname );
-my $psb_owamp_collector = perfSONAR_PS::ServiceWatcher::pSB_owamp_collector->new();
-$psb_owamp_collector->init( pid_files => $pSB_owamp_collector_pid, process_names => $pSB_owamp_collector_pname );
+my $regular_testing = perfSONAR_PS::ServiceWatcher::RegularTesting->new();
+$regular_testing->init( pid_files => $regular_testing_pid, process_names => $regular_testing_pname );
 my $ls_registration_daemon = perfSONAR_PS::ServiceWatcher::LSRegistrationDaemon->new();
 $ls_registration_daemon->init( pid_files => $ls_registration_daemon_pid, init_script => $ls_registration_daemon_init_script, process_names => $ls_registration_daemon_pname );
 my $ls_cache_daemon = perfSONAR_PS::ServiceWatcher::LSCacheDaemon->new();
@@ -149,14 +133,12 @@ my $config_daemon = perfSONAR_PS::ServiceWatcher::ConfigDaemon->new();
 $config_daemon->init( pid_files => $config_daemon_pid, init_script => $config_daemon_init_script, process_names => $config_daemon_pname );
 my $traceroute_ma = perfSONAR_PS::ServiceWatcher::TracerouteMA->new();
 $traceroute_ma->init( pid_files => $traceroute_MA_pid, process_names => $traceroute_MA_pname );
-my $traceroute_scheduler = perfSONAR_PS::ServiceWatcher::TracerouteScheduler->new();
-$traceroute_scheduler->init( pid_files => [ $traceroute_scheduler_pid, $traceroute_master_pid ], process_names => [ $traceroute_scheduler_pname, $traceroute_master_pname ] );
 my $simple_ls_bootstrap = perfSONAR_PS::ServiceWatcher::SimpleLSBootstrap->new();
 $simple_ls_bootstrap->init( pid_files => $simple_ls_bootstrap_pid, init_script => $simple_ls_bootstrap_init_script, process_names => $simple_ls_bootstrap_pname );
 
 # do a 'restart' pass if the "--regular-restart" flag was specified
 if ($REGULAR_RESTART) {
-    foreach my $service ( $mysql, $simple_ls_bootstrap, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $traceroute_scheduler, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
+    foreach my $service ( $mysql, $simple_ls_bootstrap, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $regular_testing, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
 		my ($status, $res);
 
 		($status, $res) = $service->is_enabled();
@@ -188,7 +170,7 @@ if ($REGULAR_RESTART) {
 	}
 }
 # do a single pass to see if the services are up, and try to start them. Report any that are down.
-foreach my $service ( $mysql, $simple_ls_bootstrap, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $traceroute_scheduler, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
+foreach my $service ( $mysql, $simple_ls_bootstrap, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $regular_testing, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
 	my ($status, $res);
 
 	($status, $res) = $service->is_enabled();
@@ -232,7 +214,7 @@ foreach my $service ( $mysql, $simple_ls_bootstrap, $owamp, $bwctl, $npad, $ndt,
 }
 
 # do a single pass of all the services that are up, and send "OK" messages for all the ones that are running.
-foreach my $service ( $mysql, $simple_ls_bootstrap, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $traceroute_scheduler, $psb_owamp_collector, $psb_owamp_master, $psb_bwctl_collector, $psb_bwctl_master, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
+foreach my $service ( $mysql, $simple_ls_bootstrap, $owamp, $bwctl, $npad, $ndt, $psb_ma, $pinger, $snmp_ma, $traceroute_ma, $regular_testing, $ls_registration_daemon, $ls_cache_daemon, $config_daemon ) {
 	my ($status, $res);
 
 	($status, $res) = $service->is_enabled();
@@ -476,271 +458,6 @@ sub kill {
 
     return stop_service( { name => $self->{SERVICE_NAME} } );
 }
-
-package perfSONAR_PS::ServiceWatcher::pSB_bwctl_master;
-
-use base 'perfSONAR_PS::ServiceWatcher::Base';
-
-sub init {
-    my ( $self, %conf ) = @_;
-
-    $self->{SERVICE_NAME} = "perfsonarbuoy_bwctl";
-    $self->SUPER::init( %conf );
-    return 0;
-}
-
-sub check_state {
-    my ($self) = @_;
-
-    my ($status, $res) = $self->SUPER::check_state();
-    if ($status == 0) {
-	return ($status, $res);
-    }
-
-    my $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
-    ( $status, $res ) = $testing_conf->init( { } );
-    if ( $status != 0) {
-    	# I'm not sure what I should do in this situation...
-	return (0, "");
-    }
-
-    ( $status, $res ) = $testing_conf->get_tests();
-    if ( $status != 0) {
-    	# I'm not sure what I should do in this situation...
-	return (0, "");
-    }
-
-    my $tests = 0;
-    foreach my $test (@$res) {
-            if ( $test->{type} eq "perfsonarbuoy/bwctl" ) {
-                $tests++;
-            }
-    }
-
-    if ($tests == 0) {
-	$logger->debug("pSB/bwctl tests: 0");
-	return (0, "");
-    }
-    else {
-	$logger->debug("pSB/bwctl tests: ".$tests);
-    }
-
-    return (-1, "pSB/owamp tests are available, but pSB/bwctl daemons aren't running");
-}
-
-# Try to stop gracefully, and if not, kill off any remaining processes
-sub kill {
-	my ($self) = @_;
-
-	system("/opt/perfsonar_ps/perfsonarbuoy_ma/bin/bwmaster.pl -k");
-
-	system("pkill -9 -f bwmaster.pl");
-	system("pkill -9 -f \"bwctl \""); # the quotes are so we don't kill bwctld accidently
-	system("pkill -9 -f iperf");
-
-	return (0, "");
-}
-
-package perfSONAR_PS::ServiceWatcher::pSB_bwctl_collector;
-
-use base 'perfSONAR_PS::ServiceWatcher::Base';
-
-sub init {
-    my ( $self, %conf ) = @_;
-
-    $self->{SERVICE_NAME} = "perfsonarbuoy_bwctl";
-    $self->SUPER::init( %conf );
-    return 0;
-}
-
-sub check_state {
-    my ($self) = @_;
-
-    my ($status, $res) = $self->SUPER::check_state();
-    if ($status == 0) {
-	return ($status, $res);
-    }
-
-    my $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
-    ( $status, $res ) = $testing_conf->init( { } );
-    if ( $status != 0) {
-    	# I'm not sure what I should do in this situation...
-	return (0, "");
-    }
-
-    ( $status, $res ) = $testing_conf->get_tests();
-    if ( $status != 0) {
-    	# I'm not sure what I should do in this situation...
-	return (0, "");
-    }
-
-    my $tests = 0;
-    foreach my $test (@$res) {
-            if ( $test->{type} eq "perfsonarbuoy/bwctl" ) {
-                $tests++;
-            }
-    }
-
-    if ($tests == 0) {
-	$logger->debug("pSB/bwctl tests: 0");
-	return (0, "");
-    }
-    else {
-	$logger->debug("pSB/bwctl tests: ".$tests);
-    }
-
-    return (-1, "pSB/owamp tests are available, but pSB/bwctl daemons aren't running");
-}
-
-# Try to stop gracefully, and if not, kill off any remaining processes
-sub kill {
-	my ($self) = @_;
-
-	system("/opt/perfsonar_ps/perfsonarbuoy_ma/bin/bwcollector.pl -k");
-	system("pkill -9 -f bwcollector.pl");
-
-	return (0, "");
-}
-
-sub needs_regular_restart {
-	my ($self) = @_;
-
-	return 1;
-}
-
-package perfSONAR_PS::ServiceWatcher::pSB_owamp_master;
-
-use base 'perfSONAR_PS::ServiceWatcher::Base';
-
-use perfSONAR_PS::NPToolkit::Config::RegularTesting;
-
-sub init {
-    my ( $self, %conf ) = @_;
-
-    $self->{SERVICE_NAME} = "perfsonarbuoy_owamp";
-    $self->SUPER::init( %conf );
-    return 0;
-}
-
-sub check_state {
-    my ($self) = @_;
-
-    my ($status, $res) = $self->SUPER::check_state();
-    if ($status == 0) {
-	return ($status, $res);
-    }
-
-    my $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
-    ( $status, $res ) = $testing_conf->init( { } );
-    if ( $status != 0) {
-    	# I'm not sure what I should do in this situation...
-	return (0, "");
-    }
-
-    ( $status, $res ) = $testing_conf->get_tests();
-    if ( $status != 0) {
-    	# I'm not sure what I should do in this situation...
-	return (0, "");
-    }
-
-    my $tests = 0;
-    foreach my $test (@$res) {
-            if ( $test->{type} eq "owamp" ) {
-                $tests++;
-            }
-    }
-
-    if ($tests == 0) {
-	$logger->debug("pSB/owamp tests: 0");
-	return (0, "");
-    }
-    else {
-	$logger->debug("pSB/owamp tests: ".$tests);
-    }
-
-    return (-1, "pSB/owamp tests are available, but pSB/owamp daemons aren't running");
-}
-
-# Try to stop gracefully, and if not, kill off any remaining processes
-sub kill {
-	my ($self) = @_;
-
-	system("/opt/perfsonar_ps/perfsonarbuoy_ma/bin/powmaster.pl -k");
-	system("pkill -9 -f powmaster.pl");
-	system("pkill -9 -f powstream");
-
-	return (0, "");
-}
-
-package perfSONAR_PS::ServiceWatcher::pSB_owamp_collector;
-
-use base 'perfSONAR_PS::ServiceWatcher::Base';
-
-use perfSONAR_PS::NPToolkit::Config::RegularTesting;
-
-sub init {
-    my ( $self, %conf ) = @_;
-
-    $self->{SERVICE_NAME} = "perfsonarbuoy_owamp";
-    $self->SUPER::init( %conf );
-    return 0;
-}
-
-sub check_state {
-    my ($self) = @_;
-
-    my ($status, $res) = $self->SUPER::check_state();
-    if ($status == 0) {
-	return ($status, $res);
-    }
-
-    my $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
-    ( $status, $res ) = $testing_conf->init( { } );
-    if ( $status != 0) {
-    	# I'm not sure what I should do in this situation...
-	return (0, "");
-    }
-
-    ( $status, $res ) = $testing_conf->get_tests();
-    if ( $status != 0) {
-    	# I'm not sure what I should do in this situation...
-	return (0, "");
-    }
-
-    my $tests = 0;
-    foreach my $test (@$res) {
-            if ( $test->{type} eq "owamp" ) {
-                $tests++;
-            }
-    }
-
-    if ($tests == 0) {
-	$logger->debug("pSB/owamp tests: 0");
-	return (0, "");
-    }
-    else {
-	$logger->debug("pSB/owamp tests: ".$tests);
-    }
-
-    return (-1, "pSB/owamp tests are available, but pSB/owamp daemons aren't running");
-}
-
-# Try to stop gracefully, and if not, kill off any remaining processes
-sub kill {
-	my ($self) = @_;
-
-	system("/opt/perfsonar_ps/perfsonarbuoy_ma/bin/powcollector.pl -k");
-	system("pkill -9 -f powcollector.pl");
-
-	return (0, "");
-}
-
-sub needs_regular_restart {
-	my ($self) = @_;
-
-	return 1;
-}
-
 
 package perfSONAR_PS::ServiceWatcher::BWCTL;
 
@@ -1011,6 +728,41 @@ sub check_state {
     return (0, "");
 }
 
+package perfSONAR_PS::ServiceWatcher::RegularTesting;
+
+use base 'perfSONAR_PS::ServiceWatcher::Base';
+
+sub init {
+    my ( $self, %conf ) = @_;
+
+    $self->{SERVICE_NAME} = "regular_testing";
+
+    $self->SUPER::init( %conf );
+
+    return 0;
+}
+
+sub kill {
+	my ($self) = @_;
+
+	my ($status, $res) = $self->SUPER::kill();
+
+	sleep(10);
+
+	if ($status != 0) {
+		system("pkill -9 -f Regular");
+	}
+
+	return (0, "");
+}
+
+sub needs_regular_restart {
+	my ($self) = @_;
+
+	return 0;
+}
+
+
 package perfSONAR_PS::ServiceWatcher::LSRegistrationDaemon;
 
 use base 'perfSONAR_PS::ServiceWatcher::Base';
@@ -1208,76 +960,6 @@ sub needs_regular_restart {
 	my ($self) = @_;
 
 	return 0;
-}
-
-package perfSONAR_PS::ServiceWatcher::TracerouteScheduler;
-
-use base 'perfSONAR_PS::ServiceWatcher::Base';
-
-sub init {
-    my ( $self, %conf ) = @_;
-
-    $self->{SERVICE_NAME} = "traceroute_scheduler";
-    $self->SUPER::init( %conf );
-    return 0;
-}
-
-sub check_state {
-    my ($self) = @_;
-
-    my ($status, $res) = $self->SUPER::check_state();
-    if ($status == 0) {
-	return ($status, $res);
-    }
-
-    my $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
-    ( $status, $res ) = $testing_conf->init( { } );
-    if ( $status != 0) {
-    	# I'm not sure what I should do in this situation...
-	return (0, "");
-    }
-
-    ( $status, $res ) = $testing_conf->get_tests();
-    if ( $status != 0) {
-    	# I'm not sure what I should do in this situation...
-	return (0, "");
-    }
-
-    my $tests = 0;
-    foreach my $test (@$res) {
-            if ( $test->{type} eq "traceroute" ) {
-                $tests++;
-            }
-    }
-
-    if ($tests == 0) {
-	$logger->debug("traceroute tests: 0");
-	return (0, "");
-    }
-    else {
-	$logger->debug("traceroute tests: ".$tests);
-    }
-
-    return (-1, "traceroute tests are available, but traceroute_scheduler daemons aren't running");
-}
-
-# Try to stop gracefully, and if not, kill off any remaining processes
-sub kill {
-	my ($self) = @_;
-
-	my ($status, $res) = $self->SUPER::kill();
-    
-    foreach my $pname ( @{ $self->{PROCESS_NAMES} } ){
-        system("pkill -9 -f '$pname'");
-    }
-
-	return (0, "");
-}
-
-sub needs_regular_restart {
-	my ($self) = @_;
-
-	return 1;
 }
 
 package perfSONAR_PS::ServiceWatcher::SimpleLSBootstrap;
