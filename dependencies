@@ -19,7 +19,6 @@ Data::Validate::Domain
 Data::Validate::IP
 Date::Manip
 DateTime
-DateTime::Format::ISO8601
 DateTime::TimeZone
 Digest::MD5
 English
@@ -31,7 +30,6 @@ File::Find
 File::Path
 File::Temp
 FindBin
-FreezeThaw
 Getopt::Long
 HTML::Entities
 HTTP::Response
