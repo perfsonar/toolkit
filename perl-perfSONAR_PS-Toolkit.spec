@@ -21,11 +21,11 @@
 %define crontab_4     cron-save_config
 %define crontab_5     cron-db_cleaner 
 
-%define relnum  13 
+%define relnum  1 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
-Version:		3.3.2
+Version:		3.4
 Release:		%{relnum}.%{disttag}
 Summary:		perfSONAR_PS Toolkit
 License:		Distributable, see LICENSE
@@ -104,6 +104,7 @@ Requires:		perl-perfSONAR_PS-perfSONARBUOY-client
 Requires:		perl-perfSONAR_PS-perfSONARBUOY-config
 Requires:		perl-perfSONAR_PS-perfSONARBUOY-server
 Requires:		perl-perfSONAR_PS-serviceTest
+Requires:		perl-perfSONAR_PS-RegularTesting
 
 # the following dependencies are needed by cacti
 Requires:		net-snmp-utils
@@ -317,6 +318,9 @@ mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolk
 
 #Make sure that the owmesh file supports default traceroute options. Must run for clean install and upgrades.
 /opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_owmesh_traceroute.sh
+
+#Make sure that the owmesh file supports default traceroute options. Must run for clean install and upgrades.
+/opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_regular_tests
 
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
