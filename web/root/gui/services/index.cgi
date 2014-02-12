@@ -192,7 +192,7 @@ sub is_synced {
     };
     return if ($@);
 
-    return ($response{'Reference Clock Identifier'} ne "INIT");
+    return ($response{'Reference Clock Identifier'} and $response{'Reference Clock Identifier'} ne "INIT");
 }
 
 
