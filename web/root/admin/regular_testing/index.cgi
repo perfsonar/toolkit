@@ -163,6 +163,9 @@ my $ajax = CGI::Ajax->new(
 
     'delete_test' => \&delete_test,
 
+    'disable_test' => \&disable_test,
+    'enable_test' => \&enable_test,
+
     'lookup_servers' => \&lookup_servers,
     'repair_hosts_file' => \&repair_hosts_file,
 );
@@ -1051,6 +1054,40 @@ sub delete_test {
     save_state();
 
     $status_msg = "Test deleted";
+    return display_body();
+}
+
+sub enable_test {
+    my ( $test_id ) = @_;
+
+    my ($status, $res) = $testing_conf->enable_test( { test_id => $test_id } );
+    if ( $status != 0 ) {
+        $error_msg = "Problem enabling test: $res";
+        return display_body();
+    }
+
+    $is_modified = 1;
+
+    save_state();
+
+    $status_msg = "Test enabled";
+    return display_body();
+}
+
+sub disable_test {
+    my ( $test_id ) = @_;
+
+    my ($status, $res) = $testing_conf->disable_test( { test_id => $test_id } );
+    if ( $status != 0 ) {
+        $error_msg = "Problem disabling test: $res";
+        return display_body();
+    }
+
+    $is_modified = 1;
+
+    save_state();
+
+    $status_msg = "Test disabled";
     return display_body();
 }
 

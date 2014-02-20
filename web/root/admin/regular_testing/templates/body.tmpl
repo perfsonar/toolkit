@@ -64,7 +64,7 @@
 
 <div id="tests">
 
-<table style="width: 700px" class="basic_table">
+<table style="width: 750px" class="basic_table">
   [% IF tests.size == 0 %]
   <tr>
   <th>Scheduled Tests</th>
@@ -84,21 +84,25 @@
     [% IF test_info.type == "pinger"; test_info.type_desc = "Ping Test"; END %]
     [% IF test_info.type == "bwctl/throughput"; test_info.type_desc = "Throughput Test"; END %]
     [% IF test_info.type == "traceroute"; test_info.type_desc = "Traceroute Test"; END %]
-    [% IF test_info.id == current_test.id %]
-    <td class="selected" style="width: 400px">[% test_info.description %]</td>
-    <td class="selected" style="width: 150px">[% test_info.type_desc %]</td>
-    <td class="selected">
+    <td [% IF test_info.id == current_test.id %] class="selected" [% END %] style="width: 400px">
+        [% IF test_info.disabled %]
+        <del>
+        [% END %]
+        [% test_info.description %]
+        [% IF test_info.disabled %]
+        </del>
+        [% END %]
+    </td>
+    <td [% IF test_info.id == current_test.id %] class="selected" [% END %] style="width: 150px">[% test_info.type_desc %]</td>
+    <td [% IF test_info.id == current_test.id %] class="selected" [% END %]>
 	<a href="#" onClick="show_test('[% test_info.id %]')">Configure</a>
         <a href="#" onClick="remove_test('[% test_info.id %]')">Delete</a>
+        [% IF test_info.disabled %]
+        <a href="#" onClick="enable_test('[% test_info.id %]')">Enable</a>
+        [% ELSE %]
+        <a href="#" onClick="disable_test('[% test_info.id %]')">Disable</a>
+        [% END %]
     </td>
-    [% ELSE %]
-    <td style="width: 400px">[% test_info.description %]</td>
-    <td style="width: 150px">[% test_info.type_desc %]</td>
-    <td>
-	<a href="#" onClick="show_test('[% test_info.id %]')">Configure</a>
-        <a href="#" onClick="remove_test('[% test_info.id %]')">Delete</a>
-    </td>
-    [% END %]
   </tr>
   [% END %]
   [% END %]

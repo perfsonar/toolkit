@@ -19,6 +19,14 @@ function show_test(test_id) {
 	handle_cgi_ajax_call(null, 'Problem looking up test', true, 'show_test', [ test_id ]);
 }
 
+function enable_test(test_id) {
+	handle_cgi_ajax_call(null, 'Problem enabling test', true, 'enable_test', [ test_id ]);
+}
+
+function disable_test(test_id) {
+	handle_cgi_ajax_call(null, 'Problem disabling test', true, 'disable_test', [ test_id ]);
+}
+
 function remove_test(test_id) {
 	handle_cgi_ajax_call(null, 'Problem removing test', true, 'delete_test', [ test_id ]);
 }
