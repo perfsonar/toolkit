@@ -20,7 +20,7 @@ use lib "$RealBin/../../../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
-use perfSONAR_PS::Utils::GeoIp;
+use perfSONAR_PS::Utils::GeoIp qw(ipToLatLong);
 use perfSONAR_PS::Client::gLS::Keywords;
 
 my $config_file = $basedir . '/etc/web_admin.conf';
@@ -201,7 +201,7 @@ sub fill_variables {
     	my $address_conf = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
     	$address_conf->init();
     	my $ip = $address_conf->get_primary_address();
-    	my $res = convertIpToLatLong($ip);
+    	my $res = ipToLatLong($ip);
     	
     	if($res->{longitude} && $res->{latitude} ){
     		$vars->{longitude} = $res->{longitude};
