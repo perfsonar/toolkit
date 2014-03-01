@@ -1,0 +1,77 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my %mounts = ();
+
+open(MTAB, "/etc/mtab");
+while(<MTAB>) {
+    my ($device, $mount_point, @remainder) = split(' ');
+
+    $mounts{$mount_point} = $device;
+}
+close(MTAB);
+
+unless ($mounts{'/home'}) {
+    print "No /home partition\n";
+    exit 0;
+}
+
+my ($home_vg, $home_lv) = ($mounts{'/home'} =~ /\/dev\/mapper\/(vg_[^-]*)-(lv_[^-]*)/);
+my ($root_vg, $root_lv) = ($mounts{'/'} =~ /\/dev\/mapper\/(vg_[^-]*)-(lv_[^-]*)/);
+
+print "Root: ".$mounts{'/'}."\n";
+print "Home: ".$mounts{'/home'}."\n";
+print "VG: $home_vg\n";
+print "LV: $home_lv\n";
+print "Root VG: $root_vg\n";
+print "Root LV: $root_lv\n";
+
+my $home_dev = "/dev/".$home_vg."/".$home_lv;
+my $root_dev = "/dev/".$root_vg."/".$root_lv;
+
+unless (-e $home_dev && -e $root_dev) {
+    print "Can't figure out mount points\n";
+    exit -1;
+}
+
+`tar czf /tmp/home.tgz /home/*`;
+unless ($? == 0) {
+    print "Problem saving up /home\n";
+    exit -1;
+}
+
+`umount /home`;
+unless ($? == 0) {
+    print "Problem unmount /home\n";
+    exit -1;
+}
+
+`lvremove -f $home_dev`;
+unless ($? == 0) {
+    print "Problem deleting /home\n";
+    exit -1;
+}
+
+`lvextend -r -l +100%FREE $root_dev`;
+unless ($? == 0) {
+    print "Problem extending /\n";
+    exit -1;
+}
+
+`resize2fs $root_dev`;
+unless ($? == 0) {
+    print "Problem resizing /\n";
+    exit -1;
+}
+
+`tar xzf /tmp/home.tgz -C /`;
+unless ($? == 0) {
+    print "Problem restoring /home. /home backup is stored in /tmp/home.tgz\n";
+    exit -1;
+}
+
+unlink("/tmp/home.tgz");
+
+exit 0;
