@@ -9,12 +9,12 @@ our $VERSION = 3.3;
  
  perfSONAR_PS::Utils::GeoIp
  
- =head1 DESCRIPTION
+=head1 DESCRIPTION
  
  A module that provides utility methods to resolve location based on IPaddress
  =head1 API
  
- =cut
+=cut
 
 use base 'Exporter';
 use LWP::Simple;
@@ -31,7 +31,7 @@ my $LONGITUDE = "longitude";
  
  Resolve an ip address to a Lat,Long.
  
- =cut
+=cut
 
 sub ipToLatLong {
     
