@@ -9,28 +9,22 @@
 <input type="hidden" id="throughput_tests" value="[% throughput_tests %]" />
 <input type="hidden" id="owamp_tests" value="[% owamp_tests %]" />
 <input type="hidden" id="pinger_tests" value="[% pinger_tests %]" />
-<input type="hidden" id="psb_bwctl_enabled" value="[% psb_bwctl_enabled %]" />
-<input type="hidden" id="psb_owamp_enabled" value="[% psb_owamp_enabled %]" />
-<input type="hidden" id="pinger_enabled" value="[% pinger_enabled %]" />
+<input type="hidden" id="regular_testing_enabled" value="[% regular_testing_enabled %]" />
 
-[% IF throughput_tests > 0 && psb_bwctl_enabled && ((owamp_tests > 0 && psb_owamp_enabled) || (pinger_tests > 0 && pinger_enabled)) %]
-<br><div style="color:red">This host is configured with both latency and bandwidth tests. Bandwidth tests can interfere with latency tests</div>
+[% UNLESS regular_testing_enabled %]
+<br><div style="color:red">Regular Testing is not enabled. You will need to go to the 'Enabled Services' tool, and enable it before tests will work.</div>
 [% END %]
 
-[% IF (owamp_tests > 0); UNLESS psb_owamp_enabled %]
-<br><div style="color:red">This host has perfSONAR-BUOY One-Way Latency tests configured, but the perfSONAR-BUOY One-Way Latency Collector is disabled.</div>
-[% END; END %]
-
-[% IF (throughput_tests > 0); UNLESS psb_bwctl_enabled %]
-<br><div style="color:red">This host has perfSONAR-BUOY Throughput tests configured, but the perfSONAR-BUOY Throughput Collector is disabled.</div>
-[% END; END %]
+[% IF throughput_tests > 0 && owamp_tests > 0 %]
+<br><div style="color:red">This host is configured with both bandwidth and one-way latency tests. Bandwidth tests can interfere with one-way latency tests.</div>
+[% END %]
 
 [% IF (throughput_tests > 0 || owamp_tests > 0); UNLESS psb_ma_enabled %]
-<br><div style="color:red">This host has perfSONAR-BUOY Throughput or One-Way Latency tests configured, but the perfSONAR-BUOY Measurement Archive is disabled.</div>
+<br><div style="color:red">This host has Throughput or One-Way Latency tests configured, but the perfSONAR-BUOY Measurement Archive is disabled. You will need to go the 'Enabled Services' tool, and enable it before test results will be available.</div>
 [% END; END %]
 
 [% IF pinger_tests > 0; UNLESS pinger_enabled %]
-<br><div style="color:red">This host has PingER tests configured (Ping), but PingER is disabled.</div>
+<br><div style="color:red">This host has Ping tests configured, but PingER is disabled. You will need to go the 'Enabled Services' tool, and enable it before test results will be available.</div>
 [% END; END %]
 
 [% IF owamp_port_range && owamp_port_range > 0 && owamp_port_usage > owamp_port_range %]
@@ -42,10 +36,6 @@
 [% END %]
 [% UNLESS hosts_file_matches_dns %]
 <br><div style="color:red">The /etc/hosts file appears to have been modified. This may cause unexpected behavior by tools. <a href="#" onclick="repair_hosts_file()">Click here</a> to correct the file.</div>
-[% END %]
-
-[% IF traceroute_tests > 0 && external_address != "" %]
-<br><div style="color:green">If you would like to view the results of your traceroute tests <a href="http://psps.perfsonar.net/toolkit/gui/traceroute.cgi?url=http://[% external_address %]:8086/perfSONAR_PS/services/tracerouteMA&time=3600">click here</a>. A graphical interface to this data will be provided in a future version of the perfSONAR-PS Toolkit.</div>
 [% END %]
 
 [% IF throughput_tests > 0 %]
