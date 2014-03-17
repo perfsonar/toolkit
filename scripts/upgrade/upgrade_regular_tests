@@ -752,6 +752,7 @@ sub __parse_owmesh_conf {
     my @top_level_prefixes = ("", "BW", "OWP", "TRACE");
     my @top_level_variables = (
            "ConfigVersion", "SyslogFacility", "GroupName", "UserName", "DevNull", # Generic variables applicable to everything
+           "CGIDBUser", "CGIDBPass",  # We need these values to be able to use bwdb.pl and owdb.pl
            "CentralDBName", "CentralDBPass", "CentralDBType", "CentralDBUser",  # We don't autogenerate a collector configuration so copy all those variables over
            "SessionSumCmd", "CentralDataDir", "CentralArchDir", # We don't autogenerate a collector configuration so copy all those variables over
            "CentralHost", "CentralHostTimeout", "SendTimeout", # Copy this over since we don't have a better use for it.
