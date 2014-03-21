@@ -163,6 +163,9 @@ my $ajax = CGI::Ajax->new(
 
     'delete_test' => \&delete_test,
 
+    'disable_test' => \&disable_test,
+    'enable_test' => \&enable_test,
+
     'lookup_servers' => \&lookup_servers,
     'repair_hosts_file' => \&repair_hosts_file,
 );
@@ -318,26 +321,21 @@ sub fill_variables_status {
 
     my ($status, $res);
 
-    my ( $psb_owamp_enabled, $psb_bwctl_enabled, $psb_ma_enabled, $pinger_enabled, $hosts_file_matches_dns );
+    my ( $regular_testing_enabled, $psb_ma_enabled, $pinger_enabled, $hosts_file_matches_dns );
 
     my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
     $res = $services_conf->init( { enabled_services_file => $conf{enabled_services_file} } );
     if ( $res == 0 ) {
         my $service_info;
 
+        $service_info = $services_conf->lookup_service( { name => "regular_testing" } );
+        if ( $service_info and $service_info->{enabled} ) {
+            $regular_testing_enabled = 1;
+        }
+
         $service_info = $services_conf->lookup_service( { name => "pinger" } );
         if ( $service_info and $service_info->{enabled} ) {
             $pinger_enabled = 1;
-        }
-
-        $service_info = $services_conf->lookup_service( { name => "perfsonarbuoy_bwctl" } );
-        if ( $service_info and $service_info->{enabled} ) {
-            $psb_bwctl_enabled = 1;
-        }
-
-        $service_info = $services_conf->lookup_service( { name => "perfsonarbuoy_owamp" } );
-        if ( $service_info and $service_info->{enabled} ) {
-            $psb_owamp_enabled = 1;
         }
 
         $service_info = $services_conf->lookup_service( { name => "perfsonarbuoy_ma" } );
@@ -453,23 +451,22 @@ sub fill_variables_status {
         $owamp_port_range = $owamp_ports{max_port} - $owamp_ports{min_port} + 1;
     }
 
-    $vars->{network_percent_used} = sprintf "%.1d", $network_usage * 100;
-    $vars->{bwctl_ports}          = \%bwctl_ports;
-    $vars->{bwctl_port_range}     = $bwctl_port_range;
-    $vars->{bwctl_port_usage}     = $bwctl_port_usage;
+    $vars->{network_percent_used}    = sprintf "%.1d", $network_usage * 100;
+    $vars->{bwctl_ports}             = \%bwctl_ports;
+    $vars->{bwctl_port_range}        = $bwctl_port_range;
+    $vars->{bwctl_port_usage}        = $bwctl_port_usage;
     $vars->{hosts_file_matches_dns} = $hosts_file_matches_dns;
-    $vars->{owamp_ports}          = \%owamp_ports;
-    $vars->{owamp_port_range}     = $owamp_port_range;
-    $vars->{owamp_port_usage}     = $owamp_port_usage;
-    $vars->{owamp_tests}          = $psb_owamp_tests;
-    $vars->{pinger_tests}         = $pinger_tests;
-    $vars->{throughput_tests}     = $psb_throughput_tests;
-    $vars->{psb_bwctl_enabled}    = $psb_bwctl_enabled;
-    $vars->{psb_ma_enabled}       = $psb_ma_enabled;
-    $vars->{psb_owamp_enabled}    = $psb_owamp_enabled;
-    $vars->{pinger_enabled}       = $pinger_enabled;
-    $vars->{traceroute_tests}     = $traceroute_tests;
-    $vars->{external_address}     = $external_address ? $external_address : '';
+    $vars->{owamp_ports}             = \%owamp_ports;
+    $vars->{owamp_port_range}        = $owamp_port_range;
+    $vars->{owamp_port_usage}        = $owamp_port_usage;
+    $vars->{owamp_tests}             = $psb_owamp_tests;
+    $vars->{pinger_tests}            = $pinger_tests;
+    $vars->{throughput_tests}        = $psb_throughput_tests;
+    $vars->{psb_ma_enabled}          = $psb_ma_enabled;
+    $vars->{regular_testing_enabled} = $regular_testing_enabled;
+    $vars->{pinger_enabled}          = $pinger_enabled;
+    $vars->{traceroute_tests}        = $traceroute_tests;
+    $vars->{external_address}        = $external_address ? $external_address : '';
     
     return 0;
 }
@@ -1051,6 +1048,40 @@ sub delete_test {
     save_state();
 
     $status_msg = "Test deleted";
+    return display_body();
+}
+
+sub enable_test {
+    my ( $test_id ) = @_;
+
+    my ($status, $res) = $testing_conf->enable_test( { test_id => $test_id } );
+    if ( $status != 0 ) {
+        $error_msg = "Problem enabling test: $res";
+        return display_body();
+    }
+
+    $is_modified = 1;
+
+    save_state();
+
+    $status_msg = "Test enabled";
+    return display_body();
+}
+
+sub disable_test {
+    my ( $test_id ) = @_;
+
+    my ($status, $res) = $testing_conf->disable_test( { test_id => $test_id } );
+    if ( $status != 0 ) {
+        $error_msg = "Problem disabling test: $res";
+        return display_body();
+    }
+
+    $is_modified = 1;
+
+    save_state();
+
+    $status_msg = "Test disabled";
     return display_body();
 }
 

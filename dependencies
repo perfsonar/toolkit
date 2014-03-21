@@ -19,6 +19,7 @@ Data::Validate::Domain
 Data::Validate::IP
 Date::Manip
 DateTime
+DateTime::Format::ISO8601
 DateTime::TimeZone
 Digest::MD5
 English
@@ -26,6 +27,7 @@ Exporter
 Fcntl
 File::Basename
 File::Compare
+File::Copy
 File::Find
 File::Path
 File::Temp
@@ -42,6 +44,7 @@ IPC::Open3
 IPC::Run
 JSON
 JSON::XS
+LWP
 LWP::Simple
 LWP::UserAgent
 Log::Log4perl

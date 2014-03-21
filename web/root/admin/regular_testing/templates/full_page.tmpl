@@ -19,6 +19,14 @@ function show_test(test_id) {
 	handle_cgi_ajax_call(null, 'Problem looking up test', true, 'show_test', [ test_id ]);
 }
 
+function enable_test(test_id) {
+	handle_cgi_ajax_call(null, 'Problem enabling test', true, 'enable_test', [ test_id ]);
+}
+
+function disable_test(test_id) {
+	handle_cgi_ajax_call(null, 'Problem disabling test', true, 'disable_test', [ test_id ]);
+}
+
 function remove_test(test_id) {
 	handle_cgi_ajax_call(null, 'Problem removing test', true, 'delete_test', [ test_id ]);
 }
@@ -218,32 +226,17 @@ function display_pinger_test_dialog(test_id, description, packet_size, packet_co
 		return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface);
 	}
 
-	var psb_bwctl_enabled   = parseInt(dojo.byId('psb_bwctl_enabled').value);
-	var psb_owamp_enabled   = parseInt(dojo.byId('psb_owamp_enabled').value);
-	var pinger_enabled      = parseInt(dojo.byId('pinger_enabled').value);
-	var owamp_tests         = parseInt(dojo.byId('owamp_tests').value);
-	var throughput_tests    = parseInt(dojo.byId('throughput_tests').value);
-	var pinger_tests        = parseInt(dojo.byId('pinger_tests').value);
-
-	// if PingER is enabled and there are no throughput tests that will interfere
-	if ((throughput_tests == 0 || !psb_bwctl_enabled) && pinger_enabled) {
+	var regular_testing_enabled      = parseInt(dojo.byId('regular_testing_enabled').value);
+	if (regular_testing_enabled) {
 		return __display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface);
 	}
 
 	var title = "Warning: host isn't configured for ping tests";
 	var dialog_content = "";
 
-	if (throughput_tests > 0 && psb_bwctl_enabled) {
-		dialog_content += "<p>";
-		dialog_content += "<font color='red'>Throughput tests are configured. This will make the PingER test results meaningless</font>";
-		dialog_content += "</p>";
-	}
-
-	if (!pinger_enabled) {
-		dialog_content += "<p>";
-		dialog_content += "<font color='red'>PingER is not enabled. You will need to go to the 'Enabled Services' tool, and enable it before the PingER tests will work</font>";
-		dialog_content += "</p>";
-	}
+	dialog_content += "<p>";
+	dialog_content += "<font color='red'>Regular Testing is not enabled. You will need to go to the 'Enabled Services' tool, and enable it before the ping tests will work</font>";
+	dialog_content += "</p>";
 
 	dialog_content += "<button dojoType='dijit.form.Button' id='add_test_warning_add_test'>Add Test Anyway</button>";
 	dialog_content += "<button dojoType='dijit.form.Button' id='add_test_warning_cancel'>Cancel</button>";
@@ -357,30 +350,26 @@ function display_bwctl_throughput_test_dialog(test_id, description, test_interva
 		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
 	}
 
-	var psb_bwctl_enabled   = parseInt(dojo.byId('psb_bwctl_enabled').value);
-	var psb_owamp_enabled   = parseInt(dojo.byId('psb_owamp_enabled').value);
-	var pinger_enabled      = parseInt(dojo.byId('pinger_enabled').value);
-	var owamp_tests         = parseInt(dojo.byId('owamp_tests').value);
-	var throughput_tests    = parseInt(dojo.byId('throughput_tests').value);
-	var pinger_tests        = parseInt(dojo.byId('pinger_tests').value);
+	var regular_testing_enabled = parseInt(dojo.byId('regular_testing_enabled').value);
+	var owamp_tests             = parseInt(dojo.byId('owamp_tests').value);
 
 	// if pSB throughput tests are enabled and there are no latency tests that this new test will interfere with
-	if ((pinger_tests == 0 || !pinger_enabled) && (owamp_tests == 0 || !psb_owamp_enabled) && psb_bwctl_enabled) {
+	if (owamp_tests == 0 && regular_testing_enabled) {
 		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
 	}
 
 	var title = "Warning: host isn't configured for throughput tests";
 	var dialog_content = "";
 
-	if ((pinger_tests > 0 && pinger_enabled) || (owamp_tests > 0 && psb_bwctl_enabled)) {
+	if (owamp_tests > 0) {
 		dialog_content += "<p>";
-		dialog_content += "<font color='red'>Latency tests are configured. Adding throughput tests will make the latency test results meaningless</font>";
+		dialog_content += "<font color='red'>One-Way Latency tests are configured. Adding throughput tests can interfere with the one-way latency results</font>";
 		dialog_content += "</p>";
 	}
 
-	if (!psb_bwctl_enabled) {
+	if (!regular_testing_enabled) {
 		dialog_content += "<p>";
-		dialog_content += "<font color='red'>perfSONAR-BUOY Throughput Tests are not enabled. You will need to go to the 'Enabled Services' tool, and enable it before the throughput tests will work</font>";
+		dialog_content += "<font color='red'>Regular Testing is not enabled. You will need to go to the 'Enabled Services' tool, and enable it before the throughput tests will work</font>";
 		dialog_content += "</p>";
 	}
 
@@ -537,30 +526,26 @@ function display_owamp_test_dialog(test_id, description, packet_interval, packet
 		return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
 	}
 
-	var psb_bwctl_enabled   = parseInt(dojo.byId('psb_bwctl_enabled').value);
-	var psb_owamp_enabled   = parseInt(dojo.byId('psb_owamp_enabled').value);
-	var pinger_enabled      = parseInt(dojo.byId('pinger_enabled').value);
-	var owamp_tests         = parseInt(dojo.byId('owamp_tests').value);
-	var throughput_tests    = parseInt(dojo.byId('throughput_tests').value);
-	var pinger_tests        = parseInt(dojo.byId('pinger_tests').value);
+	var regular_testing_enabled = parseInt(dojo.byId('regular_testing_enabled').value);
+	var throughput_tests        = parseInt(dojo.byId('throughput_tests').value);
 
 	// if pSB owamp is enabled and there are no throughput tests that will interfere
-	if ((throughput_tests == 0 || !psb_bwctl_enabled) && psb_owamp_enabled) {
+	if (throughput_tests == 0 || regular_testing_enabled) {
 		return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
 	}
 
 	var title = "Warning: host isn't configured for one-way latency tests";
 	var dialog_content = "";
 
-	if (throughput_tests && psb_bwctl_enabled) {
+	if (throughput_tests > 0) {
 		dialog_content += "<p>";
-		dialog_content += "<font color='red'>Throughput tests are configured. Throughput tests will make the latency test results meaningless</font>";
+		dialog_content += "<font color='red'>Throughput tests are configured. Throughput tests can interfere with one-way latency results</font>";
 		dialog_content += "</p>";
 	}
 
-	if (!psb_owamp_enabled) {
+	if (!regular_testing_enabled) {
 		dialog_content += "<p>";
-		dialog_content += "<font color='red'>perfSONAR-BUOY Latency Tests are not enabled. You will need to go to the 'Enabled Services' tool, and enable it before the one-way latency tests will work</font>";
+		dialog_content += "<font color='red'>Regular Testing is not enabled. You will need to go to the 'Enabled Services' tool, and enable it before the one-way latency tests will work</font>";
 		dialog_content += "</p>";
 	}
 

@@ -21,7 +21,9 @@ our $VERSION = sprintf "%d.%d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/g;
 our $CLIENT_TIME_SEND = undef;
 our $CLIENT_TIME_RECEIVE = undef;
 
-our $TIMEOUT = 60,
+# AB: We set the timeout to 1 seconds, because for our use-case (checking
+# loopback), anything longer is likely a problem.
+our $TIMEOUT = 1,
 
 our %MODE = (
       '0'    =>    'reserved',
