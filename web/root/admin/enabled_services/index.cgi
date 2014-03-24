@@ -104,6 +104,7 @@ sub fill_variables {
 		    $service_desc{name}        = $service->{name};
 		    $service_desc{description} = $service->{description};
 		    $service_desc{enabled}     = $service->{enabled};
+		    $service_desc{system}      = $service->{system}?1:0;
 
 		    $vars_services{ $service->{name} } = \%service_desc;
 	    }
