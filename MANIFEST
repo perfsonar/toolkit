@@ -244,6 +244,7 @@ scripts/pinger_toolkit_init.sql
 scripts/pinger_toolkit_upgrade.sql
 scripts/ps-toolkit-migrate-backup.sh
 scripts/ps-toolkit-migrate-restore.sh
+scripts/remove_home_partition
 scripts/restore_config
 scripts/save_config
 scripts/service_watcher
