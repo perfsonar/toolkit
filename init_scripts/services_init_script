@@ -92,6 +92,8 @@ sub setup_links {
                 `chkconfig --list $script &> /dev/null`;
                 next if $? != 0;
                 
+                next if ($service->{system});
+
                 if ($service->{enabled}) {
                     system( "chkconfig --add $script" );
                     system( "chkconfig $script on" );

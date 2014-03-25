@@ -158,6 +158,8 @@ lib/perfSONAR_PS/PINGER_DATATYPES/v2_0/select/Message/Metadata/Parameters.pm
 lib/perfSONAR_PS/PINGER_DATATYPES/v2_0/select/Message/Metadata/Subject.pm
 lib/perfSONAR_PS/RegularTesting/Config.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/Base.pm
+lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondBase.pm
+lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondPing.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/Null.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/PingER.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/TracerouteMA.pm
@@ -194,7 +196,6 @@ lib/perfSONAR_PS/RegularTesting/Utils/CmdRunner.pm
 lib/perfSONAR_PS/RegularTesting/Utils/CmdRunner/Cmd.pm
 lib/perfSONAR_PS/RegularTesting/Utils/ConfigFile.pm
 lib/perfSONAR_PS/RegularTesting/Utils/SerializableObject.pm
-lib/perfSONAR_PS/ServiceWatcher/Base.pm
 lib/perfSONAR_PS/Transport.pm
 lib/perfSONAR_PS/Utils/Closest.pm
 lib/perfSONAR_PS/Utils/Config/BWCTL.pm
@@ -203,8 +204,8 @@ lib/perfSONAR_PS/Utils/Config/OWAMP.pm
 lib/perfSONAR_PS/Utils/DNS.pm
 lib/perfSONAR_PS/Utils/Daemon.pm
 lib/perfSONAR_PS/Utils/GeoIp.pm
-lib/perfSONAR_PS/Utils/Host.pm
 lib/perfSONAR_PS/Utils/HTTPS.pm
+lib/perfSONAR_PS/Utils/Host.pm
 lib/perfSONAR_PS/Utils/NTP.pm
 lib/perfSONAR_PS/Utils/NetLogger.pm
 lib/perfSONAR_PS/Utils/ParameterValidation.pm
@@ -252,8 +253,8 @@ scripts/system_environment/add_dbxml_path
 scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path
 scripts/system_environment/configure_bwctld_log_location
-scripts/system_environment/configure_firewall
 scripts/system_environment/configure_cacti_version
+scripts/system_environment/configure_firewall
 scripts/system_environment/configure_ntpd
 scripts/system_environment/configure_sysctl
 scripts/system_environment/configure_syslog_local5_location

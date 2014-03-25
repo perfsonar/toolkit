@@ -223,11 +223,13 @@ function select_latency_services() {
 	<td>OWAMP</td>
 	<td>Allows clients at other sites to run One-Way Latency tests to this host</td>
 	</tr>
+        [% IF services.ssh.system == 0%]
 	<tr>
 	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="ssh" name="ssh" [% IF services.ssh.enabled %] checked="checked" [% END %] /></td>
 	<td>SSH</td>
 	<td>Allows administrators to remotely connect to this host using SSH</td>
         </tr>
+        [% END %]
 	<tr>
 	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="snmp_ma" name="snmp_ma" [% IF services.snmp_ma.enabled %] checked="checked" [% END %] /></td>
 	<td>SNMP MA</td>
