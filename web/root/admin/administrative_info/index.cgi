@@ -283,7 +283,7 @@ sub subscribe{
         if($value){
                 open(SENDMAIL, "| $sendmail");
                 my $subject = "Subject: Do not reply. NP Toolkit user list subscription\n";
-                my $content = "Please click<a href=\"https://lists.internet2.edu/sympa/subscribe/performance-node-users\"> here</a> to complete the NP Toolkit user list subscription process\n";
+                my $content = "Please click<a href=\"https://lists.internet2.edu/sympa/subscribe/perfsonar-user\"> NP Toolkit user list</a> to complete the subscription process\n";
                 my $send_to = "To: ".$value."\n";
                 my $from = "From: admin\n";
                 print SENDMAIL $from;
