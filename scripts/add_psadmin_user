@@ -40,7 +40,12 @@ if options.auto:
     except:
         sys.exit(0)
 
-    if len(psadmin_grp[3]) > 0:
+    non_root_user = False
+    for user in psadmin_grp[3]:
+        if user != "root":
+            non_root_user = True
+
+    if non_root_user:
         sys.exit(0)
 
     print Internet2Consts.YELLOW + "There isn't a perfSONAR Website Administrator defined." + Internet2Consts.NORMAL
@@ -81,7 +86,33 @@ while not done:
     else:
         done = True
 
-       
+try:
+    psadmin_grp = getgrnam("psadmin")
+except:
+    sys.exit(0)
+
+root_user = False
+for user in psadmin_grp[3]:
+    if user == "root":
+        root_user = True
+
+if root_user:
+    print Internet2Consts.MAGENTA + "The root user can login to the perfSONAR Web Interface. This is insecure." + Internet2Consts.NORMAL
+    ans = raw_input("Remove the root user's ability to login to the web interface? [yes] ").strip().upper()
+    if not ans:
+        ans = "YES"
+
+    remove_login = False
+    if ans[0] == "Y":
+        remove_login = True
+
+    if remove_login:
+        cmd = "/usr/bin/gpasswd -d root psadmin"
+
+        retVal = os.system(cmd)
+        if (retVal != 0):
+            print Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL
+
 print Internet2Consts.NORMAL + "You may now use the " + user + " account to login to the perfSONAR Web Interface on this host." + Internet2Consts.NORMAL
 
 sys.exit(0)
