@@ -256,6 +256,9 @@ rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 rm -rf %{buildroot}
 
 %post
+# Add a group of users who can login to the web ui
+/usr/sbin/groupadd psadmin 2> /dev/null || :
+
 mkdir -p /var/log/perfsonar
 chown perfsonar:perfsonar /var/log/perfsonar
 mkdir -p /var/log/perfsonar/web_admin

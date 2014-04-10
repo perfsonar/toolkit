@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $group_name = "psadmin2";
+my $existing_group = "wheel";
+
+# Check if the psadmin group exists
+unless (getgrnam($group_name)) {
+    my $result = system("/usr/sbin/groupadd", $group_name);
+    if ($result) {
+        die("Couldn't add group $group_name");
+    }
+
+    my ($name,$passwd,$gid,$members) = getgrnam($existing_group);
+    my @members = split(' ', $members);
+    foreach my $member (@members) {
+        system("/usr/sbin/usermod", "-a", "-G", $group_name, $member);
+    }
+}

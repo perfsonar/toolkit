@@ -63,7 +63,7 @@ def add_user():
         cmd = "/usr/sbin/adduser -M --shell /bin/false"
 
     if (is_admin):
-        cmd += " -G wheel"
+        cmd += " -G wheel,psadmin"
 
 
     cmd += " " + user
