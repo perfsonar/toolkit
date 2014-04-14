@@ -1,1 +1,0 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondPing.pm
