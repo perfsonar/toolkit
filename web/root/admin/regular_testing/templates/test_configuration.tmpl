@@ -95,14 +95,22 @@
 </table>
 
 <table class="basic_table">
-<tr><th colspan=3>Test Members</th></tr>
+<tr><th colspan=4>Test Members</th></tr>
 <!-- <tr><th>Address</th><th>Description</th><th>Actions</th></tr> -->
 [% USE test_member_iter = iterator(current_test.members) %]
 [% UNLESS current_test.members.0 %]
-<tr><td width="300px">No Members In Test</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td width="300px">No Members In Test</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
 [% ELSE %]
 [% FOREACH member_info IN current_test.members %]
-<tr><td width="200px">[% member_info.address %]</td><td width="400px">[% member_info.description %]</td><td><a href="#" onClick="remove_test_member('[% current_test.id %]', '[% member_info.id %]')">Delete</a></tr>
+[% IF member_info.test_ipv4 AND member_info.test_ipv6 %]
+    [% SET address_types = "ipv4&nbsp;and&nbsp;ipv6" %]
+[% ELSIF member_info.test_ipv4 %]
+    [% SET address_types = "ipv4&nbsp;only" %]
+[% ELSE %]
+    [% SET address_types = "ipv6&nbsp;only" %]
+[% END %]
+
+<tr><td width="200px">[% member_info.address %]</td><td width="400px">[% member_info.description %]</td><td>[% address_types %]</td><td><a href="#" onClick="edit_test_member('[% current_test.id %]', '[% member_info.id %]', '[%- member_info.address -%]', '[%- member_info.description -%]', [% member_info.can_test_ipv4 %], [% member_info.test_ipv4 %], [% member_info.can_test_ipv6 %], [% member_info.test_ipv6 %])">Edit</a> <a href="#" onClick="remove_test_member('[% current_test.id %]', '[% member_info.id %]')">Delete</a></tr>
 [% END %]
 [% END %]
 </table>

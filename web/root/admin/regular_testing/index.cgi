@@ -159,6 +159,7 @@ my $ajax = CGI::Ajax->new(
     'update_bwctl_throughput_test' => \&update_bwctl_throughput_test,
 
     'add_member_to_test'      => \&add_member_to_test,
+    'update_test_member'      => \&update_test_member,
     'remove_member_from_test' => \&remove_member_from_test,
 
     'delete_test' => \&delete_test,
@@ -310,6 +311,43 @@ sub fill_variables_tests {
         }
         else {
             $vars->{current_test} = $res;
+
+            # Check whether or not the test members can do ipv4 or ipv6 tests
+            foreach my $member (@{ $res->{members} }) {
+                next if ($member->{can_test_ipv4} or $member->{can_test_ipv6});
+
+                my $addr = $member->{address};
+
+                my ($ipv4, $ipv6) = (0, 0);
+
+                # Discover the hostname, and figure out if ipv4 or ipv6 testing should
+                # be done.
+                if ( is_ipv4( $addr ) ) {
+                    $ipv4 = 1;
+                }
+                elsif ( &Net::IP::ip_is_ipv6( $addr ) ) {
+                    $ipv6 = 1;
+                }
+                elsif ( is_hostname( $addr ) ) {
+                    my @host_addrs = resolve_address($addr);
+                    foreach my $host_addr (@host_addrs) {
+                        if ( &Net::IP::ip_is_ipv6( $host_addr ) ) {
+                            $ipv6 = 1;
+                        }
+                        elsif ( is_ipv4( $host_addr ) ) {
+                            $ipv4 = 1;
+                        }
+                    }
+
+                    if (scalar(@host_addrs) == 0) {
+                            $ipv6 = 1;
+                            $ipv4 = 1;
+                    }
+                }
+
+                $member->{can_test_ipv4} = $ipv4;
+                $member->{can_test_ipv6} = $ipv6;
+            }
         }
     }
 
@@ -948,65 +986,66 @@ sub update_pinger_test {
 }
 
 sub add_member_to_test {
-    $error_msg = "";
     my ( $test_id, $address, $port, $description ) = @_;
-
-    my @addressList = split(',', $address);
 
     my %hostname;
 
-    foreach my $addr(@addressList){
+    my @addresses = split(',', $address);
+    foreach my $addr (@addresses) {
         $addr = $1 if ($addr =~ /^\[(.*)\]$/);
 
-            if ( is_ipv4( $addr ) ) {
-                $hostname{$addr} = reverse_dns( $addr );
-         }
+        my ($host, $ipv4, $ipv6);
+
+        # Discover the hostname, and figure out if ipv4 or ipv6 testing should
+        # be done.
+        if ( is_ipv4( $addr ) ) {
+            $host = reverse_dns( $addr );
+            $ipv4 = 1;
+        }
         elsif ( &Net::IP::ip_is_ipv6( $addr ) ) {
-                 $hostname{$addr} = reverse_dns( $addr );
+            $host = reverse_dns( $addr );
+            $ipv6 = 1;
         }
         elsif ( is_hostname( $addr ) ) {
-                $hostname{$addr} = $addr;
-         }
-        else {
-                $error_msg = "Can't parse the specified address";
-                return display_body();
-        }
-
-    }
-
-   my %status;
-   my %res;
-   foreach my $addr(@addressList){
-            my $new_description = $description;
-
-            $new_description = $hostname{$addr} if ( not $description and $hostname{$addr} );
-            $new_description = $addr  if ( not $description and $addr );
-
-            $logger->debug( "Adding address: $addr Port: $port Description: $description" );
-
-            ( $status{$addr}, $res{$addr} ) = $testing_conf->add_test_member(
-                {
-                        test_id     => $test_id,
-                        address     => $addr,
-                        port        => $port,
-                        description => $description,
-                        sender      => 1,
-                        receiver    => 1,
+            $host = $addr;
+            my @host_addrs = resolve_address($addr);
+            foreach my $host_addr (@host_addrs) {
+                if ( &Net::IP::ip_is_ipv6( $host_addr ) ) {
+                    $ipv6 = 1;
                 }
-             );
-
-   }
-
-   foreach my $addr (@addressList){
-        if ( $status{$addr} != 0 ) {
-                $error_msg = "Failed to add test: $res{$addr}\n";
-                #return display_body();
+                elsif ( is_ipv4( $host_addr ) ) {
+                    $ipv4 = 1;
+                }
+            }
         }
-   }
+        else {
+            $error_msg = "Can't parse the specified address: '$addr'";
+            return display_body();
+        }
 
-   if($error_msg ne ""){
-        return display_body();
-   }
+        # Set the description
+        my $new_description = $description;
+        $new_description = $host unless $new_description;
+        $new_description = $addr unless $new_description;
+
+        $logger->debug( "Adding address: $addr Port: $port Description: $description" );
+
+        my ( $status, $res ) = $testing_conf->add_test_member({
+                    test_id     => $test_id,
+                    address     => $addr,
+                    port        => $port,
+                    description => $description,
+                    sender      => 1,
+                    receiver    => 1,
+                    test_ipv4   => $ipv4,
+                    test_ipv6   => $ipv6,
+        });
+
+        if ( $status != 0 ) {
+            $error_msg = "Failed to add member to test: $res";
+            return display_body();
+        }
+    }
 
     $is_modified = 1;
 
@@ -1016,6 +1055,33 @@ sub add_member_to_test {
     return display_body();
 }
 
+sub update_test_member {
+    my ($test_id, $member_id, $address, $description, $test_ipv4, $test_ipv6) = @_;
+
+    $test_ipv4 = 0 if ($test_ipv4 and $test_ipv4 eq "false");
+    $test_ipv6 = 0 if ($test_ipv6 and $test_ipv6 eq "false");
+
+    my ( $status, $res ) = $testing_conf->update_test_member({
+                test_id     => $test_id,
+                member_id   => $member_id,
+                address     => $address,
+                description => $description,
+                test_ipv4   => $test_ipv4,
+                test_ipv6   => $test_ipv6,
+    });
+
+    if ( $status != 0 ) {
+        $error_msg = "Problem updating test member: $res";
+        return display_body();
+    }
+
+    $is_modified = 1;
+
+    save_state();
+
+    $status_msg = "Test member updated";
+    return display_body();
+}
 
 sub remove_member_from_test {
     my ( $test_id, $member_id ) = @_;

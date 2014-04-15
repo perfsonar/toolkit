@@ -256,6 +256,9 @@ rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 rm -rf %{buildroot}
 
 %post
+# Add a group of users who can login to the web ui
+/usr/sbin/groupadd psadmin 2> /dev/null || :
+
 mkdir -p /var/log/perfsonar
 chown perfsonar:perfsonar /var/log/perfsonar
 mkdir -p /var/log/perfsonar/web_admin
@@ -394,6 +397,11 @@ for script in %{install_base}/scripts/system_environment/*; do
 	fi
 done
 
+# Add a script to inspire them to create a 'psadmin' user if they don't already have one
+cat >> /root/.bashrc <<EOF
+# Run the add_psadmin_user script to ensure that a psadmin user has been created
+/opt/perfsonar_ps/toolkit/scripts/add_psadmin_user --auto
+EOF
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)

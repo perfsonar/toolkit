@@ -159,7 +159,9 @@ lib/perfSONAR_PS/PINGER_DATATYPES/v2_0/select/Message/Metadata/Subject.pm
 lib/perfSONAR_PS/RegularTesting/Config.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/Base.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondBase.pm
-lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondPing.pm
+lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondLatency.pm
+lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondThroughput.pm
+lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondTraceroute.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/Null.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/PingER.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/TracerouteMA.pm
@@ -216,6 +218,7 @@ python_lib/Internet2Commands.py
 python_lib/Internet2Consts.py
 python_lib/Internet2Lib.py
 scripts/NPToolkit.version
+scripts/add_psadmin_user
 scripts/apache-toolkit_web_gui.conf
 scripts/cacti_toolkit_init.sql
 scripts/clean_owampd
@@ -276,6 +279,7 @@ scripts/temp_root.img
 scripts/update_administrative_info.pl
 scripts/upgrade/upgrade_3.1.x.sh
 scripts/upgrade/upgrade_3.2.x.sh
+scripts/upgrade/upgrade_apache_admin
 scripts/upgrade/upgrade_conman_fix.sh
 scripts/upgrade/upgrade_databases.sh
 scripts/upgrade/upgrade_fix_cert_serial.sh

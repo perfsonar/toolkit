@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $group_name = "psadmin";
+my $existing_group = "wheel";
+my $apache_conf = "/etc/httpd/conf.d/apache-toolkit_web_gui.conf";
+
+# Check if the psadmin group exists
+unless (getgrnam($group_name)) {
+    my $result = system("/usr/sbin/groupadd", $group_name);
+    if ($result) {
+        die("Couldn't add group $group_name");
+    }
+
+    my ($name,$passwd,$gid,$members) = getgrnam($existing_group);
+    my @members = split(' ', $members);
+    foreach my $member (@members) {
+        system("/usr/sbin/usermod", "-a", "-G", $group_name, $member);
+    }
+}
+
+# Make sure that the apache toolkit config file doesn't have the
+my $result = system("sed", "-i", "s|Require group wheel admin|Require group $group_name|g", $apache_conf);
+if ($result != 0) {
+    die("Problem removing wheel group from apache config file $apache_conf");
+}

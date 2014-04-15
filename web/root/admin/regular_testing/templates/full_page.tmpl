@@ -35,6 +35,11 @@ function add_test_member(test_id, address, port, description) {
 	handle_cgi_ajax_call(null, 'Problem adding host to test', true, 'add_member_to_test', [ test_id, address, port, description ]);
 }
 
+function modify_test_member(test_id, member_id, address, description, test_ipv4, test_ipv6) {
+	handle_cgi_ajax_call(null, 'Problem adding host to test', true, 'update_test_member', [ test_id, member_id, address, description, test_ipv4, test_ipv6 ]);
+}
+
+
 function remove_test_member(test_id, member_id) {
 	handle_cgi_ajax_call(null, 'Problem adding host to test', true, 'remove_member_from_test', [ test_id, member_id ]);
 }
@@ -137,6 +142,85 @@ function minimal_granularity(time) {
 	}
 
 	return granularity;
+}
+
+function edit_test_member(test_id, member_id, address, description, can_test_ipv4, test_ipv4, can_test_ipv6, test_ipv6) {
+	var title = "Configure Test Member";
+
+	var dialog_id = "edit_test_member_dialog";
+
+	var dialog_content = "";
+	dialog_content += "<div id='configure_test_member_status' style='color:red'></div>";
+	dialog_content += "<table>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Address</td>";
+	dialog_content += "<td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All test members must have an address' id='configure_test_member_address' size='100' value='"+address+"'></input></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<tr>";
+	dialog_content += "<td>Description</td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' id='configure_test_member_description' size='100' value='"+description+"'></input></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<td>Test IPv4</td>";
+	dialog_content += "<td colspan=2><input type='checkbox' dojoType='dijit.form.CheckBox' id='configure_test_member_ipv4' "; if (test_ipv4 == 1) { dialog_content += " checked='checked'"; }; dialog_content+="/></td>";
+	dialog_content += "</tr>";
+	dialog_content += "<td>Test IPv6</td>";
+	dialog_content += "<td colspan=2><input type='checkbox' dojoType='dijit.form.CheckBox' id='configure_test_member_ipv6' "; if (test_ipv6 == 1) { dialog_content += " checked='checked'"; };  dialog_content+="/></td>";
+	dialog_content += "</tr>";
+	dialog_content += "</table>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_member_save'>Set</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='configure_test_member_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: dialog_id });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', dialog_id));
+	dojo.connect(dijit.byId('configure_test_member_cancel'), 'onClick', function() { dijit.byId(dialog_id).hide(); });
+
+        var check_addresses_fn = dojo.hitch(null, function(address, can_test_ipv4, can_test_ipv6) {
+		var curr_address     = dijit.byId('configure_test_member_address').attr('value');
+		var test_ipv4   = dijit.byId('configure_test_member_ipv4').checked;
+		var test_ipv6   = dijit.byId('configure_test_member_ipv6').checked;
+
+                error_msg = "";
+                if (curr_address == address) {
+			if (test_ipv4 && !can_test_ipv4) {
+				error_msg += address + " does not have an IPv4 address.";
+			}
+
+			if (test_ipv6 && !can_test_ipv6) {
+				error_msg += address + " does not have an IPv6 address.";
+			}
+                }
+
+                if (!test_ipv4 && !test_ipv6) {
+			error_msg = "Must specify an address type to use";
+                }
+
+		dojo.byId('configure_test_member_status').innerHTML = error_msg;
+        }, address, can_test_ipv4, can_test_ipv6);
+
+	dojo.connect(dijit.byId('configure_test_member_ipv4'), 'onChange', check_addresses_fn);
+	dojo.connect(dijit.byId('configure_test_member_ipv6'), 'onChange', check_addresses_fn);
+
+	dojo.connect(dijit.byId('configure_test_member_save'), 'onClick', dojo.hitch(null,
+				function(dialog_id, test_id, member_id) {
+					var address     = dijit.byId('configure_test_member_address').attr('value');
+					var description = dijit.byId('configure_test_member_description').attr('value');
+					var test_ipv4   = dijit.byId('configure_test_member_ipv4').checked;
+					var test_ipv6   = dijit.byId('configure_test_member_ipv6').checked;
+					if (test_ipv4 || test_ipv6) {
+						modify_test_member(test_id, member_id, address, description, test_ipv4, test_ipv6);
+						dijit.byId(dialog_id).hide();
+					}
+					else {
+						dojo.byId('configure_test_member_status').innerHTML = "Must specify an address type to use";
+					}
+				},
+				dialog_id, test_id, member_id)
+			);
+
+	check_addresses_fn();
+	dialog.show();
 }
 
 function display_owamp_port_configuration_dialog(min_port, max_port) {
