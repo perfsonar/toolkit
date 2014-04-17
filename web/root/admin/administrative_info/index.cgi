@@ -25,6 +25,7 @@ use perfSONAR_PS::Client::gLS::Keywords;
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
+our $error_class = "perfSONAR-error";
 our %conf = $conf_obj->getall;
 
 $conf{sessions_directory} = "/tmp" unless ( $conf{sessions_directory} );
@@ -112,7 +113,7 @@ my $html;
 
 $tt->process( "full_page.tmpl", \%vars, \$html ) or die $tt->error();
 
-print $ajax->build_html( $cgi, $html, { '-Expires' => '1d' } );
+print $ajax->build_html( $cgi, $html, { '-Expires' => '-1d' } );
 
 sub display_body {
     my %vars = ();
@@ -186,15 +187,25 @@ sub fill_variables {
     $vars->{known_keywords_check_time} = $known_keywords_age;
 
     $vars->{organization_name}   = $administrative_info_conf->get_organization_name();
+    set_error_variables( $vars, 'organization_name' );
     $vars->{administrator_name}  = $administrative_info_conf->get_administrator_name();
+    set_error_variables( $vars, 'administrator_name' );
     $vars->{administrator_email} = $administrative_info_conf->get_administrator_email();
+    set_error_variables( $vars, 'administrator_email' );
     $vars->{location}            = $administrative_info_conf->get_location();
+    set_error_variables( $vars, 'location' );
     $vars->{city}            = $administrative_info_conf->get_city();
+    set_error_variables( $vars, 'city' );
     $vars->{state}            = $administrative_info_conf->get_state();
+    set_error_variables( $vars, 'state' );
     $vars->{country}            = $administrative_info_conf->get_country();
+    set_error_variables( $vars, 'country' );
     $vars->{zipcode}            = $administrative_info_conf->get_zipcode();
+    set_error_variables( $vars, 'zipcode' );
     $vars->{latitude}            = $administrative_info_conf->get_latitude();
+    set_error_variables( $vars, 'latitude' );
     $vars->{longitude}            = $administrative_info_conf->get_longitude();
+    set_error_variables( $vars, 'longitude' );
     
     #if latitude and longitude are empty then populate lat,long using geoip
     if((!$vars->{latitude} || $vars->{latitude} eq "") && (!$vars->{longitude} || $vars->{longitude} eq "")){
@@ -221,10 +232,24 @@ sub fill_variables {
     $vars->{configured_keywords} = \@display_keywords;
     $vars->{status_message}      = $status_msg;
     $vars->{error_message}       = $error_msg;
+    if (!$administrative_info_conf->is_complete()) {
+        $vars->{error_message_body}  = "IMPORTANT - Some elements on this page are not completed. Please complete the fields in red.</p>";
+    }
 
     $logger->debug("Variables: ".Dumper(\%vars));
 
     return 0;
+}
+
+# Helper function for set_error_variables, in case we want to have 
+# different displays based on whether a field has a value
+sub set_error_variables {
+    my ($vars, $field_name) = @_;
+
+    my $required_indicator = '<span class="' . $error_class . '"> * </span>';
+    $vars->{"${field_name}_class"} = $error_class if ($administrative_info_conf->field_empty( { field_name => $field_name}) );
+    $vars->{"${field_name}_required"} = $required_indicator if ($administrative_info_conf->field_empty( { field_name => $field_name}) );
+    $vars->{required_indicator} = $required_indicator;
 }
 
 sub set_host_information  {

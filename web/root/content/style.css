@@ -513,3 +513,8 @@ a[rel="external"], a.external {
 	background: url(/toolkit/content/images/external.png) no-repeat 100% 50%;
 	zoom: 1;
 }
+
+.perfSONAR-error, .basic_table td.perfSONAR-error {
+    color:#ff0000;
+
+}
