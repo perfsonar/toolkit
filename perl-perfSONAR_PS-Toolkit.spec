@@ -446,6 +446,7 @@ EOF
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_5}
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_bwctl.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_owamp.sh
