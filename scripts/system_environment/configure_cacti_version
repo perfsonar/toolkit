@@ -1,6 +1,0 @@
-#!/bin/bash
-
-#change this when you upgrade cacti
-VERSION="0.8.8b"
-
-mysql -u root -e "UPDATE cacti.version SET cacti='${VERSION}';"
