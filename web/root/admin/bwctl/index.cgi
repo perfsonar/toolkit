@@ -230,8 +230,6 @@ sub save_config {
     my ($status, $res) = $bwctl_conf->save( { restart_services => 1 } );
     if ($status != 0) {
         $error_msg = "Problem saving configuration: $res";
-        #$is_modified = 1;
-        #save_state();
         return display_body();
     } else {
         $status_msg = "Configuration Saved And Services Restarted";
@@ -554,7 +552,6 @@ sub reset_state {
 
     $bwctl_conf = perfSONAR_PS::NPToolkit::Config::BWCTL->new();
     $res = $bwctl_conf->init( { bwctld_limits => $conf{bwctld_limits}, bwctld_keys => $conf{bwctld_keys} } );
-    $logger->info( Dumper $bwctl_conf );
     if ( $res != 0 ) {
         die( "Couldn't initialize BWCTL Configuration" . Dumper $bwctl_conf );
     }
