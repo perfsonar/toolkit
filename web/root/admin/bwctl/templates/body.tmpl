@@ -2,6 +2,9 @@
 <div class="subTitle1">BWCTL Configuration Tool</div>
 
 <center><font color="red"><div id="web_admin_error">[% error_message %]</div></font></center>
+[% IF warning_message %]
+<div class="warning status">[% warning_message %]</div>
+[% END %]
 <center><div id="web_admin_status">[% status_message %]</div></center>
 
 [% IF other_changes %]

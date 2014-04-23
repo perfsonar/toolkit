@@ -313,7 +313,7 @@ function display_edit_group_dialog(group_id, description, allow_tcp, allow_udp, 
 											var allow_udp = dijit.byId('configure_group_allow_udp').checked;
 											var bandwidth = dijit.byId('configure_group_bandwidth').attr('value');
 											var bandwidth_unit = dijit.byId('configure_group_bandwidth_unit').attr('value');
-											var duration = dijit.byId('configure_group_duration').attr('value');
+											var duration = dijit.byId('configure_group_duration').attr('value') || 0;
 											var event_horizon = dijit.byId('configure_group_event_horizon').attr('value');
 											var allow_open_mode = dijit.byId('configure_group_allow_open_mode').attr('value');
 											var pending = dijit.byId('configure_group_pending').attr('value');

@@ -60,9 +60,9 @@ else {
     $session = CGI::Session->new( "driver:File;serializer:Storable", $cgi, { Directory => $conf{sessions_directory} } );
 }
 
-die( "Couldn't instantiate session: " . CGI::Session->errstr() ) unless ( $session );
+die( "Couldn't instantiate session: " . CGI::Session->errstr() . Dumper %conf ) unless ( $session );
 
-my ( $bwctl_conf, $advanced_mode, $status_msg, $error_msg, $other_changes, $is_modified, $initial_state_time );
+my ( $bwctl_conf, $advanced_mode, $status_msg, $error_msg, $warning_msg, $other_changes, $is_modified, $initial_state_time );
 
 if ( $session and not $session->is_expired and $session->param( "bwctl_conf" ) ) {
     $bwctl_conf = perfSONAR_PS::NPToolkit::Config::BWCTL->new( { saved_state => $session->param( "bwctl_conf" ) } );
@@ -205,6 +205,7 @@ sub fill_variables {
     $vars->{is_modified}    = $is_modified;
     $vars->{status_message} = $status_msg;
     $vars->{error_message}  = $error_msg;
+    $vars->{warning_message}  = $warning_msg;
     $vars->{other_changes}  = $other_changes;
 
     return 0;
@@ -228,11 +229,12 @@ sub display_body {
 sub save_config {
     my ($status, $res) = $bwctl_conf->save( { restart_services => 1 } );
     if ($status != 0) {
-    $error_msg = "Problem saving configuration: $res";
+        $error_msg = "Problem saving configuration: $res";
+        return display_body();
     } else {
         $status_msg = "Configuration Saved And Services Restarted";
-    $is_modified = 0;
-    $initial_state_time = $bwctl_conf->last_modified();
+        $is_modified = 0;
+        $initial_state_time = $bwctl_conf->last_modified();
     }
 
     save_state();
@@ -550,9 +552,8 @@ sub reset_state {
 
     $bwctl_conf = perfSONAR_PS::NPToolkit::Config::BWCTL->new();
     $res = $bwctl_conf->init( { bwctld_limits => $conf{bwctld_limits}, bwctld_keys => $conf{bwctld_keys} } );
-
     if ( $res != 0 ) {
-        die( "Couldn't initialize BWCTL Configuration" );
+        die( "Couldn't initialize BWCTL Configuration" . Dumper $bwctl_conf );
     }
 
     $is_modified = 0;

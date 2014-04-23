@@ -2,6 +2,9 @@
 <div class="subTitle1">Administrative Information Configuration Tool</div>
 
 <center><font color="red"><div id="web_admin_error">[% error_message %]</div></font></center>
+[% IF warning_message %]
+<div class="warning status">[% warning_message %]</div>
+[% END %]
 <center><div id="web_admin_status">[% status_message %]</div></center>
 
 <input type="hidden" id="nptoolkit_is_modified" value="[% is_modified %]" />
@@ -19,40 +22,38 @@
 <input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save_config()">
 <input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset_config()">
 
-<p class="perfSONAR-error">[% error_message_body  %]</p>
-
 <table class="basic_table">
         <tr>
         <th style="width: 200px">Host Information</th><th style="width: 200px; text-align: right"><a href="#" onClick="display_modify_host_information_dialog()">Edit</a></th>
         </tr>
+        <tr class="[% organization_name_class %]">
+        <td>Organization Name</td><td>[% organization_name %]</td>
         <tr>
-        <td class="[% organization_name_class %]">Organization Name</td><td>[% organization_name %]</td>
-        <tr>
-        <tr>
-        <td class="[% city_class %]">City</td><td>[% city %]</td>
+        <tr class="[% city_class %]">
+        <td>City</td><td>[% city %]</td>
         </tr>
-        <tr>
-        <td class="[% state_class %]">State</td><td>[% state %]</td>
+        <tr class="[% state_class %]">
+        <td>State</td><td>[% state %]</td>
         </tr>
-        <tr>
-        <td class="[% country_class %]">Country (ISO3166 2 letter codes)</td><td>[% country %]</td>
+        <tr class="[% country_class %]">
+        <td>Country (ISO3166 2 letter codes)</td><td>[% country %]</td>
         </tr>
-        <tr>
-        <td class="[% zipcode_class %]">Zip Code</td><td>[% zipcode %]</td>
-        </tr>
-        <tr></tr>
-        <tr>
-        <td class="[% administrator_name_class %]">Administrator Name</td><td>[% administrator_name %]</td>
-        </tr>
-        <tr>
-        <td class="[% administrator_email_class %]">Administrator Email</td><td>[% administrator_email %]</td>
+        <tr class="[% zipcode_class %]">
+        <td>Zip Code</td><td>[% zipcode %]</td>
         </tr>
         <tr></tr>
-        <tr>
-        <td class="[% latitude_class %]">Latitude (-90 to 90) </td><td>[% latitude %]</td>
+        <tr class="[% administrator_name_class %]">
+        <td>Administrator Name</td><td>[% administrator_name %]</td>
         </tr>
-        <tr>
-        <td class="[% longitude_class %]">Longitude (-180 to 180)</td><td>[% longitude %]</td>
+        <tr class="[% administrator_email_class %]">
+        <td>Administrator Email</td><td>[% administrator_email %]</td>
+        </tr>
+        <tr></tr>
+        <tr class="[% latitude_class %]">
+        <td>Latitude (-90 to 90) </td><td>[% latitude %]</td>
+        </tr>
+        <tr class="[% longitude_class %]">
+        <td>Longitude (-180 to 180)</td><td>[% longitude %]</td>
         </tr>
 </table>
 

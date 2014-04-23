@@ -25,7 +25,7 @@ use perfSONAR_PS::Client::gLS::Keywords;
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
-our $error_class = "perfSONAR-error";
+our $warning_class = "warning";
 our %conf = $conf_obj->getall;
 
 $conf{sessions_directory} = "/tmp" unless ( $conf{sessions_directory} );
@@ -233,7 +233,7 @@ sub fill_variables {
     $vars->{status_message}      = $status_msg;
     $vars->{error_message}       = $error_msg;
     if (!$administrative_info_conf->is_complete()) {
-        $vars->{error_message_body}  = "IMPORTANT - Some elements on this page are not completed. Please complete the fields in red.</p>";
+        $vars->{warning_message}  = "IMPORTANT - Some elements on this page are not completed. Please complete the fields highlighted below.";
     }
 
     $logger->debug("Variables: ".Dumper(\%vars));
@@ -246,8 +246,8 @@ sub fill_variables {
 sub set_error_variables {
     my ($vars, $field_name) = @_;
 
-    my $required_indicator = '<span class="' . $error_class . '"> * </span>';
-    $vars->{"${field_name}_class"} = $error_class if ($administrative_info_conf->field_empty( { field_name => $field_name}) );
+    my $required_indicator = '<span class="' . $warning_class . '"> * </span>';
+    $vars->{"${field_name}_class"} = $warning_class if ($administrative_info_conf->field_empty( { field_name => $field_name}) );
     $vars->{"${field_name}_required"} = $required_indicator if ($administrative_info_conf->field_empty( { field_name => $field_name}) );
     $vars->{required_indicator} = $required_indicator;
 }
