@@ -104,6 +104,7 @@ Requires:		perl-perfSONAR_PS-perfSONARBUOY-config
 Requires:		perl-perfSONAR_PS-perfSONARBUOY-server
 Requires:		perl-perfSONAR_PS-serviceTest
 Requires:		perl-perfSONAR_PS-RegularTesting
+Requires:		perl-perfSONAR_PS-MeshConfig-JSONBuilder
 
 # the following dependencies are needed by cacti
 Requires:		cacti
