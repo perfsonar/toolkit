@@ -72,6 +72,9 @@ if [ -z "`grep psadmin $CACTI_APACHE`" ]; then
     sed -i 's|^\s*Allow from localhost|Allow from all\nAuthShadow on\nAuthType Basic\nAuthName "Password Required"\nRequire group psadmin|' $CACTI_APACHE
 fi
 
+# Make sure that the cacti user (which the cron job gets run as) owns any RRDs
+chown cacti:cacti /var/lib/cacti/rra/*rrd
+
 if [ "${STOP_MYSQL}" = "1" ]; then
     /etc/init.d/mysqld stop
 fi
