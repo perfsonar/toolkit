@@ -1,0 +1,77 @@
+#!/bin/bash
+#
+# conifgure_cacti:
+#   This script sets up a default configuration for cacti:
+#       A cacti database is created
+#       Cacti is placed behind https/http authentication
+#       Cacti is setup so that it requires a 'psadmin' user to authenticate
+#
+
+DATABASE=cacti
+PASSWORD=`openssl rand -base64 32`;
+CACTI_DB_SETTINGS=/etc/cacti/db.php
+CACTI_CRON=/etc/cron.d/cacti
+CACTI_APACHE=/etc/httpd/conf.d/cacti.conf
+
+/etc/init.d/mysqld status
+if [ $? != 0 ]; then
+    /etc/init.d/mysqld start
+    STOP_MYSQL=1
+fi
+
+`mysqlshow $DATABASE &> /dev/null`;
+if [ $? != 0 ]; then
+    for cacti_sql in /usr/share/doc/cacti*/cacti.sql; do
+        CACTI_SQL=$cacti_sql
+    done
+
+    if [ -z "$CACTI_SQL" ]; then
+        echo "Couldn't find cacti SQL"
+        exit -1
+    fi
+
+    # Create the cacti database and pre-populate some settings so that it uses http
+    # authentication, and that authenticated users are admins
+    mysqladmin create $DATABASE
+    mysql $DATABASE < $CACTI_SQL
+    mysql -e "INSERT INTO settings (name, value) VALUES ('auth_method', 2);" $DATABASE   # Set cacti to use HTTP Authentication
+    mysql -e "INSERT INTO settings (name, value) VALUES ('user_template', 'admin');" $DATABASE   # Set the user logins to be admin users
+fi
+
+# Setup the cacti user
+mysql -e "GRANT ALL ON * TO cactiuser@localhost IDENTIFIED BY '$PASSWORD'" $DATABASE
+
+# Set the new database and password
+sed -i "s|database_default.*|database_default = \"$DATABASE\";|" $CACTI_DB_SETTINGS
+sed -i "s|database_password.*|database_password = \"$PASSWORD\";|" $CACTI_DB_SETTINGS
+
+# Uncomment the url path
+sed -i 's|//\$url_path|$url_path|' $CACTI_DB_SETTINGS
+
+# Uncomment the commented-out poller
+sed -i 's|#\(.*poller.php.*\)|\1|' $CACTI_CRON
+
+# Move apache behind https
+if [ -z "`grep RewriteEngine $CACTI_APACHE`" ]; then
+cat > $CACTI_APACHE.new << EOF
+# Redirect cacti to behind https
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteCond %{REQUEST_URI} !=/cacti/graph_view.php
+RewriteRule ^/cacti.* https://%{SERVER_NAME}%{REQUEST_URI} [R,L]
+EOF
+
+cat $CACTI_APACHE >> $CACTI_APACHE.new
+mv $CACTI_APACHE $CACTI_APACHE.back
+mv $CACTI_APACHE.new $CACTI_APACHE
+fi
+
+# Require a 'psadmin' user to login
+if [ -z "`grep psadmin $CACTI_APACHE`" ]; then
+    sed -i 's|^\s*Require host localhost|AuthShadow on\nAuthType Basic\nAuthName "Password Required"\nRequire group psadmin|' $CACTI_APACHE
+    sed -i 's|^\s*Allow from localhost|Allow from all\nAuthShadow on\nAuthType Basic\nAuthName "Password Required"\nRequire group psadmin|' $CACTI_APACHE
+fi
+
+if [ "${STOP_MYSQL}" = "1" ]; then
+    /etc/init.d/mysqld stop
+fi

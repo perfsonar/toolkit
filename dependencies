@@ -35,6 +35,7 @@ FindBin
 Getopt::Long
 HTML::Entities
 HTTP::Response
+Hash::Merge
 IO::File
 IO::Interface
 IO::Select
