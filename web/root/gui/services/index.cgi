@@ -181,6 +181,7 @@ sub new{
     return $self;
 }
 
+# TODO: use this for drawing the nav and doing checks on the NTP page
 package perfSONAR_PS::HostInfo::NTP;
 use Net::NTP;
 use base 'perfSONAR_PS::HostInfo::Base';

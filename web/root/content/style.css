@@ -308,12 +308,12 @@ color: rgb(255, 255, 255);
 	line-height: 20px;
 	display: block;
 	margin: 0px;
-	 border-top: solid 1px rgb(200, 200, 200);
-	 border-left: solid 7px #bcd7f1;
+	border-top: solid 1px rgb(200, 200, 200);
+	border-left: solid 7px #bcd7f1;
 	color: rgb(60, 60, 60);
-       text-decoration: none;
-       font-size: 12px;
-       white-space: normal;
+    text-decoration: none;
+    font-size: 12px;
+    white-space: normal;
 }
 
 .leftSideNavigation li a.selected {
@@ -325,11 +325,15 @@ color: rgb(255, 255, 255);
 	margin: 0px;
 	border-top: solid 1px rgb(200, 200, 200);
 	border-left: solid 7px rgb(156, 186, 214);
-        background-color: rgb(156, 186, 214);
-        color: rgb(60, 60, 60);
-        text-decoration: none;
-        font-size: 12px;
-        white-space: normal;
+    background-color: rgb(156, 186, 214); 
+    color: rgb(60, 60, 60);
+    text-decoration: none;
+    font-size: 12px;
+    white-space: normal;
+}
+
+.leftSideNavigation li.warning a.selected { 
+    border-left: solid 7px #FEEFB3;
 }
 
 .leftSideNavigation li a:hover {
@@ -519,12 +523,36 @@ a[rel="external"], a.external {
 
 }
 
+
+.info {
+    color: #00529B;
+    background-color: #BDE5F8;
+    background-image: url('info.png');
+}
+
+.success {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+}
+.success.status {
+    background-image: url('/toolkit/content/images/icon_success.png');
+}
+
 .warning {
     color: #9F6000;
     background-color: #FEEFB3;
 }
 .warning.status {
     background-image: url('/toolkit/content/images/icon_warning.png');
+}
+
+.error {
+    color: #D8000C;
+    background-color: #FFBABA;
+}
+
+.error.status {
+    background-image: url('/toolkit/content/images/icon_error.png');
 }
 
 .status {

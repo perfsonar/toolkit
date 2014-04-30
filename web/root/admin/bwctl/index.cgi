@@ -21,6 +21,7 @@ my $basedir = "$RealBin/";
 use lib "$RealBin/../../../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::BWCTL;
+use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -207,6 +208,8 @@ sub fill_variables {
     $vars->{error_message}  = $error_msg;
     $vars->{warning_message}  = $warning_msg;
     $vars->{other_changes}  = $other_changes;
+
+    $vars = set_sidebar_vars( {vars => $vars} );
 
     return 0;
 }
