@@ -20,6 +20,7 @@ my $basedir = "$RealBin/";
 use lib "$RealBin/../../../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::Services;
+use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -75,7 +76,8 @@ sub main {
 
 	$vars{self_url}   = $cgi->self_url();
 
-	fill_variables( \%vars );
+    fill_variables( \%vars );    
+    set_sidebar_vars( { vars => \%vars } );
 
 	my $html;
 

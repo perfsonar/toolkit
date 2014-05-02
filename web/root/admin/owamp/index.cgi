@@ -21,6 +21,7 @@ my $basedir = "$RealBin/";
 use lib "$RealBin/../../../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::OWAMP;
+use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -120,7 +121,7 @@ my %vars = ();
 $vars{self_url}   = $cgi->self_url();
 $vars{session_id} = $session->id();
 fill_variables( \%vars );
-
+set_sidebar_vars( { vars => \%vars } );
 my $html;
 
 $tt->process( "full_page.tmpl", \%vars, \$html ) or die $tt->error();

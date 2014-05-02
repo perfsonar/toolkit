@@ -20,11 +20,13 @@ use Template;
 use CGI;
 use Log::Log4perl qw(get_logger :easy :levels);
 use Config::General;
- 
+
 use FindBin qw($RealBin);
 my $basedir = "$RealBin/";
 use lib "$RealBin/../../../../lib";
 
+
+use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 my $CGI      = CGI->new();
 
 my $config_file = $basedir . '/etc/web_admin.conf';
@@ -183,6 +185,8 @@ my %vars = (
     daemons     => \@daemonList,
     services    => \@serviceList
 );
+
+set_sidebar_vars( { vars => \%vars } );
 
 $tt->process( "directory.tmpl", \%vars, \$html ) or die $tt->error();
 

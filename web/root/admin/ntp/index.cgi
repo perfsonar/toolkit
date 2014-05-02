@@ -22,6 +22,7 @@ use lib "$RealBin/../../../../lib";
 use perfSONAR_PS::NPToolkit::Config::NTP;
 use perfSONAR_PS::Utils::NTP qw( ping );
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address );
+use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
 use Data::Validate::IP qw(is_ipv4);
 use Net::IP;
@@ -118,6 +119,7 @@ my %vars = ();
 $vars{self_url}   = $cgi->self_url();
 $vars{session_id} = $session->id();
 fill_variables( \%vars );
+set_sidebar_vars( { vars => \%vars } );
 
 my $html;
 

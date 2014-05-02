@@ -38,6 +38,7 @@ use perfSONAR_PS::Client::MA;
 use perfSONAR_PS::Common qw( extract find );
 use perfSONAR_PS::Utils::ParameterValidation;
 use perfSONAR_PS::Client::PingER;
+use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -306,13 +307,13 @@ else {
             interfaces => \@interfaces
         );
 
+        set_sidebar_vars( { vars => \%vars } );
+
         my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} );
 
 	my $html;
 
 	$tt->process( "serviceTest_utilization.tmpl", \%vars, \$html ) or die $tt->error();
-
-	print $html;
 
 	exit ( 0 );
     }
@@ -1380,6 +1381,7 @@ sub errorPage {
 
     my %vars = ();
     $vars{error_msg} = $msg;
+    set_sidebar_vars( { vars => \%vars } );
 
     $tt->process( "serviceTest_error.tmpl", \%vars, \$html ) or die $tt->error();
 

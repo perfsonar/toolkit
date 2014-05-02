@@ -6,6 +6,7 @@ use CGI;
 use Log::Log4perl qw(get_logger :easy :levels);
 use Template;
 use POSIX;
+use Data::Dumper;
 
 ######################
 # Configuration
@@ -49,6 +50,7 @@ use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 use perfSONAR_PS::NPToolkit::Config::Services;
 use perfSONAR_PS::NPToolkit::Config::Version;
 use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
+use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -160,7 +162,7 @@ $logger->debug("Checking if NTP is synced");
 $vars{ntp_sync_status}     = $ntpinfo->is_synced();
 $logger->debug("Checking if globally registered");
 $vars{global_reg} 		= $administrative_info_conf->has_admin_info();
-
+set_sidebar_vars( { vars => \%vars } );
 $logger->debug("Building index page");
 
 $tt->process( "status.tmpl", \%vars, \$html ) or die $tt->error();

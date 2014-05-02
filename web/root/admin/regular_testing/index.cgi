@@ -30,6 +30,7 @@ use perfSONAR_PS::NPToolkit::Config::Services;
 use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
 use perfSONAR_PS::NPToolkit::Config::HostsFile;
 use perfSONAR_PS::Common qw(find findvalue extract genuid);
+use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
 use Data::Validate::IP qw(is_ipv4);
 use Data::Validate::Domain qw(is_hostname);
@@ -116,7 +117,9 @@ unless ($external_address) {
 
             my %full_page_vars = ();
 
-            fill_variables( \%full_page_vars );
+            fill_variables( \%full_page_vars );            
+            set_sidebar_vars( { vars => \%full_page_vars } );
+
 
             $tt->process( "full_page.tmpl", \%full_page_vars, \$html ) or die $tt->error();
         }
@@ -177,6 +180,7 @@ my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Cou
 my %full_page_vars = ();
 
 fill_variables( \%full_page_vars );
+set_sidebar_vars( { vars => \%full_page_vars } );
 
 $logger->debug( "Using variables: " . Dumper( \%full_page_vars ) );
 
@@ -280,6 +284,8 @@ sub fill_variables {
     $vars->{status_message} = $status_msg;
     $vars->{self_url}       = $cgi->self_url();
     $vars->{session_id}     = $session->id();
+    set_sidebar_vars( { vars => $vars } );
+
 
     return 0;
 }

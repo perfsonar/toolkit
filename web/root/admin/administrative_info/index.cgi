@@ -234,13 +234,9 @@ sub fill_variables {
 
     if (!$administrative_info_conf->is_complete()) {
         $vars->{warning_message}  = "IMPORTANT - Some elements on this page are not completed. Please complete the fields highlighted below.";
-    #    $vars->{admin_info_nav_class} = "warning";
     }
 
-    #$vars = perfSONAR_PS::Web::Sidebar::set_template_vars( { vars => $vars } );
-    $vars = set_sidebar_vars( { vars => $vars } );
-
-    $logger->debug("Variables: ".Dumper(\%vars));
+    set_sidebar_vars( { vars => $vars } );
 
     return 0;
 }

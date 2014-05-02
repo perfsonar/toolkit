@@ -219,6 +219,7 @@ lib/perfSONAR_PS/Utils/Host.pm
 lib/perfSONAR_PS/Utils/NTP.pm
 lib/perfSONAR_PS/Utils/NetLogger.pm
 lib/perfSONAR_PS/Utils/ParameterValidation.pm
+lib/perfSONAR_PS/Web/Sidebar.pm
 lib/perfSONAR_PS/XML/Document.pm
 lib/psTracerouteUtils.pm
 perl-perfSONAR_PS-Toolkit.spec
