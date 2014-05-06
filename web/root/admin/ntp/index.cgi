@@ -23,6 +23,7 @@ use perfSONAR_PS::NPToolkit::Config::NTP;
 use perfSONAR_PS::Utils::NTP qw( ping );
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address );
 use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
+use perfSONAR_PS::HostInfo::Base;
 
 use Data::Validate::IP qw(is_ipv4);
 use Net::IP;
@@ -69,7 +70,8 @@ else {
 
 die( "Couldn't instantiate session: " . CGI::Session->errstr() ) unless ( $session );
 
-our ( $ntp_conf, $status_msg, $error_msg, $failed_connect, $is_modified, $initial_state_time );
+our ( $ntp_conf, $status_msg, $warning_msg, $error_msg, $failed_connect, $is_modified, $initial_state_time, $ntpinfo );
+
 if ( $session and not $session->is_expired and $session->param( "ntp_conf" ) ) {
     $logger->debug( "Restoring ntp conf object" );
     $ntp_conf = perfSONAR_PS::NPToolkit::Config::NTP->new( { saved_state => $session->param( "ntp_conf" ) } );
@@ -97,6 +99,9 @@ if ($ntp_conf->last_modified() > $initial_state_time) {
 	print $html;
 	exit 0;
 }
+
+$ntpinfo = perfSONAR_PS::HostInfo::NTP->new();
+$warning_msg = "NTP is not syncronized" unless $ntpinfo->is_synced();
 
 my $ajax = CGI::Ajax->new(
     'save_config'  => \&save_config,
@@ -158,6 +163,7 @@ sub fill_variables {
     $vars->{is_modified}           = $is_modified;
     $vars->{status_message}        = $status_msg;
     $vars->{error_message}         = $error_msg;
+    $vars->{warning_message}        = $warning_msg;
 
     return 0;
 }

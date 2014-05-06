@@ -106,7 +106,7 @@ if ( $external_address_config->init() == 0 ) {
 unless ($external_address) {
 	reset_state();
 	save_state();
-	$error_msg = "There is no external address configured. No changes can be made until one is.";
+	$error_msg = "There is no external address configured. No changes can be made until one is. You may need to run /opt/perfsonar_ps/toolkit/scripts/discover_external_address";
 
         my $html;
         if ( $cgi->param( "session_id" ) ) {

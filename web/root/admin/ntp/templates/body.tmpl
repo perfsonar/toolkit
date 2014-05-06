@@ -1,8 +1,7 @@
 <div class="mainContainer">
 <div class="subTitle1">NTP Configuration Tool</div>
 
-<center><font color="red"><div id="web_admin_error">[% error_message %]</div></font></center>
-<center><div id="web_admin_status">[% status_message %]</div></center>
+[% INCLUDE status_messages.html %]
 
 <input type="hidden" id="nptoolkit_is_modified" value="[% is_modified %]" />
 

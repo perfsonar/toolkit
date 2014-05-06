@@ -334,8 +334,15 @@ color: rgb(255, 255, 255);
 
 .leftSideNavigation li.warning a.selected { 
     border-left: solid 7px #FEEFB3;
+    background-color: #FEEFB3;
 }
 
+.leftSideNavigation li.warning a {
+    background-image: url('/toolkit/content/images/icon_warning_16x16.png');
+    background-repeat: no-repeat;
+    padding-left:18px;
+    border-left: solid 7px #FEEFB3;
+}
 .leftSideNavigation li a:hover {
 	border-left: solid 7px rgb(156, 186, 214);
 	color: rgb(0, 0, 0);

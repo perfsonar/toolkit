@@ -274,7 +274,7 @@ sub set_host_information  {
 
     save_state();
 
-    $status_msg = "Host information updated";
+    $status_msg = "Host information updated. NOTE: You must click the Save button to save your changes.";
     return display_body();
 }
 

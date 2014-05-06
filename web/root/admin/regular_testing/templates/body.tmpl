@@ -1,9 +1,6 @@
 <div class="mainContainer">
 <div class="subTitle1">Scheduled Tests Configuration Tool</div>
 
-<center><font color="red"><div id="web_admin_error">[% error_message %]</div></font></center>
-<center><div id="web_admin_status">[% status_message %]</div></center>
-
 <input type="hidden" id="nptoolkit_is_modified" value="[% is_modified %]" />
 
 <input type="hidden" id="throughput_tests" value="[% throughput_tests %]" />
@@ -12,31 +9,34 @@
 <input type="hidden" id="regular_testing_enabled" value="[% regular_testing_enabled %]" />
 
 [% UNLESS regular_testing_enabled %]
-<br><div style="color:red">Regular Testing is not enabled. You will need to go to the 'Enabled Services' tool, and enable it before tests will work.</div>
+<div class="status error">Regular Testing is not enabled. You will need to go to the 'Enabled Services' tool, and enable it before tests will work.</div>
 [% END %]
 
-[% IF throughput_tests > 0 && owamp_tests > 0 %]
-<br><div style="color:red">This host is configured with both bandwidth and one-way latency tests. Bandwidth tests can interfere with one-way latency tests.</div>
-[% END %]
 
 [% IF (throughput_tests > 0 || owamp_tests > 0); UNLESS psb_ma_enabled %]
-<br><div style="color:red">This host has Throughput or One-Way Latency tests configured, but the perfSONAR-BUOY Measurement Archive is disabled. You will need to go the 'Enabled Services' tool, and enable it before test results will be available.</div>
+<div class="status error">This host has Throughput or One-Way Latency tests configured, but the perfSONAR-BUOY Measurement Archive is disabled. You will need to go the 'Enabled Services' tool, and enable it before test results will be available.</div>
 [% END; END %]
 
 [% IF pinger_tests > 0; UNLESS pinger_enabled %]
-<br><div style="color:red">This host has Ping tests configured, but PingER is disabled. You will need to go the 'Enabled Services' tool, and enable it before test results will be available.</div>
+<div class="status error">This host has Ping tests configured, but PingER is disabled. You will need to go the 'Enabled Services' tool, and enable it before test results will be available.</div>
 [% END; END %]
 
 [% IF owamp_port_range && owamp_port_range > 0 && owamp_port_usage > owamp_port_range %]
-<br><div style="color:red">This host has owamp test ports configured ([% owamp_ports.min_port %]-[% owamp_ports.max_port %]). However, based on the number of hosts being tested against, at least [% owamp_port_usage %] ports need to be available.</div>
+<div class="status error">This host has owamp test ports configured ([% owamp_ports.min_port %]-[% owamp_ports.max_port %]). However, based on the number of hosts being tested against, at least [% owamp_port_usage %] ports need to be available.</div>
 [% END %]
 
 [% IF bwctl_port_range > 0 && bwctl_port_usage > bwctl_port_range %]
-<br><div style="color:red">This host has bwctl test ports configured ([% bwctl_ports.min_port %]-[% bwctl_ports.max_port %]). However, based on the number of hosts being tested against, at least [% bwctl_port_usage %] ports need to be available.</div>
+<div class="status error">This host has bwctl test ports configured ([% bwctl_ports.min_port %]-[% bwctl_ports.max_port %]). However, based on the number of hosts being tested against, at least [% bwctl_port_usage %] ports need to be available.</div>
 [% END %]
 [% UNLESS hosts_file_matches_dns %]
-<br><div style="color:red">The /etc/hosts file appears to have been modified. This may cause unexpected behavior by tools. <a href="#" onclick="repair_hosts_file()">Click here</a> to correct the file.</div>
+<div class="status error">The /etc/hosts file appears to have been modified. This may cause unexpected behavior by tools. <a href="#" onclick="repair_hosts_file()">Click here</a> to correct the file.</div>
 [% END %]
+
+[% IF throughput_tests > 0 && owamp_tests > 0 %]
+<div class="status warning">This host is configured with both bandwidth and one-way latency tests. Bandwidth tests can interfere with one-way latency tests.</div>
+[% END %]
+
+[% INCLUDE status_messages.html %]
 
 [% IF throughput_tests > 0 %]
 [% IF network_percent_used > 100 %]
@@ -46,7 +46,7 @@
 [% ELSE %]
 [% SET network_percentage_color = "green" %]
 [% END %]
-<br><div style="color:[% network_percentage_color %]">Throughput tests will be running [% network_percent_used %]% of the time</div>
+<div style="color:[% network_percentage_color %]; margin:10px 0;">Throughput tests will be running [% network_percent_used %]% of the time</div>
 [% END %]
 
 <input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save_config()">

@@ -79,7 +79,7 @@ else {
 if ($bwctl_conf->last_modified() > $initial_state_time) {
     reset_state();
     save_state();
-    $status_msg = "The on-disk configuration has changed. Any changes you made have been lost.";
+    $error_msg = "The on-disk configuration has changed. Any changes you made have been lost.";
 
     my $html = display_body();
 
@@ -113,9 +113,6 @@ my $ajax = CGI::Ajax->new(
 
 my ( $header, $footer );
 my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
-
-#$tt->process( "header.tmpl", \%vars, \$header ) or die $tt->error();
-#$tt->process( "footer.tmpl", \%vars, \$footer ) or die $tt->error();
 
 my %vars = ();
 $vars{self_url}   = $cgi->self_url();
@@ -209,7 +206,7 @@ sub fill_variables {
     $vars->{warning_message}  = $warning_msg;
     $vars->{other_changes}  = $other_changes;
 
-    $vars = set_sidebar_vars( {vars => $vars} );
+    set_sidebar_vars( {vars => $vars} );
 
     return 0;
 }
@@ -518,7 +515,7 @@ sub delete_group {
     $logger->info( "Deleting Group: $group" );
 
     unless ( $bwctl_conf->lookup_group( { name => $group } ) ) {
-        $status_msg = "Group $group does not exist";
+        $error_msg = "Group $group does not exist";
         return display_body();
     }
 

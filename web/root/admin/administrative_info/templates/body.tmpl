@@ -1,15 +1,7 @@
 <div class="mainContainer">
 <div class="subTitle1">Administrative Information Configuration Tool</div>
 
-[% IF status_message %]
-<div class="success status">[% status_message %]</div>
-[% END %]
-[% IF warning_message %]
-<div class="warning status">[% warning_message %]</div>
-[% END %]
-[% IF error_message %]
-<div class="error status">[% error_message %]</div>
-[% END %]
+[% INCLUDE status_messages.html %]
 
 <input type="hidden" id="nptoolkit_is_modified" value="[% is_modified %]" />
 <input type="hidden" id="organization_name" value="[% organization_name %]" />

@@ -69,9 +69,6 @@ sub main {
 	my ( $header, $footer );
 	my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
 
-#$tt->process( "header.tmpl", \%vars, \$header ) or die $tt->error();
-#$tt->process( "footer.tmpl", \%vars, \$footer ) or die $tt->error();
-
 	my %vars = ();
 
 	$vars{self_url}   = $cgi->self_url();
@@ -94,7 +91,7 @@ sub fill_variables {
     my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
     my $res = $services_conf->init( { enabled_services_file => $conf{enabled_services_file} } );
     if ( $res != 0 ) {
-        $vars->{error_message}  = "Couldn't initialize Services Configuration";
+        $vars->{error_msg}  = "Couldn't initialize Services Configuration";
     } else {
 	    my $services = $services_conf->get_services();
 

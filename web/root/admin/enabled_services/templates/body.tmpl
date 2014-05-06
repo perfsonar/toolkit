@@ -1,10 +1,12 @@
 <div class="mainContainer">
 <div class="subTitle1">Enabled Services Configuration Tool</div>
 
+[% INCLUDE status_messages.html %]
+<div id="web_admin_error" class="error status" style="display:none;">[% error_message %]</div>
+<div id="web_admin_status" class="success status" style="display:none;">[% status_message %]</div>
+
 <div class="rcontainer">
 
-<center><font color="red"><div id="web_admin_error">[% error_message %]</div></font></center>
-<center><div id="web_admin_status">[% status_message %]</div></center>
 
 <script type="text/javascript">
 function handle_save() {
@@ -32,13 +34,19 @@ function handle_save() {
 function handle_save_response(response, io_args) {
 	if (response['error']) {
 		dojo.byId('web_admin_error').innerHTML=response['error'];
+        dojo.style(dojo.byId('web_admin_error'), "display", "block");
 		dojo.byId('web_admin_status').innerHTML="";
+        dojo.style(byId('web_admin_status'), "display", "none");
 	} else if (response['message']) {
 		dojo.byId('web_admin_error').innerHTML="";
+        dojo.style(dojo.byId('web_admin_error'), "display", "none");
 		dojo.byId('web_admin_status').innerHTML=response['message'];
+        dojo.style(dojo.byId('web_admin_status'), "display", "block");
 		dojo.byId('nptoolkit_is_modified').value = 0;
 	} else {
 		dojo.byId('web_admin_error').innerHTML="Received unknown response from service";
+        dojo.style(dojo.byId('web_admin_error'), "display", "block");
+        dojo.style(dojo.byId('web_admin_status'), "display", "none");
 		dojo.byId('web_admin_status').innerHTML="";
 	}
 }
