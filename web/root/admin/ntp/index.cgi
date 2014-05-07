@@ -20,6 +20,8 @@ my $basedir = "$RealBin/";
 use lib "$RealBin/../../../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::NTP;
+use perfSONAR_PS::NPToolkit::Services::ServicesMap qw(get_service_object);
+
 use perfSONAR_PS::Utils::NTP qw( ping );
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address );
 use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
