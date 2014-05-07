@@ -107,10 +107,7 @@
 		[% IF pair.key == "ndt"; pair.value.name = "Network Diagnostic Tester (NDT)"; pair.value.url = "http://www.internet2.edu/performance/ndt/"; END %]
 		[% IF pair.key == "npad"; pair.value.name = "Network Path and Application Diagnosis (NPAD)"; pair.value.url = "http://www.psc.edu/networking/projects/pathdiag/"; END %]
 		[% IF pair.key == "regular_testing"; pair.value.name = "Regular Testing"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
-		[% IF pair.key == "perfsonarbuoy_ma"; pair.value.name = "perfSONAR-BUOY Measurement Archive"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
-		[% IF pair.key == "traceroute_ma"; pair.value.name = "Traceroute Measurement Archive"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
-		[% IF pair.key == "snmp_ma"; pair.value.name = "SNMP Measurement Archive"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
-		[% IF pair.key == "pinger"; pair.value.name = "PingER Measurement Archive and Regular Tester"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
+		[% IF pair.key == "esmond"; pair.value.name = "esmond Measurement Archive"; pair.value.url = "https://github.com/esnet/esmond/"; END %]
 		[% IF pair.key == "owamp"; pair.value.name = "One-Way Ping Service (OWAMP)"; pair.value.url = "http://www.internet2.edu/performance/owamp/index.html"; END %]
 		[% IF pair.key == "bwctl"; pair.value.name = "Bandwidth Test Controller (BWCTL)"; pair.value.url = "http://www.internet2.edu/performance/bwctl/index.html"; END %]
 		<tr>
@@ -150,15 +147,12 @@
 	<table class="basic_table">
 		<tr><th style="width: 400px" colspan=2>Software Versions</th></tr>
 		<tr><td><a rel="external" target="_blank" href="http://psps.perfsonar.net/toolkit/">pS-Performance Toolkit</a></td><td>[% toolkit_version %]</td></tr>
-		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS PingER MA/MP</a></td><td>3.3.2</td></tr>
-		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS perfSONAR-BUOY</a></td><td>3.3.2</td></tr>
-		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS SNMP MA</a></td><td>3.3.2</td></tr>
-		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS Traceroute MA/MP</a></td><td>3.3.2</td></tr>
-		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS Regular Testing Daemon</a></td><td>3.4-rc1</td></tr>
 		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/bwctl/">BWCTL</a></td><td>1.5.1</td></tr>
 		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/owamp/">OWAMP</a></td><td>3.4rc3</td></tr>
 		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/ndt/">NDT</a></td><td>3.6.5.2</td></tr>
 		<tr><td><a rel="external" target="_blank" href="http://www.psc.edu/networking/projects/pathdiag/">NPAD</a></td><td>1.5.6</td></tr>
+		<tr><td><a rel="external" target="_blank" href="https://github.com/esnet/esmond">esmond Measurement Archive</a></td><td>1.0</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS Regular Testing Daemon</a></td><td>3.4-rc1</td></tr>
 		<tr><td><a rel="external" target="_blank" href="http://www.cacti.net/">Cacti</a></td><td>0.8.8b</td></tr>
 	</table>
 
