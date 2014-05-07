@@ -19,7 +19,9 @@ my $basedir = "$RealBin/";
 
 use lib "$RealBin/../../../../lib";
 
-use perfSONAR_PS::NPToolkit::Config::Services;
+use perfSONAR_PS::NPToolkit::Services::ServicesMap qw(get_service_object);
+use perfSONAR_PS::NPToolkit::ConfigManager::Utils qw( save_file start_service restart_service stop_service );
+
 use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
 my $config_file = $basedir . '/etc/web_admin.conf';
@@ -54,62 +56,51 @@ my $cgi = CGI->new();
 
 my $function = $cgi->param("fname");
 unless ($function) {
-	main();
+    main();
 } elsif ($function eq "save_config") {
-	save_config();
+    save_config();
 } elsif ($function eq "reset_config") {
-	reset_config();
+    reset_config();
 } else {
-	die("Unknown function: $function");
+    die("Unknown function: $function");
 }
 
 exit 0;
 
 sub main {
-	my ( $header, $footer );
-	my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
+    my ( $header, $footer );
+    my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
 
-	my %vars = ();
+    my %vars = ();
 
-	$vars{self_url}   = $cgi->self_url();
+    $vars{self_url}   = $cgi->self_url();
 
     fill_variables( \%vars );    
     set_sidebar_vars( { vars => \%vars } );
 
-	my $html;
+    my $html;
 
-	$tt->process( "full_page.tmpl", \%vars, \$html ) or die $tt->error();
+    $tt->process( "full_page.tmpl", \%vars, \$html ) or die $tt->error();
 
-	print "Content-type: text/html\n\n";
-	print $html;
+    print "Content-type: text/html\n\n";
+    print $html;
 
 }
 
 sub fill_variables {
     my $vars = shift;
 
-    my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
-    my $res = $services_conf->init( { enabled_services_file => $conf{enabled_services_file} } );
-    if ( $res != 0 ) {
-        $vars->{error_msg}  = "Couldn't initialize Services Configuration";
-    } else {
-	    my $services = $services_conf->get_services();
+    my %service_list = ();
 
-	    my %vars_services = ();
-	    foreach my $key ( keys %{$services} ) {
-		    my $service = $services->{$key};
+    foreach my $service_name ("bwctl", "owamp", "ndt", "npad") {
+        my $service = get_service_object($service_name);
 
-		    my %service_desc = ();
-		    $service_desc{name}        = $service->{name};
-		    $service_desc{description} = $service->{description};
-		    $service_desc{enabled}     = $service->{enabled};
-		    $service_desc{system}      = $service->{system}?1:0;
+        next unless $service;
 
-		    $vars_services{ $service->{name} } = \%service_desc;
-	    }
-
-	    $vars->{services}       = \%vars_services;
+        $service_list{$service_name}->{enabled} = not $service->disabled;
     }
+
+    $vars->{services} = \%service_list;
 
     return 0;
 }
@@ -132,34 +123,19 @@ sub save_config {
 
     my ($status, $res);
 
-    my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
-    $res = $services_conf->init( { enabled_services_file => $conf{enabled_services_file} } );
-    if ( $res != 0 ) {
-        my %resp = ( error => "Couldn't initialize Services Configuration" );
-	print "Content-type: text/json\n\n";
-	print encode_json(\%resp);
-	return;
-    }
+    $logger->error("CONFIG: ".Dumper($params));
 
     foreach my $name (keys %$params) {
-    	unless ($services_conf->lookup_service({ name => $name })) {
+        unless (get_service_object($name)) {
             $logger->error("Service $name not found");
             next;
         }
 
-	if ($params->{$name} eq "off") {
-		$services_conf->disable_service({ name => $name});
-	} else {
-		$services_conf->enable_service({ name => $name});
-	}
-    }
-
-    ($status, $res) = $services_conf->save( { restart_services => 1 } );
-    if ($status != 0) {
-        my %resp = ( error => "Couldn't save Services Configuration: $res" );
-	print "Content-type: text/json\n\n";
-	print encode_json(\%resp);
-	return;
+        if ($params->{$name} eq "off") {
+            stop_service( { name => $name, disable => 1 });
+        } else {
+            start_service( { name => $name, enable => 1 });
+        }
     }
 
     my %resp = ( message => "Configuration Saved And Services Restarted" );
@@ -168,18 +144,15 @@ sub save_config {
 }
 
 sub reset_config {
-    my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
-    my $res = $services_conf->init( { enabled_services_file => $conf{enabled_services_file} } );
-    if ( $res != 0 ) {
-        my %resp = ( error => "Couldn't initialize Services Configuration" );
-	print "Content-type: text/json\n\n";
-	print encode_json(\%resp);
-    }
 
-    my $services = $services_conf->get_services();
     my %service_list = ();
-    foreach my $name (keys %$services) {
-	    $service_list{$name} = $services->{$name}->{enabled};
+
+    foreach my $service_name ("bwctl", "owamp", "ndt", "npad") {
+        my $service = get_service_object($service_name);
+
+        next unless $service;
+
+        $service_list{$service_name}->{enabled} = not $service->disabled;
     }
 
     my %resp = ( services => \%service_list );

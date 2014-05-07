@@ -26,7 +26,6 @@ use perfSONAR_PS::Client::gLS::Keywords;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 use perfSONAR_PS::NPToolkit::Config::BWCTL;
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
-use perfSONAR_PS::NPToolkit::Config::Services;
 use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
 use perfSONAR_PS::NPToolkit::Config::HostsFile;
 use perfSONAR_PS::Common qw(find findvalue extract genuid);
@@ -367,27 +366,6 @@ sub fill_variables_status {
 
     my ( $regular_testing_enabled, $psb_ma_enabled, $pinger_enabled, $hosts_file_matches_dns );
 
-    my $services_conf = perfSONAR_PS::NPToolkit::Config::Services->new();
-    $res = $services_conf->init( { enabled_services_file => $conf{enabled_services_file} } );
-    if ( $res == 0 ) {
-        my $service_info;
-
-        $service_info = $services_conf->lookup_service( { name => "regular_testing" } );
-        if ( $service_info and $service_info->{enabled} ) {
-            $regular_testing_enabled = 1;
-        }
-
-        $service_info = $services_conf->lookup_service( { name => "pinger" } );
-        if ( $service_info and $service_info->{enabled} ) {
-            $pinger_enabled = 1;
-        }
-
-        $service_info = $services_conf->lookup_service( { name => "perfsonarbuoy_ma" } );
-        if ( $service_info and $service_info->{enabled} ) {
-            $psb_ma_enabled = 1;
-        }
-    }
-    
     #make sure /etc/hosts matches DNS
     my $hosts_file_config = perfSONAR_PS::NPToolkit::Config::HostsFile->new();
     if($hosts_file_config->init() == 0){

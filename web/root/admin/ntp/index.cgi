@@ -23,7 +23,6 @@ use perfSONAR_PS::NPToolkit::Config::NTP;
 use perfSONAR_PS::Utils::NTP qw( ping );
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address );
 use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
-use perfSONAR_PS::HostInfo::Base;
 
 use Data::Validate::IP qw(is_ipv4);
 use Net::IP;
@@ -100,8 +99,8 @@ if ($ntp_conf->last_modified() > $initial_state_time) {
 	exit 0;
 }
 
-$ntpinfo = perfSONAR_PS::HostInfo::NTP->new();
-$warning_msg = "NTP is not syncronized" unless $ntpinfo->is_synced();
+my $ntp = get_service_object("ntp");
+$warning_msg = "NTP is not syncronized" unless $ntp->is_synced();
 
 my $ajax = CGI::Ajax->new(
     'save_config'  => \&save_config,

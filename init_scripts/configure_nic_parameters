@@ -20,16 +20,22 @@ LATENCY_ENABLED=
 BANDWIDTH_ENABLED=
 NDTNPAD_ENABLED=
 
-ENABLED_SERVICES=`/opt/perfsonar_ps/toolkit/scripts/get_enabled_services`;
-for service in $ENABLED_SERVICES; do
-        if [ "$service" == "ndt" -o "$service" == "npad" ]; then
-                NDTNPAD_ENABLED=1
-        elif [ "$service" == "owamp" -o "$service" == "pinger" ]; then
-                LATENCY_ENABLED=1
-        elif [ "$service" == "bwctl" ]; then
-                BANDWIDTH_ENABLED=1
-        fi
-done
+`/sbin/chkconfig --list ndt &> /dev/null`;
+NDT=$?
+`/sbin/chkconfig --list npad &> /dev/null`;
+NPAD=$?
+`/sbin/chkconfig --list owampd &> /dev/null`;
+OWAMP=$?
+`/sbin/chkconfig --list bwctld &> /dev/null`;
+BWCTL=$?
+
+if [ $NDT == 0 -o $NPAD == 0 ]; then
+        NDTNPAD_ENABLED=1
+elif [ $OWAMP == 0 ]; then
+        LATENCY_ENABLED=1
+elif [ $BWCTL == 0 ]; then
+        BANDWIDTH_ENABLED=1
+fi
 
 # XXX: should make these configurable via configuration file
 

@@ -1,1 +1,0 @@
-../../../../Shared/lib/perfSONAR_PS/ServiceInfo/perfSONAR_PS.pm

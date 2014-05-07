@@ -90,9 +90,9 @@ function handle_reset_response(response, io_args) {
 }
 
 function select_bandwidth_services() {
-	var bandwidth_services = [ "regular_testing", "perfsonarbuoy_ma", "ndt", "npad", "bwctl"  ];
-	var latency_services = [ "regular_testing", "perfsonarbuoy_ma", "pinger", "owamp" ];
-	var disabled_services = [ "snmp_ma" ];
+	var bandwidth_services = [ "ndt", "npad", "bwctl"  ];
+	var latency_services = [ "owamp" ];
+	var disabled_services = [ ];
 
 	dojo.byId('nptoolkit_is_modified').value = 1;
 
@@ -132,9 +132,9 @@ function select_bandwidth_services() {
 }
 
 function select_latency_services() {
-	var bandwidth_services = [ "regular_testing", "perfsonarbuoy_ma", "ndt", "npad", "bwctl"  ];
-	var latency_services = [ "regular_testing", "perfsonarbuoy_ma", "pinger", "owamp" ];
-	var disabled_services = [ "snmp_ma" ];
+	var bandwidth_services = [ "ndt", "npad", "bwctl"  ];
+	var latency_services = [ "owamp" ];
+	var disabled_services = [ ];
 
 	dojo.byId('nptoolkit_is_modified').value = 1;
 
@@ -179,37 +179,19 @@ function select_latency_services() {
 <input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset()">
 
 <form id="services_form" dojoType="dijit.form.Form">
-[% IF advanced_mode %]
-<table class="basic_table">
-        <tr>
-        <th></th><th>Services</th>
-        </tr>
-        [% FOREACH pair IN services.pairs %]
-        <tr>
-                <td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on" id="[% pair.value.name %]" name="[% pair.value.name %]" [% IF pair.value.enabled %] checked="checked" [% END %] /></td>
-                <td>[% pair.value.description %]</td>
-        </tr>
-        [% END %]
-</table>
-[% ELSE %]
 <table class="basic_table">
         <tr>
         <th></th><th>Services</th><th>Description</th>
 	</tr>
 	<tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="pinger" name="pinger" [% IF services.pinger.enabled %] checked="checked" [% END %] /></td>
-	<td>PingER</td>
-	<td>Enables this host to perform scheduled ping tests. These tests will periodically ping configured hosts giving administrators a view of the latency from their site over time.</td>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="bwctl" name="bwctl" [% IF services.bwctl.enabled %] checked="checked" [% END %] /></td>
+	<td>BWCTL</td>
+	<td>Allows clients at other sites to run Throughput, Traceroute and Latency tests to this host</td>
 	</tr>
 	<tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="regular_testing" name="regular_testing" [% IF services.regular_testing.enabled %] checked="checked" [% END %] /></td>
-	<td>Regular Testing</td>
-	<td>Enables this host to perform scheduled tests. These tests will run periodically giving administrators a view of the network performance to and from their site over time.</td>
-	</tr>
-	<tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="perfsonarbuoy_ma" name="perfsonarbuoy_ma" [% IF services.perfsonarbuoy_ma.enabled %] checked="checked" [% END %] /></td>
-	<td>perfSONAR-BUOY Measurement Archive</td>
-	<td>Makes available the data collected by the One-Way Latency and Throughput tests.</td>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="owamp" name="owamp" [% IF services.owamp.enabled %] checked="checked" [% END %] /></td>
+	<td>OWAMP</td>
+	<td>Allows clients at other sites to run One-Way Latency tests to this host</td>
 	</tr>
 	<tr>
 	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="ndt" name="ndt" [% IF services.ndt.enabled %] checked="checked" [% END %] /></td>
@@ -221,35 +203,7 @@ function select_latency_services() {
 	<td>NPAD</td>
 	<td>Allows clients at other sites to run NPAD tests to this host.</td>
 	</tr>
-	<tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="bwctl" name="bwctl" [% IF services.bwctl.enabled %] checked="checked" [% END %] /></td>
-	<td>BWCTL</td>
-	<td>Allows clients at other sites to run Throughput tests to this host</td>
-	</tr>
-	<tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="owamp" name="owamp" [% IF services.owamp.enabled %] checked="checked" [% END %] /></td>
-	<td>OWAMP</td>
-	<td>Allows clients at other sites to run One-Way Latency tests to this host</td>
-	</tr>
-        [% IF services.ssh.system == 0%]
-	<tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="ssh" name="ssh" [% IF services.ssh.enabled %] checked="checked" [% END %] /></td>
-	<td>SSH</td>
-	<td>Allows administrators to remotely connect to this host using SSH</td>
-        </tr>
-        [% END %]
-	<tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="snmp_ma" name="snmp_ma" [% IF services.snmp_ma.enabled %] checked="checked" [% END %] /></td>
-	<td>SNMP MA</td>
-	<td>Makes available SNMP statistics collected by Cacti (Note: you must configure cacti for this to work)</td>
-        </tr>
-    <tr>
-	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="traceroute_ma" name="traceroute_ma" [% IF services.traceroute_ma.enabled %] checked="checked" [% END %] /></td>
-	<td>Traceroute MA</td>
-	<td>Makes available results of data collected by scheduled traceroute tests</td>
-    </tr>
 </table>
-[% END %]
 </form>
 
 <input class="button" type="submit" name="select_bandwidth" id="select_bandwidth" value="Only Enable Bandwidth Services" onClick="select_bandwidth_services()">

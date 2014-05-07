@@ -37,7 +37,6 @@ HTML::Entities
 HTTP::Response
 Hash::Merge
 IO::File
-IO::Interface
 IO::Select
 IO::Socket
 IO::Socket::SSL
@@ -78,6 +77,7 @@ Symbol
 Template
 Time::HiRes
 Time::Local
+URI
 URI::Escape
 URI::Split
 XML::LibXML
