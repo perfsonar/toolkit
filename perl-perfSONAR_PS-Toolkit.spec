@@ -93,14 +93,10 @@ Requires:		perl(vars)
 Requires:		perl(version)
 Requires:		perl(warnings)
 
+Requires:		esmond
 Requires:		perl-perfSONAR_PS-LSCacheDaemon
 Requires:		perl-perfSONAR_PS-LSRegistrationDaemon
-Requires:		perl-perfSONAR_PS-PingER-server
 Requires:		perl-perfSONAR_PS-SimpleLS-BootStrap-client
-Requires:		perl-perfSONAR_PS-SNMPMA
-Requires:		perl-perfSONAR_PS-perfSONARBUOY-client
-Requires:		perl-perfSONAR_PS-perfSONARBUOY-config
-Requires:		perl-perfSONAR_PS-perfSONARBUOY-server
 Requires:		perl-perfSONAR_PS-serviceTest
 Requires:		perl-perfSONAR_PS-RegularTesting
 Requires:		perl-perfSONAR_PS-MeshConfig-JSONBuilder
@@ -138,16 +134,10 @@ Obsoletes:		perl-perfSONAR_PS-TopologyService
 Requires(post):	perl
 Requires(post):	perl-perfSONAR_PS-LSCacheDaemon
 Requires(post):	perl-perfSONAR_PS-LSRegistrationDaemon
-Requires(post):	perl-perfSONAR_PS-PingER-server
 Requires(post):	perl-perfSONAR_PS-SimpleLS-BootStrap-client
-Requires(post):	perl-perfSONAR_PS-SNMPMA
-Requires(post):	perl-perfSONAR_PS-TracerouteMA-client
-Requires(post):	perl-perfSONAR_PS-TracerouteMA-config
-Requires(post):	perl-perfSONAR_PS-TracerouteMA-server
-Requires(post):	perl-perfSONAR_PS-perfSONARBUOY-client
-Requires(post):	perl-perfSONAR_PS-perfSONARBUOY-config
-Requires(post):	perl-perfSONAR_PS-perfSONARBUOY-server
 Requires(post):	perl-perfSONAR_PS-serviceTest
+Requires(post):	esmond
+Requires(post):	perl-perfSONAR_PS-RegularTesting
 
 Requires(post):	bwctl-client
 Requires(post):	bwctl-server
@@ -298,15 +288,6 @@ ln -sf /usr/share/cacti /opt/perfsonar_ps/toolkit/web/root/admin/cacti
 # configuration files containing the default settings.
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/SimpleLSBootStrap-hosts-client.yml /opt/SimpleLS/bootstrap/etc/hosts-client.yml
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/ls_registration_daemon.conf /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
-cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/pinger.conf /opt/perfsonar_ps/PingER/etc/daemon.conf
-cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/psb_ma.conf /opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf
-cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/snmp_ma.conf /opt/perfsonar_ps/snmp_ma/etc/daemon.conf
-cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/traceroute_ma.conf /opt/perfsonar_ps/traceroute_ma/etc/daemon.conf
-cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/traceroute_master.conf /opt/perfsonar_ps/traceroute_ma/etc/traceroute-master.conf
-
-#make sure traceroute_scheduler uses pSB owmesh file
-rm /opt/perfsonar_ps/traceroute_ma/etc/owmesh.conf
-ln -s /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf /opt/perfsonar_ps/traceroute_ma/etc/owmesh.conf
 
 #Add most recent version information to ls_registration_daemon.conf
 grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrative_info > /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp
@@ -329,13 +310,6 @@ mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolk
 # should be how they read these, but that'd require a fair number of changes,
 # so we'll put that in the "maybe" category.
 chmod o+r /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
-chmod o+r /opt/perfsonar_ps/perfsonarbuoy_ma/etc/daemon.conf
-chmod o+r /opt/perfsonar_ps/PingER/etc/daemon.conf
-chmod o+r /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf
-chmod o+r /opt/perfsonar_ps/PingER/etc/pinger-landmarks.xml
-chmod o+r /opt/perfsonar_ps/snmp_ma/etc/daemon.conf
-chmod o+r /opt/perfsonar_ps/traceroute_ma/etc/daemon.conf
-chmod o+r /opt/perfsonar_ps/traceroute_ma/etc/traceroute-master.conf
 chmod o+r /opt/perfsonar_ps/toolkit/etc/administrative_info
 chmod o+r /opt/perfsonar_ps/toolkit/etc/enabled_services
 chmod o+r /opt/perfsonar_ps/toolkit/etc/external_addresses
@@ -362,8 +336,6 @@ chkconfig --level 2345 httpd on
 #starting iptables
 chkconfig iptables on
 chkconfig ip6tables on
-
-/opt/perfsonar_ps/toolkit/scripts/initialize_databases 2> /dev/null
 
 %post LiveCD
 # The toolkit_config init script is only enabled when the LiveCD is being used
@@ -449,16 +421,9 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_traceroute.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/discover_external_address
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/get_enabled_services
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_databases
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_perfsonarbuoy_bwctl_database
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_perfsonarbuoy_owamp_database
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_pinger_database
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/initialize_traceroute_ma_database
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/pinger_toolkit_init.sql
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/pinger_toolkit_upgrade.sql
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-backup.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
