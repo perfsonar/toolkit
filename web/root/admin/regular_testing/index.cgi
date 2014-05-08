@@ -352,6 +352,11 @@ sub fill_variables_tests {
 
                 $member->{can_test_ipv4} = $ipv4;
                 $member->{can_test_ipv6} = $ipv6;
+
+                # The template assumes that test_ipv4/test_ipv6 are either 1 or
+                # 0, not undef.
+                $member->{test_ipv4} = 0 unless $member->{test_ipv4};
+                $member->{test_ipv6} = 0 unless $member->{test_ipv6};
             }
         }
     }
@@ -982,13 +987,17 @@ sub add_member_to_test {
         if ( is_ipv4( $addr ) ) {
             $host = reverse_dns( $addr );
             $ipv4 = 1;
+            $ipv6 = 0;
         }
         elsif ( &Net::IP::ip_is_ipv6( $addr ) ) {
             $host = reverse_dns( $addr );
+            $ipv4 = 0;
             $ipv6 = 1;
         }
         elsif ( is_hostname( $addr ) ) {
             $host = $addr;
+            $ipv4 = 0;
+            $ipv6 = 0;
             my @host_addrs = resolve_address($addr);
             foreach my $host_addr (@host_addrs) {
                 if ( &Net::IP::ip_is_ipv6( $host_addr ) ) {
