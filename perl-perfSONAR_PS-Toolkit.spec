@@ -18,7 +18,7 @@
 %define crontab_2     cron-owamp_cleaner
 %define crontab_3     cron-save_config
 
-%define relnum  1 
+%define relnum  2
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -108,6 +108,7 @@ Requires:		php-adodb
 Requires:		php-mysql
 Requires:		php-pdo
 Requires:		php-snmp
+Requires:		mysql-server
 
 Requires:		bwctl-client
 Requires:		bwctl-server
@@ -188,6 +189,7 @@ Requires(post):	irda-utils
 Requires(post):	irqbalance
 Requires(post):	mdadm
 Requires(post):	mysql
+Requires(post):	mysql-server
 Requires(post):	nfs-utils
 Requires(post):	ntp
 Requires(post):	pcsc-lite
@@ -295,9 +297,6 @@ mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolk
 /opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl 2> /dev/null
 
 #Make sure that the owmesh file supports default traceroute options. Must run for clean install and upgrades.
-/opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_owmesh_traceroute.sh
-
-#Make sure that the owmesh file supports default traceroute options. Must run for clean install and upgrades.
 /opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_regular_tests
 
 #Make sure that the owamp config file has the expanded port range instead of the old defaults
@@ -382,23 +381,10 @@ EOF
 %attr(0644,root,root) /etc/cron.d/%{crontab_2}
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
 # Make sure the cgi scripts are all executable
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/jowping/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/reverse_traceroute.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/serviceTest.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/directory.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/bandwidthGraphScatter.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/utilizationGraphFlash.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/bandwidthGraphFlash.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/PingERGraph.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/delayGraph.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/utilizationGraph.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/bandwidthGraph.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/psTracerouteViewer/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/bwctl/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/regular_testing/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/owamp/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/ntp/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/administrative_info/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/enabled_services/index.cgi
@@ -413,7 +399,6 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/discover_external_address
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/get_enabled_services
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
