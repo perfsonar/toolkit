@@ -91,13 +91,6 @@ def initialize():
                          "requiresReboot": True,
                     },
                     {
-                         "description": "Set built-in account passwords",
-                         "command": "/opt/perfsonar_ps/toolkit/scripts/set_default_passwords",
-                         "isConfiguredFunction": passwordsConfigured,
-                         "required": True,
-                         "requiresReboot": False,
-                    },
-                    {
                          "description": "Configure Networking",
                          "command": "/usr/sbin/system-config-network-tui",
                          "isConfiguredFunction": None,
