@@ -364,7 +364,7 @@ sub fill_variables_status {
 
     my ($status, $res);
 
-    my ( $regular_testing_enabled, $psb_ma_enabled, $pinger_enabled, $hosts_file_matches_dns );
+    my $hosts_file_matches_dns;
 
     #make sure /etc/hosts matches DNS
     my $hosts_file_config = perfSONAR_PS::NPToolkit::Config::HostsFile->new();
@@ -484,9 +484,6 @@ sub fill_variables_status {
     $vars->{owamp_tests}             = $psb_owamp_tests;
     $vars->{pinger_tests}            = $pinger_tests;
     $vars->{throughput_tests}        = $psb_throughput_tests;
-    $vars->{psb_ma_enabled}          = $psb_ma_enabled;
-    $vars->{regular_testing_enabled} = $regular_testing_enabled;
-    $vars->{pinger_enabled}          = $pinger_enabled;
     $vars->{traceroute_tests}        = $traceroute_tests;
     $vars->{external_address}        = $external_address ? $external_address : '';
     

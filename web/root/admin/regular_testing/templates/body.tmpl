@@ -6,20 +6,6 @@
 <input type="hidden" id="throughput_tests" value="[% throughput_tests %]" />
 <input type="hidden" id="owamp_tests" value="[% owamp_tests %]" />
 <input type="hidden" id="pinger_tests" value="[% pinger_tests %]" />
-<input type="hidden" id="regular_testing_enabled" value="[% regular_testing_enabled %]" />
-
-[% UNLESS regular_testing_enabled %]
-<div class="status error">Regular Testing is not enabled. You will need to go to the 'Enabled Services' tool, and enable it before tests will work.</div>
-[% END %]
-
-
-[% IF (throughput_tests > 0 || owamp_tests > 0); UNLESS psb_ma_enabled %]
-<div class="status error">This host has Throughput or One-Way Latency tests configured, but the perfSONAR-BUOY Measurement Archive is disabled. You will need to go the 'Enabled Services' tool, and enable it before test results will be available.</div>
-[% END; END %]
-
-[% IF pinger_tests > 0; UNLESS pinger_enabled %]
-<div class="status error">This host has Ping tests configured, but PingER is disabled. You will need to go the 'Enabled Services' tool, and enable it before test results will be available.</div>
-[% END; END %]
 
 [% IF owamp_port_range && owamp_port_range > 0 && owamp_port_usage > owamp_port_range %]
 <div class="status error">This host has owamp test ports configured ([% owamp_ports.min_port %]-[% owamp_ports.max_port %]). However, based on the number of hosts being tested against, at least [% owamp_port_usage %] ports need to be available.</div>
