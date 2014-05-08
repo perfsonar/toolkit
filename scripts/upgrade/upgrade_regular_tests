@@ -34,6 +34,11 @@ Log::Log4perl->easy_init($INFO);
 
 my $logger = get_logger();
 
+unless ( -e $pinger_landmarks and -e $owmesh_conf ) {
+    print "No tests to upgrade\n";
+    exit 0;
+}
+
 # Backup the existing files
 backup_file({ file => $pinger_landmarks });
 backup_file({ file => $owmesh_conf });
