@@ -96,7 +96,7 @@ lib/perfSONAR_PS/NPToolkit/Services/NetworkBase.pm
 lib/perfSONAR_PS/NPToolkit/Services/OWAMP.pm
 lib/perfSONAR_PS/NPToolkit/Services/RegularTesting.pm
 lib/perfSONAR_PS/NPToolkit/Services/ServicesMap.pm
-lib/perfSONAR_PS/NPToolkit/Services/SimpleLSBoostrap.pm
+lib/perfSONAR_PS/NPToolkit/Services/SimpleLSBootstrap.pm
 lib/perfSONAR_PS/NPToolkit/Services/esmond.pm
 lib/perfSONAR_PS/NPToolkit/Services/httpd.pm
 lib/perfSONAR_PS/PINGERTOPO_DATATYPES/v2_0/Element.pm
