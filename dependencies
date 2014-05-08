@@ -33,7 +33,6 @@ File::Path
 File::Temp
 FindBin
 Getopt::Long
-HTML::Entities
 HTTP::Response
 Hash::Merge
 IO::File
@@ -76,9 +75,7 @@ Storable
 Symbol
 Template
 Time::HiRes
-Time::Local
 URI
-URI::Escape
 URI::Split
 XML::LibXML
 XML::Simple

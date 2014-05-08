@@ -17,7 +17,6 @@
 %define crontab_1     cron-service_watcher
 %define crontab_2     cron-owamp_cleaner
 %define crontab_3     cron-save_config
-%define crontab_4     cron-db_cleaner 
 
 %define relnum  1 
 %define disttag pSPS
@@ -221,7 +220,6 @@ make ROOTPATH=%{buildroot}/%{install_base} rpminstall
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_2} %{buildroot}/etc/cron.d/%{crontab_2}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
-install -D -m 0600 scripts/%{crontab_4} %{buildroot}/etc/cron.d/%{crontab_4}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 
@@ -239,7 +237,6 @@ install -D -m 0755 init_scripts/%{init_script_9} %{buildroot}/etc/init.d/%{init_
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_2}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
-rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_4}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 
 %clean
@@ -384,7 +381,6 @@ EOF
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 %attr(0644,root,root) /etc/cron.d/%{crontab_2}
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
-%attr(0644,root,root) /etc/cron.d/%{crontab_4}
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/jowping/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
@@ -416,9 +412,6 @@ EOF
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_bwctl.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_owamp.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/cleanupdb_traceroute.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/discover_external_address
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/get_enabled_services
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
@@ -434,7 +427,6 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/watcher_log_archive_cleanup
 
 %files LiveCD
-%attr(0644,root,root) /etc/cron.d/%{crontab_4}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_6}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_7}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_8}
