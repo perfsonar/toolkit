@@ -14,9 +14,6 @@
 [% IF bwctl_port_range > 0 && bwctl_port_usage > bwctl_port_range %]
 <div class="status error">This host has bwctl test ports configured ([% bwctl_ports.min_port %]-[% bwctl_ports.max_port %]). However, based on the number of hosts being tested against, at least [% bwctl_port_usage %] ports need to be available.</div>
 [% END %]
-[% UNLESS hosts_file_matches_dns %]
-<div class="status error">The /etc/hosts file appears to have been modified. This may cause unexpected behavior by tools. <a href="#" onclick="repair_hosts_file()">Click here</a> to correct the file.</div>
-[% END %]
 
 [% IF throughput_tests > 0 && owamp_tests > 0 %]
 <div class="status warning">This host is configured with both bandwidth and one-way latency tests. Bandwidth tests can interfere with one-way latency tests.</div>

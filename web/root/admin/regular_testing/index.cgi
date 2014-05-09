@@ -27,7 +27,6 @@ use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 use perfSONAR_PS::NPToolkit::Config::BWCTL;
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
 use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
-use perfSONAR_PS::NPToolkit::Config::HostsFile;
 use perfSONAR_PS::Common qw(find findvalue extract genuid);
 use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
@@ -96,38 +95,6 @@ else {
     save_state();
 }
 
-my $external_address;
-my $external_address_config = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
-if ( $external_address_config->init() == 0 ) {
-    $external_address = $external_address_config->get_primary_address({});
-}
-
-unless ($external_address) {
-	reset_state();
-	save_state();
-	$error_msg = "There is no external address configured. No changes can be made until one is. You may need to run /opt/perfsonar_ps/toolkit/scripts/discover_external_address";
-
-        my $html;
-        if ( $cgi->param( "session_id" ) ) {
-	    $html = display_body();
-        }
-        else {
-            my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
-
-            my %full_page_vars = ();
-
-            fill_variables( \%full_page_vars );            
-            set_sidebar_vars( { vars => \%full_page_vars } );
-
-
-            $tt->process( "full_page.tmpl", \%full_page_vars, \$html ) or die $tt->error();
-        }
-
-	print "Content-Type: text/html\n\n";
-	print $html;
-	exit 0;
-}
-
 if ($testing_conf->last_modified() > $initial_state_time) {
 	reset_state();
 	save_state();
@@ -170,7 +137,6 @@ my $ajax = CGI::Ajax->new(
     'enable_test' => \&enable_test,
 
     'lookup_servers' => \&lookup_servers,
-    'repair_hosts_file' => \&repair_hosts_file,
 );
 
 my ( $header, $footer );
@@ -269,17 +235,32 @@ sub fill_variables {
     my @interfaces = ();
 
     foreach my $iface (get_ethernet_interfaces()) {
+        my @ips = get_interface_addresses({ interface => $iface });
+
         my %iface_desc = (
             name => $iface,
-            ips => get_interface_addresses({ interface => $iface }),
+            ips => \@ips,
         );
 
         push @interfaces, \%iface_desc;
     }
 
+    my $warning_msg;
+
+    my $external_address;
+    my $external_address_config = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
+    if ( $external_address_config->init() == 0 ) {
+        $external_address = $external_address_config->get_primary_address({});
+    }
+
+    unless ($external_address) {
+    	$warning_msg = "There is no external address available. Your tests may not work as expected. You may need to run /opt/perfsonar_ps/toolkit/scripts/discover_external_address";
+    }
+
     $vars->{interfaces}     = \@interfaces;
     $vars->{is_modified}    = $is_modified;
     $vars->{error_message}  = $error_msg;
+    $vars->{warning_message} = $warning_msg;
     $vars->{status_message} = $status_msg;
     $vars->{self_url}       = $cgi->self_url();
     $vars->{session_id}     = $session->id();
@@ -370,12 +351,6 @@ sub fill_variables_status {
     my ($status, $res);
 
     my $hosts_file_matches_dns;
-
-    #make sure /etc/hosts matches DNS
-    my $hosts_file_config = perfSONAR_PS::NPToolkit::Config::HostsFile->new();
-    if($hosts_file_config->init() == 0){
-        $hosts_file_matches_dns = $hosts_file_config->compare_to_dns();
-    }
 
     # Calculate whether or not they have a "good" configuration
     ( $status, $res ) = $testing_conf->get_tests();
@@ -490,8 +465,7 @@ sub fill_variables_status {
     $vars->{pinger_tests}            = $pinger_tests;
     $vars->{throughput_tests}        = $psb_throughput_tests;
     $vars->{traceroute_tests}        = $traceroute_tests;
-    $vars->{external_address}        = $external_address ? $external_address : '';
-    
+
     return 0;
 }
 
@@ -1396,22 +1370,6 @@ sub lookup_addresses {
     }
 
     return;
-}
-
-sub repair_hosts_file{
-    my $hosts_file_config = perfSONAR_PS::NPToolkit::Config::HostsFile->new();
-    if($hosts_file_config->init() != 0){
-        $error_msg = "Unable to initialize hosts file manager";
-    }else{
-        my ( $status, $res ) = $hosts_file_config->save( { restart_services => 0 } );
-        if ($status != 0) {
-            $error_msg = "$res";
-        }else{
-            $status_msg="Hosts file successfully repaired";
-        }
-    }
-    
-    return display_body();
 }
 
 1;

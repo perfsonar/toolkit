@@ -69,7 +69,6 @@ lib/perfSONAR_PS/NPToolkit/Config/AdministrativeInfo.pm
 lib/perfSONAR_PS/NPToolkit/Config/BWCTL.pm
 lib/perfSONAR_PS/NPToolkit/Config/Base.pm
 lib/perfSONAR_PS/NPToolkit/Config/ExternalAddress.pm
-lib/perfSONAR_PS/NPToolkit/Config/HostsFile.pm
 lib/perfSONAR_PS/NPToolkit/Config/LSRegistrationDaemon.pm
 lib/perfSONAR_PS/NPToolkit/Config/NDT.pm
 lib/perfSONAR_PS/NPToolkit/Config/NPAD.pm
@@ -246,7 +245,6 @@ scripts/remove_home_partition
 scripts/restore_config
 scripts/save_config
 scripts/service_watcher
-scripts/set_default_passwords
 scripts/system_environment/add_dbxml_path
 scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path
@@ -464,3 +462,13 @@ web/root/index.cgi
 web/templates/footer.tmpl
 web/templates/header.tmpl
 web/templates/sidebar.html
+web/root/admin/administrative_info/templates/status_messages.html
+web/root/admin/enabled_services/templates/status_messages.html
+web/root/admin/ntp/templates/status_messages.html
+web/root/admin/regular_testing/templates/status_messages.html
+web/root/content/images/icon_error.png
+web/root/content/images/icon_success.png
+web/root/content/images/icon_warning.png
+web/root/content/images/icon_warning_16x16.png
+web/root/gui/services/templates/status_messages.html
+web/templates/status_messages.html

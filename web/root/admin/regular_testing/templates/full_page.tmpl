@@ -108,26 +108,6 @@ function modify_traceroute_test(test_id, description, test_interval, packet_size
 	}
 }
 
-function repair_hosts_file() {
-    var title = "Confirm Hosts File Replacement";
-    var dialog_content = "";
-	dialog_content += "<p>Are you sure you want to do this? Clicking \"Yes\" will replace your /etc/hosts file. Any manual changes you made to this file will be lost.</p>";
-	dialog_content += "<div align=\"center\">";
-	dialog_content += "<button dojoType='dijit.form.Button' id='repair_hosts_file_yes'>Yes</button>";
-	dialog_content += "<button dojoType='dijit.form.Button' id='repair_hosts_file_no'>No</button>";
-	dialog_content += "</div>";
-	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "repair_hosts_file_dialog", style: "width: 400px" });
-	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', 'repair_hosts_file_dialog'));
-	dojo.connect(dijit.byId('repair_hosts_file_no'), 'onClick', function() { dijit.byId("repair_hosts_file_dialog").hide(); });
-    dojo.connect(dijit.byId('repair_hosts_file_yes'), 'onClick', dojo.hitch(null,
-		function() {
-		     handle_cgi_ajax_call(null, 'Problem updating hosts file', true, 'repair_hosts_file', []);
-		     dijit.byId("repair_hosts_file_dialog").hide();
-		})
-	);
-	dialog.show();
-}
-
 function minimal_granularity(time) {
 	var granularity;
 
