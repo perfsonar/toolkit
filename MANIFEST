@@ -47,12 +47,7 @@ lib/Net/NTP.pm
 lib/OWP/Conf.pm
 lib/OWP/Helper.pm
 lib/perfSONAR_PS/Client/Echo.pm
-lib/perfSONAR_PS/Client/LS.pm
 lib/perfSONAR_PS/Client/MA.pm
-lib/perfSONAR_PS/Client/Parallel/LS.pm
-lib/perfSONAR_PS/Client/Parallel/Simple.pm
-lib/perfSONAR_PS/Client/Parallel/gLS.pm
-lib/perfSONAR_PS/Client/gLS.pm
 lib/perfSONAR_PS/Client/gLS/Keywords.pm
 lib/perfSONAR_PS/Common.pm
 lib/perfSONAR_PS/Messages.pm

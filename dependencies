@@ -1,6 +1,4 @@
 5
-AnyEvent
-AnyEvent::HTTP
 Archive::Tar
 CGI
 CGI::Ajax

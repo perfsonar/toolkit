@@ -18,7 +18,6 @@ use FindBin qw($RealBin);
 my $basedir = "$RealBin/";
 
 use lib "$RealBin/../../../../lib";
-use lib "/usr/local/perfSONAR-PS/perfSONAR_PS-PingER/lib";
 
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address reverse_dns_multi resolve_address_multi );
 use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces get_interface_addresses );
