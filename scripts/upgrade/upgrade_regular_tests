@@ -13,24 +13,17 @@ use lib "$Bin/../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
 
-use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::pingertopo::Topology';
-use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::pingertopo::Topology::Domain';
-use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::pingertopo::Topology::Domain::Node';
-use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::nmtb::Topology::Domain::Node::Name';
-use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::nmtb::Topology::Domain::Comments';
-use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::nmtb::Topology::Domain::Node::HostName';
-use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::nmtb::Topology::Domain::Node::Description';
-use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::nmwg::Topology::Domain::Node::Parameters';
-use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::nmwg::Topology::Domain::Node::Parameters::Parameter';
-use aliased 'perfSONAR_PS::PINGERTOPO_DATATYPES::v2_0::nmtl3::Topology::Domain::Node::Port';
-
 use OWP::Conf;
 
-my $pinger_landmarks = "/opt/perfsonar_ps/PingER/etc/pinger-landmarks.xml";
-my $owmesh_conf = "/opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf";
-my $regular_test_conf = "/opt/perfsonar_ps/regular_testing/etc/regular_testing.conf";
+#my $pinger_landmarks = "/opt/perfsonar_ps/PingER/etc/pinger-landmarks.xml";
+#my $owmesh_conf = "/opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf";
+#my $regular_test_conf = "/opt/perfsonar_ps/regular_testing/etc/regular_testing.conf";
 
-Log::Log4perl->easy_init($INFO);
+my $pinger_landmarks = "conf1/pinger-landmarks.xml";
+my $owmesh_conf = "conf1/owmesh.conf";
+my $regular_test_conf = "conf1/regular_testing.conf";
+
+Log::Log4perl->easy_init($DEBUG);
 
 my $logger = get_logger();
 
@@ -45,7 +38,7 @@ backup_file({ file => $owmesh_conf });
 backup_file({ file => $regular_test_conf });
 
 my $regular_tests = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
-my ($status, $res) = $regular_tests->init();
+my ($status, $res) = $regular_tests->init(regular_testing_config_file => $regular_test_conf);
 if ($status != 0) {
     die("Problem initializing regular tests: $res");
 }
@@ -70,7 +63,7 @@ my $pinger_output = $res;
 
 my $owmesh_output = $res;
 
-($status, $res) = $regular_tests->generate_regular_testing_config();
+($status, $res) = $regular_tests->generate_regular_testing_config(include_mesh_tests => 1);
 
 my $regular_tests_output = $res;
 
@@ -128,255 +121,104 @@ sub backup_file {
 sub parse_pinger_landmarks_file {
     my ( $regular_tests, @params ) = @_;
     my $parameters = validate( @params, { file => 1, } );
-
     my $file = $parameters->{file};
 
     return ( 0, "" ) unless ( -e $parameters->{file} );
 
     eval {
-        local ( $/, *FH );
-        open( FH, $file ) or die " Failed to open landmarks $file";
-        my $text = <FH>;
-        my $topology = Topology->new( { xml => $text } );
-        close FH;
+        my $dom = XML::LibXML->load_xml(location => $file);
 
-        my %new_domains = ();
-        my %opaque_domains = ();
+        die " Failed to open landmarks $file" unless $dom;
 
-        if ( $topology->get_domain ) {
-            # Handle the backward compatibility case where someone has simply
-            # selected a group of hosts to monitor using the previous pinger
-            # web admin gui, and didn't change any of the settings.
+        $logger->debug("Looking for domains");
 
-            foreach my $domain ( @{ $topology->get_domain } ) {
+        foreach my $domain ($dom->findnodes('*[local-name()="topology"]/*[local-name()="domain"]')) {
+            my $domain_id = $domain->getAttribute("id");
 
-                # Skip if it's one of ours
-                next if ( $domain->get_id =~ /domain=(group.)?test.[0-9]+$/ );
-                next if ( $domain->get_id =~ /domain=mesh_agent_/ );
+            $logger->debug("Found test: $domain_id");
 
-                $logger->debug( "Handling domain: " . $domain->get_id );
+            my $test_id;
 
-                next unless ($domain->get_node);
+            my $profile_node;
+            foreach my $node ($domain->findnodes('*[local-name()="node"]')) {
+                my $node_id = $node->getAttribute("id");
+                next unless $node_id and $node_id =~ /:node=profile_node$/;
 
-                foreach my $node ( @{ $domain->get_node } ) {
-
-                    next unless ( $node->get_port and $node->get_parameters );
-
-                    $logger->debug( "Handling node: " . $node->get_id );
-
-                    my $test_params = $node->get_parameters();
-
-                    # We try to merge all the existing tests into a single
-                    # one. This will likely work for all PingER installs.
-
-                    my %parameters = ();
-                    foreach my $param ( @{ $test_params->get_parameter } ) {
-                        $parameters{ $param->get_name } = $param->get_text;
-                    }
-
-                    my $key = "";
-                    foreach my $parameter ( sort keys %parameters ) {
-                        my $value = $parameters{$parameter};
-                        $value = "" unless ( $value );
-
-                        $key .= $parameter . "|" . $value;
-                    }
-
-                    unless ( $new_domains{$key} ) {
-
-                        # The domain isn't actually used, so we overload it to differentiate test
-                        # groups from individual tests.
-                        my $urn;
-                        my $domain_obj;
-
-                        $logger->debug( "Finding new domain id" );
-
-                        # Find an empty domain
-                        do {
-                            $urn        = "urn:ogf:network:domain=test." . genuid();
-                            $domain_obj = $topology->getDomainById( $urn );
-                        } while ( $domain_obj );
-
-                        # Add the new group
-                        $logger->debug( "Creating new domain" );
-                        $topology->addDomain( Domain->new( { id => $urn } ) );
-                        $domain_obj = $topology->getDomainById( $urn );
-
-                        $new_domains{$key} = $domain_obj;
-
-                        # Since we start with "empty" tests. we define a junk node to hold our
-                        # test's properties (test parameters/description).
-
-                        eval {
-
-                            # Create a new profile node
-                            my $profile_urn  = $urn . ":node=profile_node";
-                            my $profile_node = Node->new(
-                                {
-                                    id          => $profile_urn,
-                                    description => Description->new( { text => "PingER Test" } ),
-                                    parameters  => Parameters->new( { xml => $node->get_parameters->asString } ),
-                                }
-                            );
-
-                            $domain_obj->addNode( $profile_node );
-                        };
-                        if ( $@ ) {
-                            die( "Failed to add test: $@" );
-                        }
-
-                        $logger->debug( "Finished creating domain" );
-                    }
-
-                    my $new_domain = $new_domains{$key};
-
-                    eval {
-                        $logger->debug( "Adding new node " . $node->get_id . " to domain: " . $new_domain->get_id );
-
-                        my $node_urn;
-                        do {
-                            $node_urn = $domain->get_id . ":node=" . genuid();
-                        } while ( $domain->getNodeById( $node_urn ) );
-
-                        my $port_urn = $node_urn . ":port=" . genuid();
-                        my $real_node = Node->new( { xml => $node->asString } );
-
-                        # Duplicate the information into the new domain
-                        $real_node->set_id( $node_urn );
-                        $real_node->set_description( $node->get_description );
-                        $real_node->get_port->set_id( $port_urn );
-                        $real_node->set_parameters( Parameters->new( { xml => $node->get_parameters->asString } ) );
-
-                        $new_domain->addNode( $real_node );
-                    };
-                    if ( $@ ) {
-                        die( "Failed to add test: $@" );
-                    }
-                }
-
-                $logger->debug( "Removing domain: " . $domain->get_id );
-
-                # Get rid of the old version
-                $topology->removeDomainById( $domain->get_id );
+                $logger->debug("Found profile node");
+                $profile_node = $node;
+                last;
             }
 
-            # Now, all the domains available should be one of our "test"
-            # domains.
+            my $test_description;
 
-            my @mesh_added_domains = ();
+            if ($profile_node) {
+                $test_description = $profile_node->findvalue('*[local-name()="description"]');
+            }
 
-            foreach my $domain ( @{ $topology->get_domain } ) {
-                my $test_id;
+            unless ($test_description) {
+                $test_description = $domain->findvalue('*[local-name()="comments"]');
+            }
 
-                my @members = ();
+            unless ($test_description) {
+                $test_description = "PingER test";
+            }
 
-                my $is_mesh_added;
-                $is_mesh_added = 1 if ($domain->get_id =~ /domain=mesh_agent_/);
+            $logger->debug("Test description: $test_description");
 
-                $logger->debug("Domain id: ".$domain->get_id);
+            foreach my $node ( $domain->findnodes('*[local-name()="node"]') ) {
+                my $node_id = $node->getAttribute("id");
 
-                if ($is_mesh_added) {
-                    $logger->debug("Adding domain: ".$domain->get_id." to opaque list");
-                    push @mesh_added_domains, $domain;
-                }
+                $logger->debug("Found node: $node_id");
 
-                if ( $domain->get_node ) {
-                    my $test_description;
+                unless ($test_id) {
+                    my $packet_size = $node->findvalue('*[local-name()="parameters"]/*[local-name()="parameter" and @name="packetSize"]');
+                    my $packet_count = $node->findvalue('*[local-name()="parameters"]/*[local-name()="parameter" and @name="count"]');
+                    my $packet_interval = $node->findvalue('*[local-name()="parameters"]/*[local-name()="parameter" and @name="packetInterval"]');
+                    my $test_interval = $node->findvalue('*[local-name()="parameters"]/*[local-name()="parameter" and @name="measurementPeriod"]');
+                    my $test_offset = $node->findvalue('*[local-name()="parameters"]/*[local-name()="parameter" and @name="measurementOffset"]');
+                    my $ttl = $node->findvalue('*[local-name()="parameters"]/*[local-name()="parameter" and @name="ttl"]');
 
-                    my $profile_node = $domain->getNodeById( $domain->get_id . ":node=profile_node" );
-                    if ($profile_node) {
-                        $test_description = $profile_node->get_description->get_text;
-                    }
-                    else {
-                        my $domain_comments = $domain->get_comments;
-                        if ($domain_comments) {
-                            $test_description = $domain_comments->get_text;
-                        }
-                        else {
-                            $test_description = "PingER test";
-                        }
-                    }
-
-                    foreach my $node ( @{ $domain->get_node } ) {
-                        unless ($test_id) {
-                            my $packet_size;
-                            my $packet_count;
-                            my $packet_interval;
-                            my $test_interval;
-                            my $test_offset;
-                            my $ttl;
-        
-                            my $test_params = $node->get_parameters;
-
-                            foreach my $param ( @{ $test_params->get_parameter } ) {
-                                my $param_name;
-                                if ( $param->get_name eq "packetSize" ) {
-                                    $packet_size = $param->get_text;
-                                }
-                                elsif ( $param->get_name eq "count" ) {
-                                    $packet_count = $param->get_text;
-                                }
-                                elsif ( $param->get_name eq "packetInterval" ) {
-                                    $packet_interval = $param->get_text;
-                                }
-                                elsif ( $param->get_name eq "measurementPeriod" ) {
-                                    $test_interval = $param->get_text;
-                                }
-                                elsif ( $param->get_name eq "measurementOffset" ) {
-                                    $test_offset = $param->get_text;
-                                }
-                                elsif ( $param->get_name eq "ttl" ) {
-                                    $ttl = $param->get_text;
-                                }
+                    my $added_by_mesh;
+                    $added_by_mesh = 1 if $domain_id =~ /domain=mesh_agent_/;
+    
+                    my ( $status, $res ) = $regular_tests->add_test_pinger(
+                        {
+                            description     => $test_description,
+                                packet_size     => $packet_size,
+                                packet_count    => $packet_count,
+                                packet_interval => $packet_interval,
+                                test_interval   => $test_interval,
+                                test_offset     => $test_offset,
+                                ttl             => $ttl,
+                                added_by_mesh   => $added_by_mesh,
                             }
+                        );
 
-                            my ( $status, $res ) = $regular_tests->add_test_pinger(
-                                {
-                                    description     => $test_description,
-                                    packet_size     => $packet_size,
-                                    packet_count    => $packet_count,
-                                    packet_interval => $packet_interval,
-                                    test_interval   => $test_interval,
-                                    test_offset     => $test_offset,
-                                    ttl             => $ttl,
-                                }
-                            );
+                        die( "Couldn't create PingER test: $res" ) unless ( $status == 0 );
 
-                            die( "Couldn't create PingER test: $res" ) unless ( $status == 0 );
+                        $test_id = $res;
+                    }
 
-                            $test_id = $res;
-                        }
+                    next if ( $node_id =~ /profile_node/ );
 
-                        next if ( $node->get_id =~ /profile_node/ );
-
-                        my $port = $node->get_port;
-
-                        next unless ( $port );
-
+                    foreach my $port ($node->findnodes('*[local-name()="port"]')) {
                         my $description = "";
 
-                        $description = $node->get_description->get_text if ( $node->get_description );
-                        $description = $node->get_hostName->get_text if ( $node->get_hostName and not $description );
+                        $description = $node->findvalue('*[local-name()="description"]');
+                        $description = $node->findvalue('*[local-name()="hostName"]') unless $description;
 
-                        my $name = "";
-                        $name = $node->get_hostName->get_text if ( $node->get_hostName and $node->get_hostName->get_text );
-                        $logger->debug( "Parsed Name: $name" );
-                        unless ($name) {
-                            # The node may have already been added to the node table with the ip address as the hostname
-                            $name = $node->get_port->get_ipAddress->get_text;
-                            $logger->debug( "Parsed Name2: $name" );
-                        }
+                        my $ip = $port->findvalue('*[local-name()="ipAddress"]');
+                        my $name = $node->findvalue('*[local-name()="hostName"]');
+                        $name = $ip unless $name;
 
-                        $logger->debug( "Member: " . $node->asString );
-                        $logger->debug( "Parsed: $description/$name" );
+                        $logger->debug( "Parsed: $description/$name/$ip" );
 
-                        my ( $status, $res ) = $regular_tests->add_test_member( { test_id => $test_id, name => $name, description => $description, address => $node->get_port->get_ipAddress->get_text, receiver => 1, sender => 1 } );
+                        my ( $status, $res ) = $regular_tests->add_test_member( { test_id => $test_id, name => $name, description => $description, address => $ip, receiver => 1, sender => 1 } );
 
                         die( "Couldn't add host to PingER test: $res" ) unless ( $status == 0 );
                     }
                 }
             }
-        }
     };
     if ( $@ ) {
         return ( -1, "Failed to load landmarks file: $@ " );
@@ -396,17 +238,7 @@ sub generate_pinger_landmarks_file {
     my ( $regular_tests, @params ) = @_;
     my $parameters = validate( @params, { } );
 
-    my $content;
-
-    eval {
-        my $topology = Topology->new();
-        $content = $topology->asString;
-    };
-    if ( $@ ) {
-        my $msg = "Failed to create landmarks file: $@";
-        $logger->error($msg);
-        return ( -1, $msg);
-    }
+    my $content = '<pingertopo:topology xmlns:pingertopo="http://ogf.org/ns/nmwg/tools/pinger/landmarks/1.0/"/>';
 
     return ( 0, $content );
 }
@@ -491,6 +323,7 @@ sub parse_owmesh_conf {
                     my $sample_count              = $owmesh_conf->{TESTSPEC}->{$test}->{'OWPSAMPLECOUNT' };
                     my $packet_padding            = $owmesh_conf->{TESTSPEC}->{$test}->{'OWPPACKETPADDING' };
                     my $bucket_width              = $owmesh_conf->{TESTSPEC}->{$test}->{'OWPBUCKETWIDTH' };
+                    my $added_by_mesh             = $measurement_set_desc->{'ADDED_BY_MESH' };
 
                     my $description = $owmesh_conf->{TESTSPEC}->{$test}->{'DESCRIPTION' };
                     $description = $group_name unless ( $description );
@@ -505,6 +338,7 @@ sub parse_owmesh_conf {
                             sample_count              => $sample_count,
                             packet_padding            => $packet_padding,
                             bucket_width              => $bucket_width,
+                            added_by_mesh             => $added_by_mesh,
                         }
                     );
 
@@ -522,6 +356,7 @@ sub parse_owmesh_conf {
                     my $icmp        = $owmesh_conf->{TESTSPEC}->{$test}->{'TRACEICMP' };
                     my $description = $owmesh_conf->{TESTSPEC}->{$test}->{'DESCRIPTION' };
                     $description = $group_name unless ( $description );
+                    my $added_by_mesh = $measurement_set_desc->{'ADDED_BY_MESH' };
 
                     my ( $status, $res ) = $regular_tests->add_test_traceroute(
                         {
@@ -535,6 +370,7 @@ sub parse_owmesh_conf {
                             max_ttl       => $max_ttl,
                             pause         => $pause,
                             protocol      => ($icmp ? 'icmp' : 'udp'),
+                            added_by_mesh => $added_by_mesh
                         }
                     );
 
@@ -562,6 +398,7 @@ sub parse_owmesh_conf {
                     my $buffer_length             = $owmesh_conf->{TESTSPEC}->{$test}->{'BWBufferLen' };
                     my $test_interval_start_alpha = $owmesh_conf->{TESTSPEC}->{$test}->{'BWTestIntervalStartAlpha' };
                     my $tos_bits                  = $owmesh_conf->{TESTSPEC}->{$test}->{'BWTosBits' };
+                    my $added_by_mesh = $measurement_set_desc->{'ADDED_BY_MESH' };
 
                     my $description = $owmesh_conf->{TESTSPEC}->{$test}->{DESCRIPTION};
                     $description = $group_name unless ( $description );
@@ -611,6 +448,7 @@ sub parse_owmesh_conf {
                             buffer_length             => $buffer_length,
                             test_interval_start_alpha => $test_interval_start_alpha,
                             tos_bits                  => $tos_bits,
+                            added_by_mesh             => $added_by_mesh
                         }
                     );
 
