@@ -13,7 +13,7 @@ if [ -f /etc/sysconfig/iptables ]; then
     fi
 fi
 if [ -f /etc/sysconfig/ip6tables ]; then
-    grep "perfSONAR Toolkit Firewall Config v1.0" /etc/sysconfig/ip6tables &> /dev/null
+    grep "perfSONAR Toolkit Firewall Config v1.1" /etc/sysconfig/ip6tables &> /dev/null
     if [ $? != 0 ]; then
        FILE_NUM=0
        while [ -f "/etc/sysconfig/ip6tables.bak.${FILE_NUM}" ]; do
