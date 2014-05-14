@@ -121,9 +121,9 @@ To join the 'perfSONAR-PS Users' mailing list, please visit:
 
   https://lists.internet2.edu/sympa/info/perfsonar-ps-users
 
-The perfSONAR-PS subversion repository is located at:
+The perfSONAR-PS git repository is located at:
 
-  http://anonsvn.internet2.edu/svn/perfSONAR-PS/trunk
+  https://code.google.com/p/perfsonar-ps/
 
 Questions and comments can be directed to the author, or the mailing list.
 Bugs, feature requests, and improvements can be directed here:
