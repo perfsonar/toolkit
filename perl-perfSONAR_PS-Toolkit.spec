@@ -122,6 +122,7 @@ Requires:		httpd
 Requires:		iperf
 Requires:		mod_auth_shadow
 Requires:		mod_ssl
+Requires:               nagios-plugins-all
 Requires:		nscd
 Requires:		ntp
 Requires:		fail2ban
