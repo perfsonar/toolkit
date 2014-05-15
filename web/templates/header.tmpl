@@ -27,6 +27,11 @@ dojo.require("dijit.form.FilteringSelect");
 dojo.require("dojo.data.ItemFileReadStore");
 dojo.require("dojox.validate.regexp");
 dojo.require("dojox.data.CsvStore");
+dojo.require("dojo/_base/lang");
+dojo.require("dojox/grid/DataGrid");
+dojo.require("dojo/data/ItemFileWriteStore");
+dojo.require("dojo/dom");
+dojo.require("dojo/domReady!");
 
 function display_waiting_dialog(message) {
 	var title = "";
@@ -116,6 +121,36 @@ function strip_trailing_slash(url) {
 function close_dialog(dialog_name) {
 	dijit.byId(dialog_name).destroyRecursive();
 }
+
+function display_jowping_warning_dialog() {
+	var title = "Warning: The Java OWAMP Client is experimental software";
+	var dialog_content = "";
+
+	dialog_content += "<p>";
+	dialog_content += "The Java OWAMP Client is experimental software that was written as part of the Goole Summer Of Code.";
+	dialog_content += "</p>";
+	dialog_content += "<p>";
+	dialog_content += "The authors are currently looking for people to evaluate the software and write usage documentation.";
+	dialog_content += "</p>";
+
+	dialog_content += "<button dojoType='dijit.form.Button' id='jowping_warning_run_jowping'>Run Java OWAMP Client</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='jowping_warning_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "jowping_warning_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "jowping_warning_dialog" ));
+	dojo.connect(dijit.byId('jowping_warning_cancel'), 'onClick', function() { dijit.byId('jowping_warning_dialog').hide(); });
+	dojo.connect(dijit.byId('jowping_warning_run_jowping'), 'onClick', dojo.hitch(null,
+										function() {
+											location.href = "http://"+location.host+"/toolkit/gui/jowping";
+											dijit.byId('jowping_warning_dialog').hide();
+										}
+										)
+			);
+
+	dialog.show();
+}
+
 
 function highlight_selected_menu() {
 	if (dojo.byId("leftSideNavigation") == null) {
