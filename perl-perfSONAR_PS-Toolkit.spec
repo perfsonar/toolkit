@@ -297,9 +297,6 @@ mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolk
 #Make sure that the administrator_info file gets reloaded
 /opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl 2> /dev/null
 
-#Make sure that the owmesh file supports default traceroute options. Must run for clean install and upgrades.
-/opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_regular_tests
-
 #Make sure that the owamp config file has the expanded port range instead of the old defaults
 /opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_owamp_port_range.sh
 
@@ -333,6 +330,11 @@ chkconfig --level 2345 httpd on
 #starting iptables
 chkconfig iptables on
 chkconfig ip6tables on
+
+#adding cassandra and postgres for esmond
+chkconfig --add cassandra
+chkconfig cassandra on
+chkconfig postgresql on
 
 %post LiveCD
 # The toolkit_config init script is only enabled when the LiveCD is being used

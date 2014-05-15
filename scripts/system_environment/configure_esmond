@@ -1,0 +1,46 @@
+#!/bin/bash
+
+#init postgres
+if [ -z "$(ls -A /var/lib/pgsql/data)" ]; then
+    /sbin/service postgresql initdb
+    /sbin/service postgresql start
+    sudo -u postgres psql -c "CREATE USER esmond WITH PASSWORD '7hc4m1'"
+    sudo -u postgres psql -c "CREATE DATABASE esmond"
+    sudo -u postgres psql -c "GRANT ALL ON DATABASE esmond to esmond"
+    cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
+    /sbin/service postgresql restart
+    sed -i "s/sql_db_name = .*/sql_db_name = esmond/g" /opt/esmond/esmond.conf
+    sed -i "s/sql_db_user = .*/sql_db_user = esmond/g" /opt/esmond/esmond.conf
+    sed -i "s/sql_db_password = .*/sql_db_password = 7hc4m1/g" /opt/esmond/esmond.conf
+fi
+
+#install esmond config
+cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
+
+#set esmond env variables
+export ESMOND_ROOT=/opt/esmond
+export ESMOND_CONF=$ESMOND_ROOT/esmond.conf
+export DJANGO_SETTINGS_MODULE=esmond.settings
+
+#initialize python
+cd /opt/esmond
+source /opt/rh/python27/enable
+/opt/rh/python27/root/usr/bin/virtualenv --prompt="(esmond)" .
+. bin/activate
+
+#build esmond tables
+python esmond/manage.py syncdb --noinput
+
+#create api key
+KEY=`python esmond/manage.py add_ps_metadata_post_user perfsonar | grep "Key:" | cut -f2 -d " "`
+python esmond/manage.py add_timeseries_post_user perfsonar
+
+#put api key in regular_testing
+if [ -n "$KEY" ]; then
+    grep "$KEY" /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf &> /dev/null
+    if [ $? != 0 ]; then
+        mv /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf.install.bak
+        cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/regular_testing.conf /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf 
+        sed -i "s/ESMOND_API_KEY/$KEY/g" /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf
+    fi
+fi

@@ -26,6 +26,8 @@ etc/config_daemon-logger.conf
 etc/config_daemon.conf
 etc/default_service_configs/SimpleLSBootStrap-hosts-client.yml
 etc/default_service_configs/ls_registration_daemon.conf
+etc/default_service_configs/pg_hba.conf
+etc/default_service_configs/regular_testing.conf
 etc/discover_external_address-logger.conf
 etc/discover_external_address.conf
 etc/enabled_services
@@ -177,6 +179,7 @@ scripts/system_environment/add_toolkit_dirs_path
 scripts/system_environment/bwctl_port_verify
 scripts/system_environment/configure_bwctld_log_location
 scripts/system_environment/configure_cacti
+scripts/system_environment/configure_esmond
 scripts/system_environment/configure_firewall
 scripts/system_environment/configure_ntpd
 scripts/system_environment/configure_sysctl
