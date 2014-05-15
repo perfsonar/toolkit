@@ -1,1 +1,0 @@
-../../../../../../../../../Shared/lib/perfSONAR_PS/PINGER_DATATYPES/v2_0/nmwg/Message/Metadata/Parameters/Parameter.pm

@@ -28,7 +28,6 @@ use XML::LibXML;
 use Digest::MD5 qw(md5_hex);
 
 use perfSONAR_PS::Utils::ParameterValidation;
-use perfSONAR_PS::Client::gLS;
 
 =head2 new( $package, { hints_url => 0, hints_file => 0, cache_directory => 0 } )
 
@@ -41,22 +40,14 @@ sub new {
     my $parameters = validateParams(
         @args,
         {
-            hints_url       => { type => Params::Validate::ARRAYREF | Params::Validate::UNDEF | Params::Validate::SCALAR, optional => 1 },
-            hints_file      => { type => Params::Validate::SCALAR | Params::Validate::UNDEF,                              optional => 1 },
-            cache_directory => { type => Params::Validate::SCALAR | Params::Validate::UNDEF,                              optional => 1 },
+            cache_directory => { type => Params::Validate::SCALAR | Params::Validate::UNDEF,                              optional => 0 },
         }
     );
 
     my $self = fields::new( $package );
 
     $self->{LOGGER} = get_logger( $package );
-
-    if ( $parameters->{cache_directory} ) {
-        $self->{CACHE_DIRECTORY} = $parameters->{cache_directory};
-    }
-    else {
-        $self->{GLS_CLIENT} = perfSONAR_PS::Client::gLS->new( { url => $parameters->{hints_url}, file => $parameters->{hints_file} } );
-    }
+    $self->{CACHE_DIRECTORY} = $parameters->{cache_directory};
 
     return $self;
 }
@@ -130,9 +121,9 @@ To join the 'perfSONAR-PS Users' mailing list, please visit:
 
   https://lists.internet2.edu/sympa/info/perfsonar-ps-users
 
-The perfSONAR-PS subversion repository is located at:
+The perfSONAR-PS git repository is located at:
 
-  http://anonsvn.internet2.edu/svn/perfSONAR-PS/trunk
+  https://code.google.com/p/perfsonar-ps/
 
 Questions and comments can be directed to the author, or the mailing list.
 Bugs, feature requests, and improvements can be directed here:
