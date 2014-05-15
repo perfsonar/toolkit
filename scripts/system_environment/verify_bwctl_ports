@@ -1,0 +1,16 @@
+#!/bin/bash
+
+addBwctlPorts(){  
+    port_type=$1
+    port_range=$2
+    grep ^${port_type} /etc/bwctld/bwctld.conf &> /dev/null
+    if [ $? != 0 ]; then
+        echo "" >> /etc/bwctld/bwctld.conf
+        echo "${port_type} ${port_range}" >> /etc/bwctld/bwctld.conf
+    fi  
+}
+
+addBwctlPorts "nuttcp_port" "5301-5600"
+addBwctlPorts "iperf_port" "5001-5300"
+addBwctlPorts "owamp_port" "5601-5900"
+addBwctlPorts "peer_port" "6001-6200"
