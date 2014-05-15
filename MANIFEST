@@ -174,6 +174,7 @@ scripts/service_watcher
 scripts/system_environment/add_dbxml_path
 scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path
+scripts/system_environment/bwctl_port_verify
 scripts/system_environment/configure_bwctld_log_location
 scripts/system_environment/configure_cacti
 scripts/system_environment/configure_firewall
@@ -193,7 +194,6 @@ scripts/system_environment/enable_ntpd
 scripts/system_environment/enable_web100_kernel_repository
 scripts/system_environment/enable_wheel_sudo
 scripts/system_environment/increase_owamp_limits
-scripts/system_environment/verify_bwctl_ports
 scripts/temp_root.img
 scripts/update_administrative_info.pl
 scripts/upgrade/upgrade_3.1.x.sh
