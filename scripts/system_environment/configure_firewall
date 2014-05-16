@@ -2,7 +2,7 @@
 
 #backup old versions
 if [ -f /etc/sysconfig/iptables ]; then
-    grep "perfSONAR Toolkit Firewall Config v1.0" /etc/sysconfig/iptables &> /dev/null
+    grep "perfSONAR Toolkit Firewall Config v1.1" /etc/sysconfig/iptables &> /dev/null
     if [ $? != 0 ]; then
        FILE_NUM=0
        while [ -f "/etc/sysconfig/iptables.bak.${FILE_NUM}" ]; do
