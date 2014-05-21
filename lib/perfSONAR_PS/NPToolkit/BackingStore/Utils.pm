@@ -27,12 +27,13 @@ use base 'Exporter';
 
 our @EXPORT_OK = qw( mount_data_store load_live_device unload_live_device );
 
-our $store_info_location = "/var/run/toolkit/backing_store.info";
-our $store_location      = "/mnt/store";
-our $new_store_location  = "/mnt/store.new";
-our $live_dir            = "/mnt/live";
-our $squashfs_dir        = "/mnt/squashfs";
-our $toolkit_dir         = "/mnt/toolkit";
+our $store_info_location   = "/var/run/toolkit/backing_store.info";
+our $store_location        = "/mnt/store";
+our $new_store_location    = "/mnt/store.new";
+our $live_dir              = "/mnt/live";
+our $squashfs_dir          = "/mnt/squashfs";
+our $toolkit_dir           = "/mnt/toolkit";
+our @supported_filesystems = ( "ext3", "ext4", "xfs", "btrfs", "jfs", "reiserfs" );
 
 =head2 mount_data_store({ })
 
@@ -106,23 +107,27 @@ sub mount_data_store {
 
     my $mounted_dev;
 
-    if (open(BLKID, "-|", "blkid -o device -t TYPE='ext3'")) {
-        while(my $dev = <BLKID>) {
-            chomp($dev);
-            `mount -t ext3 $dev $store_location &> /dev/null`;
-            if ($?) {
-                # XXX: disply an error
-                next;
-            }
+    foreach my $fs_type (@supported_filesystems) {
+        if (open(BLKID, "-|", "blkid -o device -t TYPE='$fs_type'")) {
+            while(my $dev = <BLKID>) {
+                chomp($dev);
+                `mount -t $fs_type $dev $store_location &> /dev/null`;
+                if ($?) {
+                    # XXX: disply an error
+                    next;
+                }
 
-            if ( -e "$store_location/NPTools" ) {
-                $mounted_dev=$dev;
-                last;
-            }
-            else {
-                `umount $store_location &> /dev/null`;
+                if ( -e "$store_location/NPTools" ) {
+                    $mounted_dev=$dev;
+                    last;
+                }
+                else {
+                    `umount $store_location &> /dev/null`;
+                }
             }
         }
+
+        last if $mounted_dev;
     }
 
     unless ($mounted_dev) {
@@ -142,20 +147,28 @@ sub mount_data_store {
                     # XXX: display an error or something
                     next;
                 }
-                chomp($dev);
-                `mount -t ext3 $dev $store_location &> /dev/null`;
-                if ($?) {
-                    # XXX: disply an error
-                    next;
-                }
 
-                if ( -e "$store_location/NPTools" ) {
-                    $mounted_dev=$dev;
+                foreach my $fs_type (@supported_filesystems) {
+                    chomp($dev);
+                    `mount -t $fs_type $dev $store_location &> /dev/null`;
+                    if ($?) {
+                        # XXX: disply an error
+                        next;
+                    }
+
+                    if ( -e "$store_location/NPTools" ) {
+                        $mounted_dev=$dev;
+                    }
+                    else {
+                        `umount $store_location &> /dev/null`;
+                    }
+
+                    # If we get here, we mounted the device so trying another
+                    # filesystem isn't going to help
                     last;
                 }
-                else {
-                    `umount $store_location &> /dev/null`;
-                }
+
+                last if $mounted_dev;
             }
             close(PARTITIONS);
         }
