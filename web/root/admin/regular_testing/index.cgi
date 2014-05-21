@@ -20,12 +20,11 @@ my $basedir = "$RealBin/";
 use lib "$RealBin/../../../../lib";
 
 use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address reverse_dns_multi resolve_address_multi );
-use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces get_interface_addresses );
+use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces get_interface_addresses discover_primary_address );
 use perfSONAR_PS::Client::gLS::Keywords;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 use perfSONAR_PS::NPToolkit::Config::BWCTL;
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
-use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
 use perfSONAR_PS::Common qw(find findvalue extract genuid);
 use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
@@ -246,14 +245,9 @@ sub fill_variables {
 
     my $warning_msg;
 
-    my $external_address;
-    my $external_address_config = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
-    if ( $external_address_config->init() == 0 ) {
-        $external_address = $external_address_config->get_primary_address({});
-    }
-
-    unless ($external_address) {
-    	$warning_msg = "There is no external address available. Your tests may not work as expected. You may need to run /opt/perfsonar_ps/toolkit/scripts/discover_external_address";
+    my $external_addresses = discover_primary_address({ disable_ipv4_reverse_lookup => 1, disable_ipv6_reverse_lookup => 1 });
+    unless ($external_addresses->{primary_address}) {
+    	$warning_msg = "There isn't an external address available. Your tests may not work as expected.";
     }
 
     $vars->{interfaces}     = \@interfaces;

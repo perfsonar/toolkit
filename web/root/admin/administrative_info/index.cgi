@@ -19,10 +19,10 @@ my $basedir = "$RealBin/";
 use lib "$RealBin/../../../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
-use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
 use perfSONAR_PS::Utils::GeoIp qw(ipToLatLong);
 use perfSONAR_PS::Client::gLS::Keywords;
 use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
+use perfSONAR_PS::Utils::Host qw( discover_primary_address );
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -206,20 +206,6 @@ sub fill_variables {
     $vars->{longitude}            = $administrative_info_conf->get_longitude();
     set_error_variables( $vars, 'longitude' );
 
-    #if latitude and longitude are empty then populate lat,long using geoip
-    if((!$vars->{latitude} || $vars->{latitude} eq "") && (!$vars->{longitude} || $vars->{longitude} eq "")){
-        my $address_conf = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
-        $address_conf->init();
-        my $ip = $address_conf->get_primary_address();
-        my $res = ipToLatLong($ip);
-
-        if($res->{longitude} && $res->{latitude} ){
-            $vars->{longitude} = $res->{longitude};
-            $vars->{latitude} = $res->{latitude};
-        }
-
-    }
-
     my $keywords         = $administrative_info_conf->get_keywords();
     my @display_keywords = ();
     if ( $keywords ) {
@@ -255,6 +241,21 @@ sub set_error_variables {
 sub set_host_information  {
     my ( $organization_name, $host_location, $city, $state, $country, $zipcode, $administrator_name, $administrator_email, $latitude, $longitude, $subscribe ) = @_;
 
+    #if latitude and longitude are empty then populate lat,long using geoip
+    unless ($latitude or $longitude or 
+            $administrative_info_conf->get_latitude() or
+            $administrative_info_conf->get_longitude()) {
+        my $external_addresses = discover_primary_address({ disable_ipv4_reverse_lookup => 1, disable_ipv6_reverse_lookup => 1 });
+        if ($external_addresses->{primary_address}) {
+            my $res = ipToLatLong($external_addresses->{primary_address});
+
+            if($res->{longitude} && $res->{latitude} ){
+                $longitude = $res->{longitude};
+                $latitude = $res->{latitude};
+            }
+        }
+    }
+
     $administrative_info_conf->set_organization_name( { organization_name => $organization_name } );
     $administrative_info_conf->set_city( { city => $city } );
     $administrative_info_conf->set_state( { state => $state } );
@@ -264,7 +265,6 @@ sub set_host_information  {
     $administrative_info_conf->set_longitude( { longitude => $longitude } );
     $administrative_info_conf->set_administrator_name( { administrator_name => $administrator_name } );
     $administrative_info_conf->set_administrator_email( { administrator_email => $administrator_email } );
-
 
     if($administrator_email && $subscribe eq "true"){
         subscribe($administrator_email);

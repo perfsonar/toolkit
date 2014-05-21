@@ -38,7 +38,7 @@ sub ipToLatLong {
     my ( $ip ) = @_;
     
     my $result = ();
-    if($ip && $ip != ""){
+    if ($ip) {
         my $url = $GEOIPSERVICE_URL_PREFIX . "";
         my $content = get($url);
         if (defined $content){

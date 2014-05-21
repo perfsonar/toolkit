@@ -15,8 +15,9 @@ my $basedir = "$RealBin/";
 use lib "$RealBin/../../../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::Version;
-use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
+
+use perfSONAR_PS::Utils::Host qw( discover_primary_address );
 
 use perfSONAR_PS::NPToolkit::Services::ServicesMap qw(get_service_object);
 
@@ -50,8 +51,18 @@ if ( $conf{debug} ) {
 my $version_conf = perfSONAR_PS::NPToolkit::Config::Version->new();
 $version_conf->init();
 
-my $external_address_conf = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
-$external_address_conf->init();
+my $external_addresses = discover_primary_address({
+                                                    interface => $conf{primary_interface},
+                                                    allow_rfc1918 => $conf{allow_internal_addresses},
+                                                    disable_ipv4_reverse_lookup => $conf{disable_ipv4_reverse_lookup},
+                                                    disable_ipv6_reverse_lookup => $conf{disable_ipv6_reverse_lookup},
+                                                 });
+my $external_address;
+my $external_address_mtu;
+if ($external_addresses) {
+    $external_address = $external_addresses->{primary_address};
+    $external_address_mtu = $external_addresses->{primary_iface_mtu};
+}
 
 my $administrative_info_conf = perfSONAR_PS::NPToolkit::Config::AdministrativeInfo->new();
 $administrative_info_conf->init( { administrative_info_file => $conf{administrative_info_file} } );
@@ -119,10 +130,9 @@ $vars{toolkit_version} = $version_conf->get_version();
 $vars{services}        = \%services;
 $vars{admin_name}      = $administrative_info_conf->get_administrator_name();
 $vars{admin_email}     = $administrative_info_conf->get_administrator_email();
-$logger->debug("Grabbing primary address");
-$vars{external_address}     = $external_address_conf->get_primary_address();
+$vars{external_address}     = $external_address;
 $logger->debug("Grabbing MTU of primary address");
-$vars{mtu}     = $external_address_conf->get_primary_iface_mtu();
+$vars{mtu}     = $external_address_mtu;
 $logger->debug("Checking if NTP is synced");
 $vars{ntp_sync_status}     = $ntp->is_synced();
 $logger->debug("Checking if globally registered");

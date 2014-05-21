@@ -35,10 +35,9 @@ use File::Basename qw(dirname basename);
 use FindBin qw($RealBin);
 use lib "$RealBin/../lib";
 
-use lib "/opt/perfsonar_ps/toolkit/lib";
-
-use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
 use perfSONAR_PS::NPToolkit::Config::Version;
+
+use perfSONAR_PS::Utils::Host qw( discover_primary_address );
 
 my $motd_template = "/opt/perfsonar_ps/toolkit/templates/config/motd.tmpl";
 
@@ -73,9 +72,9 @@ sub start {
         $version = $version_config->get_version();
     }
 
-    my $external_address_config = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
-    if ( $external_address_config->init() == 0 ) {
-        $external_address = $external_address_config->get_primary_address();
+    my $external_addresses = discover_primary_address();
+    if ( $external_addresses ) {
+        $external_address = $external_addresses->{primary_address};
     }
 
     my $template_directory = dirname( $motd_template );
@@ -99,7 +98,6 @@ __END__
 =head1 SEE ALSO
 
 L<Template>, L<File::Basename>, L<FindBin>,
-L<perfSONAR_PS::NPToolkit::Config::ExternalAddress>
 
 To join the 'perfSONAR Users' mailing list, please visit:
 

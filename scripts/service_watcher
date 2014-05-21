@@ -11,7 +11,6 @@ use Params::Validate qw(:all);
 use FindBin qw($RealBin);
 use lib "$RealBin/../lib";
 
-use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
 use perfSONAR_PS::NPToolkit::Services::ServicesMap qw(get_service_object);
 
 my ( $status, $res );

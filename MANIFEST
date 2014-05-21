@@ -28,10 +28,7 @@ etc/default_service_configs/SimpleLSBootStrap-hosts-client.yml
 etc/default_service_configs/ls_registration_daemon.conf
 etc/default_service_configs/pg_hba.conf
 etc/default_service_configs/regular_testing.conf
-etc/discover_external_address-logger.conf
-etc/discover_external_address.conf
 etc/enabled_services
-etc/external_addresses
 etc/firewall.conf
 etc/firewall_v6.conf
 etc/ntp_known_servers
@@ -39,7 +36,6 @@ etc/service_watcher-logger.conf
 etc/service_watcher.conf
 init_scripts/config_daemon
 init_scripts/configure_nic_parameters
-init_scripts/discover_external_address
 init_scripts/generate_cert_init_script
 init_scripts/generate_motd
 init_scripts/livecd_net_config
@@ -58,7 +54,6 @@ lib/perfSONAR_PS/NPToolkit/BackingStore/Utils.pm
 lib/perfSONAR_PS/NPToolkit/Config/AdministrativeInfo.pm
 lib/perfSONAR_PS/NPToolkit/Config/BWCTL.pm
 lib/perfSONAR_PS/NPToolkit/Config/Base.pm
-lib/perfSONAR_PS/NPToolkit/Config/ExternalAddress.pm
 lib/perfSONAR_PS/NPToolkit/Config/LSRegistrationDaemon.pm
 lib/perfSONAR_PS/NPToolkit/Config/NDT.pm
 lib/perfSONAR_PS/NPToolkit/Config/NPAD.pm
@@ -66,7 +61,6 @@ lib/perfSONAR_PS/NPToolkit/Config/NTP.pm
 lib/perfSONAR_PS/NPToolkit/Config/OWAMP.pm
 lib/perfSONAR_PS/NPToolkit/Config/RegularTesting.pm
 lib/perfSONAR_PS/NPToolkit/Config/Version.pm
-lib/perfSONAR_PS/NPToolkit/Config/pSPSServiceDaemon.pm
 lib/perfSONAR_PS/NPToolkit/ConfigManager/ConfigClient.pm
 lib/perfSONAR_PS/NPToolkit/ConfigManager/ConfigDaemon.pm
 lib/perfSONAR_PS/NPToolkit/ConfigManager/Utils.pm
@@ -162,7 +156,6 @@ scripts/create_backing_store
 scripts/cron-owamp_cleaner
 scripts/cron-save_config
 scripts/cron-service_watcher
-scripts/discover_external_address
 scripts/livecd_net_config.sh
 scripts/manage_users
 scripts/nptoolkit-configure.py
