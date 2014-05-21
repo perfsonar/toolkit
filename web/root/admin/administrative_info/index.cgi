@@ -256,7 +256,6 @@ sub set_host_information  {
     my ( $organization_name, $host_location, $city, $state, $country, $zipcode, $administrator_name, $administrator_email, $latitude, $longitude, $subscribe ) = @_;
 
     $administrative_info_conf->set_organization_name( { organization_name => $organization_name } );
-    $administrative_info_conf->set_location( { location => $host_location } );
     $administrative_info_conf->set_city( { city => $city } );
     $administrative_info_conf->set_state( { state => $state } );
     $administrative_info_conf->set_country( { country => $country } );
