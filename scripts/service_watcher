@@ -85,7 +85,6 @@ my @services = (
     get_service_object("ls_registration_daemon"),
     get_service_object("ls_cache_daemon"),
     get_service_object("config_daemon"),
-    get_service_object("simple_ls_bootstrap"),
 );
 
 # do a 'restart' pass if the "--regular-restart" flag was specified

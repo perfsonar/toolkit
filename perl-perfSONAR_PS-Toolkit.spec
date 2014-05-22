@@ -97,7 +97,6 @@ Requires:		datastax-repo
 Requires:		centos-release-SCL
 Requires:		perl-perfSONAR_PS-LSCacheDaemon
 Requires:		perl-perfSONAR_PS-LSRegistrationDaemon
-Requires:		perl-perfSONAR_PS-SimpleLS-BootStrap-client
 Requires:		perl-perfSONAR_PS-serviceTest
 Requires:		perl-perfSONAR_PS-RegularTesting
 Requires:		perl-perfSONAR_PS-MeshConfig-JSONBuilder
@@ -137,7 +136,6 @@ Obsoletes:		perl-perfSONAR_PS-TopologyService
 Requires(post):	perl
 Requires(post):	perl-perfSONAR_PS-LSCacheDaemon
 Requires(post):	perl-perfSONAR_PS-LSRegistrationDaemon
-Requires(post):	perl-perfSONAR_PS-SimpleLS-BootStrap-client
 Requires(post):	perl-perfSONAR_PS-serviceTest
 Requires(post):	esmond
 Requires(post):	perl-perfSONAR_PS-RegularTesting
@@ -288,7 +286,6 @@ ln -sf /usr/share/cacti /opt/perfsonar_ps/toolkit/web/root/admin/cacti
 
 # Overwrite the existing configuration files for the services with new
 # configuration files containing the default settings.
-cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/SimpleLSBootStrap-hosts-client.yml /opt/SimpleLS/bootstrap/etc/hosts-client.yml
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/ls_registration_daemon.conf /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
 
 #Add most recent version information to ls_registration_daemon.conf
