@@ -22,6 +22,7 @@ do
             echo "MTU=\"1500\"" >> /etc/sysconfig/network-scripts/ifcfg-${i}
             echo "ONBOOT=\"yes\"" >> /etc/sysconfig/network-scripts/ifcfg-${i}
             echo "TYPE=\"Ethernet\"" >> /etc/sysconfig/network-scripts/ifcfg-${i}
+            echo "NM_CONTROLLED=\"no\"" >> /etc/sysconfig/network-scripts/ifcfg-${i}
             
             #start interface
             /sbin/ifup ${i}
