@@ -15,7 +15,7 @@ EOF
 fi
 
 # Disable sync on /var/log/messages to save IO
-sed 's/\/var\/log\/messages/-\/var\/log\/messages/g' /etc/rsyslog.conf > /etc/rsyslog.conf.tmp
+sed 's/ \/var\/log\/messages/ -\/var\/log\/messages/g' /etc/rsyslog.conf > /etc/rsyslog.conf.tmp
 mv /etc/rsyslog.conf.tmp /etc/rsyslog.conf
 
 # Make sure that the owamp/bwctl log file gets rotated regularly
