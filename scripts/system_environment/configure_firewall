@@ -13,6 +13,7 @@ OWAMPDEFAULTS=("8760:9960")
 BWCTLFILE="/etc/bwctld/bwctld.conf"
 OWAMPFILE="/etc/owampd/owampd.conf"
 FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/firewall.conf"
+DEFAULT_FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/default_firewall.conf"
 OLD_FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/old_firewall_rules.conf"
 
 if [ ! -f $FIREWALL_RULES ]; then
@@ -26,10 +27,23 @@ main() {
         deleteOldFirewallRules
     fi
 
+    if [ "${IS_UPGRADE}" == "new" ]; then
+        echo "Setting up default firewall rules"
+        setupDefaultFirewallRules
+    fi
+
     echo "Adding perfSONAR firewall rules"
     addFirewallRules
 
     saveFirewallRules
+}
+
+setupDefaultFirewallRules() {
+    if [ -f $DEFAULT_FIREWALL_RULES ]; then
+        for iptables_cmd in "iptables" "ip6tables"; do
+            cat $DEFAULT_FIREWALL_RULES | ${iptables_cmd}-restore
+        done
+    fi
 }
 
 saveFirewallRules() {
@@ -54,7 +68,6 @@ deleteOldFirewallRules(){
         deletePortRuleFromFile "$iptables_cmd" "$BWCTLFILE" "$p";
         p=`echo ${OWAMPPARAMS[@]}`;
         deletePortRuleFromFile "$iptables_cmd" "$OWAMPFILE" "$p";
-
     done
 }
 
@@ -101,7 +114,6 @@ addFirewallRules(){
         # Make sure that there's an INPUT rule to point us into the 
         $iptables_cmd -n -L INPUT | grep -q "${CHAIN}[ \t]"
         if [ $? != 0 ]; then
-            echo "Couldn't find chain"
             $iptables_cmd -I INPUT -j ${CHAIN}
         fi
     done
