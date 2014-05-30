@@ -38,6 +38,17 @@ if [ $? != 0 ]; then
     mysql -e "INSERT INTO settings (name, value) VALUES ('user_template', 'admin');" $DATABASE   # Set the user logins to be admin users
 fi
 
+# This is a fix for an issue where the 0.8.8b cacti version got updated on the
+# Toolkit, but the tables weren't included, the version number just got
+# updated.
+OUTPUT=`mysql -e "SHOW TABLES LIKE 'plugin_config';" $DATABASE`
+if [ $? == 0 ]; then
+    if [ "${OUTPUT}" == "" ]; then
+        echo "plugin_config table is missing, setting the cacti version number to 0.8.7c to force an update"
+        mysql -e "UPDATE version SET cacti='0.8.7c' WHERE cacti='0.8.8b';" $DATABASE 
+    fi
+fi
+
 # Setup the cacti user
 mysql -e "GRANT ALL ON * TO cactiuser@localhost IDENTIFIED BY '$PASSWORD'" $DATABASE
 

@@ -24,14 +24,14 @@ etc/backingstore.conf.d/toolkit.conf
 etc/backingstore.conf.d/upgrade.conf
 etc/config_daemon-logger.conf
 etc/config_daemon.conf
-etc/default_service_configs/SimpleLSBootStrap-hosts-client.yml
+etc/default_firewall.conf
 etc/default_service_configs/ls_registration_daemon.conf
 etc/default_service_configs/pg_hba.conf
 etc/default_service_configs/regular_testing.conf
 etc/enabled_services
 etc/firewall.conf
-etc/firewall_v6.conf
 etc/ntp_known_servers
+etc/old_firewall_rules.conf
 etc/service_watcher-logger.conf
 etc/service_watcher.conf
 init_scripts/config_daemon
@@ -79,7 +79,6 @@ lib/perfSONAR_PS/NPToolkit/Services/NetworkBase.pm
 lib/perfSONAR_PS/NPToolkit/Services/OWAMP.pm
 lib/perfSONAR_PS/NPToolkit/Services/RegularTesting.pm
 lib/perfSONAR_PS/NPToolkit/Services/ServicesMap.pm
-lib/perfSONAR_PS/NPToolkit/Services/SimpleLSBootstrap.pm
 lib/perfSONAR_PS/NPToolkit/Services/esmond.pm
 lib/perfSONAR_PS/NPToolkit/Services/httpd.pm
 lib/perfSONAR_PS/RegularTesting/Config.pm
@@ -197,6 +196,7 @@ scripts/upgrade/upgrade_3.2.x.sh
 scripts/upgrade/upgrade_add_livecd_keyword.sh
 scripts/upgrade/upgrade_apache_admin
 scripts/upgrade/upgrade_conman_fix.sh
+scripts/upgrade/upgrade_firewall
 scripts/upgrade/upgrade_fix_cert_serial.sh
 scripts/upgrade/upgrade_fix_permissions.sh
 scripts/upgrade/upgrade_owamp_port_range.sh
