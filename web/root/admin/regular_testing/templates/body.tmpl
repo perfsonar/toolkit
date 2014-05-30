@@ -22,10 +22,10 @@
 [% INCLUDE status_messages.html %]
 
 [% IF throughput_tests > 0 %]
-[% IF network_percent_used > 100 %]
+[% IF network_percent_used >= 100 %]
 [% SET network_percentage_color = "red" %]
 [% ELSIF network_percent_used > 80 %]
-[% SET network_percentage_color = "yellow" %]
+[% SET network_percentage_color = "#DDC022" %]
 [% ELSE %]
 [% SET network_percentage_color = "green" %]
 [% END %]
