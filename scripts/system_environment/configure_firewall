@@ -30,7 +30,10 @@ cp /opt/perfsonar_ps/toolkit/etc/firewall_v6.conf /etc/sysconfig/ip6tables
 
 #Determine BWCTL and OWAMP ports
 bwctlparams=("iperf_port" "nuttcp_port" "peer_port")
+bwctldefaults=("5001:5300" "5301-5600" "6001:6200")
+
 owampparams=("testports")
+owampdefaults=("8760:9960")
 
 bwctlfile="/etc/bwctld/bwctld.conf"
 owampfile="/etc/owampd/owampd.conf"
@@ -38,22 +41,35 @@ owampfile="/etc/owampd/owampd.conf"
 addPortRuleFromFile(){
 	file=$1
 	local params=( `echo "$2"` )
-	for i in "${params[@]}"
+	local defaults=( `echo "$3"` )
+	
+	total=${#params[*]}
+	for (( i=0; i<=$(( $total - 1 )); i++ ))
 	do
-		portrange=`awk -v search="^$i" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
-		if [ ! -z "$portrange" ]; then
-			echo "-I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT" >> /etc/sysconfig/iptables 
-			echo "-I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT" >> /etc/sysconfig/iptables 
-			echo "-I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT" >> /etc/sysconfig/ip6tables
-			echo "-I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT" >> /etc/sysconfig/ip6tables
-		fi
+	    param_name="${params[$i]}"
+	    param_default="${defaults[$i]}"
+
+	    portrange=`awk -v search="^$param_name" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
+	    if [ -z "$portrange" ]; then
+		portrange=$param_default
+		echo "Unable to find definition for \"$param_name\" in \"$file\", using default of \"$portrange\""
+	    fi
+	    if [ ! -z "$portrange" ]; then
+		echo "-I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT" >> /etc/sysconfig/iptables 
+		echo "-I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT" >> /etc/sysconfig/iptables 
+		echo "-I INPUT 1 -m udp -p udp --dport $portrange -j ACCEPT" >> /etc/sysconfig/ip6tables
+		echo "-I INPUT 1 -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT" >> /etc/sysconfig/ip6tables
+	    fi
+		
 	done 
 }
 
 p=`echo ${bwctlparams[@]}`
-addPortRuleFromFile "$bwctlfile" "$p"
+d=`echo ${bwctldefaults[@]}`
+addPortRuleFromFile "$bwctlfile" "$p" "$d"
 p=`echo ${owampparams[@]}`
-addPortRuleFromFile "$owampfile" "$p"
+d=`echo ${owampdefaults[@]}`
+addPortRuleFromFile "$owampfile" "$p" "$d"
 echo "COMMIT" >> /etc/sysconfig/iptables
 echo "COMMIT" >> /etc/sysconfig/ip6tables
 
