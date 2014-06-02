@@ -4,6 +4,8 @@
 if [ -z "$(ls -A /var/lib/pgsql/data)" ]; then
     /sbin/service postgresql initdb
     /sbin/service postgresql start
+    echo "Waiting for postgresql to complete startup"
+    sleep 20
     sudo -u postgres psql -c "CREATE USER esmond WITH PASSWORD '7hc4m1'"
     sudo -u postgres psql -c "CREATE DATABASE esmond"
     sudo -u postgres psql -c "GRANT ALL ON DATABASE esmond to esmond"
@@ -34,13 +36,3 @@ python esmond/manage.py syncdb --noinput
 #create api key
 KEY=`python esmond/manage.py add_ps_metadata_post_user perfsonar | grep "Key:" | cut -f2 -d " "`
 python esmond/manage.py add_timeseries_post_user perfsonar
-
-#put api key in regular_testing
-if [ -n "$KEY" ]; then
-    grep "$KEY" /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf &> /dev/null
-    if [ $? != 0 ]; then
-        mv /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf.install.bak
-        cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/regular_testing.conf /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf 
-        sed -i "s/ESMOND_API_KEY/$KEY/g" /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf
-    fi
-fi

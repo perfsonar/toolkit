@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#set esmond env variables
+export ESMOND_ROOT=/opt/esmond
+export ESMOND_CONF=$ESMOND_ROOT/esmond.conf
+export DJANGO_SETTINGS_MODULE=esmond.settings
+
+#initialize python
+cd /opt/esmond
+source /opt/rh/python27/enable
+/opt/rh/python27/root/usr/bin/virtualenv --prompt="(esmond)" .
+. bin/activate
+
+#build esmond tables
+python esmond/manage.py syncdb --noinput
+
+#create api key
+KEY=`python esmond/manage.py add_ps_metadata_post_user perfsonar | grep "Key:" | cut -f2 -d " "`
+python esmond/manage.py add_timeseries_post_user perfsonar
+
+#put api key in regular_testing
+if [ -n "$KEY" ]; then
+    grep -q ESMOND_API_KEY /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf
+    if [ $? == 0 ]; then
+        mv /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf.install.bak
+        cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/regular_testing.conf /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf 
+        sed -i "s/ESMOND_API_KEY/$KEY/g" /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf
+    fi
+fi
+
+if [ -f /opt/perfsonar_ps/PingER/etc/pinger-landmarks.xml -o /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf  ]; then
+    /opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_regular_tests
+fi
