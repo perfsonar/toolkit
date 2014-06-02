@@ -6,6 +6,7 @@
 %define init_script_1 config_daemon
 %define init_script_2 generate_motd
 %define init_script_3 configure_nic_parameters
+%define init_script_10 psb_to_esmond
 
 # The following init scripts are only enabled when the LiveCD is being used
 %define init_script_6 mount_scratch_overlay
@@ -232,6 +233,7 @@ install -D -m 0755 init_scripts/%{init_script_6} %{buildroot}/etc/init.d/%{init_
 install -D -m 0755 init_scripts/%{init_script_7} %{buildroot}/etc/init.d/%{init_script_7}
 install -D -m 0755 init_scripts/%{init_script_8} %{buildroot}/etc/init.d/%{init_script_8}
 install -D -m 0755 init_scripts/%{init_script_9} %{buildroot}/etc/init.d/%{init_script_9}
+install -D -m 0755 init_scripts/%{init_script_10} %{buildroot}/etc/init.d/%{init_script_10}
 
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
@@ -312,10 +314,12 @@ chmod o+r /etc/owampd/owampd.pfs 2> /dev/null
 chkconfig --add %{init_script_1}
 chkconfig --add %{init_script_2}
 chkconfig --add %{init_script_3}
+chkconfig --add %{init_script_10}
 
 chkconfig %{init_script_1} on
 chkconfig %{init_script_2} on
 chkconfig %{init_script_3} on
+chkconfig %{init_script_10} on
 
 chkconfig fail2ban on
 # apache needs to be on for the toolkit to work
@@ -388,9 +392,11 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_3}
+%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_10}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_1}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
+%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_10}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
@@ -398,6 +404,7 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-backup.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/update_administrative_info.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade/*
