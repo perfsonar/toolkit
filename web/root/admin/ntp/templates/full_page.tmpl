@@ -3,13 +3,20 @@
 [% INCLUDE header.tmpl %]
 
 <script type="text/javascript">
-function toggle_server(address) {
-	var checkbox = dijit.byId(address+"_toggle");
-	if (!checkbox) {
-		return;
+function toggle_server(address, value) {
+        if (value == null) {
+		var checkbox = dijit.byId(address+"_toggle");
+		if (!checkbox) {
+			return;
+		}
+		value = checkbox.attr('value');
 	}
 
-	handle_cgi_ajax_call(null, null, false, 'toggle_server', [address, checkbox.attr('value')]);
+	handle_cgi_ajax_call(null, null, false, 'toggle_server', [address, 'value']);
+}
+
+function set_display_type(display_type) {
+	handle_cgi_ajax_call(null, null, true, 'set_display_type', [ display_type ]);
 }
 
 function handle_add_ntp_server() {
