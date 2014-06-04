@@ -5,8 +5,8 @@ IS_UPGRADE=$1
 CHAIN=perfSONAR
 
 #Determine BWCTL and OWAMP ports
-BWCTLPARAMS=("iperf_port" "nuttcp_port" "peer_port")
-BWCTLDEFAULTS=("5001:5300" "5301:5600" "6001:6200")
+BWCTLPARAMS=("iperf_port" "nuttcp_port" "owamp_port" "peer_port")
+BWCTLDEFAULTS=("5001:5300" "5301:5600" "5601:5900" "6001:6200")
 OWAMPPARAMS=("testports")
 OWAMPDEFAULTS=("8760:9960")
 
@@ -130,11 +130,11 @@ addPortRuleFromFile(){
 	do
 		param_name="${params[$i]}"
 		param_default="${defaults[$i]}"
-		portrange=`awk -v search="^$i" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
+		portrange=`awk -v search="^$param_name" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
 
 		if [ -z "$portrange" ]; then
 			portrange=$param_default
-			echo "Unable to find definition for \"$param_name\" in \"$file\", using default of \"$portrange\""
+			echo "Unable to find definition for \"$param_name\" in \"$file\" for \"$iptables_cmd\", using default of \"$portrange\""
 		fi
 
 		if [ ! -z "$portrange" ]; then
