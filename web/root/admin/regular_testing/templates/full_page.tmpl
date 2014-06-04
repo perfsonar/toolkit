@@ -617,11 +617,18 @@ function __display_owamp_test_dialog(test_id, description, packet_interval, pack
 	dialog_content += "<td>Packet Rate</td>";
 	dialog_content += "<td>";
 	dialog_content += "<select id='configure_test_packet_rate' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='"+packet_rate+"'>";
-	for(var i = 1; i <= 20; i++) {
-		dialog_content += "	<option value='"+i+"' "; if (packet_rate == i) { dialog_content += "selected='selected'" }; dialog_content += ">"+i+"</option>";
+	var rate_choices = [10, 50, 100, 250, 500, 1000];
+	for(var i = 0; i < rate_choices.length; i++) {
+	        var rate_choice = rate_choices[i];
+		dialog_content += "	<option value='"+rate_choice+"' ";
+                if (packet_rate == rate_choice) { 
+		    dialog_content += "selected='selected'";
+		}
+		dialog_content += ">"+rate_choice+"</option>";
 	}
-	if (packet_rate > 20) {
-		dialog_content += "	<option value='"+packet_rate+"' selected='selected'>"+packet_rate+"</option>";
+	// if there was something not in the list of choices still present it
+	if (rate_choices.indexOf(packet_rate) == -1){
+	     dialog_content += "	<option value='"+packet_rate+"' selected='selected'>"+packet_rate+"</option>";
 	}
 	dialog_content += "</select>";
 	dialog_content += "</td>";
