@@ -12,9 +12,9 @@ OWAMPDEFAULTS=("8760:9960")
 
 BWCTLFILE="/etc/bwctld/bwctld.conf"
 OWAMPFILE="/etc/owampd/owampd.conf"
-FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/firewall.conf"
-DEFAULT_FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/default_firewall.conf"
-OLD_FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/old_firewall_rules.conf"
+FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf"
+DEFAULT_FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/default_system_firewall_settings.conf"
+OLD_FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf"
 
 if [ ! -f $FIREWALL_RULES ]; then
     echo "Couldn't find firewall rules"
