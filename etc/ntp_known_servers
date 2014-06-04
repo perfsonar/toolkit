@@ -3,28 +3,28 @@ owamp.chic.net.internet2.edu:Internet2 - Chicago, IL USA
 owamp.hous.net.internet2.edu:Internet2 - Houston, TX USA
 owamp.salt.net.internet2.edu:Internet2 - Salt Lake City, UT USA
 owamp.losa.net.internet2.edu:Internet2 - Los Angeles, CA USA
-owamp.newy.net.internet2.edu:Internet2 - New York, NY USA
 chronos.es.net:ESnet - New York, NY USA
 saturn.es.net:ESnet - Sunnyvale, CA USA
-time-a.nist.gov:NIST - Gaithersburg, MD USA
-ntp0.usno.navy.mil:Naval Observatory - Washington, DC USA
+utcnist2.colorado.edu:JILA - University of Colorado
+nist1-chi.ustiming.org:NIST - NIST, Chicago, IL USA
+nist-time-server.eoni.com:NIST - NIST, La Grande, OR USA
+time-a.timefreq.bldrdoc.gov:NIST - NIST, Boulder, CO USA
+ntp-gatech.usno.navy.mil:Naval Observatory - GATech
 navobs1.oar.net:Naval Observatory - Columbus, OH USA
-tick.usnogps.navy.mil:Naval Observatory - Colorado Springs, CO USA
 ntp-ucla.usno.navy.mil:Naval Observatory - Los Angeles, CA USA
 ntp-uw.usno.navy.mil:Naval Observatory - Seattle, WA USA
 ntp-ua.usno.navy.mil:Naval Observatory - Fairbanks, AK USA
-tick.mhpcc.hpc.mil:Maui HPC Center - Maui, HI USA
+time1.chpc.utah.edu:UTAH - Server #1, University of Utah, Salt Lake City, UT USA
+time2.chpc.utah.edu:UTAH - Server #2, University of Utah, Salt Lake City, UT USA
+time3.chpc.utah.edu:UTAH - Server #3, University of Utah, Salt Lake City, UT USA
 ntp.hawaii.edu:University of Hawaii - Honolulu, HI USA
-ntp.nict.jp:NICT - National Institute of Information and Communications Technology - Tokyo, Japan
 ns2.jp.apan.net:Asia Pacific Advanced Network - Tokyo, Japan
-clock.nc.fukuoka-u.ac.jp:Fukuoka University- Fukuoka, Japan
 ns.twgrid.org: TWGrid - Taipei, Taiwan
-140.109.7.5:Academia Sinica IIS - Taipei, Taiwan
-a.ntp.monipe.rnp.br:RNP Time Server #1 - Brazil
 b.ntp.monipe.rnp.br:RNP Time Server #2 - Brazil
-c.ntp.monipe.rnp.br:RNP Time Server #3 - Brazil
-d.ntp.monipe.rnp.br:RNP Time Server #4 - Brazil
-e.ntp.monipe.rnp.br:RNP Time Server #5 - Brazil
-time1.ethz.ch:ETH Zurich -  Zurich, Switzerland
-time2.ethz.ch:ETH Zurich -  Zurich, Switzerland
-time3.ethz.ch:ETH Zurich -  Zurich, Switzerland
+ntp1.cais.rnp.br:RNP Time Server #6 - Brazil
+time1.ethz.ch:ETH Zurich - Zurich, Switzerland
+time2.ethz.ch:ETH Zurich - Zurich, Switzerland
+time3.ethz.ch:ETH Zurich - Zurich, Switzerland
+vega.cbk.poznan.pl:PIONIER - EU 
+tempus1.gum.gov.pl:PIONIER - EU
+ntp.itl.waw.pl:PIONIER - EU
