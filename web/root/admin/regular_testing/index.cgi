@@ -277,7 +277,7 @@ sub fill_variables_tests {
         $tests = \@tests;
     }
 
-    my @sorted_tests = sort { $a->{id} cmp $b->{id} } @$tests;
+    my @sorted_tests = sort { $a->{description} cmp $b->{description} } @$tests;
     $tests = \@sorted_tests;
 
     $vars->{tests} = $tests;
