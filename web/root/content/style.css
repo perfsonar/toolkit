@@ -337,6 +337,13 @@ color: rgb(255, 255, 255);
     background-color: #FEEFB3;
 }
 
+.leftSideNavigation li.error a {
+    background-image: url('/toolkit/content/images/icon_error_16x16.png');
+    background-repeat: no-repeat;
+    padding-left:18px;
+    border-left: solid 7px #FFBABA;
+}
+
 .leftSideNavigation li.warning a {
     background-image: url('/toolkit/content/images/icon_warning_16x16.png');
     background-repeat: no-repeat;

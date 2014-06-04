@@ -122,6 +122,27 @@ function close_dialog(dialog_name) {
 	dijit.byId(dialog_name).destroyRecursive();
 }
 
+function display_insecure_user_warning_dialog() {
+	var title = "Warning: Using root to login is insecure";
+	var dialog_content = "";
+
+	dialog_content += "<p>";
+	dialog_content += "You are currently logged in using the 'root' user. This can allow expose the root password on insecure networks."
+	dialog_content += "</p>";
+	dialog_content += "<p>";
+	dialog_content += "To fix this problem, you can login to this host via SSH or via the console, and configure a perfSONAR administrative user using the add_psadmin_user command. ";
+	dialog_content += "</p>";
+
+	dialog_content += "<button dojoType='dijit.form.Button' id='insecure_user_warning_ok'>Ok</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "insecure_user_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "insecure_user_dialog" ));
+	dojo.connect(dijit.byId('insecure_user_warning_ok'), 'onClick', function() { dijit.byId('insecure_user_dialog').hide(); });
+
+	dialog.show();
+}
+
 function display_jowping_warning_dialog() {
 	var title = "Warning: The Java OWAMP Client is experimental software";
 	var dialog_content = "";
