@@ -68,14 +68,6 @@ function close_dialog(dialog_name) {
 	dijit.byId(dialog_name).destroyRecursive();
 }
 
-function modify_owamp_port_range(min_port, max_port) {
-	handle_cgi_ajax_call(null, 'Problem updating port range', true, 'update_owamp_test_port_range', [min_port, max_port]);
-}
-
-function modify_bwctl_port_range(min_port, max_port) {
-	handle_cgi_ajax_call(null, 'Problem updating port range', true, 'update_bwctl_test_port_range', [min_port, max_port]);
-}
-
 function modify_psb_bwctl_test(test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits, local_interface) {
 	if (test_id) {
 		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_bwctl_throughput_test', [ test_id, description, test_duration, test_interval, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits, local_interface ]);
@@ -203,44 +195,6 @@ function edit_test_member(test_id, member_id, address, description, can_test_ipv
 	dialog.show();
 }
 
-function display_owamp_port_configuration_dialog(min_port, max_port) {
-	var title = "Configure OWAMP Tests Port Range";
-
-	var dialog_content = "";
-	dialog_content += "<div id='configure_owamp_tests_port_range_status' style='color:red'></div>";
-	dialog_content += "<table>";
-	dialog_content += "<tr>";
-	dialog_content += "<td>Minimum Port</td>";
-	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}'  id='configure_owamp_tests_port_range_min_range' size='10' value='"+min_port+"' /></td>";
-	dialog_content += "</tr>";
-	dialog_content += "<tr>";
-	dialog_content += "<td>Maximum Port</td>";
-	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}'  id='configure_owamp_tests_port_range_max_range' size='10' value='"+max_port+"' /></td>";
-	dialog_content += "</tr>";
-	dialog_content += "</table>";
-	dialog_content += "<button dojoType='dijit.form.Button' id='configure_port_save'>Set</button>";
-	dialog_content += "<button dojoType='dijit.form.Button' id='configure_port_cancel'>Cancel</button>";
-
-	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "owamp_port_configuration_dialog" });
-
-	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', 'owamp_port_configuration_dialog'));
-	dojo.connect(dijit.byId('configure_port_cancel'), 'onClick', function() { dijit.byId("owamp_port_configuration_dialog").hide(); });
-	dojo.connect(dijit.byId('configure_port_save'), 'onClick', dojo.hitch(null,
-		function() {
-			var min_port = dijit.byId('configure_owamp_tests_port_range_min_range').attr('value');
-			var max_port = dijit.byId('configure_owamp_tests_port_range_max_range').attr('value');
-			if (min_port > max_port) {
-				dojo.byId('configure_owamp_tests_port_range_status').innerHTML = "Minimum port must be smaller than maximum port";
-			}
-			else {
-				modify_owamp_port_range(min_port, max_port);
-				dijit.byId("owamp_port_configuration_dialog").hide();
-			}
-		})
-	);
-
-	dialog.show();
-}
 
 function display_bwctl_port_configuration_dialog(min_port, max_port) {
 	var title = "Configure BWCTL Tests Port Range";
