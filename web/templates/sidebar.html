@@ -12,11 +12,10 @@
 <li><a rel="external" target="_blank" href="http://www-wanmon.slac.stanford.edu/cgi-wrap/reflector.cgi?function=vtrace">Traceroute Visualization</a></li>
 </ul>
 <ul>
-<li class="title">Service Graphs</li>
-<li><a href="/serviceTest/index.cgi?eventType=bwctl">Throughput</a></li>
-<li><a href="/serviceTest/index.cgi?eventType=owamp">Loss/Latency</a></li>
-<li><a rel="external" href="/toolkit/gui/psTracerouteViewer/index.cgi" target="_blank">Traceroute</a></li>
-<li><a href="/toolkit/gui/perfAdmin/serviceTest.cgi?url=http://localhost:8075/perfSONAR_PS/services/pinger/ma&amp;eventType=http://ggf.org/ns/nmwg/tools/pinger/2.0/">Ping Latency</a></li>
+<li class="title">Scheduled Tests</li>
+<li><a href="/serviceTest/psGraph.cgi">Throughput / Latency Graphs</a></li>
+<li><a rel="external" href="/toolkit/gui/psTracerouteViewer/index.cgi" target="_blank">Traceroute Graphs</a></li>
+<li><a href="/toolkit/admin/regular_testing">Configure Tests</a></li>
 </ul>
 <ul>
     <li class="title">Toolkit Administration</li>
@@ -26,7 +25,6 @@
     <li [% IF admin_info_nav_class %]class="[% admin_info_nav_class %]" title="Incomplete configuration"[% END %]><a href="/toolkit/admin/administrative_info">Administrative Information</a></li>
     <li><a href="/toolkit/admin/enabled_services">Enabled Services</a></li>
     <li [% IF ntp_nav_class %]class="[% ntp_nav_class  %]" title="NTP not properly configured" [% END %]><a href="/toolkit/admin/ntp">NTP</a></li>
-    <li><a href="/toolkit/admin/regular_testing">Scheduled Tests</a></li>
     <li><a rel="external" target="_blank" href="/toolkit/cacti">Cacti SNMP Monitoring</a></li>
     <li><a rel="external" target="_blank" href="/toolkit/admin/logs">perfSONAR Logs</a></li>
     <li><a rel="external" target="_blank" href="/toolkit/admin/log_view/bwctl.cgi">BWCTL Log Analysis</a></li>
