@@ -1,0 +1,56 @@
+[% INCLUDE header.tmpl %]
+
+<h2 class="divheading">OWAMP Summary</h2>
+
+[% IF owamp_data_present > 0 %]
+
+<table id="bodylayout" width="150px" border="0">
+	<tr>
+		<th align="left">Total Tests</th>
+		<td align="right">[% owamp_totalt %]</td>
+	</tr>
+	<tr>
+		<th align="left">Total Domains</th>
+		<td align="right">[% owamp_totald %]</td>
+	</tr>
+</table>
+
+<br>
+
+<table id="bodylayout" width="300px" border="0">
+	<tr>
+		<th align="left">Domain</th>
+		<th>Number of Tests</th>
+	</tr>
+[% FOREACH row IN owamp_summary %]
+        <tr>
+                <td>[% row.0 %]</td>
+                <td align="center">[% row.1 %]</td>
+        </tr>
+[% END %]
+</table>
+
+<h2 class="divheading">OWAMP Individual Results</h2>
+
+<table id="bodylayout" width="700px" border="0">
+	<tr>
+		<th align="left">Test Time</th>
+		<th align="left">Client IP</th>
+		<th align="left">Client Hostname</th>
+	</tr>
+[% FOREACH row IN owamp_data %]
+        <tr>
+[% FOREACH item IN row %]
+                <td>[% item %]</td>
+[% END %]
+        </tr>
+[% END %]
+</table>
+
+[% ELSE %]
+
+<p>No OWAMP test results were found.</p>
+
+[% END %]
+
+[% INCLUDE footer.tmpl %]
