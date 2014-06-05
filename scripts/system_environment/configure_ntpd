@@ -56,3 +56,10 @@ saturn.es.net
 EOF
 fi
 
+
+####################
+# Auto-select NTP servers based on proximity
+####################
+if [ "$1" == "new" ]; then
+    /opt/perfsonar_ps/toolkit/scripts/autoselect_ntp_servers
+fi

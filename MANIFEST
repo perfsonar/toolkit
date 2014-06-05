@@ -164,6 +164,7 @@ python_lib/Internet2Lib.py
 scripts/NPToolkit.version
 scripts/add_psadmin_user
 scripts/apache-toolkit_web_gui.conf
+scripts/autoselect_ntp_servers
 scripts/clean_owampd
 scripts/create_backing_store
 scripts/cron-owamp_cleaner

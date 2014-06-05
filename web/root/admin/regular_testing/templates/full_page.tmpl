@@ -466,19 +466,6 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	dialog_content += "<td><input type='text' dojoType='dijit.form.TextBox' id='configure_test_test_duration' size='10' value='"+test_duration+"''/></td><td>Seconds</td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
-	dialog_content += "<td>Bandwidth Tester</td>";
-	dialog_content += "<td colspan=2>";
-	dialog_content += "<input id='configure_test_tool' type='hidden' value='iperf' />Iperf";
-    /*
-	dialog_content += "<select id='configure_test_tool' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='"+tool+"'>";
-	dialog_content += "	<option value='iperf' "; if (tool == 'iperf') { dialog_content += "selected='selected'" }; dialog_content += ">Iperf</option>";
-	dialog_content += "	<option value='nuttcp' "; if (tool == 'nuttcp') { dialog_content += "selected='selected'" }; dialog_content += ">nuttcp</option>";
-	dialog_content += "	<option value='iperf' "; if (tool == 'thrulay') { dialog_content += "selected='selected'" }; dialog_content += ">Thrulay</option>";
-	dialog_content += "</select>";
-    */
-	dialog_content += "</td>";
-	dialog_content += "</tr>";
-	dialog_content += "<tr>";
 	dialog_content += "<td>Protocol</td>";
 	dialog_content += "<td>";
 	dialog_content += "<select id='configure_test_protocol' dojoType='dijit.form.FilteringSelect' autocomplete='false' value='"+protocol+"'>";
@@ -520,12 +507,11 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	dojo.connect(dijit.byId('configure_test_protocol'), 'onChange', function() { if (this.value == 'udp') { ps_show('configure_test_udp_questions'); } else { ps_hide('configure_test_udp_questions'); } });
 	dojo.connect(dijit.byId('configure_test_cancel'), 'onClick', function() { dijit.byId('add_test_dialog').hide(); });
 	dojo.connect(dijit.byId('configure_test_save'), 'onClick', dojo.hitch(null,
-										function(test_id) {
+										function(test_id, tool) {
 											var description = dijit.byId('configure_test_description').attr('value');
 											var test_duration = dijit.byId('configure_test_test_duration').attr('value');
 											var test_interval = dijit.byId('configure_test_test_interval').attr('value');
 											var test_interval_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
-											var tool = dojo.byId('configure_test_tool').value;
 											var protocol = dijit.byId('configure_test_protocol').attr('value');
 											var window_size = dijit.byId('configure_test_window_size').attr('value');
 											var udp_bandwidth = dijit.byId('configure_test_udp_bandwidth').attr('value');
@@ -536,7 +522,7 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 											modify_psb_bwctl_test(test_id, description, test_duration, test_interval, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
 											dijit.byId('add_test_dialog').hide();
 										},
-										test_id)
+										test_id, tool)
 			);
 	dialog.show();
 }
