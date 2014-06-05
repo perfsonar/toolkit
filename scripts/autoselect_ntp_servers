@@ -1,0 +1,86 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Getopt::Long;
+use Config::General;
+use Params::Validate qw(:all);
+
+use FindBin qw($RealBin);
+use lib "$RealBin/../lib";
+
+use perfSONAR_PS::NPToolkit::Config::NTP;
+use perfSONAR_PS::Utils::NTP qw(ping);
+
+my $MAXIMUM_SERVERS = 5;
+my $USE_TOOLKIT;
+my $NTP_CONF_LOCATION = "/etc/ntp.conf";
+
+my $status = GetOptions(
+    'number_servers=i' => \$MAXIMUM_SERVERS,
+    'use_toolkit' => \$USE_TOOLKIT,
+);
+
+unless ($status) {
+    print "$0: [--use_toolkit] [--number_servers=<number of servers>]\n";
+    exit 1;
+}
+
+my $ntp_conf = perfSONAR_PS::NPToolkit::Config::NTP->new();
+$ntp_conf->init(ntp_conf => $NTP_CONF_LOCATION);
+
+my $ntp_servers = $ntp_conf->get_servers();
+
+my @servers;
+
+foreach my $key ( keys %{$ntp_servers} ) {
+    my $ntp_server = $ntp_servers->{$key};
+
+    push @servers, $ntp_server->{address};
+}
+
+my @succeeded_hosts = ();
+
+( $status, my $results ) = ping({ hostnames => \@servers, timeout => 5 });
+
+# Grab the hosts that we successfully ping'd
+foreach my $host (keys %$results) {
+    next unless ($results->{$host}->{rtt});
+
+    push @succeeded_hosts, { address => $host, rtt => $results->{$host}->{rtt} };
+}
+
+# Sort those hosts by RTT
+@succeeded_hosts = sort { $a->{rtt} <=> $b->{rtt} } @succeeded_hosts;
+
+# Make sure we only grab the maximum number
+if ( $MAXIMUM_SERVERS ) {
+    splice @succeeded_hosts, $MAXIMUM_SERVERS;
+}
+
+# Make sure we're getting the minimum number of hosts
+if (scalar(@succeeded_hosts) < 4) {
+    die("Couldn't find 4 servers to sync against");
+}
+
+# Unselect all hosts, and then select just the newly chosen ones
+foreach my $ntp_server ( values %{$ntp_servers} ) {
+    $ntp_conf->update_server( { address => $ntp_server->{address}, selected => 0 } );
+}
+
+foreach my $server_info ( @succeeded_hosts ) {
+    $ntp_conf->update_server( { address => $server_info->{address}, selected => 1 } );
+}
+
+if ($USE_TOOLKIT) {
+    $ntp_conf->save();
+}
+else {
+    my $ntp_config_str = $ntp_conf->generate_ntp_conf();
+    unless (open(NTP_CONF, ">", $NTP_CONF_LOCATION)) {
+        die("Couldn't open $NTP_CONF_LOCATION for writing");
+    }
+    print NTP_CONF $ntp_config_str;
+    close(NTP_CONF);
+}
