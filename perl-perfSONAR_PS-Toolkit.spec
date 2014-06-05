@@ -18,6 +18,8 @@
 %define crontab_2     cron-owamp_cleaner
 %define crontab_3     cron-save_config
 
+%define cron_hourly_1 logscraper.cron
+
 %define relnum  3
 %define disttag pSPS
 
@@ -223,6 +225,8 @@ install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_2} %{buildroot}/etc/cron.d/%{crontab_2}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 
+install -D -m 0600 scripts/%{cron_hourly_1} %{buildroot}/etc/cron.hourly/%{cron_hourly_1}
+
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 
 install -D -m 0755 init_scripts/%{init_script_1} %{buildroot}/etc/init.d/%{init_script_1}
@@ -239,6 +243,7 @@ install -D -m 0755 init_scripts/%{init_script_10} %{buildroot}/etc/init.d/%{init
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_2}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
+rm -rf %{buildroot}/%{install_base}/scripts/%{cron_hourly_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 
 %clean
@@ -259,6 +264,11 @@ mkdir -p /var/lib/perfsonar/db_backups/owamp
 chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/owamp
 mkdir -p /var/lib/perfsonar/db_backups/traceroute
 chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/traceroute
+
+mkdir -p /var/lib/perfsonar/log_view/bwctl
+mkdir -p /var/lib/perfsonar/log_view/ndt	
+mkdir -p /var/lib/perfsonar/log_view/owamp
+
 
 #Make sure root is in the wheel group for fresh install. If upgrade, keep user settings
 if [ $1 -eq 1 ] ; then
@@ -381,6 +391,7 @@ EOF
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 %attr(0644,root,root) /etc/cron.d/%{crontab_2}
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
+%attr(0755,root,root) /etc/cron.hourly/%{cron_hourly_1}
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/reverse_traceroute.cgi

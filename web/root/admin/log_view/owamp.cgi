@@ -46,10 +46,7 @@ closedir( DIR );
 
 my %lookup = ();
 
-my $count = 0;
 foreach my $l ( reverse sort @logs ) {
-
-    last if ($count++ > 3);
 
     if ( $l =~ /\.gz$/ ) {
 	open( LOGFILE, "gunzip -c $log_dir.$l |" ) or die "can't open pipe to $log_dir.$l\n";
