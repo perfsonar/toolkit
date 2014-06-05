@@ -358,44 +358,31 @@ sub find_closest_servers {
             maximum_number => 0,
         }
     );
+    my $servers = $parameters->{servers};
+    my $maximum_number = $parameters->{maximum_number};
 
-    my @results = ();
-    my @failed_results = ();
+    my ( $status, $results ) = ping({ hostnames => $servers, timeout => 5 });
+    my @failed_hosts = ();
+    my @succeeded_hosts = ();
 
-    foreach my $server ( @{ $parameters->{servers} } ) {
-	$logger->debug("Pinging $server");
-
-        my ( $ret, $duration ) = ping({ hostname => $server, timeout => 2 });
-        unless ( $ret == 0 ) {
-            $logger->debug("Didn't receive response from $server");
-	    push @failed_results, $server;
-            next;
-	}
-	$logger->debug("Server $server took $duration seconds");
-        push @results, { address => $server, rtt => $duration };
+    foreach my $host (keys %$results) {
+        if ($results->{$host}->{rtt}) {
+            push @succeeded_hosts, { address => $host, rtt => $results->{$host}->{rtt} };
+        }
+        else {
+            push @failed_hosts, $host;
+        }
     }
 
-    $logger->debug("Out of find_closest_servers loop");
-
-    @results = sort { $a->{rtt} <=> $b->{rtt} } @results;
+    @succeeded_hosts = sort { $a->{rtt} <=> $b->{rtt} } @succeeded_hosts;
 
     # make sure we only grab the maximum number
 
-    unless ( $parameters->{maximum_number} ) {
-        $logger->debug("Returning all results");
-        return ( 0, \@results, \@failed_results );
+    if ( $parameters->{maximum_number} ) {
+        splice @succeeded_hosts, $maximum_number;
     }
-    else {
-        $logger->debug("Returning subset of results");
 
-        my @retval = ();
-
-        for ( my $i = 0; $i < $parameters->{maximum_number} and $i < scalar( @results ); $i++ ) {
-            push @retval, $results[$i];
-        }
-
-        return ( 0, \@retval, \@failed_results );
-    }
+    return ( 0, \@succeeded_hosts, \@failed_hosts );
 }
 
 1;
