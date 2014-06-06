@@ -104,12 +104,12 @@
 	<table class="basic_table">
 		<tr><th  style="width: 600px" colspan=2>Services Offered</th></tr>
 	[% FOREACH pair IN services %]
-		[% IF pair.key == "ndt"; pair.value.name = "Network Diagnostic Tester (NDT)"; pair.value.url = "http://www.internet2.edu/performance/ndt/"; END %]
+		[% IF pair.key == "ndt"; pair.value.name = "Network Diagnostic Tester (NDT)"; pair.value.url = "http://software.internet2.edu/ndt/"; END %]
 		[% IF pair.key == "npad"; pair.value.name = "Network Path and Application Diagnosis (NPAD)"; pair.value.url = "http://www.psc.edu/networking/projects/pathdiag/"; END %]
-		[% IF pair.key == "regular_testing"; pair.value.name = "Regular Testing"; pair.value.url = "http://www.internet2.edu/performance/pS-PS/index.html"; END %]
-		[% IF pair.key == "esmond"; pair.value.name = "esmond Measurement Archive"; pair.value.url = "https://github.com/esnet/esmond/"; END %]
-		[% IF pair.key == "owamp"; pair.value.name = "One-Way Ping Service (OWAMP)"; pair.value.url = "http://www.internet2.edu/performance/owamp/index.html"; END %]
-		[% IF pair.key == "bwctl"; pair.value.name = "Bandwidth Test Controller (BWCTL)"; pair.value.url = "http://www.internet2.edu/performance/bwctl/index.html"; END %]
+		[% IF pair.key == "regular_testing"; pair.value.name = "Regular Testing"; pair.value.url = "http://www.perfsonar.net"; END %]
+		[% IF pair.key == "esmond"; pair.value.name = "esmond Measurement Archive"; pair.value.url = "http://software.es.net/esmond/"; END %]
+		[% IF pair.key == "owamp"; pair.value.name = "One-Way Ping Service (OWAMP)"; pair.value.url = "http://software.internet2.edu/owamp/"; END %]
+		[% IF pair.key == "bwctl"; pair.value.name = "Bandwidth Test Controller (BWCTL)"; pair.value.url = "http://software.internet2.edu/bwctl/"; END %]
 		<tr>
 		<td class="top">[% pair.value.name %]<sup>[<a target="_blank" href="[% pair.value.url %]">1</a>]</sup></td>
 		<td class="top">
@@ -146,13 +146,13 @@
 
 	<table class="basic_table">
 		<tr><th style="width: 400px" colspan=2>Software Versions</th></tr>
-		<tr><td><a rel="external" target="_blank" href="http://psps.perfsonar.net/toolkit/">pS-Performance Toolkit</a></td><td>[% toolkit_version %]</td></tr>
-		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/bwctl/">BWCTL</a></td><td>1.5.1</td></tr>
-		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/owamp/">OWAMP</a></td><td>3.4rc3</td></tr>
-		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/ndt/">NDT</a></td><td>3.6.5.2</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.perfsonar.net">pS-Performance Toolkit</a></td><td>[% toolkit_version %]</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://software.internet2.edu/bwctl/">BWCTL</a></td><td>1.5.1</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://software.internet2.edu/owamp/">OWAMP</a></td><td>3.4rc3</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://software.internet2.edu/ndt/">NDT</a></td><td>3.6.5.2</td></tr>
 		<tr><td><a rel="external" target="_blank" href="http://www.psc.edu/networking/projects/pathdiag/">NPAD</a></td><td>1.5.6</td></tr>
-		<tr><td><a rel="external" target="_blank" href="https://github.com/esnet/esmond">esmond Measurement Archive</a></td><td>1.0</td></tr>
-		<tr><td><a rel="external" target="_blank" href="http://www.internet2.edu/performance/pS-PS/index.html">perfSONAR-PS Regular Testing Daemon</a></td><td>3.4-rc1</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://software.es.net/esmond/">esmond Measurement Archive</a></td><td>1.0</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.perfsonar.net">perfSONAR-PS Regular Testing Daemon</a></td><td>3.4-rc1</td></tr>
 		<tr><td><a rel="external" target="_blank" href="http://www.cacti.net/">Cacti</a></td><td>0.8.8b</td></tr>
 	</table>
 
