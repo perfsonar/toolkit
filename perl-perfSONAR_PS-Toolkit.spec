@@ -119,9 +119,13 @@ Requires:		npad
 Requires:		owamp-client
 Requires:		owamp-server
 
+# Misc performance/performance-related tools
+Requires:		nuttcp
+Requires:		iperf
+Requires:		tcptrace
+
 Requires:		coreutils
 Requires:		httpd
-Requires:		iperf
 Requires:		mod_auth_shadow
 Requires:		mod_ssl
 Requires:               nagios-plugins-all
