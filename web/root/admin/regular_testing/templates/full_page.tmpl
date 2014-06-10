@@ -238,7 +238,7 @@ function display_bwctl_port_configuration_dialog(min_port, max_port) {
 	dialog.show();
 }
 
-function display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface) {
+function display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface, test_schedule) {
 	var title;
 	var action;
 	if (test_id) {
@@ -253,8 +253,6 @@ function display_pinger_test_dialog(test_id, description, packet_size, packet_co
 
 	var inter_test_unit = minimal_granularity(test_interval);
 	var display_test_interval = test_interval/inter_test_unit;
-
-	console.log("Granulairty: "+inter_test_unit);
 
 	var dialog_content = "";
 	dialog_content += "<table>";
@@ -274,6 +272,15 @@ function display_pinger_test_dialog(test_id, description, packet_size, packet_co
 	dialog_content += "</td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
+	if (test_schedule != "") {
+	dialog_content += "<tr>";
+	dialog_content += "<td>Test Schedule</td>";
+	dialog_content += "<td>";
+	dialog_content += test_schedule;
+	dialog_content += "</td>";
+	dialog_content += "</tr>";
+	}
+	else {
 	dialog_content += "<td>Time Between Tests</td>";
 	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}'  id='configure_test_test_interval' size='10' value='"+display_test_interval+"' /></td>";
 	dialog_content += "<td>";
@@ -285,6 +292,7 @@ function display_pinger_test_dialog(test_id, description, packet_size, packet_co
 	dialog_content += "</select>";
 	dialog_content += "</td>";
 	dialog_content += "</tr>";
+	}
 	dialog_content += "<tr>";
 	dialog_content += "<td>Packets Sent Per Test</td>";
 	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}' id='configure_test_packet_count' size='10' value='"+packet_count+"' /></td>";
@@ -306,37 +314,40 @@ function display_pinger_test_dialog(test_id, description, packet_size, packet_co
 	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', 'add_test_dialog'));
 	dojo.connect(dijit.byId('configure_test_cancel'), 'onClick', function() { dijit.byId('add_test_dialog').hide(); });
 	dojo.connect(dijit.byId('configure_test_save'), 'onClick', dojo.hitch(null,
-										function(test_id) {
+										function(test_id, test_schedule) {
 											var description = dijit.byId('configure_test_description').attr('value');
 											var packet_size = dijit.byId('configure_test_packet_size').attr('value');
 											var packet_count = dijit.byId('configure_test_packet_count').attr('value');
 											var packet_interval = dijit.byId('configure_test_packet_interval').attr('value');
-											var test_interval = dijit.byId('configure_test_test_interval').attr('value');
-											var test_interval_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
+											var test_interval = 0;
+											if (test_schedule == "") {
+												var test_interval_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
+												test_interval = dijit.byId('configure_test_test_interval').attr('value');
+												test_interval *= test_interval_unit;
+											}
 											var local_interface    = dijit.byId('configure_test_local_interface').attr('value');
 											var test_offset = 0;
 											var ttl = 255;
-											test_interval *= test_interval_unit;
 											modify_pinger_test(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface);
 											dijit.byId('add_test_dialog').hide();
 										},
-										test_id)
+										test_id, test_schedule)
 			);
 
 	dialog.show();
 }
 
-function display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface) {
+function display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule) {
 	// if we're displaying the 'edit' dialog
 	if (test_id) {
-		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
+		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule);
 	}
 
 	var owamp_tests             = parseInt(dojo.byId('owamp_tests').value);
 
 	// if pSB throughput tests are enabled and there are no latency tests that this new test will interfere with
 	if (owamp_tests == 0) {
-		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
+		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule);
 	}
 
 	var title = "Warning: host isn't configured for throughput tests";
@@ -356,19 +367,17 @@ function display_bwctl_throughput_test_dialog(test_id, description, test_interva
 	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "add_test_warning_dialog" ));
 	dojo.connect(dijit.byId('add_test_warning_cancel'), 'onClick', function() { dijit.byId('add_test_warning_dialog').hide(); });
 	dojo.connect(dijit.byId('add_test_warning_add_test'), 'onClick', dojo.hitch(null,
-										function(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits) {
+										function(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, test_schedule) {
 											dijit.byId('add_test_warning_dialog').hide();
-											return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
+											return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule);
 										},
-										test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits)
+										test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, test_schedule)
 			);
 
 	dialog.show();
 }
 
-function __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface) {
-	console.log("display_bwctl_throughput_test_dialog()");
-
+function __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule) {
 	var title;
 	var action;
 	if (test_id) {
@@ -403,6 +412,15 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	dialog_content += "</select>";
 	dialog_content += "</td>";
 	dialog_content += "</tr>";
+	if (test_schedule != "") {
+	dialog_content += "<tr>";
+	dialog_content += "<td>Test Schedule</td>";
+	dialog_content += "<td>";
+	dialog_content += test_schedule;
+	dialog_content += "</td>";
+	dialog_content += "</tr>";
+	}
+	else {
 	dialog_content += "<tr>";
 	dialog_content += "<td>Time Between Tests</td>";
 	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}'  id='configure_test_test_interval' size='10' value='"+display_test_interval+"' /></td>";
@@ -415,6 +433,7 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	dialog_content += "</select>";
 	dialog_content += "</td>";
 	dialog_content += "</tr>";
+	}
 	dialog_content += "<tr>";
 	dialog_content += "<td>Test Duration<span id='configure_test_test_duration_help'><sup>[1]</sup></span></td>";
 	dialog_content += "<td><input type='text' dojoType='dijit.form.TextBox' id='configure_test_test_duration' size='10' value='"+test_duration+"''/></td><td>Seconds</td>";
@@ -461,22 +480,25 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	dojo.connect(dijit.byId('configure_test_protocol'), 'onChange', function() { if (this.value == 'udp') { ps_show('configure_test_udp_questions'); } else { ps_hide('configure_test_udp_questions'); } });
 	dojo.connect(dijit.byId('configure_test_cancel'), 'onClick', function() { dijit.byId('add_test_dialog').hide(); });
 	dojo.connect(dijit.byId('configure_test_save'), 'onClick', dojo.hitch(null,
-										function(test_id, tool) {
+										function(test_id, tool, test_schedule) {
 											var description = dijit.byId('configure_test_description').attr('value');
 											var test_duration = dijit.byId('configure_test_test_duration').attr('value');
-											var test_interval = dijit.byId('configure_test_test_interval').attr('value');
-											var test_interval_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
+											var test_interval = 0;
+											if (test_schedule == "") {
+												var test_interval_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
+												test_interval = dijit.byId('configure_test_test_interval').attr('value');
+												test_interval *= test_interval_unit;
+											}
 											var protocol = dijit.byId('configure_test_protocol').attr('value');
 											var window_size = dijit.byId('configure_test_window_size').attr('value');
 											var udp_bandwidth = dijit.byId('configure_test_udp_bandwidth').attr('value');
-											test_interval *= test_interval_unit;
 											var tos_bits = dijit.byId('configure_test_tos_bits').attr('value');
 											console.log ("TOSBit Value:"+tos_bits);
 											var local_interface = dijit.byId('configure_test_local_interface').attr('value');
 											modify_psb_bwctl_test(test_id, description, test_duration, test_interval, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface);
 											dijit.byId('add_test_dialog').hide();
 										},
-										test_id, tool)
+										test_id, tool, test_schedule)
 			);
 	dialog.show();
 }
@@ -607,7 +629,7 @@ function __display_owamp_test_dialog(test_id, description, packet_interval, pack
 	dialog.show();
 }
 
-function display_traceroute_test_dialog(test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface) {
+function display_traceroute_test_dialog(test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface, test_schedule) {
 	var title;
 	var action;
 	if (test_id) {
@@ -617,8 +639,8 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 		title = "Add New Traceroute Test";
 		action = "Add";
 	}
-    
-    var inter_test_unit = minimal_granularity(test_interval);
+
+	var inter_test_unit = minimal_granularity(test_interval);
 	var display_test_interval = test_interval/inter_test_unit;
 	
 	var dialog_id = "add_test_dialog";
@@ -633,13 +655,22 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 	dialog_content += "<td>";
 	dialog_content += "<select id='configure_test_local_interface' dojoType='dijit.form.FilteringSelect' autocomplete='false' >";
 	dialog_content += "	<option value='' "; if (local_interface == "" || local_interface == null) { dialog_content += "selected" }; dialog_content += ">Default</option>";
-        [% FOREACH iface IN interfaces %]
+	[% FOREACH iface IN interfaces %]
 	dialog_content += "	<option value='[% iface.name %]' "; if (local_interface == "[% iface.name %]") { dialog_content += "selected" }; dialog_content += ">[% iface.name %] ([% iface.ips.join(", ") %])</option>";
-        [% END %]
+	[% END %]
 	dialog_content += "</select>";
 	dialog_content += "</td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
+	if (test_schedule != "") {
+	dialog_content += "<tr>";
+	dialog_content += "<td>Test Schedule</td>";
+	dialog_content += "<td>";
+	dialog_content += test_schedule;
+	dialog_content += "</td>";
+	dialog_content += "</tr>";
+	}
+	else {
 	dialog_content += "<td>Time Between Tests</td>";
 	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='You must enter a whole number greater than 0' constraints='{min:1,places:0}'  id='configure_test_test_interval' size='10' value='"+display_test_interval+"' /></td>";
 	dialog_content += "<td>";
@@ -651,7 +682,8 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 	dialog_content += "</select>";
 	dialog_content += "</td>";
 	dialog_content += "</tr>";
-    dialog_content += "<tr>";
+	}
+	dialog_content += "<tr>";
 	dialog_content += "<td>Packet Size</td>";
 	dialog_content += "<td><input type='text' dojoType='dijit.form.NumberTextBox' required='true' invalidMessage='The minimum size packet is 20 bytes (IP header). The maximum is 9000.' constraints='{min:20,max:9000}' id='configure_test_packet_size' size='10' value='"+packet_size+"''/></td><td>Bytes</td>";
 	dialog_content += "</tr>";
@@ -672,11 +704,14 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', 'add_test_dialog'));
 	dojo.connect(dijit.byId('configure_test_cancel'), 'onClick', function() { dijit.byId('add_test_dialog').hide(); });
 	dojo.connect(dijit.byId('configure_test_save'), 'onClick', dojo.hitch(null,
-										function(test_id) {
+										function(test_id, test_schedule) {
 											var description = dijit.byId('configure_test_description').attr('value');
-											var test_interval = dijit.byId('configure_test_test_interval').attr('value');
-											var test_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
-											test_interval *= test_unit;
+											var test_interval = 0;
+											if (test_schedule == "") {
+												test_interval = dijit.byId('configure_test_test_interval').attr('value');
+												test_unit = dijit.byId('configure_test_test_interval_unit').attr('value');
+												test_interval *= test_unit;
+											}
 											var packet_size = dijit.byId('configure_test_packet_size').attr('value');
 											var first_ttl = dijit.byId('configure_test_first_ttl').attr('value');
 											var max_ttl = dijit.byId('configure_test_max_ttl').attr('value');
@@ -684,7 +719,7 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 											modify_traceroute_test(test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface);
 											dijit.byId('add_test_dialog').hide();
 										},
-										test_id)
+										test_id, test_schedule)
 		);
 
 	dialog.show();

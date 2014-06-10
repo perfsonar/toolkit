@@ -781,19 +781,15 @@ sub add_traceroute_test {
 }
 
 sub update_traceroute_test {
-    my ($id, $description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol, $local_interface) = @_;
+    my ($id, $description, $test_interval, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
 
     my ( $status, $res );
 
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, description => $description } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, test_interval => $test_interval } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, packet_size => $packet_size } );
-    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, timeout => $timeout } );
-    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, waittime => $waittime } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, first_ttl => $first_ttl } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, max_ttl => $max_ttl } );
-    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, pause => $pause } );
-    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, protocol => $protocol } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, local_interface => $local_interface } );
 
     if ( $status != 0 ) {
