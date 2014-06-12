@@ -22,6 +22,7 @@ etc/backingstore.conf.d/pinger.conf
 etc/backingstore.conf.d/snmp_ma.conf
 etc/backingstore.conf.d/toolkit.conf
 etc/backingstore.conf.d/upgrade.conf
+etc/clean_esmond_db.conf
 etc/config_daemon-logger.conf
 etc/config_daemon.conf
 etc/default_system_firewall_settings.conf
@@ -165,8 +166,10 @@ scripts/NPToolkit.version
 scripts/add_psadmin_user
 scripts/apache-toolkit_web_gui.conf
 scripts/autoselect_ntp_servers
+scripts/clean_esmond_db.sh
 scripts/clean_owampd
 scripts/create_backing_store
+scripts/cron-clean_esmond_db
 scripts/cron-owamp_cleaner
 scripts/cron-save_config
 scripts/cron-service_watcher
