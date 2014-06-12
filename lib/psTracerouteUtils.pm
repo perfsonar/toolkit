@@ -2,9 +2,9 @@
 #======================================================================
 #
 #       psTracerouteUtils.pm
-#       $Id: psTracerouteUtils.pm,v 1.3 2012/10/03 23:20:58 dwcarder Exp $
 #
 #       Helper Utilities for viewing traceroute data stored in PerfSonar.
+#	Version 2, with support for esmond
 #
 #       Written by: Dale W. Carder, dwcarder@wisc.edu
 #       Network Services Group
@@ -13,7 +13,7 @@
 #
 #       Inspired in large part by traceroute_improved.cgi by Yuan Cao <caoyuan@umich.edu>
 #
-#       Copyright 2012 The University of Wisconsin Board of Regents
+#       Copyright 2014 The University of Wisconsin Board of Regents
 #       Licensed and distributed under the terms of the Artistic License 2.0
 #
 #       See the file LICENSE for details or reference the URL:
@@ -29,13 +29,14 @@ package psTracerouteUtils;
 #=====================================================
 use warnings;
 use strict;
-use lib '/opt/perfsonar_ps/traceroute_ma/lib';
+use lib '/opt/perfsonar_ps/toolkit/lib';
 use perfSONAR_PS::Client::MA;
 use Exporter;                           # easy perl module functions
 use XML::Twig;
 use XML::Simple qw(:strict);
 use Data::Dumper;
-
+use Data::Validate::IP qw(is_ipv4 is_ipv6);
+use perfSONAR_PS::Client::Esmond::ApiConnect;
 
 #======================================================================
 #    B E G I N   C O N F I G U R A T I O N   S E C T I O N
@@ -52,25 +53,95 @@ local $ENV{XML_SIMPLE_PREFERRED_PARSER} = 'XML::SAX::ExpatXS';
 #   E X P O R T
 #=====================================================
 use vars qw(@ISA @EXPORT);              # perl module variables
-our $VERSION = 1.0;
+our $VERSION = 2.0;		# 2.0 adds esmond support
 @ISA = qw(Exporter);
-@EXPORT = qw(   GetTracerouteMetadataFromMA ParseTracerouteMetadataAnswer 
-                GetTracerouteDataFromMA DeduplicateTracerouteDataAnswer
-             );
+@EXPORT = qw( GetTracerouteMetadata GetTracerouteData DeduplicateTracerouteData );
 
 
 #=====================================================
 #    P R O T O T Y P E S
 #=====================================================
+sub GetTracerouteData($$$$$);
+sub GetTracerouteMetadata($$$$);
 sub GetTracerouteMetadataFromMA($$$);
+sub GetTracerouteMetadataFromESmond($$$$);
 sub ParseTracerouteMetadataAnswer($$);
 sub GetTracerouteDataFromMA($$$$);
-sub DeduplicateTracerouteDataAnswer($$;$);
+sub GetTracerouteDataFromEsmond($$$$$);
+sub ConvertXMLtoHash($$);
+sub DeduplicateTracerouteData($$);
 
 
 
 #==============================================================================
 #            B E G I N   S U B R O U T I N E S 
+
+
+
+#===============================================================================
+#                       GetTracerouteMetadata
+#
+#	wrapper to go get available traceroute metadata from esmond or old MA
+#
+#  Arguments:
+#     arg[0]: full url to use
+#     arg[1]: start time to query (unix time)
+#     arg[2]: end time to query (unix time)
+#     arg[3]: hashref to fill with metadata
+#
+sub GetTracerouteMetadata($$$$) {
+	my $url = shift;
+	my $stime = shift;
+	my $etime = shift;
+	my $endpoint = shift;
+
+	# old-school perfsonar SOAP measurement archive
+	if ($url =~ m/:8086\//) {
+		my $ma_result = GetTracerouteMetadataFromMA($url,$stime,$etime);
+		ParseTracerouteMetadataAnswer($ma_result,$endpoint);
+		return('');
+
+	# new-school esmond REST measurement archive
+	} elsif ($url =~ m/esmond/) {
+		return(GetTracerouteMetadataFromESmond($url,$stime,$etime,$endpoint));
+
+	} else {
+		return("Unsure what kind of measurement archive this is.");
+	}
+}
+
+
+#===============================================================================
+#                       GetTracerouteData
+#
+#	wrapper to go get available traceroute data from esmond or old MA
+#
+#  Arguments:
+#     arg[0]: full url of the of the traceroute data source
+#     arg[1]: either metadata key or URI of the of the traceroute data source
+#     arg[2]: start time to query (unix time)
+#     arg[3]: end time to query (unix time)
+#     arg[4]: hashref to fill with data
+#
+sub GetTracerouteData($$$$$) {
+	my $url = shift;
+	my $ma = shift;
+	my $stime = shift;
+	my $etime = shift;
+	my $topology = shift;
+
+	# new-school esmond REST measurement archive
+	if ($ma =~ m/esmond/) {
+		return(GetTracerouteDataFromEsmond($url,$ma,$stime,$etime,$topology));
+
+	# old-school perfsonar SOAP measurement archive
+	} else {
+		my $trdata = GetTracerouteDataFromMA($url,$ma,$stime,$etime);
+		ConvertXMLtoHash($trdata,$topology);
+		return('');
+	}
+}
+
 
 
 
@@ -112,13 +183,78 @@ sub GetTracerouteMetadataFromMA($$$) {
                         }
                 );
         if(not defined $result){
-                die("Cannot connect MA.\n");
+                die("Cannot connect to MA.\n");
         }
 
         return($result);
 
 } # end GetTracerouteMetadataFromMA
 
+
+#===============================================================================
+#                       GetTracerouteMetadataFromEsmond
+#
+#  Arguments:
+#     arg[0]: full url of the archive
+#     arg[1]: start time to query (unix time)
+#     arg[2]: end time to query (unix time)
+#     arg[3]: a hash reference to fill with endpoint information
+#
+#	Returns error message, if there is one.
+#
+sub GetTracerouteMetadataFromESmond($$$$) {
+
+	my $url = shift;    
+	my $start_time = shift;
+	my $end_time = shift;
+	my $endpoint = shift;
+	
+	my $filters = new perfSONAR_PS::Client::Esmond::ApiFilters();
+
+	# FIXME:  What happens if someone uses traceroute instead of tracepath?
+	$filters->metadata_filters->{'tool-name'} = 'bwctl/tracepath';
+
+	$filters->time_start($start_time);
+	# note: time_end does not actually work with metadata, see 
+	# https://code.google.com/p/perfsonar-ps/wiki/MeasurementArchivePerlAPI#Advanced_Time_Filter_Usage
+
+	my $client = new perfSONAR_PS::Client::Esmond::ApiConnect(
+	    url => $url,
+	    filters => $filters
+	);
+	
+	my $md = $client->get_metadata();
+	
+	if ($client->error) {
+		return($client->error);
+	}
+	
+	# iterate through results
+	my $key;
+	foreach my $m(@{$md}){
+
+		#my $id = $m->get_field('metadata-key');
+		my $id = $m->get_event_type("packet-trace")->base_uri();
+
+		$$endpoint{$id}{'srcval'} = $m->get_field('source');
+		$$endpoint{$id}{'dstval'} = $m->get_field('destination');
+
+		# some backwards compatibility with the old xml MA here,
+		# results in helping the UI out later
+		if (is_ipv4($m->get_field('source'))) {
+			$$endpoint{$id}{'srctype'} = 'ipv4';
+		} elsif (is_ipv6($m->get_field('source'))) {
+			$$endpoint{$id}{'srctype'} = 'ipv6';
+		}
+
+		if (is_ipv4($m->get_field('destination'))) {
+			$$endpoint{$id}{'dsttype'} = 'ipv4';
+		} elsif (is_ipv6($m->get_field('destination'))) {
+			$$endpoint{$id}{'dsttype'} = 'ipv6';
+		}
+	}
+
+} # end GetTracerouteMetadataFromEsmond
 
 
 #===============================================================================
@@ -225,39 +361,79 @@ sub GetTracerouteDataFromMA($$$$) {
 
 }
 
+#===============================================================================
+#                       GetTracerouteDataFromEsmond
+#
+#  Arguments:
+#     arg[0]: host url of measurement archive
+#     arg[1]: uri of specific measurement
+#     arg[1]: start time to query (unix time)
+#     arg[2]: end time to query (unix time)
+#     arg[3]: hashref to fill with results:
+#		$hashref{unix_timestamp}{hop #}{ip addr} = mtu
+#	
+#  Returns:
+#	error message (if any)
+#
+sub GetTracerouteDataFromEsmond($$$$$) {
 
+    my $url = shift;    
+    my $uri = shift;    
+    my $start_time = shift;
+    my $end_time = shift;
+	my $results = shift;
+
+	my $filter = new perfSONAR_PS::Client::Esmond::ApiFilters();
+	$filter->time_start($start_time);
+	$filter->time_end($end_time);
+
+	my $result_client = new perfSONAR_PS::Client::Esmond::ApiConnect(
+	    url => $url,
+	    filters => $filter
+	);
+	
+	my $data = $result_client->get_data($uri); # the uri from previous phase
+	if($result_client->error) {
+		return($result_client->error);
+	}
+
+		# for each datapoint
+	    foreach my $d (@{$data}){
+	        #print "Time: " . $d->datetime . "\n";
+	        foreach my $hop (@{$d->val}){
+	            #print "ttl=" . $hop->{ttl} . ",query=" . $hop->{query};
+	            if($hop->{success}){
+	                #print ",ip=" . $hop->{ip} . ",rtt=" . $hop->{rtt} . ",mtu=" . $hop->{mtu} . "\n";
+
+					$$results{$d->ts}{$hop->{ttl}}{$hop->{ip}} = $hop->{mtu};
+	            }else{
+					if (defined($hop->{error_message})) {
+						$$results{$d->ts}{$hop->{ttl}}{$hop->{error_message}} = 1;
+					} else {
+						$$results{$d->ts}{$hop->{ttl}}{'error'} = 1;
+					}
+	            }
+	        }
+	    }
+	return('');
+}
 
 
 #===============================================================================
-#                       DeduplicateTracerouteDataAnswer
+#                      ConvertXMLtoHash 
 #
-#  Arguments:
 #     arg[0]: datastructure containing xml to parse
 #     arg[1]: hash ref datastructure to fill
-#     arg[2]: (optional) boolean, do not actually deduplicate
 #
-#  Returns: 
-#
-#
-sub DeduplicateTracerouteDataAnswer($$;$) {
+sub ConvertXMLtoHash($$) {
+
 	my $xmlresult = shift;
 	my $topology = shift;
-	my $donotdedup = shift;
 
-	if (!defined($donotdedup)) {
-		$donotdedup = 0;
-	}
-
-	my %last_topology;
-	my $last_timestamp=0;
+	#print Dumper($xmlresult->{"data"});
 
 	# each row is a timestamp
         foreach my $xmlrow (@{$xmlresult->{"data"}}) {
-
-		my %current_topology;
-		my $current_timestamp=0;
-
-		#print "\n\nNEW TIME\n";
 
 		# parse xml into a datastructure
 		my $parsed_xml = XMLin($xmlrow, 
@@ -266,83 +442,96 @@ sub DeduplicateTracerouteDataAnswer($$;$) {
   		);
 
 		#print Dumper($parsed_xml);
-		my @arr = $$parsed_xml{'traceroute:datum'};
-
+		#my @arr = $$parsed_xml{'traceroute:datum'};
 		#print Dumper(@arr);
 
-		#foreach my $hashref ( @{$arr[0]} ) {
-		#foreach my $hashref ( @arr ) {
 		foreach my $hashref ( @{$$parsed_xml{'traceroute:datum'}} ) {
 			#print "\n\nROW\n";
 			#print Dumper($hashref);
 
-			if ($$hashref{'timeValue'} < $last_timestamp) {
-				die ("Times from XML response are out of order");
-			} else {
-				# update timestamp
-				$current_timestamp = $$hashref{'timeValue'};
-			}
-
-			$current_topology{$$hashref{'ttl'}}{$$hashref{'hop'}} = 1;
+			$$topology{$$hashref{'timeValue'}}{$$hashref{'ttl'}}{$$hashref{'hop'}} = 1;
 		}
+	}
+}
 
+
+
+#===============================================================================
+#                       DeduplicateTracerouteData
+#
+#  Arguments:
+#     arg[0]: hash ref datastructure containing data to parse
+#     arg[1]: hash ref datastructure to fill
+#
+#  Returns: 
+#
+#
+sub DeduplicateTracerouteData($$) {
+	my $current_topology = shift;
+	my $new_topology = shift;
+
+	my %last_topology;
+
+	foreach my $timestamp (sort keys(%{$current_topology})) {
 
 		my $topologychange=0;
+
+		#print "\n\n\n new time: $timestamp\n";
 		# see if this is the 1st run
 		if (scalar(keys(%last_topology)) < 1) {
-			%last_topology = %current_topology;
+			#print "this is the 1st run\n";
+			%last_topology = %{$$current_topology{$timestamp}};
 			$topologychange=1;
 
 		# or, let's compare topologies
 		} else {
 
 			#print "current: -------------\n";
-			#print Dumper(\%current_topology);
+			#print Dumper($$current_topology{$timestamp});
 			#print "last: -------------\n";
 			#print Dumper(\%last_topology);
 
 		   TOPOCOMPARE1:
 		   foreach my $hop (keys(%last_topology)) {
 
-			# see if the old toplology has something the new one doen't have
-			foreach my $rtr ( keys(%{$last_topology{$hop}}) ) {
-				if (! defined($current_topology{$hop}{$rtr})) {
-					$topologychange=1;
-					#print "topo change1 at $current_timestamp for $rtr\n";
-					last TOPOCOMPARE1;
+				# see if the old toplology has something the new one doen't have
+				foreach my $rtr ( keys(%{$last_topology{$hop}}) ) {
+					if (! defined($$current_topology{$timestamp}{$hop}{$rtr})) {
+						$topologychange=1;
+						#print "topo change1 at $timestamp for $rtr\n";
+						last TOPOCOMPARE1;
+					}
 				}
-			}
 		   }
 
 		   if ($topologychange eq 0) {
-		   TOPOCOMPARE2:
-		     foreach my $hop (keys(%current_topology)) {
-			# see if the new toplology has something the old one doen't have
-			foreach my $rtr ( keys(%{$current_topology{$hop}}) ) {
-				if (! defined($last_topology{$hop}{$rtr})) {
-					$topologychange=1;
-					#print "topo change2 at $current_timestamp for $rtr\n";
-					last TOPOCOMPARE2;
-				}
-			}
-		     }
-		   }
-		}
+		   		TOPOCOMPARE2:
+				foreach my $hop (keys(%{$$current_topology{$timestamp}})) {
+		   	 		# see if the new toplology has something the old one doen't have
+				   	foreach my $rtr ( keys(%{$$current_topology{$timestamp}{$hop}}) ) {
+		   	 			if (! defined($last_topology{$hop}{$rtr})) {
+		   	 				$topologychange=1;
+		   	 				#print "topo change2 at $timestamp for $rtr\n";
+		   	 				last TOPOCOMPARE2;
+		   	 			}
+		   	 		}
+		   	  	}
+		   	}
+		} #done comparting topologies
 
 		if ($topologychange) {
-			#print "topology change at $current_timestamp\n";
+			#print "topology change at $timestamp\n";
 			# save this topology at this timestamp
-			$$topology{$current_timestamp} = \%current_topology;
-			%last_topology = %current_topology;
+			$$new_topology{$timestamp} = $$current_topology{$timestamp};
+			%last_topology = %{$$current_topology{$timestamp}};
+		} else {
+			#print "NO topology changes found at $timestamp\n";
 		}
-
-		# save the timestamp
-		$last_timestamp = $current_timestamp;
 	
 	} # end for each timestamp row
 
 	return;
 
-} # end DeduplicateTracerouteDataAnswer
+} # end DeduplicateTracerouteData
 
-
+1;
