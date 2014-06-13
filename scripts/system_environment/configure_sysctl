@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VARIABLES=("net.core.rmem_max" "net.core.wmem_max" "net.ipv4.tcp_rmem" "net.ipv4.tcp_wmem" "net.core.netdev_max_backlog" "net.ipv4.tcp_no_metrics_save" "net.ipv4.tcp_congestion_control")
-VALUES=("33554432" "33554432" "4096 87380 16777216" "4096 87380 16777216" "30000" "1" "htcp")
+VALUES=("67108864" "67108864" "4096 87380 33554432" "4096 87380 33554432" "30000" "1" "htcp")
 
 #for i in $(seq 0 ${#VARIABLES[@]}); do
 for i in $(seq 0 ${#VARIABLES[@]}); do
