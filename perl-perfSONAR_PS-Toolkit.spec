@@ -318,7 +318,6 @@ mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolk
 chmod o+r /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
 chmod o+r /opt/perfsonar_ps/toolkit/etc/administrative_info
 chmod o+r /opt/perfsonar_ps/toolkit/etc/enabled_services
-chmod o+r /opt/perfsonar_ps/toolkit/etc/external_addresses
 chmod o+r /opt/perfsonar_ps/toolkit/etc/ntp_known_servers
 chmod o+r /etc/bwctld/bwctld.limits 2> /dev/null
 chmod o+r /etc/bwctld/bwctld.keys 2> /dev/null
