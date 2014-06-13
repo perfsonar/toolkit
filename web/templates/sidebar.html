@@ -19,7 +19,7 @@
 </ul>
 <ul>
     <li class="title">Toolkit Administration</li>
-    [% IF remote_login == "fdsa" %]
+    [% IF remote_login == "root" %]
     <li class="error" title="Insecure User Login"><a href="#" onClick="display_insecure_user_warning_dialog()">Insecure Administrative User</a></li>
     [% END %]
     <li [% IF admin_info_nav_class %]class="[% admin_info_nav_class %]" title="Incomplete configuration"[% END %]><a href="/toolkit/admin/administrative_info">Administrative Information</a></li>
