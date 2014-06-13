@@ -416,3 +416,14 @@ web/templates/footer.tmpl
 web/templates/header.tmpl
 web/templates/sidebar.html
 web/templates/status_messages.html
+web/root/admin/log_view/bwctl.cgi
+web/root/admin/log_view/ndt.cgi
+web/root/admin/log_view/owamp.cgi
+web/root/admin/log_view/templates/.htaccess
+web/root/admin/log_view/templates/footer.tmpl
+web/root/admin/log_view/templates/header.tmpl
+web/root/admin/log_view/templates/log_view_bwctl.tmpl
+web/root/admin/log_view/templates/log_view_ndt.tmpl
+web/root/admin/log_view/templates/log_view_owamp.tmpl
+web/root/admin/log_view/templates/sidebar.html
+scripts/logscraper.cron
