@@ -36,6 +36,36 @@ if [ $? != 0 ]; then
     mysql $DATABASE < $CACTI_SQL
     mysql -e "INSERT INTO settings (name, value) VALUES ('auth_method', 2);" $DATABASE   # Set cacti to use HTTP Authentication
     mysql -e "INSERT INTO settings (name, value) VALUES ('user_template', 'admin');" $DATABASE   # Set the user logins to be admin users
+
+    # If cacti isn't configured, the cacti poller will hang in an infinite
+    # loop. Set some default values so that the poller doesn't go nuts.
+    DEFAULT_KEYS=(
+         "path_rrdtool"
+         "path_php_binary"
+         "path_snmpwalk"
+         "path_snmpget"
+         "path_snmpbulkwalk"
+         "path_snmpgetnext"
+         "path_cactilog"
+         "snmp_version"
+         "rrdtool_version"
+    )
+
+    DEFAULT_VALUES=(
+         "/usr/bin/rrdtool"
+         "/usr/bin/php"
+         "/usr/bin/snmpwalk"
+         "/usr/bin/snmpget"
+         "/usr/bin/snmpbulkwalk"
+         "/usr/bin/snmpgetnext"
+         "/usr/share/cacti/log/cacti.log"
+         "net-snmp"
+         "rrd-1.3.x"
+    )
+
+    for ((i = 0; i < ${#DEFAULT_KEYS[@]}; i++)); do
+        mysql -e "INSERT INTO settings (name, value) VALUES ('${DEFAULT_KEYS[$i]}', '${DEFAULT_VALUES[$i]}');" $DATABASE
+    done
 fi
 
 # This is a fix for an issue where the 0.8.8b cacti version got updated on the
@@ -45,7 +75,7 @@ OUTPUT=`mysql -e "SHOW TABLES LIKE 'plugin_config';" $DATABASE`
 if [ $? == 0 ]; then
     if [ "${OUTPUT}" == "" ]; then
         echo "plugin_config table is missing, setting the cacti version number to 0.8.7c to force an update"
-        mysql -e "UPDATE version SET cacti='0.8.7c' WHERE cacti='0.8.8b';" $DATABASE 
+        mysql -e "UPDATE version SET cacti='0.8.7c' WHERE cacti='0.8.8b';" $DATABASE
     fi
 fi
 
