@@ -112,6 +112,9 @@ Requires:		php-pdo
 Requires:		php-snmp
 Requires:		mysql-server
 
+# The NTP monitoring scripts
+Requires:		cacti-script-ntp-monitoring
+
 Requires:		bwctl-client
 Requires:		bwctl-server
 Requires:		ndt

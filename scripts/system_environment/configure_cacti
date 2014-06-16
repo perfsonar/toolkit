@@ -86,6 +86,11 @@ fi
 # Make sure that the cacti user (which the cron job gets run as) owns any RRDs
 chown cacti:cacti /var/lib/cacti/rra/*rrd
 
+# Configure the cacti NTP monitoring, if available
+if [ -x /usr/share/cacti-script-ntp-monitoring/setup_cacti_ntp_graph.pl ]; then
+    /usr/share/cacti-script-ntp-monitoring/setup_cacti_ntp_graph.pl
+fi
+
 if [ "${STOP_MYSQL}" = "1" ]; then
     /etc/init.d/mysqld stop
 fi
