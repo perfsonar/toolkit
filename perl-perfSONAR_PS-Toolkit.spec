@@ -415,6 +415,7 @@ EOF
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_10}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
