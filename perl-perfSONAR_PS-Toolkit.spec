@@ -20,7 +20,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  3
+%define relnum 4 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -448,6 +448,9 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
 
 %changelog
+* Thu Jun 19 2014 andy@es.net 3.4-4
+- 3.4rc2 release
+
 * Tue Oct 02 2012 asides@es.net 3.3-1
 - 3.3 beta release
 - Add support for LiveUSB and clean up rpm install output
