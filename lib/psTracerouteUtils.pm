@@ -212,7 +212,7 @@ sub GetTracerouteMetadataFromESmond($$$$) {
 	my $filters = new perfSONAR_PS::Client::Esmond::ApiFilters();
 
 	# FIXME:  What happens if someone uses traceroute instead of tracepath?
-	$filters->metadata_filters->{'tool-name'} = 'bwctl/tracepath';
+	$filters->metadata_filters->{'event-type'} = 'packet-trace';
 
 	$filters->time_start($start_time);
 	# note: time_end does not actually work with metadata, see 
