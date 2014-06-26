@@ -2,7 +2,7 @@
 #
 # Init file for perfSONAR MA data conversion tool
 #
-# chkconfig: 2345 66 20
+# chkconfig: 2345 99 20
 # description: perfSONAR MA data conversion tool
 #
 
