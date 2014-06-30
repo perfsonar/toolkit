@@ -7,6 +7,8 @@ doc/iptables-config.example
 etc/administrative_info
 etc/backingstore.conf
 etc/backingstore.conf.d/cacti.conf
+etc/backingstore.conf.d/cassandra.conf
+etc/backingstore.conf.d/esmond.conf
 etc/backingstore.conf.d/etc.conf
 etc/backingstore.conf.d/home.conf
 etc/backingstore.conf.d/initialize_environment.conf
@@ -19,6 +21,7 @@ etc/backingstore.conf.d/npad.conf
 etc/backingstore.conf.d/owamp.conf
 etc/backingstore.conf.d/perfsonarbuoy.conf
 etc/backingstore.conf.d/pinger.conf
+etc/backingstore.conf.d/postgresql.conf
 etc/backingstore.conf.d/snmp_ma.conf
 etc/backingstore.conf.d/toolkit.conf
 etc/backingstore.conf.d/upgrade.conf
