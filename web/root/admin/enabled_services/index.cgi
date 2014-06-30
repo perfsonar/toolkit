@@ -121,24 +121,39 @@ sub display_body {
 sub save_config {
     my $params = $cgi->Vars;
 
-    my ($status, $res);
+    my ($success, $res);
 
     $logger->error("CONFIG: ".Dumper($params));
 
+    # be optimistic
+    $success = 1;
+
     foreach my $name (keys %$params) {
+	# skip the function name
+	next if ($name eq 'fname');
         unless (get_service_object($name)) {
             $logger->error("Service $name not found");
             next;
         }
-
+      
         if ($params->{$name} eq "off") {
-            stop_service( { name => $name, disable => 1 });
+            $res = stop_service( { name => $name, disable => 1 });
         } else {
-            start_service( { name => $name, enable => 1 });
+            $res = start_service( { name => $name, enable => 1 });
         }
+
+	$success = 0 if ($res != 0);
     }
 
-    my %resp = ( message => "Configuration Saved And Services Restarted" );
+    my %resp;
+
+    if ($success){
+	%resp = ( message => "Configuration Saved And Services Restarted" );	
+    }
+    else {
+	%resp = ( error => "Error while restarting services, configuration NOT saved. Please consult the logs for more information.");
+    }
+    
     print "Content-type: text/json\n\n";
     print encode_json(\%resp);
 }
