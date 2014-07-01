@@ -205,6 +205,7 @@ Requires(post):	ntp
 Requires(post):	pcsc-lite
 Requires(post):	php-common
 Requires(post):	readahead
+Requires(post):	rootfiles
 Requires(post):	rsyslog
 Requires(post):	setup
 Requires(post):	smartmontools
