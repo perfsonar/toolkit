@@ -35,6 +35,10 @@ use File::Basename qw(dirname basename);
 use FindBin qw($RealBin);
 use lib "$RealBin/../lib";
 
+# The generate_motd script gets installed into /etc/init.d, so we need to keep
+# a reference to the installed location.
+use lib "/opt/perfsonar_ps/toolkit/lib";
+
 use perfSONAR_PS::NPToolkit::Config::Version;
 
 use perfSONAR_PS::Utils::Host qw( discover_primary_address );
