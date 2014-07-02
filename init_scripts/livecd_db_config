@@ -18,6 +18,7 @@ do
     if [ -f "/var/lib/pgsql/data/PG_VERSION" ]; then
         echo "Database looks initialized. Nothing to do."
     else
+        /etc/init.d/postgresql stop
         rm -rf /var/lib/pgsql
         /opt/perfsonar_ps/toolkit/scripts/system_environment/configure_esmond
         /opt/perfsonar_ps/toolkit/scripts/system_environment/configure_regular_testing
