@@ -13,7 +13,6 @@
 %define init_script_7 generate_cert_init_script
 %define init_script_8 toolkit_config
 %define init_script_9 livecd_net_config
-%define init_script_11 livecd_db_config
 
 %define crontab_1     cron-service_watcher
 %define crontab_2     cron-owamp_cleaner
@@ -249,7 +248,6 @@ install -D -m 0755 init_scripts/%{init_script_7} %{buildroot}/etc/init.d/%{init_
 install -D -m 0755 init_scripts/%{init_script_8} %{buildroot}/etc/init.d/%{init_script_8}
 install -D -m 0755 init_scripts/%{init_script_9} %{buildroot}/etc/init.d/%{init_script_9}
 install -D -m 0755 init_scripts/%{init_script_10} %{buildroot}/etc/init.d/%{init_script_10}
-install -D -m 0755 init_scripts/%{init_script_11} %{buildroot}/etc/init.d/%{init_script_11}
 
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
@@ -363,13 +361,11 @@ chkconfig --add %{init_script_6}
 chkconfig --add %{init_script_7}
 chkconfig --add %{init_script_8}
 chkconfig --add %{init_script_9}
-chkconfig --add %{init_script_11}
 
 chkconfig %{init_script_6} on
 chkconfig %{init_script_7} on
 chkconfig %{init_script_8} on
 chkconfig %{init_script_9} on
-chkconfig %{init_script_11} on
 
 mkdir -p /mnt/store
 mkdir -p /mnt/temp_root
@@ -448,12 +444,10 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_7}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_8}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_9}
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_11}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_6}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_7}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_8}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_9}
-%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_11}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/create_backing_store
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/restore_config
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/save_config

@@ -43,7 +43,6 @@ init_scripts/config_daemon
 init_scripts/configure_nic_parameters
 init_scripts/generate_cert_init_script
 init_scripts/generate_motd
-init_scripts/livecd_db_config
 init_scripts/livecd_net_config
 init_scripts/mount_scratch_overlay
 init_scripts/psb_to_esmond
