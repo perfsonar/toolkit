@@ -830,9 +830,6 @@ web/root/content/util/doh/runner.js
 web/root/content/util/doh/runner.sh
 web/root/content/util/doh/small_logo.png
 web/root/content/util/doh/tests/robot.html
-web/root/gui/jowping/JOWPing.jar
-web/root/gui/jowping/index.cgi
-web/root/gui/jowping/jowping_jnlp.tmpl
 web/root/gui/perfAdmin/PingERGraph.cgi
 web/root/gui/perfAdmin/bandwidthGraph.cgi
 web/root/gui/perfAdmin/bandwidthGraphFlash.cgi

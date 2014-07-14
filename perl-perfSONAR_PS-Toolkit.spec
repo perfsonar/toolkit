@@ -404,7 +404,6 @@ done
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
 %attr(0644,root,root) /etc/cron.d/%{crontab_5}
 # Make sure the cgi scripts are all executable
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/jowping/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/reverse_traceroute.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/perfAdmin/serviceTest.cgi
