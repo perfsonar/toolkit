@@ -17,8 +17,11 @@
 %define crontab_1     cron-service_watcher
 %define crontab_2     cron-owamp_cleaner
 %define crontab_3     cron-save_config
+%define crontab_4     cron-clean_esmond_db
 
-%define relnum  3
+%define cron_hourly_1 logscraper.cron
+
+%define relnum 11 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -110,6 +113,9 @@ Requires:		php-pdo
 Requires:		php-snmp
 Requires:		mysql-server
 
+# The NTP monitoring scripts
+Requires:		cacti-script-ntp-monitoring
+
 Requires:		bwctl-client
 Requires:		bwctl-server
 Requires:		ndt
@@ -117,9 +123,13 @@ Requires:		npad
 Requires:		owamp-client
 Requires:		owamp-server
 
+# Misc performance/performance-related tools
+Requires:		nuttcp
+Requires:		iperf
+Requires:		tcptrace
+
 Requires:		coreutils
 Requires:		httpd
-Requires:		iperf
 Requires:		mod_auth_shadow
 Requires:		mod_ssl
 Requires:               nagios-plugins-all
@@ -195,6 +205,7 @@ Requires(post):	ntp
 Requires(post):	pcsc-lite
 Requires(post):	php-common
 Requires(post):	readahead
+Requires(post):	rootfiles
 Requires(post):	rsyslog
 Requires(post):	setup
 Requires(post):	smartmontools
@@ -222,6 +233,9 @@ make ROOTPATH=%{buildroot}/%{install_base} rpminstall
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_2} %{buildroot}/etc/cron.d/%{crontab_2}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
+install -D -m 0600 scripts/%{crontab_4} %{buildroot}/etc/cron.d/%{crontab_4}
+
+install -D -m 0600 scripts/%{cron_hourly_1} %{buildroot}/etc/cron.hourly/%{cron_hourly_1}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 
@@ -239,6 +253,8 @@ install -D -m 0755 init_scripts/%{init_script_10} %{buildroot}/etc/init.d/%{init
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_2}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
+rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_4}
+rm -rf %{buildroot}/%{install_base}/scripts/%{cron_hourly_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 
 %clean
@@ -259,6 +275,11 @@ mkdir -p /var/lib/perfsonar/db_backups/owamp
 chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/owamp
 mkdir -p /var/lib/perfsonar/db_backups/traceroute
 chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/traceroute
+
+mkdir -p /var/lib/perfsonar/log_view/bwctl
+mkdir -p /var/lib/perfsonar/log_view/ndt	
+mkdir -p /var/lib/perfsonar/log_view/owamp
+
 
 #Make sure root is in the wheel group for fresh install. If upgrade, keep user settings
 if [ $1 -eq 1 ] ; then
@@ -304,7 +325,6 @@ mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolk
 chmod o+r /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
 chmod o+r /opt/perfsonar_ps/toolkit/etc/administrative_info
 chmod o+r /opt/perfsonar_ps/toolkit/etc/enabled_services
-chmod o+r /opt/perfsonar_ps/toolkit/etc/external_addresses
 chmod o+r /opt/perfsonar_ps/toolkit/etc/ntp_known_servers
 chmod o+r /etc/bwctld/bwctld.limits 2> /dev/null
 chmod o+r /etc/bwctld/bwctld.keys 2> /dev/null
@@ -381,14 +401,20 @@ EOF
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 %attr(0644,root,root) /etc/cron.d/%{crontab_2}
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
+%attr(0644,root,root) /etc/cron.d/%{crontab_4}
+%attr(0755,root,root) /etc/cron.hourly/%{cron_hourly_1}
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/reverse_traceroute.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/psTracerouteViewer/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/regular_testing/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/ntp/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/administrative_info/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/enabled_services/index.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/bwctl.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/ndt.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/owamp.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_3}
@@ -398,6 +424,8 @@ EOF
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_10}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
@@ -430,6 +458,9 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
 
 %changelog
+* Thu Jun 19 2014 andy@es.net 3.4-4
+- 3.4rc2 release
+
 * Tue Oct 02 2012 asides@es.net 3.3-1
 - 3.3 beta release
 - Add support for LiveUSB and clean up rpm install output

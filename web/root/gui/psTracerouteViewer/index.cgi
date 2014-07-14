@@ -2,9 +2,11 @@
 #======================================================================
 #
 #       psTracerouteViewer index.cgi
-#       $Id: index.cgi,v 1.2 2012/10/03 23:20:34 dwcarder Exp $
 #
 #       A cgi for viewing traceroute data stored in PerfSonar.
+#
+#		Version 2, with support for revised psTracerouteUtils lib w/
+#                  esmond support, and mtu reporting.
 #
 #       Written by: Dale W. Carder, dwcarder@wisc.edu
 #       Network Services Group
@@ -13,7 +15,7 @@
 #
 #       Inspired in large part by traceroute_improved.cgi by Yuan Cao <caoyuan@umich.edu>
 #
-#       Copyright 2012 The University of Wisconsin Board of Regents
+#       Copyright 2014 The University of Wisconsin Board of Regents
 #       Licensed and distributed under the terms of the Artistic License 2.0
 #
 #       See the file LICENSE for details or reference the URL:
@@ -21,7 +23,6 @@
 #
 #======================================================================
 
-#TODO select measurement archive from a list.
 #TODO time each operation and present it at the bottom.
 
 
@@ -30,7 +31,7 @@
 #
 
 my $Script = 'index.cgi';
-my $Default_mahost = 'http://localhost:8086/perfSONAR_PS/services/tracerouteMA';
+my $Default_mahost = 'http://localhost/esmond/perfsonar/archive/';
 
 
 #
@@ -40,7 +41,7 @@ my $Default_mahost = 'http://localhost:8086/perfSONAR_PS/services/tracerouteMA';
 
 use lib "/opt/perfsonar_ps/toolkit/lib";
 use strict;
-use psTracerouteUtils;
+use psTracerouteUtils 2.0;
 use CGI qw(:standard);
 use CGI::Carp qw(fatalsToBrowser);
 use Date::Manip;
@@ -89,20 +90,21 @@ my %dnscache;   # duh
 #======================================================================
 #       M A I N 
 
-parseInput();
-
-my $ma_result = GetTracerouteMetadataFromMA($mahost,$epoch_stime,$epoch_etime);
-ParseTracerouteMetadataAnswer($ma_result,\%endpoint);
-
-
 # print http header
 print("Content-Type: text/html;\n\n");
 
+parseInput();
+
+print "<input type='hidden' name='s' value='$epoch_stime'>\n";
+print "<input type='hidden' name='e' value='$epoch_etime'>\n";
 
 displayTop();
 
+my $msg = GetTracerouteMetadata($mahost,$epoch_stime,$epoch_etime,\%endpoint);
+
 if ( scalar(keys((%endpoint))) < 1 ) {
-        print "<b><font color=\"red\">Error: No Measurement Archives available.</font></b>\n<br>\n";
+	unless(defined($msg)) { $msg = '&nbsp'; }
+       	print "<b><font color=\"red\">Error: No Measurement Archives available.<br>$msg</font></b>\n<br>\n";
 
 } else {
 
@@ -113,7 +115,6 @@ if ( scalar(keys((%endpoint))) < 1 ) {
 	}
 }
 
-#print "<br><br><hr>$Ver<br>\n";
 print "<br><br>";
 
 exit();
@@ -125,6 +126,24 @@ exit();
 
 # Sanity Check all cgi input, and set defaults if none are given
 sub parseInput() {
+
+	# timezone support
+	my $tz;
+	# It turns out that DateTime::TimeZone can die() if it can't
+	# figure out the timezone.  Instead, catch that and set a default.
+	# http://code.google.com/p/perfsonar-ps/issues/detail?id=819
+	eval { $tz = DateTime::TimeZone->new(name=>'local'); };
+	if ( $@ ) {
+		$ENV{TZ} = "America/Chicago";
+	} else {	
+		$ENV{TZ} = $tz->name;
+	}
+	if (defined(param('tzselect'))) {
+		if (param('tzselect') =~ m/^[0-9a-zA-Z:\/_\-]+$/ ) {
+			$ENV{TZ} = param('tzselect');
+		}
+	} 
+	tzset;
 
         # measurement archive url
         if (defined(param("mahost"))) {
@@ -171,10 +190,10 @@ sub parseInput() {
         }
 
         if (defined(param('epselect'))) {
-                if (param('epselect') =~ m/[0-9a-z]/ ) {
+                if (param('epselect') =~ m/^[0-9a-zA-Z\-\/]+$/ ) {
                         $epselect = param('epselect');
                 } else {
-                        $epselect = "unselected";
+                        die("Illegal endpoint selection: " . param('epselect'));
                 }
         } else {
 		$epselect = "unselected";
@@ -188,20 +207,6 @@ sub parseInput() {
         } else {
                 $donotdedup = 0;
         }
-
-	# timezone support
-	my $tz = DateTime::TimeZone->new(name=>'local');
-	$ENV{TZ} = $tz->name;
-	if (defined(param('tzselect'))) {
-		if (param('tzselect') =~ m/^[0-9a-zA-Z:\/_\-]+$/ ) {
-			#my $zone = param('tzselect');
-			#my $tz = DateTime::TimeZone->new(name=>$zone);
-			#$ENV{TZ} = $tz->name;
-			$ENV{TZ} = param('tzselect');
-		}
-	} 
-	tzset;
-
 }
 
 
@@ -212,7 +217,11 @@ sub lookup($;$) {
         my $af = shift;
         my $r;
 
-        if (defined($dnscache{$thing})) {
+        if (defined($af)) {
+           if (defined($dnscache{$af}{$thing})) {
+               return $dnscache{$af}{$thing};
+           }
+        } elsif (defined($dnscache{$thing})) {
                 return $dnscache{$thing};
         }
 
@@ -231,8 +240,12 @@ sub lookup($;$) {
         }
 
         if (defined($r)) { 
+			if (defined($af)) {
+				$dnscache{$af}{$thing} = $r;
+			} else {
                 $dnscache{$thing} = $r;
-                return $r;      
+			}
+            return $r;      
         } else {
                 return " ";
         }
@@ -243,12 +256,18 @@ sub displayTrData() {
 
    # display traceroute data
 
-        my $trdata = GetTracerouteDataFromMA($mahost,$epselect,$epoch_stime,$epoch_etime);
-
-        #print Dumper($trdata);
-
         my %topology;
-        DeduplicateTracerouteDataAnswer($trdata,\%topology,$donotdedup);
+		my $msg  = GetTracerouteData($mahost,$epselect,$epoch_stime,$epoch_etime,\%topology);
+		if (defined($msg) && $msg ne '') {
+			print "<font color='red'>Error: $msg</font><p>";
+		}
+
+		unless($donotdedup) {
+			my %new_topology;
+			DeduplicateTracerouteData(\%topology,\%new_topology);
+			undef(%topology);
+			%topology = %new_topology;
+		}
 
       #print "<pre>\n";
         #print Dumper(%topology);
@@ -256,9 +275,10 @@ sub displayTrData() {
 
       foreach my $time (sort keys %topology) {
               my $humantime = scalar(localtime($time));
-              print "<h3>Topology beginning at $humantime (" . utcOffset($ENV{'TZ'}) .")</h3><blockquote>\n";
+              print "\n\n<h3>Topology beginning at $humantime (" . utcOffset($ENV{'TZ'}) .")</h3><blockquote>\n";
+	      print "<input type='hidden' name='t' value='$time'>\n";
               print "<table border=1 cellspacing=0 cellpadding=3>\n";
-              print "<tr><th>Hop</th><th>Router</th><th>IP</th></tr>\n";
+              print "<tr><th>Hop</th><th>Router</th><th>IP</th><th>MTU</th></tr>\n";
               foreach my $hopnum (sort { $a <=> $b } keys %{$topology{$time}} ) {
                       my $sayecmp=" ";
                       foreach my $router (keys %{$topology{$time}{$hopnum}}) {
@@ -268,14 +288,20 @@ sub displayTrData() {
                               if (lookup($router) ne ' ') {
                                       $name = lookup($router); 
                               }
-                              print "<tr><td>$hopnum $sayecmp</td><td>$name</td><td>$router</td></tr>\n";
+							  
+						      # handle MTU
+							  my $mtu = '&nbsp;';
+							  if (defined($topology{$time}{$hopnum}{$router}) && $topology{$time}{$hopnum}{$router} != 1){
+								  $mtu = $topology{$time}{$hopnum}{$router};
+							  } 
+								 
+                              print "<tr><td>$hopnum $sayecmp</td><td>$name</td><td>$router</td><td>$mtu</td></tr>\n";
                       }
               }
               print "</table></blockquote>";
       }
    
 } # end displayTrData()
-
 
 sub displaySelectBox() {
 
@@ -286,6 +312,7 @@ sub displaySelectBox() {
 EOM
    print $html3;
 
+   my %options;
 
    foreach my $id (keys %endpoint) {
 
@@ -299,7 +326,11 @@ EOM
       } else { # we have a hostname, but want the ip
               if ($endpoint{$id}{'dsttype'} eq 'ipv6') {
                       $srchost = $endpoint{$id}{'srcval'} . ' ('. lookup($endpoint{$id}{'srcval'},AF_INET6) .') ';
-              }else{
+
+			  # so, now we have to guess if this is a v4 or v6 host.  prefer v6 like a typical host.
+              } elsif (lookup($endpoint{$id}{'srcval'},AF_INET6) ne ' ' && lookup($endpoint{$id}{'dstval'},AF_INET6) ne ' ') {
+                      $srchost = $endpoint{$id}{'srcval'} . ' ('. lookup($endpoint{$id}{'srcval'},AF_INET6) .') ';
+			  } else {
                       $srchost = $endpoint{$id}{'srcval'} . ' ('. lookup($endpoint{$id}{'srcval'},AF_INET) .') ';
               }
       }
@@ -307,8 +338,12 @@ EOM
       if ($endpoint{$id}{'dsttype'} =~ m/ipv[46]/ ) {
               $dsthost = lookup($endpoint{$id}{'dstval'}) . ' ('. $endpoint{$id}{'dstval'} . ')' ;
 
-      } else { # we have a hostname, but want the ip, try to guess v4 or v6
+      } else { # we have a hostname, but want the ip
           if ($endpoint{$id}{'srctype'} eq 'ipv6') {
+              $dsthost = $endpoint{$id}{'dstval'} . ' ('. lookup($endpoint{$id}{'dstval'},AF_INET6) .') ';
+
+		  # so, now we have to guess if this is a v4 or v6 host.  prefer v6 like a typical host.
+		  } elsif (lookup($endpoint{$id}{'dstval'},AF_INET6) ne ' ' && lookup($endpoint{$id}{'srcval'},AF_INET6) ne ' ') {
               $dsthost = $endpoint{$id}{'dstval'} . ' ('. lookup($endpoint{$id}{'dstval'},AF_INET6) .') ';
           } else{
               $dsthost = $endpoint{$id}{'dstval'} . ' ('. lookup($endpoint{$id}{'dstval'},AF_INET) .') ';
@@ -318,8 +353,12 @@ EOM
       # determine if something was already selected or not.
       my $selected=" ";
       if ($id eq $epselect) { $selected="selected=\"selected\""; }
-      print "<option value=\"$id\" $selected > $srchost ---->  $dsthost \n";
+	  $options{"$srchost ---->  $dsthost"} = "<option value=\"$id\" $selected >";
    }
+
+	foreach my $srcdst (sort keys(%options)) {
+		print $options{$srcdst} . $srcdst . "\n" ;
+	}
 
    # see if the checkbox should be selected
    my $dedupsel = " ";
@@ -348,14 +387,14 @@ sub displayTop() {
       <html>
       <head>
        <META NAME="robots" CONTENT="noindex,nofollow">
-       <title>psTracerouteViewer</title>
+       <title>psTracerouteViewer v2</title>
        <style type="text/css">\@import url(jscalendar/calendar-win2k-1.css);</style>
        <script type="text/javascript" src="jscalendar/calendar.js"></script>
        <script type="text/javascript" src="jscalendar/lang/calendar-en.js"></script>
        <script type="text/javascript" src="jscalendar/calendar-setup.js"></script>
       </head>
 
-      <h2>psTracerouteViewer</h2>
+      <h2>psTracerouteViewer v2</h2>
 
     <table border=0 width="100%">
     <tr>

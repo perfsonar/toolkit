@@ -56,9 +56,9 @@ if not ans:
 
 user = ans
 
-ans = raw_input("Should this user be able to login via SSH? [yes] ").strip().upper()
+ans = raw_input("Should this user be able to login via SSH? [no] ").strip().upper()
 if not ans:
-    ans = "YES"
+    ans = "NO"
 
 can_login = False
 if ans[0] == "Y":

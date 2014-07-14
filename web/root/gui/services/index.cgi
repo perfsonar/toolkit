@@ -14,10 +14,13 @@ my $basedir = "$RealBin/";
 
 use lib "$RealBin/../../../../lib";
 
+use RPM2;
+
 use perfSONAR_PS::NPToolkit::Config::Version;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 
 use perfSONAR_PS::Utils::Host qw( discover_primary_address );
+use perfSONAR_PS::Utils::LookupService qw( is_host_registered );
 
 use perfSONAR_PS::NPToolkit::Services::ServicesMap qw(get_service_object);
 
@@ -59,9 +62,11 @@ my $external_addresses = discover_primary_address({
                                                  });
 my $external_address;
 my $external_address_mtu;
+my $is_registered = 0;
 if ($external_addresses) {
     $external_address = $external_addresses->{primary_address};
     $external_address_mtu = $external_addresses->{primary_iface_mtu};
+    $is_registered = is_host_registered($external_address);
 }
 
 my $administrative_info_conf = perfSONAR_PS::NPToolkit::Config::AdministrativeInfo->new();
@@ -108,6 +113,7 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
     $service_info{"name"}       = $service_name;
     $service_info{"is_running"} = $is_running_output;
     $service_info{"addresses"}  = \@addresses;
+    $service_info{"version"}    = $service->package_version;
 
     $services{$service_name} = \%service_info;
 }
@@ -136,7 +142,7 @@ $vars{mtu}     = $external_address_mtu;
 $logger->debug("Checking if NTP is synced");
 $vars{ntp_sync_status}     = $ntp->is_synced();
 $logger->debug("Checking if globally registered");
-$vars{global_reg} 		= $administrative_info_conf->has_admin_info();
+$vars{global_reg} 		= $is_registered;
 set_sidebar_vars( { vars => \%vars } );
 $logger->debug("Building index page");
 

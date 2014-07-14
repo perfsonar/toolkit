@@ -110,8 +110,6 @@ my $ajax = CGI::Ajax->new(
     'reset_config' => \&reset_config,
 
     'show_test' => \&show_test,
-    'update_owamp_test_port_range' => \&update_owamp_test_port_range,
-    'update_bwctl_test_port_range' => \&update_bwctl_test_port_range,
 
     'add_pinger_test'    => \&add_pinger_test,
     'update_pinger_test' => \&update_pinger_test,
@@ -277,7 +275,7 @@ sub fill_variables_tests {
         $tests = \@tests;
     }
 
-    my @sorted_tests = sort { $a->{id} cmp $b->{id} } @$tests;
+    my @sorted_tests = sort { $a->{description} cmp $b->{description} } @$tests;
     $tests = \@sorted_tests;
 
     $vars->{tests} = $tests;
@@ -665,75 +663,6 @@ sub add_bwctl_throughput_test {
     return display_body();
 }
 
-sub update_owamp_test_port_range {
-    my ($min_port, $max_port) = @_;
-
-    my ($status, $res);
-
-    if ($min_port eq "NaN" or $max_port eq "NaN") {
-        ( $status, $res ) = $testing_conf->reset_local_port_range({ test_type => "owamp" });
-    } else {
-        ( $status, $res ) = $testing_conf->set_local_port_range( { test_type => "owamp", min_port => $min_port, max_port => $max_port } );
-    }
-
-    if ( $status != 0 ) {
-        $error_msg = "Port range update failed: $res";
-        return display_body();
-    }
-
-    $is_modified = 1;
-
-    save_state();
-
-    return display_body();
-}
-
-sub update_bwctl_test_port_range {
-    my ($min_port, $max_port) = @_;
-
-    if ($min_port eq "NaN" or $max_port eq "NaN") {
-        $min_port = 0;
-        $max_port = 0;
-    }
-
-    unless ($min_port <= $max_port) {
-        $error_msg = "Minimum port must be less than maximum port";
-        return display_body();
-    }
-
-    unless (($min_port == 0 and $max_port == 0) or ($max_port - $min_port) > 0) {
-        $error_msg = "Must specify at least two ports";
-        return display_body();
-    }
-
-    my ($test_min_port, $test_max_port, $iperf_min_port, $iperf_max_port);
-
-    # Divide the range into the "iperf" ports, and the "peer" ports.
-    $test_min_port = $min_port;
-    $test_max_port = int(($max_port - $min_port)/2) + $min_port;
-    $iperf_min_port = int(($max_port - $min_port)/2) + 1 + $min_port;
-    $iperf_max_port = $max_port;
-
-    my ($status, $res);
-
-    ( $status, $res ) = $bwctl_conf->set_port_range({ port_type => "peer", min_port => $test_min_port, max_port => $test_max_port });
-    if ( $status != 0 ) {
-        $error_msg = "Port range update failed: $res";
-        return display_body();
-    }
-
-    ( $status, $res ) = $bwctl_conf->set_port_range({ port_type => "iperf", min_port => $iperf_min_port, max_port => $iperf_max_port });
-    if ( $status != 0 ) {
-        $error_msg = "Port range update failed: $res";
-        return display_body();
-    }
-
-    $is_modified = 1;
-
-    save_state();
-
-    return display_body();
-}
 
 sub update_bwctl_throughput_test {
     my ($id, $description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits, $local_interface) = @_;
@@ -852,19 +781,15 @@ sub add_traceroute_test {
 }
 
 sub update_traceroute_test {
-    my ($id, $description, $test_interval, $packet_size, $timeout, $waittime, $first_ttl, $max_ttl, $pause, $protocol, $local_interface) = @_;
+    my ($id, $description, $test_interval, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
 
     my ( $status, $res );
 
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, description => $description } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, test_interval => $test_interval } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, packet_size => $packet_size } );
-    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, timeout => $timeout } );
-    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, waittime => $waittime } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, first_ttl => $first_ttl } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, max_ttl => $max_ttl } );
-    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, pause => $pause } );
-    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, protocol => $protocol } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, local_interface => $local_interface } );
 
     if ( $status != 0 ) {

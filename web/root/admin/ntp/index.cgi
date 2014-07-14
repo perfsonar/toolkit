@@ -71,12 +71,13 @@ else {
 
 die( "Couldn't instantiate session: " . CGI::Session->errstr() ) unless ( $session );
 
-our ( $ntp_conf, $status_msg, $warning_msg, $error_msg, $failed_connect, $is_modified, $initial_state_time, $ntpinfo );
+our ( $ntp_conf, $display_type, $status_msg, $warning_msg, $error_msg, $failed_connect, $is_modified, $initial_state_time, $ntpinfo );
 
 if ( $session and not $session->is_expired and $session->param( "ntp_conf" ) ) {
     $logger->debug( "Restoring ntp conf object" );
     $ntp_conf = perfSONAR_PS::NPToolkit::Config::NTP->new( { saved_state => $session->param( "ntp_conf" ) } );
     $failed_connect = thaw( $session->param("failed_connect") );
+    $display_type  = $session->param( "display_type" );
     $is_modified   = $session->param( "is_modified" );
     $initial_state_time = $session->param( "initial_state_time" );
     unless ($failed_connect) {
@@ -107,6 +108,8 @@ $warning_msg = "NTP is not syncronized" unless $ntp->is_synced();
 my $ajax = CGI::Ajax->new(
     'save_config'  => \&save_config,
     'reset_config' => \&reset_config,
+
+    'set_display_type'   => \&set_display_type,
 
     'add_server'         => \&add_server,
     'delete_server'      => \&delete_server,
@@ -162,6 +165,7 @@ sub fill_variables {
     $vars->{servers}               = \@vars_servers;
     $vars->{enable_select_closest} = 1 if $conf{enable_select_closest};
     $vars->{is_modified}           = $is_modified;
+    $vars->{display_type}          = $display_type;
     $vars->{status_message}        = $status_msg;
     $vars->{error_message}         = $error_msg;
     $vars->{warning_message}        = $warning_msg;
@@ -201,6 +205,16 @@ sub reset_config {
     reset_state();
     save_state();
     $status_msg = "Configuration Reset";
+    return display_body();
+}
+
+sub set_display_type {
+    my ( $new_display_type ) = @_;
+
+    $display_type = $new_display_type;
+
+    save_state();
+
     return display_body();
 }
 
@@ -251,11 +265,13 @@ sub toggle_server {
     return unless ( $ntp_conf->lookup_server( { address => $address } ) );
 
     if ( $value and $value eq "on" ) {
+        $status_msg = "Server $address selected";
         $logger->info( "Enabling server $address: '$value'" );
         $ntp_conf->update_server( { address => $address, selected => 1 } );
     }
     else {
         $logger->info( "Disabling server $address: '$value'" );
+        $status_msg = "Server $address unselected";
         $ntp_conf->update_server( { address => $address, selected => 0 } );
     }
 
@@ -263,7 +279,7 @@ sub toggle_server {
 
     save_state();
 
-    return "";
+    return display_body();
 }
 
 sub reset_state {
@@ -272,6 +288,8 @@ sub reset_state {
     if ( $res != 0 ) {
         die( "Couldn't initialize NTP Configuration" );
     }
+
+    $display_type = "default";
 
     $is_modified = 0;
     $initial_state_time = $ntp_conf->last_modified();
@@ -282,6 +300,7 @@ sub reset_state {
 sub save_state {
     my $state = $ntp_conf->save_state();
     $session->param( "ntp_conf", $state );
+    $session->param( "display_type", $display_type );
 
     $session->param( "initial_state_time", $initial_state_time );
     $session->param("failed_connect", freeze($failed_connect));
@@ -339,44 +358,31 @@ sub find_closest_servers {
             maximum_number => 0,
         }
     );
+    my $servers = $parameters->{servers};
+    my $maximum_number = $parameters->{maximum_number};
 
-    my @results = ();
-    my @failed_results = ();
+    my ( $status, $results ) = ping({ hostnames => $servers, timeout => 5 });
+    my @failed_hosts = ();
+    my @succeeded_hosts = ();
 
-    foreach my $server ( @{ $parameters->{servers} } ) {
-	$logger->debug("Pinging $server");
-
-        my ( $ret, $duration ) = ping({ hostname => $server, timeout => 2 });
-        unless ( $ret == 0 ) {
-            $logger->debug("Didn't receive response from $server");
-	    push @failed_results, $server;
-            next;
-	}
-	$logger->debug("Server $server took $duration seconds");
-        push @results, { address => $server, rtt => $duration };
+    foreach my $host (keys %$results) {
+        if ($results->{$host}->{rtt}) {
+            push @succeeded_hosts, { address => $host, rtt => $results->{$host}->{rtt} };
+        }
+        else {
+            push @failed_hosts, $host;
+        }
     }
 
-    $logger->debug("Out of find_closest_servers loop");
-
-    @results = sort { $a->{rtt} <=> $b->{rtt} } @results;
+    @succeeded_hosts = sort { $a->{rtt} <=> $b->{rtt} } @succeeded_hosts;
 
     # make sure we only grab the maximum number
 
-    unless ( $parameters->{maximum_number} ) {
-        $logger->debug("Returning all results");
-        return ( 0, \@results, \@failed_results );
+    if ( $parameters->{maximum_number} ) {
+        splice @succeeded_hosts, $maximum_number;
     }
-    else {
-        $logger->debug("Returning subset of results");
 
-        my @retval = ();
-
-        for ( my $i = 0; $i < $parameters->{maximum_number} and $i < scalar( @results ); $i++ ) {
-            push @retval, $results[$i];
-        }
-
-        return ( 0, \@retval, \@failed_results );
-    }
+    return ( 0, \@succeeded_hosts, \@failed_hosts );
 }
 
 1;

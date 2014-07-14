@@ -1,0 +1,82 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $log_dir = "/var/log/";
+my $new_log_dir = "/var/lib/perfsonar/log_view/ndt/";
+my @logs = ();
+
+opendir(DIR, $log_dir) or die "can't open $log_dir\n";
+while ( my $file = readdir( DIR ) ) {
+    next unless ( $file =~ m/^messages.*/ );
+    push @logs, $file;
+}
+closedir( DIR );
+
+open( NEWLOGFILE, ">".$new_log_dir."ndt" ) or die "cannot open " . ">".$new_log_dir."ndt";
+foreach my $l ( reverse sort @logs ) {
+    if ( $l =~ /\.gz$/ ) {
+	open( LOGFILE, "gunzip -c $log_dir.$l |" ) or die "can't open pipe to $log_dir.$l\n";
+    }
+    else {
+	open( LOGFILE, $log_dir.$l ) or die "can't open $log_dir.$l\n";
+    }
+
+    while( <LOGFILE> ) {
+	chomp;	
+	next unless $_ =~ m/.*web100srv:\ client_IP.*/;
+
+	print NEWLOGFILE $_ , "\n";
+    }
+}
+close( NEWLOGFILE ) or die "cannot close " . ">".$new_log_dir."ndt";
+
+$log_dir = "/var/log/perfsonar/";
+my $new_log_dir1 = "/var/lib/perfsonar/log_view/bwctl/";
+my $new_log_dir2 = "/var/lib/perfsonar/log_view/owamp/";
+@logs = ();
+
+opendir(DIR, $log_dir) or die "can't open $log_dir\n";
+my $count = 0;
+while ( my $file = readdir( DIR ) ) {
+    next unless ( $file =~ m/^owamp_bwctl.*/ );
+    last if (++$count > 3);
+    push @logs, $file;
+}
+closedir( DIR );
+
+my $prev = 0;
+open( NEWLOGFILEONE, ">".$new_log_dir1."bwctl" ) or die "cannot open " . ">".$new_log_dir1."bwctl";
+open( NEWLOGFILETWO, ">".$new_log_dir2."owamp" ) or die "cannot open " . ">".$new_log_dir2."owamp";
+
+foreach my $l ( reverse sort @logs ) {
+
+    if ( $l =~ /\.gz$/ ) {
+	open( LOGFILE, "gunzip -c $log_dir.$l |" ) or die "can't open pipe to $log_dir.$l\n";
+    }
+    else {
+	open( LOGFILE, $log_dir.$l ) or die "can't open $log_dir.$l\n";
+    }
+
+    while( <LOGFILE> ) {
+	chomp;	
+
+	if ( $_ =~ m/.*bwctld.*Connection.*/ ) {
+	    next if $_ =~ m/.*Unable.*/;
+	    next if $_ =~ m/.*reset.*/;
+
+	    print NEWLOGFILEONE $_ , "\n";
+	}
+	elsif ( $_ =~ m/.*owampd.*Connection.*/ ) {
+	    next if $_ =~ m/.*reset.*/;
+	    
+	    print NEWLOGFILETWO $_ , "\n";
+	}
+	else {
+	    next;
+	}
+    }
+}
+close( NEWLOGFILEONE ) or die "cannot close " . ">".$new_log_dir1."bwctl";
+close( NEWLOGFILETWO ) or die "cannot close " . ">".$new_log_dir2."owamp";

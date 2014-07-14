@@ -399,6 +399,8 @@ sub parse_owmesh_conf {
                     my $description = $owmesh_conf->{TESTSPEC}->{$test}->{DESCRIPTION};
                     $description = $group_name unless ( $description );
 
+                    $tos_bits = undef if $tos_bits and $tos_bits eq "NaN";
+
                     # Convert window size to megabytes and UDP bandwidth to Mbps
                     if ( defined $window_size ) {
                         if ( $window_size =~ /^(\d+)[gG]$/ ) {
