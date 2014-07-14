@@ -14,6 +14,8 @@ my $basedir = "$RealBin/";
 
 use lib "$RealBin/../../../../lib";
 
+use RPM2;
+
 use perfSONAR_PS::NPToolkit::Config::Version;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 
@@ -111,6 +113,7 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
     $service_info{"name"}       = $service_name;
     $service_info{"is_running"} = $is_running_output;
     $service_info{"addresses"}  = \@addresses;
+    $service_info{"version"}    = $service->package_version;
 
     $services{$service_name} = \%service_info;
 }
