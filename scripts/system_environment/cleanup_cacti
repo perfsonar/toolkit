@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# conifgure_cacti:
+#   This script cleans up the cacti configuration:
+
+/etc/init.d/mysqld status
+if [ $? != 0 ]; then
+    /etc/init.d/mysqld start
+    STOP_MYSQL=1
+fi
+
+DATABASE=cacti
+
+# Reset some of cacti's default settings
+DEFAULT_KEYS=(
+     "path_rrdtool"
+     "path_php_binary"
+     "path_snmpwalk"
+     "path_snmpget"
+     "path_snmpbulkwalk"
+     "path_snmpgetnext"
+     "path_cactilog"
+     "snmp_version"
+     "rrdtool_version"
+)
+
+DEFAULT_VALUES=(
+     "/usr/bin/rrdtool"
+     "/usr/bin/php"
+     "/usr/bin/snmpwalk"
+     "/usr/bin/snmpget"
+     "/usr/bin/snmpbulkwalk"
+     "/usr/bin/snmpgetnext"
+     "/var/log/cacti/cacti.log"
+     "net-snmp"
+     "rrd-1.3.x"
+)
+
+echo "Reseting default values"
+for ((i = 0; i < ${#DEFAULT_KEYS[@]}; i++)); do
+    mysql -e "UPDATE settings SET value='${DEFAULT_VALUES[$i]}' WHERE name='${DEFAULT_KEYS[$i]}'" $DATABASE
+done
+
+echo "Checking cacti version correctness"
+# This is a fix for an issue where the 0.8.8b cacti version got updated on the
+# Toolkit, but the tables weren't included, the version number just got
+# updated.
+OUTPUT=`mysql -e "SHOW TABLES LIKE 'plugin_config';" $DATABASE`
+if [ $? == 0 ]; then
+    if [ "${OUTPUT}" == "" ]; then
+        echo "plugin_config table is missing, setting the cacti version number to 0.8.7c to force an update"
+        mysql -e "UPDATE version SET cacti='0.8.7c' WHERE cacti='0.8.8b';" $DATABASE
+    fi
+fi
+
+echo "Cleaning up 'guest' settings"
+
+# Cleanup any 'guest' settings
+mysql cacti -e "update settings_graphs set value='' where name in ('title_font','legend_font','axis_font','unit_font') and user_id = (select id from user_auth where username = 'guest')"
+
+
+echo "Upgrading cacti database"
+
+php /opt/perfsonar_ps/toolkit/web/root/admin/cacti/cli/upgrade_database.php
+
+if [ "${STOP_MYSQL}" = "1" ]; then
+    /etc/init.d/mysqld stop
+fi

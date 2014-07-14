@@ -208,6 +208,7 @@ scripts/set_default_passwords
 scripts/system_environment/add_dbxml_path
 scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path
+scripts/system_environment/cleanup_cacti
 scripts/system_environment/configure_bwctld_log_location
 scripts/system_environment/configure_firewall
 scripts/system_environment/configure_ntpd
