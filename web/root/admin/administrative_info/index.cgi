@@ -206,6 +206,20 @@ sub fill_variables {
     $vars->{longitude}            = $administrative_info_conf->get_longitude();
     set_error_variables( $vars, 'longitude' );
 
+
+    unless($vars->{latitude} or $vars->{longitude}){
+        my $external_addresses = discover_primary_address({ disable_ipv4_reverse_lookup => 1, disable_ipv6_reverse_lookup => 1 });
+       my $res = ipToLatLong($external_addresses->{primary_address});
+
+            if($res->{longitude} && $res->{latitude} ){
+                $vars->{longitude} = $res->{longitude};
+                $vars->{latitude} = $res->{latitude};
+            }
+
+    }
+
+
+
     my $keywords         = $administrative_info_conf->get_keywords();
     my @display_keywords = ();
     if ( $keywords ) {
@@ -240,21 +254,6 @@ sub set_error_variables {
 
 sub set_host_information  {
     my ( $organization_name, $host_location, $city, $state, $country, $zipcode, $administrator_name, $administrator_email, $latitude, $longitude, $subscribe ) = @_;
-
-    #if latitude and longitude are empty then populate lat,long using geoip
-    unless ($latitude or $longitude or 
-            $administrative_info_conf->get_latitude() or
-            $administrative_info_conf->get_longitude()) {
-        my $external_addresses = discover_primary_address({ disable_ipv4_reverse_lookup => 1, disable_ipv6_reverse_lookup => 1 });
-        if ($external_addresses->{primary_address}) {
-            my $res = ipToLatLong($external_addresses->{primary_address});
-
-            if($res->{longitude} && $res->{latitude} ){
-                $longitude = $res->{longitude};
-                $latitude = $res->{latitude};
-            }
-        }
-    }
 
     $administrative_info_conf->set_organization_name( { organization_name => $organization_name } );
     $administrative_info_conf->set_city( { city => $city } );
