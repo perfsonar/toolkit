@@ -21,6 +21,7 @@ ntp.hawaii.edu:University of Hawaii - Honolulu, HI USA
 ns2.jp.apan.net:Asia Pacific Advanced Network - Tokyo, Japan
 ns.twgrid.org: TWGrid - Taipei, Taiwan
 b.ntp.monipe.rnp.br:RNP Time Server #2 - Brazil
+c.ntp.monipe.rnp.br:RNP Time Server #3 - Brazil
 ntp1.cais.rnp.br:RNP Time Server #6 - Brazil
 time1.ethz.ch:ETH Zurich - Zurich, Switzerland
 time2.ethz.ch:ETH Zurich - Zurich, Switzerland
