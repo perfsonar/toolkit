@@ -19,8 +19,6 @@ my $basedir = "$RealBin/";
 use lib "$RealBin/../../../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
-use perfSONAR_PS::NPToolkit::Config::ExternalAddress;
-use perfSONAR_PS::Utils::GeoIp;
 use perfSONAR_PS::Client::gLS::Keywords;
 
 my $config_file = $basedir . '/etc/web_admin.conf';
@@ -195,21 +193,6 @@ sub fill_variables {
     $vars->{zipcode}            = $administrative_info_conf->get_zipcode();
     $vars->{latitude}            = $administrative_info_conf->get_latitude();
     $vars->{longitude}            = $administrative_info_conf->get_longitude();
-    
-    #if latitude and longitude are empty then populate lat,long using geoip
-    if((!$vars->{latitude} || $vars->{latitude} eq "") && (!$vars->{longitude} || $vars->{longitude} eq "")){
-    	my $address_conf = perfSONAR_PS::NPToolkit::Config::ExternalAddress->new();
-    	$address_conf->init();
-    	my $ip = $address_conf->get_primary_address();
-    	my $res = convertIpToLatLong($ip);
-    	
-    	if($res->{longitude} && $res->{latitude} ){
-    		$vars->{longitude} = $res->{longitude};
-    		$vars->{latitude} = $res->{latitude};
-    	}
-    	
-    }
-    
     my $keywords         = $administrative_info_conf->get_keywords();
     my @display_keywords = ();
     if ( $keywords ) {
@@ -333,8 +316,6 @@ sub save_state {
     $session->param( "is_modified", $is_modified );
     $session->param( "initial_state_time", $initial_state_time );
 }
-
-
 
 1;
 
