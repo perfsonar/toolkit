@@ -19,6 +19,9 @@ fi
 #install esmond config
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
 
+#disable JMX in cassandra so will start even if /etc/sysconfig/network HOSTNAME does not resolve
+sed -i '/^JVM_OPTS="\$JVM_OPTS -Dcom.sun.management.jmx/ s/^/#/' /etc/cassandra/conf/cassandra-env.sh
+
 #set esmond env variables
 export ESMOND_ROOT=/opt/esmond
 export ESMOND_CONF=$ESMOND_ROOT/esmond.conf
