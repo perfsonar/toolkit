@@ -5,6 +5,7 @@
 grep ^facility /etc/bwctld/bwctld.conf &> /dev/null
 if [ $? != 0 ]; then
 cat >>/etc/bwctld/bwctld.conf <<EOF
+
 facility        local5
 EOF
 fi

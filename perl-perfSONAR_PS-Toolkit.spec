@@ -21,7 +21,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum 12 
+%define relnum 13 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -401,7 +401,6 @@ EOF
 /etc/httpd/conf.d/*
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 %attr(0644,root,root) /etc/cron.d/%{crontab_2}
-%attr(0644,root,root) /etc/cron.d/%{crontab_3}
 %attr(0644,root,root) /etc/cron.d/%{crontab_4}
 %attr(0755,root,root) /etc/cron.hourly/%{cron_hourly_1}
 # Make sure the cgi scripts are all executable
@@ -441,6 +440,7 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/watcher_log_archive_cleanup
 
 %files LiveCD
+%attr(0644,root,root) /etc/cron.d/%{crontab_3}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_6}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_7}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_8}
