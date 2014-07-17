@@ -753,6 +753,9 @@ sub update_owamp_test {
 sub add_traceroute_test {
     my ($description, $test_interval, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
 
+    $first_ttl = undef if $first_ttl and $first_ttl eq "NaN";
+    $max_ttl   = undef if $max_ttl and $max_ttl eq "NaN";
+
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_traceroute(
         {
@@ -782,6 +785,9 @@ sub add_traceroute_test {
 
 sub update_traceroute_test {
     my ($id, $description, $test_interval, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
+
+    $first_ttl = undef if $first_ttl and $first_ttl eq "NaN";
+    $max_ttl   = undef if $max_ttl and $max_ttl eq "NaN";
 
     my ( $status, $res );
 
