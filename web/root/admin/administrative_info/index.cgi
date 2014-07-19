@@ -19,7 +19,7 @@ my $basedir = "$RealBin/";
 use lib "$RealBin/../../../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
-use perfSONAR_PS::Utils::GeoIp qw(ipToLatLong);
+use perfSONAR_PS::Utils::GeoLookup qw(geoIPLookup);
 use perfSONAR_PS::Client::gLS::Keywords;
 use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 use perfSONAR_PS::Utils::Host qw( discover_primary_address );
@@ -209,7 +209,7 @@ sub fill_variables {
 
     unless($vars->{latitude} or $vars->{longitude}){
         my $external_addresses = discover_primary_address({ disable_ipv4_reverse_lookup => 1, disable_ipv6_reverse_lookup => 1 });
-       my $res = ipToLatLong($external_addresses->{primary_address});
+       my $res = geoIPLookup($external_addresses->{primary_address});
 
             if($res->{longitude} && $res->{latitude} ){
                 $vars->{longitude} = $res->{longitude};

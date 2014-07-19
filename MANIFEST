@@ -165,7 +165,7 @@ lib/perfSONAR_PS/Utils/Config/NTP.pm
 lib/perfSONAR_PS/Utils/Config/OWAMP.pm
 lib/perfSONAR_PS/Utils/DNS.pm
 lib/perfSONAR_PS/Utils/Daemon.pm
-lib/perfSONAR_PS/Utils/GeoIp.pm
+lib/perfSONAR_PS/Utils/GeoLookup.pm
 lib/perfSONAR_PS/Utils/HTTPS.pm
 lib/perfSONAR_PS/Utils/Host.pm
 lib/perfSONAR_PS/Utils/LookupService.pm
