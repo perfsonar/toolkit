@@ -631,7 +631,14 @@ sub show_test {
 }
 
 sub add_bwctl_throughput_test {
-    my ($description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits, $local_interface) = @_;
+    my ($description, $duration, $test_interval, $test_schedule, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits, $local_interface) = @_;
+
+    # Parse the test schedule
+    my $parsed_schedule;
+    if ($test_schedule) {
+        my @timeslots = split(/ *, */, $test_schedule);
+        $parsed_schedule = \@timeslots;
+    }
 
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_bwctl_throughput(
@@ -640,6 +647,7 @@ sub add_bwctl_throughput_test {
             tool          => $tool,
             protocol      => $protocol,
             test_interval => $test_interval,
+            test_schedule => $parsed_schedule,
             duration      => $duration,
             window_size   => $window_size,
             udp_bandwidth => $udp_bandwidth,
@@ -665,12 +673,20 @@ sub add_bwctl_throughput_test {
 
 
 sub update_bwctl_throughput_test {
-    my ($id, $description, $duration, $test_interval, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits, $local_interface) = @_;
+    my ($id, $description, $duration, $test_interval, $test_schedule, $tool, $protocol, $window_size, $udp_bandwidth, $tos_bits, $local_interface) = @_;
+
+    # Parse the test schedule
+    my $parsed_schedule;
+    if ($test_schedule) {
+        my @timeslots = split(/ *, */, $test_schedule);
+        $parsed_schedule = \@timeslots;
+    }
 
     my ( $status, $res );
 
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, description => $description } );
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, test_interval => $test_interval } );
+    ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, test_schedule => $parsed_schedule } );
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, tool => $tool } );
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, duration => $duration } );
     ( $status, $res ) = $testing_conf->update_test_bwctl_throughput( { test_id => $id, protocol => $protocol } );
@@ -751,16 +767,24 @@ sub update_owamp_test {
 }
 
 sub add_traceroute_test {
-    my ($description, $test_interval, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
+    my ($description, $test_interval, $test_schedule, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
 
     $first_ttl = undef if $first_ttl and $first_ttl eq "NaN";
     $max_ttl   = undef if $max_ttl and $max_ttl eq "NaN";
+
+    # Parse the test schedule
+    my $parsed_schedule;
+    if ($test_schedule) {
+        my @timeslots = split(/ *, */, $test_schedule);
+        $parsed_schedule = \@timeslots;
+    }
 
     # Add the new group
     my ( $status, $res ) = $testing_conf->add_test_traceroute(
         {
             description   => $description,
             test_interval => $test_interval,
+            test_schedule => $parsed_schedule,
             packet_size   => $packet_size,
             first_ttl     => $first_ttl,
             max_ttl       => $max_ttl,
@@ -784,15 +808,23 @@ sub add_traceroute_test {
 }
 
 sub update_traceroute_test {
-    my ($id, $description, $test_interval, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
+    my ($id, $description, $test_interval, $test_schedule, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
 
     $first_ttl = undef if $first_ttl and $first_ttl eq "NaN";
     $max_ttl   = undef if $max_ttl and $max_ttl eq "NaN";
+
+    # Parse the test schedule
+    my $parsed_schedule;
+    if ($test_schedule) {
+        my @timeslots = split(/ *, */, $test_schedule);
+        $parsed_schedule = \@timeslots;
+    }
 
     my ( $status, $res );
 
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, description => $description } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, test_interval => $test_interval } );
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, test_schedule => $parsed_schedule } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, packet_size => $packet_size } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, first_ttl => $first_ttl } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, max_ttl => $max_ttl } );
@@ -812,7 +844,14 @@ sub update_traceroute_test {
 }
 
 sub add_pinger_test {
-    my ($description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_offset, $ttl, $local_interface) = @_;
+    my ($description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_schedule, $test_offset, $ttl, $local_interface) = @_;
+
+    # Parse the test schedule
+    my $parsed_schedule;
+    if ($test_schedule) {
+        my @timeslots = split(/ *, */, $test_schedule);
+        $parsed_schedule = \@timeslots;
+    }
 
     my ( $status, $res ) = $testing_conf->add_test_pinger(
         {
@@ -821,6 +860,7 @@ sub add_pinger_test {
             packet_count    => $packet_count,
             packet_interval => $packet_interval,
             test_interval   => $test_interval,
+            test_schedule   => $parsed_schedule,
             test_offset     => $test_offset,
             ttl             => $ttl,
             local_interface => $local_interface,
@@ -843,7 +883,14 @@ sub add_pinger_test {
 }
 
 sub update_pinger_test {
-    my ($id, $description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_offset, $ttl, $local_interface) = @_;
+    my ($id, $description, $packet_size, $packet_count, $packet_interval, $test_interval, $test_schedule, $test_offset, $ttl, $local_interface) = @_;
+
+    # Parse the test schedule
+    my $parsed_schedule;
+    if ($test_schedule) {
+        my @timeslots = split(/ *, */, $test_schedule);
+        $parsed_schedule = \@timeslots;
+    }
 
     my ( $status, $res );
 
@@ -852,6 +899,7 @@ sub update_pinger_test {
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, packet_count => $packet_count } );
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, packet_size => $packet_size } );
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, test_interval => $test_interval } );
+    ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, test_schedule => $parsed_schedule } );
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, test_offset => $test_offset } );
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, ttl => $ttl } );
     ( $status, $res ) = $testing_conf->update_test_pinger( { test_id => $id, local_interface => $local_interface } );
