@@ -275,9 +275,7 @@ function display_pinger_test_dialog(test_id, description, packet_size, packet_co
 	if (test_schedule != "") {
 	dialog_content += "<tr>";
 	dialog_content += "<td>Test Schedule</td>";
-	dialog_content += "<td>";
-	dialog_content += test_schedule;
-	dialog_content += "</td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must have a schedule' id='configure_test_schedule' size='100' value='"+test_schedule+"'></input></td>";
 	dialog_content += "</tr>";
 	}
 	else {
@@ -415,9 +413,7 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	if (test_schedule != "") {
 	dialog_content += "<tr>";
 	dialog_content += "<td>Test Schedule</td>";
-	dialog_content += "<td>";
-	dialog_content += test_schedule;
-	dialog_content += "</td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must have a schedule' id='configure_test_schedule' size='100' value='"+test_schedule+"'></input></td>";
 	dialog_content += "</tr>";
 	}
 	else {
@@ -665,9 +661,7 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 	if (test_schedule != "") {
 	dialog_content += "<tr>";
 	dialog_content += "<td>Test Schedule</td>";
-	dialog_content += "<td>";
-	dialog_content += test_schedule;
-	dialog_content += "</td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must have a schedule' id='configure_test_schedule' size='100' value='"+test_schedule+"'></input></td>";
 	dialog_content += "</tr>";
 	}
 	else {
