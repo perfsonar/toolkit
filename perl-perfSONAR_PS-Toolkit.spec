@@ -104,19 +104,6 @@ Requires:		perl-perfSONAR_PS-serviceTest
 Requires:		perl-perfSONAR_PS-RegularTesting
 Requires:		perl-perfSONAR_PS-MeshConfig-JSONBuilder
 
-# the following dependencies are needed by cacti
-Requires:		cacti
-Requires:		net-snmp-utils
-Requires:		mod_php
-Requires:		php-adodb
-Requires:		php-mysql
-Requires:		php-pdo
-Requires:		php-snmp
-Requires:		mysql-server
-
-# The NTP monitoring scripts
-Requires:		cacti-script-ntp-monitoring
-
 Requires:		bwctl-client
 Requires:		bwctl-server
 Requires:		ndt
@@ -164,8 +151,6 @@ Requires(post):	mod_auth_shadow
 Requires(post):	mod_ssl
 Requires(post):	nscd
 Requires(post):	ntp
-
-Requires(post):	cacti
 
 %description
 The pS-Performance Toolkit web GUI and associated services.
@@ -301,10 +286,6 @@ ln -sf /opt/perfsonar_ps/toolkit/web/templates/footer.tmpl /opt/perfsonar_ps/ser
 # Install a link to the logs into the web location
 ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web/root/admin/logs
 
-# Install a link to cacti for backwards compatibility purposes. This is used
-# for scripts and other things that may point directly at this directory.
-ln -sf /usr/share/cacti /opt/perfsonar_ps/toolkit/web/root/admin/cacti
-
 # Overwrite the existing configuration files for the services with new
 # configuration files containing the default settings.
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/ls_registration_daemon.conf /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
@@ -427,6 +408,7 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_cacti
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version

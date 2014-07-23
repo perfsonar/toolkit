@@ -204,6 +204,7 @@ scripts/apache-toolkit_web_gui.conf
 scripts/autoselect_ntp_servers
 scripts/clean_esmond_db.sh
 scripts/clean_owampd
+scripts/configure_cacti
 scripts/create_backing_store
 scripts/cron-clean_esmond_db
 scripts/cron-owamp_cleaner
@@ -225,7 +226,6 @@ scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path
 scripts/system_environment/bwctl_port_verify
 scripts/system_environment/configure_bwctld_log_location
-scripts/system_environment/configure_cacti
 scripts/system_environment/configure_esmond
 scripts/system_environment/configure_firewall
 scripts/system_environment/configure_ntpd
