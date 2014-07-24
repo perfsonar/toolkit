@@ -120,7 +120,7 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
 
 my $cgi = CGI->new();
 
-my $format = "json";
+my $format = "html";
 $format = $cgi->param("format") if ($cgi->param("format"));
 
 if ($format eq "json") {
