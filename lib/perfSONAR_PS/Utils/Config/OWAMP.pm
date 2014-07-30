@@ -10,7 +10,7 @@ use Digest::MD5 qw(md5_hex);
 
 use base 'Exporter';
 
-our @EXPORT_OK = qw( owamp_pfs_parse owamp_pfs_parse_file owamp_pfs_output owamp_pfs_output_file owamp_pfs_hash_password owamp_limits_parse owamp_limits_parse_file owamp_limits_output owamp_limits_output_file owamp_known_limits );
+our @EXPORT_OK = qw( owamp_conf_parse owamp_conf_parse_file owamp_pfs_parse owamp_pfs_parse_file owamp_pfs_output owamp_pfs_output_file owamp_pfs_hash_password owamp_limits_parse owamp_limits_parse_file owamp_limits_output owamp_limits_output_file owamp_known_limits );
 
 our %known_limits = (
     parent          => {
@@ -166,6 +166,58 @@ sub owamp_pfs_hash_password {
     my $hex = join( "", unpack( 'H' . $hex_len, $parameters->{password} ) ) . "\n";
 
     return $hex;
+}
+
+sub owamp_conf_parse_file {
+    my $parameters = validate( @_, { file => 1, } );
+
+    unless ( open( LIMITS_FILE, $parameters->{file} ) ) {
+        return ( -1, "Couldn't open file: " . $parameters->{file} );
+    }
+
+    my @lines = <LIMITS_FILE>;
+
+    close( LIMITS_FILE );
+
+    return owamp_conf_parse( { lines => \@lines } );
+}
+
+sub owamp_conf_parse {
+    my $parameters = validate( @_, { lines => 1, } );
+
+    my $line_number = 0;
+
+    my %variables = ();
+
+    foreach my $line ( @{ $parameters->{lines} } ) {
+        chomp( $line );
+
+        $line_number++;
+
+        # Strip out comments
+        $line =~ s/#.*//;
+
+        # Strip leading and trailing whitespace
+        $line =~ s/^\s+//;
+        $line =~ s/\s+$//;
+
+        # skip empty lines (may be empty because they were comments)
+        next if ( $line eq "" );
+
+        my ($variable, $value);
+
+        if ($line =~ /^(\S*)\s+(\S*)$/) {
+            $variables{$1} = $2;
+        }
+        elsif ($line =~ /^(\S*)$/) {
+            $variables{$1} = undef;
+        }
+        else {
+            return ( -1, "Invalid line $line_number" );
+        }
+    }
+
+    return ( 0, \%variables );
 }
 
 sub owamp_limits_parse_file {

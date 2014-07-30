@@ -107,6 +107,27 @@ foreach my $port_type ("peer", "iperf", "iperf3", "nuttcp", "thrulay", "owamp", 
     }
 }
 
+my @owamp_test_ports = ();
+my $owampd_cfg = perfSONAR_PS::NPToolkit::Config::OWAMP->new();
+$owampd_cfg->init();
+
+my ($status, $res) = $owampd_cfg->get_test_port_range();
+if ($status == 0) {
+    push @owamp_test_ports, {
+        type => "test",
+        min_port => $res->{min_port},
+        max_port => $res->{max_port},
+    };
+}
+else {
+    # OWAMP's peer range defaults to "any port"
+    push @owamp_test_ports, {
+        type => "test",
+        min_port => 1,
+        max_port => 65535,
+    };
+}
+
 my $administrative_info_conf = perfSONAR_PS::NPToolkit::Config::AdministrativeInfo->new();
 $administrative_info_conf->init( { administrative_info_file => $conf{administrative_info_file} } );
 
@@ -153,6 +174,10 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
     if ($service_name eq "bwctl") {
         $service_info{"testing_ports"} = \@bwctl_test_ports;
     }
+    elsif ($service_name eq "owamp") {
+        $service_info{"testing_ports"} = \@owamp_test_ports;
+    }
+
 
     $services{$service_name} = \%service_info;
 }
