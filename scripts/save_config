@@ -19,6 +19,7 @@ use Data::Dumper;
 use Config::General;
 use File::Find;
 use File::Compare;
+use File::Spec;
 use Params::Validate qw(:all);
 use Archive::Tar;
 
@@ -77,6 +78,7 @@ if (ref($conf->{skip}) ne "ARRAY") {
 }
 
 my %files_to_save = ();
+my %files_to_delete = ();
 
 # Find the list of all files in the 'config' entries (files or directories)
 # that have changed.
@@ -87,7 +89,11 @@ foreach my $to_save (@{ $conf->{config} }) {
     }
 
     if (-d $to_save) {
+        # Find new or modified files
         find ({ wanted => sub { if (compare_file({ filename => $File::Find::name })) { $files_to_save{$File::Find::name} = 1 } } }, ( $to_save ));
+
+        # Find deleted files
+        find ({ wanted => sub { $files_to_delete{strip_path(full_path => $File::Find::name, path_to_strip => $live_media_location)} = 1 if ( ! -e strip_path(full_path => $File::Find::name, path_to_strip => $live_media_location) ) } }, ( $live_media_location."/".$to_save ));
     }
     else {
         $status = compare_file({ filename => $to_save });
@@ -107,10 +113,26 @@ if ($conf->{skip}) {
             }
         }
     }
+
+    foreach my $file (keys %files_to_delete) {
+        foreach my $skip (@{ $conf->{skip} }) {
+            if ($file =~ /$skip/) {
+                delete ($files_to_delete{$file}) if ($file =~ /$skip/);
+                last;
+            }
+        }
+    }
 }
 
 # Create a tarball of the configuration files
 Archive::Tar->create_archive($data_store_location."/NPTools/".$conf->{configuration_tarball}, "COMPRESS_GZIP", keys %files_to_save);
+
+if (open(TO_DELETE, ">", $data_store_location."/NPTools/to_delete")) {
+    foreach my $file (keys %files_to_delete) {
+        print TO_DELETE $file."\n";
+    }
+    close(TO_DELETE);
+}
 
 if (open(VERSION, ">", $data_store_location."/NPTools/version")) {
     my $version_conf = perfSONAR_PS::NPToolkit::Config::Version->new();
@@ -122,6 +144,34 @@ if (open(VERSION, ">", $data_store_location."/NPTools/version")) {
 }
 
 exit 0;
+
+sub strip_path {
+    my $parameters    = validate( @_, { full_path => 1, path_to_strip => 1 });
+    my $full_path     = $parameters->{full_path};
+    my $path_to_strip = $parameters->{path_to_strip};
+
+    my @full_path_dirs = File::Spec->splitdir( $full_path );
+    my @path_to_strip_dirs = File::Spec->splitdir( $path_to_strip );
+
+    my @new_path = ();
+    foreach my $curr_dir (@full_path_dirs) {
+        my $matching_dir = shift(@path_to_strip_dirs);
+
+        unless ($matching_dir) {
+            push @new_path, $curr_dir;
+            next;
+        }
+
+        if ($matching_dir ne $curr_dir) {
+            # The path to strip doesn't match the path we were given so don't
+            # strip anything.
+            @new_path = @full_path_dirs;
+            last;
+        }
+    }
+
+    return File::Spec->join(@new_path);
+}
 
 sub compare_file {
     my $parameters = validate( @_, { filename => 1 });
