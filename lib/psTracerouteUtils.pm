@@ -96,7 +96,7 @@ sub GetTracerouteMetadata($$$$) {
 	my $endpoint = shift;
 
 	# old-school perfsonar SOAP measurement archive
-	if ($url =~ m/:8086\//) {
+	if ($url =~ m/perfSONAR_PS/) {
 		my $ma_result = GetTracerouteMetadataFromMA($url,$stime,$etime);
 		ParseTracerouteMetadataAnswer($ma_result,$endpoint);
 		return('');
@@ -405,7 +405,10 @@ sub GetTracerouteDataFromEsmond($$$$$) {
 	            if($hop->{success}){
 	                #print ",ip=" . $hop->{ip} . ",rtt=" . $hop->{rtt} . ",mtu=" . $hop->{mtu} . "\n";
 
-					$$results{$d->ts}{$hop->{ttl}}{$hop->{ip}} = $hop->{mtu};
+					$$results{$d->ts}{$hop->{ttl}}{$hop->{ip}} = {
+					    'mtu' => $hop->{mtu},
+					    'rtt' =>  $hop->{rtt},
+					};
 	            }else{
 					if (defined($hop->{error_message})) {
 						$$results{$d->ts}{$hop->{ttl}}{$hop->{error_message}} = 1;
@@ -449,7 +452,9 @@ sub ConvertXMLtoHash($$) {
 			#print "\n\nROW\n";
 			#print Dumper($hashref);
 
-			$$topology{$$hashref{'timeValue'}}{$$hashref{'ttl'}}{$$hashref{'hop'}} = 1;
+			$$topology{$$hashref{'timeValue'}}{$$hashref{'ttl'}}{$$hashref{'hop'}} = {
+			    'rtt' => $$hashref{'value'}
+			};
 		}
 	}
 }

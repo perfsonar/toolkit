@@ -278,7 +278,7 @@ sub displayTrData() {
               print "\n\n<h3>Topology beginning at $humantime (" . utcOffset($ENV{'TZ'}) .")</h3><blockquote>\n";
 	      print "<input type='hidden' name='t' value='$time'>\n";
               print "<table border=1 cellspacing=0 cellpadding=3>\n";
-              print "<tr><th>Hop</th><th>Router</th><th>IP</th><th>MTU</th></tr>\n";
+              print "<tr><th>Hop</th><th>Router</th><th>IP</th><th>Delay</th><th>MTU</th></tr>\n";
               foreach my $hopnum (sort { $a <=> $b } keys %{$topology{$time}} ) {
                       my $sayecmp=" ";
                       foreach my $router (keys %{$topology{$time}{$hopnum}}) {
@@ -289,13 +289,15 @@ sub displayTrData() {
                                       $name = lookup($router); 
                               }
 							  
-						      # handle MTU
+						      # handle RTT and MTU
 							  my $mtu = '&nbsp;';
+							  my $rtt = '&nbsp;';
 							  if (defined($topology{$time}{$hopnum}{$router}) && $topology{$time}{$hopnum}{$router} != 1){
-								  $mtu = $topology{$time}{$hopnum}{$router};
+								  $mtu = $topology{$time}{$hopnum}{$router}{'mtu'} if defined $topology{$time}{$hopnum}{$router}{'mtu'};
+								  $rtt = $topology{$time}{$hopnum}{$router}{'rtt'} . 'ms' if defined $topology{$time}{$hopnum}{$router}{'rtt'};
 							  } 
 								 
-                              print "<tr><td>$hopnum $sayecmp</td><td>$name</td><td>$router</td><td>$mtu</td></tr>\n";
+                              print "<tr><td>$hopnum $sayecmp</td><td>$name</td><td>$router</td><td>$rtt</td><td>$mtu</td></tr>\n";
                       }
               }
               print "</table></blockquote>";
