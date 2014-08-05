@@ -167,6 +167,16 @@ if (-e $data_store_location."/NPTools/".$conf->{configuration_tarball}) {
     Archive::Tar->extract_archive($data_store_location."/NPTools/".$conf->{configuration_tarball});
 }
 
+if (-e $data_store_location."/NPTools/to_delete") {
+    if (open(TO_DELETE, $data_store_location."/NPTools/to_delete")) {
+        while(<TO_DELETE>) {
+            chomp;
+            unlink($_);
+        }
+        close(TO_DELETE);
+    }
+}
+
 # Run any post-restore scripts 
 if ($conf->{restore_post_run}) {
     $conf->{restore_post_run} = [ $conf->{restore_post_run} ] unless (ref $conf->{restore_post_run});

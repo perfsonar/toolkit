@@ -25,6 +25,9 @@ use perfSONAR_PS::NPToolkit::Services::ServicesMap qw(get_service_object);
 
 use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 
+use perfSONAR_PS::NPToolkit::Config::BWCTL;
+use perfSONAR_PS::NPToolkit::Config::OWAMP;
+
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 our %conf = $conf_obj->getall;
@@ -72,6 +75,59 @@ if ($external_addresses) {
     $is_registered = is_host_registered($external_address);
 }
 
+my @bwctl_test_ports = ();
+my $bwctld_cfg = perfSONAR_PS::NPToolkit::Config::BWCTL->new();
+$bwctld_cfg->init();
+
+foreach my $port_type ("peer", "iperf", "iperf3", "nuttcp", "thrulay", "owamp", "test") {
+    my ($status, $res) = $bwctld_cfg->get_port_range(port_type => $port_type);
+    if ($status == 0) {
+        push @bwctl_test_ports, {
+            type => $port_type,
+            min_port => $res->{min_port},
+            max_port => $res->{max_port},
+        };
+    }
+
+    if ($port_type eq "test" and $status != 0) {
+        # BWCTL's test range defaults to 5001-5900
+        push @bwctl_test_ports, {
+            type => $port_type,
+            min_port => 5001,
+            max_port => 5900,
+        };
+    }
+    elsif ($port_type eq "peer" and $status != 0) {
+        # BWCTL's peer range defaults to "any port"
+        push @bwctl_test_ports, {
+            type => $port_type,
+            min_port => 1,
+            max_port => 65535,
+        };
+    }
+}
+
+my @owamp_test_ports = ();
+my $owampd_cfg = perfSONAR_PS::NPToolkit::Config::OWAMP->new();
+$owampd_cfg->init();
+
+my ($status, $res) = $owampd_cfg->get_test_port_range();
+if ($status == 0) {
+    push @owamp_test_ports, {
+        type => "test",
+        min_port => $res->{min_port},
+        max_port => $res->{max_port},
+    };
+}
+else {
+    # OWAMP's peer range defaults to "any port"
+    push @owamp_test_ports, {
+        type => "test",
+        min_port => 1,
+        max_port => 65535,
+    };
+}
+
 my $administrative_info_conf = perfSONAR_PS::NPToolkit::Config::AdministrativeInfo->new();
 $administrative_info_conf->init( { administrative_info_file => $conf{administrative_info_file} } );
 
@@ -114,6 +170,14 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
     $service_info{"is_running"} = $is_running_output;
     $service_info{"addresses"}  = $addr_list;
     $service_info{"version"}    = $service->package_version;
+
+    if ($service_name eq "bwctl") {
+        $service_info{"testing_ports"} = \@bwctl_test_ports;
+    }
+    elsif ($service_name eq "owamp") {
+        $service_info{"testing_ports"} = \@owamp_test_ports;
+    }
+
 
     $services{$service_name} = \%service_info;
 }
