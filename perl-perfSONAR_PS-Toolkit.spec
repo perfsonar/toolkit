@@ -21,7 +21,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum 14 
+%define relnum 15
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -103,6 +103,8 @@ Requires:		perl-perfSONAR_PS-LSRegistrationDaemon
 Requires:		perl-perfSONAR_PS-serviceTest
 Requires:		perl-perfSONAR_PS-RegularTesting
 Requires:		perl-perfSONAR_PS-MeshConfig-JSONBuilder
+Requires:       perl-perfSONAR-OPPD-MP-BWCTL
+Requires:       perl-perfSONAR-OPPD-MP-OWAMP
 
 Requires:		bwctl-client
 Requires:		bwctl-server
