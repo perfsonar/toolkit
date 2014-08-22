@@ -292,9 +292,8 @@ ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web/root/admin/logs
 # configuration files containing the default settings.
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/ls_registration_daemon.conf /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
 
-#Add most recent version information to ls_registration_daemon.conf
+#Remove old pS-NPToolkit-* community from admin_info (removal added in version 3.4)
 grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrative_info > /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp
-echo "site_project=pS-NPToolkit-%{version}" >> /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp
 mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
 
 #Make sure that the administrator_info file gets reloaded
