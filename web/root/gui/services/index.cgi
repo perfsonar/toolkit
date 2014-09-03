@@ -28,6 +28,8 @@ use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
 use perfSONAR_PS::NPToolkit::Config::BWCTL;
 use perfSONAR_PS::NPToolkit::Config::OWAMP;
 
+use Config::General;
+
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 our %conf = $conf_obj->getall;
@@ -216,6 +218,7 @@ if ($format eq "json") {
         ntp => {
             synchronized => $ntp->is_synced(),
         },
+        meshes => get_meshes(),
         globally_registered => $administrative_info_conf->has_admin_info(),
     );
 
@@ -259,3 +262,26 @@ else {
 exit 0;
 # vim: expandtab shiftwidth=4 tabstop=4
 
+sub get_meshes {
+    my @mesh_urls = ();
+    eval {
+        my $mesh_config_conf = "/opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf";
+
+        die unless ( -f $mesh_config_conf );
+
+        my %conf = Config::General->new($mesh_config_conf)->getall;
+
+        $conf{mesh} = [ ] unless $conf{mesh};
+        $conf{mesh} = [ $conf{mesh} ] unless ref($conf{mesh}) eq "ARRAY";
+
+        foreach my $mesh (@{ $conf{mesh} }) {
+            next unless $mesh->{configuration_url};
+
+            push @mesh_urls, $mesh->{configuration_url};
+        }
+    };
+    if ($@) {
+        @mesh_urls = [];
+    }
+    return \@mesh_urls;
+}
