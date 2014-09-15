@@ -45,8 +45,11 @@ print $msg."Content-type: text/html\n\n";
 # Added ability provide extra options, such as ASN or number of hops info.
 # Only for the intrepid.  Example:
 # http://www-wanmon.slac.stanford.edu/cgi-bin/traceroute.pl?options=-m 5 -A
-my $version="6.4, 8/29/2013, Jason Zurawski, Les Cottrell";
-# Enabled jumbo frames
+#my $version="6.4, 8/29/2013, Jason Zurawski, Les Cottrell";
+#Enabled jumbo frames.
+#my $version="6.5, 6/27/2014, Les Cottrell";
+my $version="6.51, 9/15/2014, Les Cottrell";#Notified perfronar.
+#Improved too many processes error message.
 # When making a significant change, please notify: i2-perfsonar@internet2.edu
 ################################################################################
 #Understand the local environment
@@ -566,7 +569,14 @@ if (($ipv6 ne "1") && ($addr =~ /\.(0|255)$/)) {
 # sent an email warning less than an hour ago.
 my $processes=grep(/$function/, `ps -o comm -u $>`);
 if($processes > $max_processes) {
-  $err.="$function server busy at the moment. Please try again later.<br>\n";
+  $err.="$function server busy at the moment with $processes "
+      . "processes exceeds max of $max_processes for $>. "
+      . "Please try again later.<br>\n";
+  if ($debug>=0) {
+    $err.="List of processes for $>:<br>\n";
+    my @ans=`ps -ef -u $>`;
+    for my $ans (@ans) {$err.="$ans<br>\n";}
+  }
   if(!($to eq "" || $mail eq "")) {
     if (! -e $last || -M _ > $timeout) {# was it > $timeout since last sent email?
       system('touch', $last); # yes, note new time and send an email warning
@@ -1056,3 +1066,4 @@ http://www.slac.stanford.edu/cgi-bin/traceroute.pl?target=ipv6.google.com&functi
 
 #$verson="5.9, 6/4/2012, Les Cottrell";
 # Attempted to support ipv6 on Solaris, unable to test.
+
