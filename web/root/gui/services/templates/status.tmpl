@@ -90,10 +90,14 @@
         <tr>
         <td style="width: 200px">Globally registered</td>
         <td>
-		[% IF global_reg %]
-		<div>Yes</div>
+		[% IF ! global_reg.defined %]
+		<div style="color: orange">Unknown</div>
 		[% ELSE %]
-		<div style="color:red">No</div>
+		   [% IF global_reg %]
+		   <div>Yes</div>
+		   [% ELSE %]
+		   <div style="color:red">No</div>
+		   [% END %]
 		[% END %]
             </td>
         </tr>

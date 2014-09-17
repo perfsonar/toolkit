@@ -68,11 +68,13 @@ my $external_address;
 my $external_address_mtu;
 my $external_address_ipv4;
 my $external_address_ipv6;
+my $is_registered = 0;
 if ($external_addresses) {
     $external_address = $external_addresses->{primary_address};
     $external_address_mtu = $external_addresses->{primary_iface_mtu};
     $external_address_ipv4 = $external_addresses->{primary_ipv4};
     $external_address_ipv6 = $external_addresses->{primary_ipv6};
+    $is_registered = is_host_registered($external_address);
 }
 
 my @bwctl_test_ports = ();
@@ -217,7 +219,7 @@ if ($format eq "json") {
             synchronized => $ntp->is_synced(),
         },
         meshes => get_meshes(),
-        globally_registered => $administrative_info_conf->has_admin_info(),
+        globally_registered => $is_registered
     );
 
     print $cgi->header('application/json');
@@ -243,7 +245,7 @@ else {
     $vars{external_address}     = $external_address;
     $vars{mtu}     = $external_address_mtu;
     $vars{ntp_sync_status}     = $ntp->is_synced();
-    $vars{global_reg} 		= $administrative_info_conf->has_admin_info();
+    $vars{global_reg} 		= $is_registered;
     set_sidebar_vars( { vars => \%vars } );
 
     print $cgi->header;
