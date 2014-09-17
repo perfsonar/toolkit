@@ -68,13 +68,11 @@ my $external_address;
 my $external_address_mtu;
 my $external_address_ipv4;
 my $external_address_ipv6;
-my $is_registered = 0;
 if ($external_addresses) {
     $external_address = $external_addresses->{primary_address};
     $external_address_mtu = $external_addresses->{primary_iface_mtu};
     $external_address_ipv4 = $external_addresses->{primary_ipv4};
     $external_address_ipv6 = $external_addresses->{primary_ipv6};
-    $is_registered = is_host_registered($external_address);
 }
 
 my @bwctl_test_ports = ();
