@@ -142,7 +142,11 @@
 			[% END %]
 		[% END %]
 		[% IF service.testing_ports %]
-		<li>Testing Ports: [%- FOREACH port_range IN service.testing_ports -%][%- IF port_range != service.testing_ports.first -%], [%- END -%][%- port_range.min_port -%]-[%- port_range.max_port -%][%- END -%]</li>
+		<li>Testing Ports:
+                    [%- FOREACH port_range IN service.testing_ports -%]
+                        [%- IF port_range != service.testing_ports.first -%], [%- END -%][%- port_range.min_port -%]-[%- port_range.max_port -%][%- IF port_range.type -%]([%- port_range.type -%])[%- END -%]
+                    [%- END -%]
+                </li>
 		[% END %]
 		</ul>
 		[% END %]
