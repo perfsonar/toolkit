@@ -99,7 +99,7 @@ def initialize():
                     },
                     {
                          "description": "Change Timezone",
-                         "command": "/usr/bin/system-config-date",
+                         "command": "/usr/bin/tzselect",
                          "isConfiguredFunction": None,
                          "required": False,
                          "requiresReboot": True,
@@ -145,8 +145,8 @@ def initialize():
 # ** Does NOT modify the NPTools list
 def displayMenu():
     print "\nInternet2 Network Performance Toolkit customization script"
-    print "Options in " + Internet2Consts.MAGENTA + "MAGENTA" + Internet2Consts.NORMAL + " have yet to be configured"
-    print "Options in " + Internet2Consts.GREEN + "GREEN" + Internet2Consts.NORMAL + " have already been configured"
+#    print "Options in " + Internet2Consts.MAGENTA + "MAGENTA" + Internet2Consts.NORMAL + " have yet to be configured"
+#    print "Options in " + Internet2Consts.GREEN + "GREEN" + Internet2Consts.NORMAL + " have already been configured"
     print ""
     
     for i, tool in enumerate(NPTools):

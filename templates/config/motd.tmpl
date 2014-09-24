@@ -1,11 +1,10 @@
 [%- UNLESS external_address; SET external_address = "[host address]"; END -%]
 Welcome to the perfSONAR Toolkit v[%- IF version ; version ; END %]
 
-To start configuration, run:
+You may create accounts to manage this host through the web interface by running the following as root:
 
-sudo /opt/perfsonar_ps/toolkit/scripts/nptoolkit-configure.py
+  /opt/perfsonar_ps/toolkit/scripts/nptoolkit-configure.py
 
-Once you set passwords, you can login to the web interface and finish
-configuration. The web interface should be available at:
+The web interface should be available at:
 
 https://[% external_address %]/toolkit
