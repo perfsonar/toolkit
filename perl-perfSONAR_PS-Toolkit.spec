@@ -30,7 +30,7 @@ Release:		%{relnum}.%{disttag}
 Summary:		perfSONAR_PS Toolkit
 License:		Distributable, see LICENSE
 Group:			Applications/Communications
-URL:			http://psps.perfsonar.net/
+URL:			http://www.perfsonar.net/
 Source0:		perfSONAR_PS-Toolkit-%{version}.%{relnum}.tar.gz
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:		noarch
