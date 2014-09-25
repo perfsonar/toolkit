@@ -43,13 +43,11 @@ def add_user():
     if not ans:
         ans = "YES"
 
-    print Internet2Consts.BLUE + "\n\nNOTE:"  + Internet2Consts.NORMAL + " you must enable SSH via the web interface before this user can login remotely\n\n"
-
     can_login = False
     if ans[0] == "Y":
         can_login = True
 
-    ans = raw_input("Is this user an administrator? [yes] ").strip().upper()
+    ans = raw_input("Should this user be able to login to the web interface? [yes] ").strip().upper()
     if not ans:
         ans = "YES"
 
@@ -202,7 +200,7 @@ def mainLoop():
 # End mainLoop
 
 ### MAIN ###
-print "Welcome to the Internet2 pS-Performance Toolkit user administration program."
+print "Welcome to the perfSONAR Toolkit user administration program."
 print "This program will help you administer users."
 
 # Must be root
