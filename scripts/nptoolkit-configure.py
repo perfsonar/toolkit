@@ -144,7 +144,7 @@ def initialize():
 # MUST be called after itialize (it accesses the NPTools list)
 # ** Does NOT modify the NPTools list
 def displayMenu():
-    print "\nInternet2 Network Performance Toolkit customization script"
+    print "\nperfSONAR Toolkit customization script"
 #    print "Options in " + Internet2Consts.MAGENTA + "MAGENTA" + Internet2Consts.NORMAL + " have yet to be configured"
 #    print "Options in " + Internet2Consts.GREEN + "GREEN" + Internet2Consts.NORMAL + " have already been configured"
     print ""
