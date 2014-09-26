@@ -1,0 +1,253 @@
+#!/usr/bin/perl
+#
+# $Id$
+#
+# mod_interface_route
+#
+
+use strict;
+use warnings;
+
+use Params::Validate qw(:all);
+use Getopt::Long;
+use Net::Interface;
+
+my ($command, $rt_table, $device, @ipv4_addresses, @ipv6_addresses, $ipv4_gateway, $ipv6_gateway);
+
+my $res = GetOptions (
+    "command=s" => \$command,
+    "table=s" => \$rt_table,
+    "device=s" => \$device,
+    "ipv4_gateway=s" => \$ipv4_gateway,
+    "ipv6_gateway=s" => \$ipv6_gateway,
+    "ipv4_address=s" => \@ipv4_addresses,
+    "ipv6_address=s" => \@ipv6_addresses,
+);
+
+unless ($res) {
+    die("Error in command line arguments\n");
+}
+
+unless ($command and ($command eq "add" or $command eq "delete")) {
+    die("--command: Command must be specified, and must be one of 'add' or 'delete'");
+}
+
+if ($command eq "add") {
+    if (scalar(@ipv4_addresses) > 0 and not $ipv4_gateway) {
+        die("--ipv4_gateway: Gateway must be specified if --ipv4_address is specified");
+    }
+
+    if (scalar(@ipv6_addresses) > 0 and not $ipv6_gateway) {
+        die("--ipv6_gateway: Gateway must be specified if --ipv6_address is specified");
+    }
+
+    unless ($ipv4_gateway or $ipv6_gateway) {
+        die("Must specify at least one of ipv4_gateway or ipv6_gateway");
+    }
+
+    unless ($device) {
+        die("--device: Must specify device for source route");
+    }
+}
+elsif ($command eq "delete") {
+    unless ($device or $rt_table) {
+        die("Must specify device or table to delete source route for");
+    }
+}
+
+$rt_table = $device."_source_route" unless $rt_table;
+
+my $rt_table_config = "/etc/iproute2/rt_tables";
+
+if ($command eq "delete") {
+    delete_table($rt_table);
+}
+elsif ($command eq "add") {
+    if ($ipv4_gateway and scalar(@ipv4_addresses) == 0) {
+        my $ips = get_ips(interface => $device);
+
+        @ipv4_addresses = @{ $ips->{ipv4} };
+        unless (scalar(@ipv4_addresses) > 0) {
+            die("Problem looking up ipv4 addresses associated with $device");
+        }
+    }
+
+    if ($ipv6_gateway and scalar(@ipv6_addresses) == 0) {
+        my $ips = get_ips(interface => $device);
+
+        @ipv6_addresses = @{ $ips->{ipv6} };
+        unless (scalar(@ipv6_addresses) > 0) {
+            die("Problem looking up ipv6 addresses associated with $device");
+        }
+    }
+
+    delete_table($rt_table) if table_exists($rt_table);
+
+    my $res = add_table(
+        table        => $rt_table,
+        device       => $device,
+        ipv4_gateway => $ipv4_gateway,
+        ipv6_gateway => $ipv6_gateway,
+        ipv4_addresses => \@ipv4_addresses,
+        ipv6_addresses => \@ipv6_addresses
+    );
+
+    unless ($res) {
+        delete_table($rt_table) if table_exists($rt_table);
+        die("Problem setting up routing\n");
+    }
+}
+
+sub table_exists {
+    my ($table) = @_;
+
+    if (open(RT_TABLE, $rt_table_config)) {
+        my @lines = ();
+        while(<RT_TABLE>) {
+            return 1 if /\s+$table$/;
+
+            push @lines, $_;
+        }
+        close(RT_TABLE);
+    }
+
+    return;
+}
+
+sub delete_table {
+    my ($table) = @_;
+
+    foreach my $family ('4', '6') {
+        # Remove the routes from the routing table
+        if (open(ROUTES, "ip -$family route show table ".$table." | ")) {
+            while(<ROUTES>) {
+                chomp;
+                my $route = $_;
+
+                system("ip -$family route del ".$route);
+            }
+            close(ROUTES);
+        }
+
+        # Remove rules directing traffic to the routing table
+        if (open(RULES, "ip -$family rule show | ")) {
+            while(<RULES>) {
+                chomp;
+                my $rule_line = $_;
+
+                if ($rule_line =~ /(\d+):\s+(.* lookup $table)/) {
+                    my $rule = $2;
+                    system("ip -$family rule del ".$rule);
+                }
+            }
+            close(RULES);
+        }
+    }
+
+    # Remove the table from the route table list
+    if (open(RT_TABLE, $rt_table_config)) {
+        my @lines = ();
+        while(<RT_TABLE>) {
+            next if /\s+$table$/;
+
+            push @lines, $_;
+        }
+        close(RT_TABLE);
+
+        if (open(RT_TABLE, ">", $rt_table_config)) {
+            foreach my $line (@lines) {
+                print RT_TABLE $line;
+            }
+            close(RT_TABLE);
+        }
+    }
+
+    return;
+}
+
+sub add_table {
+    my $parameters = validate( @_, { table => 1, device => 1, ipv4_addresses => 1, ipv4_gateway => 1, ipv6_addresses => 1, ipv6_gateway => 1 });
+
+    if (open(RT_TABLE, ">>", $rt_table_config)) {
+        print RT_TABLE int(rand(3000))."        ".$parameters->{table}."\n";
+        close(RT_TABLE);
+    }
+
+    if ($parameters->{ipv4_gateway}) {
+        unless (system("ip", "-4", "route", "add", "default", "via", $parameters->{ipv4_gateway}, "dev", $parameters->{device}, "table", $parameters->{table}) == 0) {
+            print "Problem setting up ipv4 gateway route\n";
+            return;
+        }
+    }
+
+    if ($parameters->{ipv6_gateway}) {
+        unless (system("ip", "-6", "route", "add", "default", "via", $parameters->{ipv6_gateway}, "dev", $parameters->{device}, "table", $parameters->{table}) == 0) {
+            print "Problem setting up ipv6 gateway route\n";
+            return;
+        }
+    }
+
+    if ($parameters->{ipv4_addresses}) {
+        foreach my $addr (@{ $parameters->{ipv4_addresses} }) {
+            unless (system("ip", "-4", "rule", "add", "prio", "200", "from", $addr, "lookup", $parameters->{table}) == 0) {
+                print "Problem setting up ipv4 address rule\n";
+                return;
+            }
+        }
+    }
+
+    if ($parameters->{ipv6_address}) {
+        foreach my $addr (@{ $parameters->{ipv6_addresses} }) {
+            unless (system("ip", "-6", "rule", "add", "prio", "200", "from", $parameters->{ipv4_address}, "lookup", $parameters->{table}) == 0) {
+                print "Problem setting up ipv6 address rule\n";
+                return;
+            }
+        }
+    }
+
+    return 1;
+}
+
+sub get_ips {
+    my $parameters = validate( @_, { interface => 1 } );
+    my $interface = $parameters->{interface};
+
+    my %ret_interfaces = (
+        ipv4 => [],
+        ipv6 => [],
+    );
+
+    my $IFCONFIG;
+    open( $IFCONFIG, "-|", "/sbin/ifconfig" ) or return;
+    my $is_loop = 0;
+    my $curr_interface;
+    while ( <$IFCONFIG> ) {
+        if ( /^(\S+)\s*Link encap:([^ ]+)/ ) {
+            $curr_interface = $1;
+            if ( lc( $2 ) eq "local" ) {
+                $is_loop = 1;
+            }
+            else {
+                $is_loop = 0;
+            }
+        }
+
+        next if $is_loop;
+
+        next unless ($curr_interface and $curr_interface eq $interface);
+
+        unless ($ret_interfaces{$curr_interface}) {
+            $ret_interfaces{$curr_interface} = [];
+        }
+
+        if ( /inet addr:(\d+\.\d+\.\d+\.\d+)/ ) {
+            push @{ $ret_interfaces{ipv4} }, $1;
+        }
+        elsif ( /inet6 addr: (\d*:[^\/ ]*)(\/\d+)? +Scope:Global/ ) {
+            push @{ $ret_interfaces{ipv6} }, $1;
+        }
+    }
+    close( $IFCONFIG );
+
+    return \%ret_interfaces;
+}
