@@ -272,10 +272,15 @@ sub check_running {
 
             chomp( $p_id ) if ( defined $p_id );
             if ( $p_id ) {
-                open( PSVIEW, "ps -p " . $p_id . " | grep " . $self->{PROCESS_NAMES}[$i] . " |" );
-                my @output = <PSVIEW>;
+                my $running;
+                open( PSVIEW, "-|", "ps -p " . $p_id );
+                while ( <PSVIEW> ) {
+                    if (/$self->{PROCESS_NAMES}[$i]/) {
+                        $running = 1;
+                    }
+                }
                 close( PSVIEW );
-                if ( $? != 0 ) {
+                unless ( $? == 0 and $running ) {
                     return 0;
                 }
             }

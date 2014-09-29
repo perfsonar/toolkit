@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/dash
 #
 # Echos NPToolkit version and exits
 
