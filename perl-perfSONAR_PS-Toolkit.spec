@@ -21,7 +21,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum 18
+%define relnum 19
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -55,6 +55,7 @@ Requires:		perl(English)
 Requires:		perl(Exporter)
 Requires:		perl(Fcntl)
 Requires:		perl(File::Basename)
+Requires:               perl(File::Spec)
 Requires:		perl(FindBin)
 Requires:		perl(Getopt::Long)
 Requires:		perl(IO::File)
