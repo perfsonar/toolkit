@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Enables automatic updates by default
+
+grep "<service yum_cron>" /opt/perfsonar_ps/toolkit/etc/config_daemon.conf > /dev/null 2>&1
+if [ $? != 0 ]; then
+    sed -i '/<access>/a \\t<service yum_cron> \
+		\t\trestart	\t\t 1 \
+		\t\tstart \t\t 1 \
+		\t\tstop \t\t 1 \
+	\t</service>' /opt/perfsonar_ps/toolkit/etc/config_daemon.conf
+	
+	#add service. assume if not present this needs to be activated
+	chkconfig --add yum-cron
+	chkconfig yum-cron on
+fi
+
+grep "yum_cron_enabled" /opt/perfsonar_ps/toolkit/etc/enabled_services > /dev/null 2>&1
+if [ $? != 0 ]; then
+    echo "" >> /opt/perfsonar_ps/toolkit/etc/enabled_services
+    echo "yum_cron_enabled=enabled" >> /opt/perfsonar_ps/toolkit/etc/enabled_services
+fi
+
+

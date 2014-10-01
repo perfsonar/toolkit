@@ -241,6 +241,7 @@ scripts/system_environment/disable_unwanted_services
 scripts/system_environment/disable_weak_ssl_ciphers
 scripts/system_environment/disable_zeroconf
 scripts/system_environment/enable_apache_redirect
+scripts/system_environment/enable_auto_updates
 scripts/system_environment/enable_mysqld
 scripts/system_environment/enable_nscd
 scripts/system_environment/enable_ntpd
