@@ -24,9 +24,11 @@ if [ "$1" == "new" ]; then
 	/sbin/chkconfig kudzu off 2> /dev/null || :
 	/sbin/chkconfig mdmonitor off 2> /dev/null || :
 	/sbin/chkconfig mdmpd off 2> /dev/null || :
+	/sbin/chkconfig ndt off 2> /dev/null || :
 	/sbin/chkconfig netfs off 2> /dev/null || :
 	/sbin/chkconfig nfs off 2> /dev/null || :
 	/sbin/chkconfig nfslock off 2> /dev/null || :
+	/sbin/chkconfig npad off 2> /dev/null || :
 	/sbin/chkconfig pcscd off 2> /dev/null || :
 	/sbin/chkconfig portmap off 2> /dev/null || :
 	/sbin/chkconfig psacct off 2> /dev/null || :
