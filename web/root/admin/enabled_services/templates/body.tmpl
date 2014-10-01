@@ -184,6 +184,11 @@ function select_latency_services() {
         <th></th><th>Services</th><th>Description</th>
 	</tr>
 	<tr>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="yum_cron" name="yum_cron" [% IF services.yum_cron.enabled %] checked="checked" [% END %] /></td>
+	<td>Automatic Updates</td>
+	<td>Automatically updates all software on a nightly basis. This includes not only perfSONAR packages but also operating system and third-party packages. This will help keep the latest security fixes on the system, but keep in mind it is possible some updates may break your host unexpectedly. The following rule of thumb may be useful when considering whether to enable this feature: <i>If the machine is a critical server, for which unplanned downtime of a service on the machine can not be tolerated, then you should not use automatic updates. Otherwise, you <b>may</b> choose to use them.</i></td>
+	</tr>
+	<tr>
 	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="bwctl" name="bwctl" [% IF services.bwctl.enabled %] checked="checked" [% END %] /></td>
 	<td>BWCTL</td>
 	<td>Allows clients at other sites to run Throughput, Traceroute and Latency tests to this host</td>

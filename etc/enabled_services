@@ -1,7 +1,7 @@
 snmpma_enabled=enabled
-ndt_enabled=enabled
+ndt_enabled=disabled
 owamp_enabled=enabled
-npad_enabled=enabled
+npad_enabled=disabled
 pinger_enabled=enabled
 psb_enabled=enabled
 https_enabled=enabled
@@ -11,3 +11,4 @@ hls_enabled=enabled
 traceroute_ma=enabled
 traceroute_scheduler=enabled
 regular_testing_enabled=enabled
+yum_cron_enabled=enabled

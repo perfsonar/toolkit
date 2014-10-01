@@ -92,7 +92,7 @@ sub fill_variables {
 
     my %service_list = ();
 
-    foreach my $service_name ("bwctl", "owamp", "ndt", "npad") {
+    foreach my $service_name ("bwctl", "owamp", "ndt", "npad", "yum_cron") {
         my $service = get_service_object($service_name);
 
         next unless $service;
@@ -162,7 +162,7 @@ sub reset_config {
 
     my %service_list = ();
 
-    foreach my $service_name ("bwctl", "owamp", "ndt", "npad") {
+    foreach my $service_name ("bwctl", "owamp", "ndt", "npad", "yum_cron") {
         my $service = get_service_object($service_name);
 
         next unless $service;

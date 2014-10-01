@@ -112,6 +112,7 @@ lib/perfSONAR_PS/NPToolkit/Services/RegularTesting.pm
 lib/perfSONAR_PS/NPToolkit/Services/ServicesMap.pm
 lib/perfSONAR_PS/NPToolkit/Services/esmond.pm
 lib/perfSONAR_PS/NPToolkit/Services/httpd.pm
+lib/perfSONAR_PS/NPToolkit/Services/YumCron.pm
 lib/perfSONAR_PS/RegularTesting/Config.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/Base.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondBase.pm
@@ -212,6 +213,7 @@ scripts/cron-save_config
 scripts/cron-service_watcher
 scripts/livecd_net_config.sh
 scripts/manage_users
+scripts/mod_interface_route
 scripts/nptoolkit-configure.py
 scripts/perfsonar_recover.sh
 scripts/ps-toolkit-migrate-backup.sh

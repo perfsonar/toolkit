@@ -129,6 +129,7 @@ Requires:		ntp
 Requires:		fail2ban
 Requires:		iptables
 Requires:		iptables-ipv6
+Requires:		yum-cron
 
 Obsoletes:		perl-perfSONAR_PS-TopologyService
 
