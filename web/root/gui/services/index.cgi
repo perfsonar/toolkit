@@ -164,7 +164,7 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
     my $is_running_output = ($is_running)?"yes":"no";
     
     if ($service->disabled) {
-        $is_running_output = "disabled" unless ($is_running);
+        $is_running_output = "disabled" unless ($is_running == 1);
     }
     
     my %service_info = ();
