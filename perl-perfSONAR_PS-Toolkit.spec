@@ -413,6 +413,7 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_cacti
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-backup.sh
