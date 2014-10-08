@@ -13,12 +13,14 @@ unless (getgrnam($group_name)) {
     if ($result) {
         die("Couldn't add group $group_name");
     }
+}
 
-    my ($name,$passwd,$gid,$members) = getgrnam($existing_group);
-    my @members = split(' ', $members);
-    foreach my $member (@members) {
-        system("/usr/sbin/usermod", "-a", "-G", $group_name, $member);
-    }
+my ($name,$passwd,$gid,$members) = getgrnam($existing_group);
+my @members = split(' ', $members);
+foreach my $member (@members) {
+    next if ($member eq "root");
+
+    system("/usr/sbin/usermod", "-a", "-G", $group_name, $member);
 }
 
 # Make sure that the apache toolkit config file doesn't have the
