@@ -192,6 +192,11 @@ practices.
 /usr/sbin/groupadd perfsonar 2> /dev/null || :
 /usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 
+%pre SystemEnvironment
+rm -rf %{_localstatedir}/lib/rpm-state
+mkdir -p %{_localstatedir}/lib/rpm-state
+rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE}" %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
+
 %prep
 %setup -q -n perfSONAR_PS-Toolkit-%{version}.%{relnum}
 
@@ -312,13 +317,18 @@ chkconfig cassandra on
 chkconfig postgresql on
 
 %post SystemEnvironment
+if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
+    PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
+    rm %{_localstatedir}/lib/rpm-state/previous_version
+fi
+
 for script in %{install_base}/scripts/system_environment/*; do
 	if [ $1 -eq 1 ] ; then
 		echo "Running: $script new"
 		$script new
 	else
-		echo "Running: $script upgrade"
-		$script upgrade
+		echo "Running: $script upgrade ${PREV_VERSION}"
+		$script upgrade ${PREV_VERSION}
 	fi
 done
 
