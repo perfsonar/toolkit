@@ -1,4 +1,22 @@
 #!/bin/bash
+
+#######################
+# Disable the HTTP TRACE methods. Does not matter if this is running in an
+# 'upgrade' or 'new install' context.
+#######################
+cat > /etc/httpd/conf.d/disable_trace.conf <<EOF
+# Disables the HTTP TRACE method
+TraceEnable      Off
+EOF
+
+#######################
+# Disable weak SSL ciphers in Apache. Does not matter if this is running in an
+# 'upgrade' or 'new install' context.
+#######################
+
+sed -i 's|SSLProtocol.*|SSLProtocol -ALL +SSLv3 +TLSv1|g' /etc/httpd/conf.d/ssl.conf
+sed -i 's|SSLCipherSuite.*|SSLCipherSuite ALL:!aNULL:!ADH:!DH:!EDH:!eNULL:-LOW:!EXP:RC4+RSA:+HIGH:-MEDIUM|g'  /etc/httpd/conf.d/ssl.conf
+
 #######################
 # Setup redirects so that if clients go to "http://[host]/" or
 # "https://[host]/", they get redirected to "http://[host]/toolkit" or
@@ -26,4 +44,12 @@ EOF
 grep RewriteEngine /etc/httpd/conf.d/ssl.conf &> /dev/null
 if [ $? != 0 ]; then
 sed -i 's|</VirtualHost>|RewriteEngine on\nRewriteOptions Inherit\n</VirtualHost>|g' /etc/httpd/conf.d/ssl.conf
+fi
+
+#######################
+# Upgrade apache from the previous version (e.g. to make sure 'psadmin' stuff
+# is in there and whatnot.
+#######################
+if [ "$1" == "upgrade" ]; then
+    /opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_apache_admin
 fi
