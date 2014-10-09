@@ -236,16 +236,9 @@ scripts/system_environment/enable_ntpd
 scripts/system_environment/enable_web100_kernel_repository
 scripts/system_environment/enable_wheel_sudo
 scripts/system_environment/increase_owamp_limits
+scripts/system_environment/increase_owamp_port_range
 scripts/update_administrative_info.pl
-scripts/upgrade/upgrade_3.1.x.sh
-scripts/upgrade/upgrade_3.2.x.sh
-scripts/upgrade/upgrade_add_livecd_keyword.sh
 scripts/upgrade/upgrade_apache_admin
-scripts/upgrade/upgrade_conman_fix.sh
-scripts/upgrade/upgrade_firewall
-scripts/upgrade/upgrade_fix_cert_serial.sh
-scripts/upgrade/upgrade_fix_permissions.sh
-scripts/upgrade/upgrade_owamp_port_range.sh
 scripts/upgrade/upgrade_regular_tests
 scripts/watcher_log_archive
 scripts/watcher_log_archive_cleanup

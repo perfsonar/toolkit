@@ -276,9 +276,6 @@ mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolk
 #Make sure that the administrator_info file gets reloaded
 /opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl 2> /dev/null
 
-#Make sure that the owamp config file has the expanded port range instead of the old defaults
-/opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_owamp_port_range.sh
-
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
 # so we'll put that in the "maybe" category.
