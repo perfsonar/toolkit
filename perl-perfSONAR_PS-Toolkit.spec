@@ -419,6 +419,7 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-backup.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/update_administrative_info.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade/*

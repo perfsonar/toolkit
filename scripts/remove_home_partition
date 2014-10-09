@@ -18,8 +18,18 @@ unless ($mounts{'/home'}) {
     exit 0;
 }
 
-my ($home_vg, $home_lv) = ($mounts{'/home'} =~ /\/dev\/mapper\/(vg_[^-]*)-(lv_[^-]*)/);
-my ($root_vg, $root_lv) = ($mounts{'/'} =~ /\/dev\/mapper\/(vg_[^-]*)-(lv_[^-]*)/);
+my ($home_vg, $home_lv) = ($mounts{'/home'} =~ /\/dev\/mapper\/(vg_?[^-]*)-(lv_[^-]*)/);
+my ($root_vg, $root_lv) = ($mounts{'/'} =~ /\/dev\/mapper\/(vg_?[^-]*)-(lv_[^-]*)/);
+
+unless ($home_vg and $home_lv and $root_vg and $root_lv) {
+    ($home_vg, $home_lv) = ($mounts{'/home'} =~ /\/dev\/mapper\/(VolGroup_?[^-]*)-(lv_[^-]*)/);
+    ($root_vg, $root_lv) = ($mounts{'/'} =~ /\/dev\/mapper\/(VolGroup_?[^-]*)-(lv_[^-]*)/);
+}
+
+unless ($home_vg and $home_lv and $root_vg and $root_lv) {
+    print "Couldn't figure out /home device\n";
+    exit -1;
+}
 
 print "Root: ".$mounts{'/'}."\n";
 print "Home: ".$mounts{'/home'}."\n";
