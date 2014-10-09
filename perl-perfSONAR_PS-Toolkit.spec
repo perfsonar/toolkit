@@ -195,7 +195,7 @@ practices.
 %pre SystemEnvironment
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
-rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE}" %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
+rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %prep
 %setup -q -n perfSONAR_PS-Toolkit-%{version}.%{relnum}
