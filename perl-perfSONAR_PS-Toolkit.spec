@@ -6,18 +6,11 @@
 %define init_script_1 config_daemon
 %define init_script_2 generate_motd
 %define init_script_3 configure_nic_parameters
-%define init_script_10 psb_to_esmond
-
-# The following init scripts are only enabled when the LiveCD is being used
-%define init_script_6 mount_scratch_overlay
-%define init_script_7 generate_cert_init_script
-%define init_script_8 toolkit_config
-%define init_script_9 livecd_net_config
+%define init_script_4 psb_to_esmond
 
 %define crontab_1     cron-service_watcher
 %define crontab_2     cron-owamp_cleaner
-%define crontab_3     cron-save_config
-%define crontab_4     cron-clean_esmond_db
+%define crontab_3     cron-clean_esmond_db
 
 %define cron_hourly_1 logscraper.cron
 
@@ -159,17 +152,6 @@ Requires(post):	ntp
 %description
 The pS-Performance Toolkit web GUI and associated services.
 
-%package LiveCD
-Summary:		pS-Performance Toolkit Live CD utilities
-Group:			Applications/Communications
-Requires:		perl-perfSONAR_PS-Toolkit
-Requires:		perl-perfSONAR_PS-Toolkit-SystemEnvironment
-Requires:		aufs-util
-Requires:		kmod-aufs
-%description LiveCD
-The scripts and tools needed by the pS-Performance Toolkit's Live CD
-implementation.
-
 %package SystemEnvironment
 Summary:		pS-Performance Toolkit NetInstall System Configuration
 Group:			Development/Tools
@@ -223,7 +205,6 @@ make ROOTPATH=%{buildroot}/%{install_base} rpminstall
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_2} %{buildroot}/etc/cron.d/%{crontab_2}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
-install -D -m 0600 scripts/%{crontab_4} %{buildroot}/etc/cron.d/%{crontab_4}
 
 install -D -m 0600 scripts/%{cron_hourly_1} %{buildroot}/etc/cron.hourly/%{cron_hourly_1}
 
@@ -232,18 +213,12 @@ install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apachec
 install -D -m 0755 init_scripts/%{init_script_1} %{buildroot}/etc/init.d/%{init_script_1}
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
-
-install -D -m 0755 init_scripts/%{init_script_6} %{buildroot}/etc/init.d/%{init_script_6}
-install -D -m 0755 init_scripts/%{init_script_7} %{buildroot}/etc/init.d/%{init_script_7}
-install -D -m 0755 init_scripts/%{init_script_8} %{buildroot}/etc/init.d/%{init_script_8}
-install -D -m 0755 init_scripts/%{init_script_9} %{buildroot}/etc/init.d/%{init_script_9}
-install -D -m 0755 init_scripts/%{init_script_10} %{buildroot}/etc/init.d/%{init_script_10}
+install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_script_4}
 
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_2}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
-rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_4}
 rm -rf %{buildroot}/%{install_base}/scripts/%{cron_hourly_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 
@@ -319,12 +294,12 @@ chmod o+r /etc/owampd/owampd.pfs 2> /dev/null
 chkconfig --add %{init_script_1}
 chkconfig --add %{init_script_2}
 chkconfig --add %{init_script_3}
-chkconfig --add %{init_script_10}
+chkconfig --add %{init_script_4}
 
 chkconfig %{init_script_1} on
 chkconfig %{init_script_2} on
 chkconfig %{init_script_3} on
-chkconfig %{init_script_10} on
+chkconfig %{init_script_4} on
 
 chkconfig fail2ban on
 # apache needs to be on for the toolkit to work
@@ -338,22 +313,6 @@ chkconfig ip6tables on
 chkconfig --add cassandra
 chkconfig cassandra on
 chkconfig postgresql on
-
-%post LiveCD
-# The toolkit_config init script is only enabled when the LiveCD is being used
-# so it gets enabled as part of the kickstart.
-chkconfig --add %{init_script_6}
-chkconfig --add %{init_script_7}
-chkconfig --add %{init_script_8}
-chkconfig --add %{init_script_9}
-
-chkconfig %{init_script_6} on
-chkconfig %{init_script_7} on
-chkconfig %{init_script_8} on
-chkconfig %{init_script_9} on
-
-mkdir -p /mnt/store
-mkdir -p /mnt/temp_root
 
 %post SystemEnvironment
 for script in %{install_base}/scripts/system_environment/*; do
@@ -385,7 +344,7 @@ EOF
 /etc/httpd/conf.d/*
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 %attr(0644,root,root) /etc/cron.d/%{crontab_2}
-%attr(0644,root,root) /etc/cron.d/%{crontab_4}
+%attr(0644,root,root) /etc/cron.d/%{crontab_3}
 %attr(0755,root,root) /etc/cron.hourly/%{cron_hourly_1}
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
@@ -402,11 +361,11 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_3}
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_10}
+%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_1}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
-%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_10}
+%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
@@ -425,22 +384,6 @@ EOF
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade/*
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/watcher_log_archive
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/watcher_log_archive_cleanup
-
-%files LiveCD
-%attr(0644,root,root) /etc/cron.d/%{crontab_3}
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_6}
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_7}
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_8}
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_9}
-%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_6}
-%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_7}
-%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_8}
-%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_9}
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/create_backing_store
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/restore_config
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/save_config
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/livecd_net_config.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/temp_root.img
 
 %files SystemEnvironment
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*

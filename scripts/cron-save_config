@@ -1,2 +1,0 @@
-MAILTO=root
-0 * * * * root /opt/perfsonar_ps/toolkit/scripts/save_config
