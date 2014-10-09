@@ -338,6 +338,7 @@ fi
 %{install_base}/lib/*
 %{install_base}/python_lib/*
 %{install_base}/web/*
+%config(noreplace) %{install_base}/web/root/gui/services/etc/web_admin.conf
 %{install_base}/templates/*
 %{install_base}/dependencies
 /etc/httpd/conf.d/*
