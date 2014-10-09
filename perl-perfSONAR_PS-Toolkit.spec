@@ -14,7 +14,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum 26 
+%define relnum 26
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -323,10 +323,12 @@ for script in %{install_base}/scripts/system_environment/*; do
 done
 
 # Add a script to inspire them to create a 'psadmin' user if they don't already have one
+if [ $1 -eq 1 ] ; then
 cat >> /root/.bashrc <<EOF
 # Run the add_psadmin_user script to ensure that a psadmin user has been created
 /opt/perfsonar_ps/toolkit/scripts/add_psadmin_user --auto
 EOF
+fi
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
