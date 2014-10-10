@@ -222,7 +222,6 @@ scripts/watcher_log_archive_cleanup
 templates/config/diag_form_html.tmpl
 templates/config/motd.tmpl
 templates/config/ntp_conf.tmpl
-templates/config/owmesh_conf.tmpl
 templates/config/tcpbw100_html.tmpl
 web/root/admin/administrative_info/data/countries.csv
 web/root/admin/administrative_info/etc/.htaccess
