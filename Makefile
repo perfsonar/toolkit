@@ -1,7 +1,7 @@
 PACKAGE=perfSONAR_PS-Toolkit
 ROOTPATH=/opt/perfsonar_ps/toolkit
 VERSION=3.4
-RELEASE=26
+RELEASE=28
 
 default:
 	@echo No need to build the package. Just run \"make install\"
