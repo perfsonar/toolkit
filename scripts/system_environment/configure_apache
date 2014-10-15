@@ -14,7 +14,7 @@ EOF
 # 'upgrade' or 'new install' context.
 #######################
 
-sed -i 's|SSLProtocol.*|SSLProtocol -ALL +TLSv1|g' /etc/httpd/conf.d/ssl.conf
+sed -i 's|SSLProtocol.*|SSLProtocol -ALL +SSLv3 +TLSv1|g' /etc/httpd/conf.d/ssl.conf
 sed -i 's|SSLCipherSuite.*|SSLCipherSuite ALL:!aNULL:!ADH:!DH:!EDH:!eNULL:-LOW:!EXP:RC4+RSA:+HIGH:-MEDIUM|g'  /etc/httpd/conf.d/ssl.conf
 
 #######################
