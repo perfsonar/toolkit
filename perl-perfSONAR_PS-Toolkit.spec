@@ -340,6 +340,13 @@ cat >> /root/.bashrc <<EOF
 EOF
 fi
 
+#########################################################################
+# The system environment scripts monkey with the apache configuration, so
+# reload apache when we're done. We use reload here so that we don't start
+# Apache if the administrator has shut it down for some reason
+#########################################################################
+service httpd reload || :
+
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
 %doc %{install_base}/doc/*
