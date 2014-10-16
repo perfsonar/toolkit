@@ -74,7 +74,17 @@ if ($external_addresses) {
     $external_address_mtu = $external_addresses->{primary_iface_mtu};
     $external_address_ipv4 = $external_addresses->{primary_ipv4};
     $external_address_ipv6 = $external_addresses->{primary_ipv6};
-    $is_registered = is_host_registered($external_address);
+}
+
+if ($external_address) {
+    eval {
+	# Make sure it returns in a reasonable amount of time if reverse DNS
+	# lookups are failing for some reason.
+        local $SIG{ALRM} = sub { die "alarm" };
+        alarm(2);
+        $is_registered = is_host_registered($external_address);
+        alarm(0);
+    };
 }
 
 my @bwctl_test_ports = ();
