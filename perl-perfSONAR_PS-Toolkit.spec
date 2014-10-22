@@ -91,7 +91,6 @@ Requires:		perl(version)
 Requires:		perl(warnings)
 
 Requires:		esmond
-Requires:		datastax-repo
 Requires:		perl-perfSONAR_PS-LSCacheDaemon
 Requires:		perl-perfSONAR_PS-LSRegistrationDaemon
 Requires:		perl-perfSONAR_PS-serviceTest
