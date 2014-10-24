@@ -18,7 +18,6 @@ if [ "$1" == "new" ]; then
 	/sbin/chkconfig haldaemon off 2> /dev/null || :
 	/sbin/chkconfig hidd off 2> /dev/null || :
 	/sbin/chkconfig irda off 2> /dev/null || :
-	/sbin/chkconfig irqbalance off 2> /dev/null || :
 	/sbin/chkconfig iscsi off 2> /dev/null || :
 	/sbin/chkconfig iscsid off 2> /dev/null || :
 	/sbin/chkconfig kudzu off 2> /dev/null || :
