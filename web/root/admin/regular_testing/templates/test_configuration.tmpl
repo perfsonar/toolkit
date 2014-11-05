@@ -5,7 +5,7 @@
 
 	<tr>
 	<td style="width: 200px">Description</td>
-	<td>[% current_test.description %]</td>
+	<td>[% current_test.description | replace("'", "") %]</td>
 	</tr>
 	<tr>
 	<td style="width: 200px">Interface</td>
@@ -32,7 +32,7 @@
 	<td style="width: 200px">Size Of Test Packets</td><td>[% current_test.parameters.packet_size %]</td>
 	</tr>
 	<tr>
-	<td colspan="2"><a href="#" onClick='display_pinger_test_dialog("[% current_test.id %]", "[% current_test.description %]", "[% current_test.parameters.packet_size %]", "[% current_test.parameters.packet_count %]", "[% current_test.parameters.packet_interval %]", "[% current_test.parameters.test_interval %]", "[% current_test.parameters.test_offset %]", "[% current_test.parameters.ttl %]", "[% current_test.parameters.local_interface %]", "[% current_test.parameters.test_schedule.join(", ") %]")'>Edit Test Parameters</a></td>
+	<td colspan="2"><a href="#" onClick='display_pinger_test_dialog("[% current_test.id %]", "[% current_test.description | replace("'", "") %]", "[% current_test.parameters.packet_size %]", "[% current_test.parameters.packet_count %]", "[% current_test.parameters.packet_interval %]", "[% current_test.parameters.test_interval %]", "[% current_test.parameters.test_offset %]", "[% current_test.parameters.ttl %]", "[% current_test.parameters.local_interface %]", "[% current_test.parameters.test_schedule.join(", ") %]")'>Edit Test Parameters</a></td>
 	</tr>
 [% ELSIF current_test.type == "bwctl/throughput" %]
 	<tr>
@@ -58,7 +58,7 @@
 	<td style="width: 200px">TOS Bits</td><td>[% IF current_test.parameters.tos_bits %]  [% current_test.parameters.tos_bits %] [% ELSE %] 0 [% END %] </td>
 	</tr>
 	<tr>
-	<td colspan="2"><a href="#" onClick='display_bwctl_throughput_test_dialog("[% current_test.id %]", "[% current_test.description %]", "[% current_test.parameters.test_interval %]", "[% current_test.parameters.duration %]", "[% current_test.parameters.tool %]", "[% current_test.parameters.protocol %]", "[% current_test.parameters.window_size %]", "[% current_test.parameters.udp_bandwidth %]", "[% current_test.parameters.tos_bits %]", "[% current_test.parameters.local_interface %]", "[% current_test.parameters.test_schedule.join(", ") %]")'>Edit Test Parameters</a></td>
+	<td colspan="2"><a href="#" onClick='display_bwctl_throughput_test_dialog("[% current_test.id %]", "[% current_test.description | replace("'", "") %]", "[% current_test.parameters.test_interval %]", "[% current_test.parameters.duration %]", "[% current_test.parameters.tool %]", "[% current_test.parameters.protocol %]", "[% current_test.parameters.window_size %]", "[% current_test.parameters.udp_bandwidth %]", "[% current_test.parameters.tos_bits %]", "[% current_test.parameters.local_interface %]", "[% current_test.parameters.test_schedule.join(", ") %]")'>Edit Test Parameters</a></td>
 	</tr>
 [% ELSIF current_test.type == "owamp" %]
 	<tr>
@@ -68,7 +68,7 @@
 	<td style="width: 200px">Packet Size (bytes)</td><td>[% current_test.parameters.packet_padding + 20 %]</td>
 	</tr>
 	<tr>
-	<td colspan="2"><a href="#" onClick='display_owamp_test_dialog("[% current_test.id %]", "[% current_test.description %]", "[% current_test.parameters.packet_interval %]", "[% current_test.parameters.packet_padding %]", "[% current_test.parameters.loss_threshold %]", "[% current_test.parameters.bucket_width %]", "[% current_test.parameters.session_count %]", "[% current_test.parameters.sample_count %]", "[% current_test.parameters.local_interface %]", "[% current_test.parameters.test_schedule.join(", ") %]")'>Edit Test Parameters</a></td>
+	<td colspan="2"><a href="#" onClick='display_owamp_test_dialog("[% current_test.id %]", "[% current_test.description | replace("'", '') %]", "[% current_test.parameters.packet_interval %]", "[% current_test.parameters.packet_padding %]", "[% current_test.parameters.loss_threshold %]", "[% current_test.parameters.bucket_width %]", "[% current_test.parameters.session_count %]", "[% current_test.parameters.sample_count %]", "[% current_test.parameters.local_interface %]", "[% current_test.parameters.test_schedule.join(", ") %]")'>Edit Test Parameters</a></td>
 	</tr>
 [% ELSIF current_test.type == "traceroute" %]
 	<tr>
@@ -101,7 +101,7 @@
     [% SET address_types = "ipv6&nbsp;only" %]
 [% END %]
 
-<tr><td width="200px">[% member_info.address %]</td><td width="400px">[% member_info.description %]</td><td>[% address_types %]</td><td><a href="#" onClick="edit_test_member('[% current_test.id %]', '[% member_info.id %]', '[%- member_info.address -%]', '[%- member_info.description -%]', [% member_info.can_test_ipv4 %], [% member_info.test_ipv4 %], [% member_info.can_test_ipv6 %], [% member_info.test_ipv6 %])">Edit</a> <a href="#" onClick="remove_test_member('[% current_test.id %]', '[% member_info.id %]')">Delete</a></tr>
+<tr><td width="200px">[% member_info.address %]</td><td width="400px">[% member_info.description  | replace("'", "") %]</td><td>[% address_types %]</td><td><a href="#" onClick="edit_test_member('[% current_test.id %]', '[% member_info.id %]', '[%- member_info.address -%]', '[%- member_info.description | replace("'", "") -%]', [% member_info.can_test_ipv4 %], [% member_info.test_ipv4 %], [% member_info.can_test_ipv6 %], [% member_info.test_ipv6 %])">Edit</a> <a href="#" onClick="remove_test_member('[% current_test.id %]', '[% member_info.id %]')">Delete</a></tr>
 [% END %]
 [% END %]
 </table>

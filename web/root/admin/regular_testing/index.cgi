@@ -6,6 +6,7 @@ use CGI::Carp qw(fatalsToBrowser);
 use CGI::Ajax;
 use CGI::Session;
 use Template;
+use Template::Filters;
 use Data::Dumper;
 use Config::General;
 use Log::Log4perl qw(get_logger :easy :levels);

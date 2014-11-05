@@ -317,7 +317,7 @@ function display_pinger_test_dialog(test_id, description, packet_size, packet_co
 	dojo.connect(dijit.byId('configure_test_save'), 'onClick', dojo.hitch(null,
 										function(test_id, test_schedule) {
 											var description = dijit.byId('configure_test_description').attr('value');
-											var packet_size = dijit.byId('configure_test_packet_size').attr('value');
+											var packet_size = dijit.byId('configure_test_packet_size').attr('value') || 40;
 											var packet_count = dijit.byId('configure_test_packet_count').attr('value');
 											var packet_interval = dijit.byId('configure_test_packet_interval').attr('value');
 											var test_interval = 0;
@@ -616,7 +616,7 @@ function __display_owamp_test_dialog(test_id, description, packet_interval, pack
 	dojo.connect(dijit.byId('configure_test_save'), 'onClick', dojo.hitch(null,
 										function(test_id) {
 											var packet_rate = dijit.byId('configure_test_packet_rate').attr('value');
-											var packet_size = dijit.byId('configure_test_packet_size').attr('value');
+											var packet_size = dijit.byId('configure_test_packet_size').attr('value') || 40;
 											var description = dijit.byId('configure_test_description').attr('value');
 											var local_interface = dijit.byId('configure_test_local_interface').attr('value');
 											var packet_interval = 1.0/packet_rate;
@@ -718,7 +718,7 @@ function display_traceroute_test_dialog(test_id, description, test_interval, pac
 											else {
 												test_schedule = dijit.byId('configure_test_schedule').attr('value');
 											}
-											var packet_size = dijit.byId('configure_test_packet_size').attr('value');
+											var packet_size = dijit.byId('configure_test_packet_size').attr('value') || 40;
 											var first_ttl = dijit.byId('configure_test_first_ttl').attr('value');
 											var max_ttl = dijit.byId('configure_test_max_ttl').attr('value');
 											var local_interface = dijit.byId('configure_test_local_interface').attr('value');
