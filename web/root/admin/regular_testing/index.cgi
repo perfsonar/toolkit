@@ -279,6 +279,12 @@ sub fill_variables_tests {
     my @sorted_tests = sort { $a->{description} cmp $b->{description} } @$tests;
     $tests = \@sorted_tests;
 
+    foreach my $test (@$tests) {
+        my $test_id = $test->{id};
+        $test_id =~ s/test\.//g;
+        $test->{id_num} = $test_id;
+    }
+
     $vars->{tests} = $tests;
 
     if ( $current_test ) {
@@ -289,6 +295,10 @@ sub fill_variables_tests {
         }
         else {
             $vars->{current_test} = $res;
+
+        my $test_id = $res->{id};
+        $test_id =~ s/test\.//g;
+        $res->{id_num} = $test_id;
 
             # Check whether or not the test members can do ipv4 or ipv6 tests
             foreach my $member (@{ $res->{members} }) {

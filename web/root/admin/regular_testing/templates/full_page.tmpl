@@ -241,9 +241,10 @@ function display_bwctl_port_configuration_dialog(min_port, max_port) {
 	dialog.show();
 }
 
-function display_pinger_test_dialog(test_id, description, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface, test_schedule) {
+function display_pinger_test_dialog(test_id, description_id, packet_size, packet_count, packet_interval, test_interval, test_offset, ttl, local_interface, test_schedule) {
 	var title;
 	var action;
+    var description = __get_description(description_id);
 	if (test_id) {
 		title = "Edit Parameters Of Ping Delay Test";
 		action = "Set";
@@ -341,17 +342,17 @@ function display_pinger_test_dialog(test_id, description, packet_size, packet_co
 	dialog.show();
 }
 
-function display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule) {
+function display_bwctl_throughput_test_dialog(test_id, description_id, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule) {
 	// if we're displaying the 'edit' dialog
 	if (test_id) {
-		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule);
+		return __display_bwctl_throughput_test_dialog(test_id, description_id, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule);
 	}
 
 	var owamp_tests             = parseInt(dojo.byId('owamp_tests').value);
 
 	// if pSB throughput tests are enabled and there are no latency tests that this new test will interfere with
 	if (owamp_tests == 0) {
-		return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule);
+		return __display_bwctl_throughput_test_dialog(test_id, description_id, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule);
 	}
 
 	var title = "Warning: host isn't configured for throughput tests";
@@ -373,17 +374,29 @@ function display_bwctl_throughput_test_dialog(test_id, description, test_interva
 	dojo.connect(dijit.byId('add_test_warning_add_test'), 'onClick', dojo.hitch(null,
 										function(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, test_schedule) {
 											dijit.byId('add_test_warning_dialog').hide();
-											return __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule);
+											return __display_bwctl_throughput_test_dialog(test_id, description_id, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule);
 										},
-										test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, test_schedule)
+										test_id, description_id, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, test_schedule)
 			);
 
 	dialog.show();
 }
 
-function __display_bwctl_throughput_test_dialog(test_id, description, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule) {
+function __get_description(description_id) {
+    var description = ''
+    var hidden_field = dojo.byId("test_" + description_id + "_description");
+    if (hidden_field) {
+        description = hidden_field.value; 
+        description = description.replace(/'/g, "&apos;");
+    }
+    return description;
+}
+
+function __display_bwctl_throughput_test_dialog(test_id, description_id, test_interval, test_duration, tool, protocol, window_size, udp_bandwidth, tos_bits, local_interface, test_schedule) {
 	var title;
 	var action;
+    var description = __get_description(description_id);
+
 	if (test_id) {
 		title = "Edit Parameters Of Throughput Test";
 		action = "Set";
@@ -397,13 +410,11 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	var inter_test_unit = minimal_granularity(test_interval);
 	var display_test_interval = test_interval/inter_test_unit;
 
-	console.log("Granulairty: "+inter_test_unit);
-
 	var dialog_content = "";
 	dialog_content += "<table>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Description</td>";
-	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must be given a description' id='configure_test_description' size='100' value='"+description+"'></input></td>";
+	dialog_content += "<td colspan=2><input type='text' dojoType='dijit.form.ValidationTextBox' required='true' invalidMessage='All tests must be given a description' id='configure_test_description' size='100' value='" + description + "'></input></td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Interface</td>";
@@ -508,17 +519,17 @@ function __display_bwctl_throughput_test_dialog(test_id, description, test_inter
 	dialog.show();
 }
 
-function display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface) {
+function display_owamp_test_dialog(test_id, description_id, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface) {
 	// if we're displaying the 'edit' dialog
 	if (test_id) {
-		return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
+		return __display_owamp_test_dialog(test_id, description_id, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
 	}
 
 	var throughput_tests        = parseInt(dojo.byId('throughput_tests').value);
 
 	// if pSB owamp is enabled and there are no throughput tests that will interfere
 	if (throughput_tests == 0) {
-		return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
+		return __display_owamp_test_dialog(test_id, description_id, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
 	}
 
 	var title = "Warning: host isn't configured for one-way latency tests";
@@ -538,19 +549,20 @@ function display_owamp_test_dialog(test_id, description, packet_interval, packet
 	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "add_test_warning_dialog" ));
 	dojo.connect(dijit.byId('add_test_warning_cancel'), 'onClick', function() { dijit.byId('add_test_warning_dialog').hide(); });
 	dojo.connect(dijit.byId('add_test_warning_add_test'), 'onClick', dojo.hitch(null,
-										function(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets) {
+										function(test_id, description_id, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets) {
 											dijit.byId('add_test_warning_dialog').hide();
-											return __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
+											return __display_owamp_test_dialog(test_id, description_id, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface);
 										},
-										test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets)
+										test_id, description_id, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets)
 			);
 
 	dialog.show();
 }
 
-function __display_owamp_test_dialog(test_id, description, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface) {
+function __display_owamp_test_dialog(test_id, description_id, packet_interval, packet_padding, loss_threshold, bucket_width, session_packets, sample_packets, local_interface) {
 	var title;
 	var action;
+    var description = __get_description(description_id);
 	if (test_id) {
 		title = "Edit Parameters Of One-Way Delay Test";
 		action = "Set";
@@ -634,9 +646,10 @@ function __display_owamp_test_dialog(test_id, description, packet_interval, pack
 	dialog.show();
 }
 
-function display_traceroute_test_dialog(test_id, description, test_interval, packet_size, first_ttl, max_ttl, local_interface, test_schedule) {
+function display_traceroute_test_dialog(test_id, description_id, test_interval, packet_size, first_ttl, max_ttl, local_interface, test_schedule) {
 	var title;
 	var action;
+    var description = __get_description(description_id);
 	if (test_id) {
 		title = "Edit Parameters Of Traceroute Test";
 		action = "Set";
