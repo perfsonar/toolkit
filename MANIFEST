@@ -220,8 +220,6 @@ scripts/system_environment/upgrade_apache
 scripts/update_administrative_info.pl
 scripts/upgrade/upgrade_apache_admin
 scripts/upgrade/upgrade_regular_tests
-scripts/watcher_log_archive
-scripts/watcher_log_archive_cleanup
 templates/config/diag_form_html.tmpl
 templates/config/motd.tmpl
 templates/config/ntp_conf.tmpl
