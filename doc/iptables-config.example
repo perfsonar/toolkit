@@ -119,15 +119,15 @@
 -A INPUT -m udp -p udp --sport 6001:6200 -j ACCEPT
 
 # BWCTL Test (Incoming and Outgoing, TCP and UDP)
--A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 5000:5600 -j ACCEPT 
--A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 5000:5600 -j ACCEPT 
--A OUTPUT -m tcp -p tcp --dport 5000:5600 -m state --state NEW,ESTABLISHED -j ACCEPT
--A INPUT -m tcp -p tcp --sport 5000:5600 -m state --state ESTABLISHED -j ACCEPT
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 5000:5900 -j ACCEPT 
+-A OUTPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --sport 5000:5900 -j ACCEPT 
+-A OUTPUT -m tcp -p tcp --dport 5000:5900 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A INPUT -m tcp -p tcp --sport 5000:5900 -m state --state ESTABLISHED -j ACCEPT
 
--A INPUT -m udp -p udp --dport 5000:5600 -j ACCEPT 
--A OUTPUT -m udp -p udp --sport 5000:5600 -j ACCEPT 
--A OUTPUT -m udp -p udp --dport 5000:5600 -j ACCEPT
--A INPUT -m udp -p udp --sport 5000:5600 -j ACCEPT
+-A INPUT -m udp -p udp --dport 5000:5900 -j ACCEPT 
+-A OUTPUT -m udp -p udp --sport 5000:5900 -j ACCEPT 
+-A OUTPUT -m udp -p udp --dport 5000:5900 -j ACCEPT
+-A INPUT -m udp -p udp --sport 5000:5900 -j ACCEPT
 
 # BWCTL Test [Historic] (Incoming and Outgoing, TCP and UDP)
 -A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 10101:10300 -j ACCEPT 
