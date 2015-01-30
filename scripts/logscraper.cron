@@ -6,8 +6,9 @@ use warnings;
 my $log_dir = "/var/log/";
 my $new_log_dir = "/var/lib/perfsonar/log_view/ndt/";
 my @logs = ();
+my $fulldir = "";
 
-opendir(DIR, $log_dir) or die "can't open $log_dir\n";
+opendir(DIR, $log_dir) or die "can't open log dir - $log_dir\n";
 while ( my $file = readdir( DIR ) ) {
     next unless ( $file =~ m/^messages.*/ );
     push @logs, $file;
@@ -16,15 +17,16 @@ closedir( DIR );
 
 open( NEWLOGFILE, ">".$new_log_dir."ndt" ) or die "cannot open " . ">".$new_log_dir."ndt";
 foreach my $l ( reverse sort @logs ) {
+    my $fulldir = $log_dir.$l;
     if ( $l =~ /\.gz$/ ) {
-	open( LOGFILE, "gunzip -c $log_dir.$l |" ) or die "can't open pipe to $log_dir.$l\n";
+        open( LOGFILE, "gunzip -c $fulldir |" ) or die "can't open pipe to $fulldir\n";
     }
     else {
-	open( LOGFILE, $log_dir.$l ) or die "can't open $log_dir.$l\n";
+	open( LOGFILE, $fulldir ) or die "can't open messages = $fulldir\n";
     }
 
     while( <LOGFILE> ) {
-	chomp;	
+	    chomp;	
 	next unless $_ =~ m/.*web100srv:\ client_IP.*/;
 
 	print NEWLOGFILE $_ , "\n";
@@ -37,7 +39,7 @@ my $new_log_dir1 = "/var/lib/perfsonar/log_view/bwctl/";
 my $new_log_dir2 = "/var/lib/perfsonar/log_view/owamp/";
 @logs = ();
 
-opendir(DIR, $log_dir) or die "can't open $log_dir\n";
+opendir(DIR, $log_dir) or die "can't open log dir - $log_dir\n";
 my $count = 0;
 while ( my $file = readdir( DIR ) ) {
     next unless ( $file =~ m/^owamp_bwctl.*/ );
@@ -45,18 +47,22 @@ while ( my $file = readdir( DIR ) ) {
     push @logs, $file;
 }
 closedir( DIR );
-
 my $prev = 0;
 open( NEWLOGFILEONE, ">".$new_log_dir1."bwctl" ) or die "cannot open " . ">".$new_log_dir1."bwctl";
 open( NEWLOGFILETWO, ">".$new_log_dir2."owamp" ) or die "cannot open " . ">".$new_log_dir2."owamp";
 
 foreach my $l ( reverse sort @logs ) {
 
+    my $fulldir = $log_dir.$l;
     if ( $l =~ /\.gz$/ ) {
-	open( LOGFILE, "gunzip -c $log_dir.$l |" ) or die "can't open pipe to $log_dir.$l\n";
+        open( LOGFILE, "gunzip -c $fulldir |" ) or die "can't open pipe to $fulldir\n";
+
     }
     else {
-	open( LOGFILE, $log_dir.$l ) or die "can't open $log_dir.$l\n";
+
+	open( LOGFILE, $fulldir ) or die "can't open owamp - $fulldir\n";
+    
+
     }
 
     while( <LOGFILE> ) {
@@ -80,3 +86,4 @@ foreach my $l ( reverse sort @logs ) {
 }
 close( NEWLOGFILEONE ) or die "cannot close " . ">".$new_log_dir1."bwctl";
 close( NEWLOGFILETWO ) or die "cannot close " . ">".$new_log_dir2."owamp";
+
