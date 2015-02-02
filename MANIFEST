@@ -72,6 +72,7 @@ lib/perfSONAR_PS/NPToolkit/Services/BWCTL.pm
 lib/perfSONAR_PS/NPToolkit/Services/Base.pm
 lib/perfSONAR_PS/NPToolkit/Services/Cassandra.pm
 lib/perfSONAR_PS/NPToolkit/Services/ConfigDaemon.pm
+lib/perfSONAR_PS/NPToolkit/Services/iperf3.pm
 lib/perfSONAR_PS/NPToolkit/Services/LSCacheDaemon.pm
 lib/perfSONAR_PS/NPToolkit/Services/LSRegistrationDaemon.pm
 lib/perfSONAR_PS/NPToolkit/Services/MaDDash.pm
