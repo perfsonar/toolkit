@@ -160,7 +160,7 @@ if ($config_daemon) {
 
 my %services = ();
 
-foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "esmond" ) {
+foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "esmond", "iperf3" ) {
     my $service = get_service_object($service_name);
 
     $logger->debug("Checking ".$service_name);
