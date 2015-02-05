@@ -4,7 +4,7 @@
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-System
-Version:		3.5
+Version:		3.4.1
 Release:		%{relnum}.%{disttag}
 Summary:		perfSONAR_PS System
 License:		Distributable, see LICENSE
