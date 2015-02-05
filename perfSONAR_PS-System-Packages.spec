@@ -9,7 +9,7 @@ Release:		%{relnum}.%{disttag}
 Summary:		perfSONAR_PS System
 License:		Distributable, see LICENSE
 Group:			Development/Libraries
-Source0:		perfSONAR_PS-System-%{version}.%{relnum}.tar.gz
+Source0:		perfSONAR_PS-Toolkit-%{version}.%{relnum}.tar.gz
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:		noarch
 
