@@ -14,11 +14,11 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum 1 
+%define relnum 2 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
-Version:		3.4.1
+Version:		3.4.2
 Release:		%{relnum}.%{disttag}
 Summary:		perfSONAR_PS Toolkit
 License:		Distributable, see LICENSE
