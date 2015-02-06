@@ -196,9 +196,9 @@ sub add_table {
         }
     }
 
-    if ($parameters->{ipv6_address}) {
+    if ($parameters->{ipv6_addresses}) {
         foreach my $addr (@{ $parameters->{ipv6_addresses} }) {
-            unless (system("ip", "-6", "rule", "add", "prio", "200", "from", $parameters->{ipv4_address}, "lookup", $parameters->{table}) == 0) {
+            unless (system("ip", "-6", "rule", "add", "prio", "200", "from", $addr, "lookup", $parameters->{table}) == 0) {
                 print "Problem setting up ipv6 address rule\n";
                 return;
             }
