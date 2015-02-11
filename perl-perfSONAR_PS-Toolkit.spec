@@ -98,7 +98,7 @@ Requires:		perl-perfSONAR_PS-RegularTesting
 Requires:		perl-perfSONAR_PS-MeshConfig-JSONBuilder
 Requires:       perl-perfSONAR-OPPD-MP-BWCTL
 Requires:       perl-perfSONAR-OPPD-MP-OWAMP
-
+Requires:               perl-perfSONAR_PS-Toolkit-PSIptables
 Requires:		bwctl-client
 Requires:		bwctl-server
 Requires:		ndt
@@ -183,9 +183,20 @@ Requires(post):	smartmontools
 Requires(post):	sudo
 Requires(post): system-config-firewall-base
 
+
+%package PSIptables
+Summary:      pS-Performance IPTables
+Group:        Development/Tools
+Requires:     iptables
+Requires:     iptables-ipv6
+
+
 %description SystemEnvironment
 Tunes and configures the system according to performance and security best
 practices.
+
+%description PSIptables
+Installs iptables rules for perfSONAR Toolkit
 
 %pre
 /usr/sbin/groupadd perfsonar 2> /dev/null || :
@@ -255,6 +266,25 @@ if [ $1 -eq 1 ] ; then
     /usr/sbin/usermod -a -Gwheel root
 fi
 
+#if upgrade then delete old firewall config and script. From 3.5 onwards firewall install is handled by PSIptables package
+if [ $1 -eq 2 ] ; then
+    if [ -e /opt/perfsonar_ps/toolkit/scripts/configure_firewall ]; then 
+        rm /opt/perfsonar_ps/toolkit/scripts/configure_firewall
+    fi
+   
+    if [ -e /opt/perfsonar_ps/toolkit/etc/default_system_firewall_settings.conf ]; then
+        rm /opt/perfsonar_ps/toolkit/etc/default_system_firewall_settings.conf
+    fi
+
+    if [ -e /opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf ]; then
+        rm /opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf
+    fi
+
+    if [ -e /opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf ]; then
+        rm /opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf
+    fi
+
+fi
 
 mkdir -p /var/run/web_admin_sessions
 chown apache /var/run/web_admin_sessions
@@ -306,10 +336,6 @@ chkconfig fail2ban on
 # apache needs to be on for the toolkit to work
 chkconfig --level 2345 httpd on
 
-#starting iptables
-chkconfig iptables on
-chkconfig ip6tables on
-
 #adding cassandra and postgres for esmond
 chkconfig --add cassandra
 chkconfig cassandra on
@@ -345,6 +371,11 @@ fi
 # Apache if the administrator has shut it down for some reason
 #########################################################################
 service httpd reload || :
+
+%post PSIptables
+#starting iptables
+chkconfig iptables on
+chkconfig ip6tables on
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
@@ -401,6 +432,10 @@ service httpd reload || :
 
 %files SystemEnvironment
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
+
+%files PSIptables
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/security/*
+%config(noreplace) %{install_base}/etc/security/*
 
 %changelog
 * Thu Jun 19 2014 andy@es.net 3.4-4
