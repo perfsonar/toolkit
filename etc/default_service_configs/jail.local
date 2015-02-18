@@ -1,0 +1,4 @@
+#disable mail for ssh-iptables
+[ssh-iptables]
+
+action   = iptables[name=SSH, port=ssh, protocol=tcp]
