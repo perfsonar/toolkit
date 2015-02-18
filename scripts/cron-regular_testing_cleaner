@@ -1,0 +1,2 @@
+MAILTO=root
+10 1 * * * root /opt/perfsonar_ps/toolkit/scripts/clean_regular_testing &> /var/log/perfsonar/regular_testing_cleaner_error.log

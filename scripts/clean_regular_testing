@@ -1,0 +1,14 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use FindBin qw($RealBin);
+use lib "$RealBin/../lib";
+
+use perfSONAR_PS::NPToolkit::ConfigManager::Utils qw( restart_service );
+
+my $datadir = "/var/lib/perfsonar/regular_testing";
+
+system('find '.$datadir.' -type f -mtime +7 -exec rm {} \;');
+restart_service( { name => "regular_testing" } );
