@@ -90,7 +90,7 @@ Requires:		perl(vars)
 Requires:		perl(version)
 Requires:		perl(warnings)
 
-Requires:		esmond
+#perfSONAR packages
 Requires:		perl-perfSONAR_PS-LSCacheDaemon
 Requires:		perl-perfSONAR_PS-LSRegistrationDaemon
 Requires:		perl-perfSONAR_PS-serviceTest
@@ -98,7 +98,11 @@ Requires:		perl-perfSONAR_PS-RegularTesting
 Requires:		perl-perfSONAR_PS-MeshConfig-JSONBuilder
 Requires:       perl-perfSONAR-OPPD-MP-BWCTL
 Requires:       perl-perfSONAR-OPPD-MP-OWAMP
-Requires:               perl-perfSONAR_PS-Toolkit-PSIptables
+Requires:       perl-perfSONAR_PS-ntp
+Requires:       perl-perfSONAR_PS-Toolkit-Library
+
+#perfSONAR service packages
+Requires:		esmond
 Requires:		bwctl-client
 Requires:		bwctl-server
 Requires:		ndt
@@ -110,17 +114,12 @@ Requires:		owamp-server
 Requires:		nuttcp
 Requires:		iperf
 Requires:		tcptrace
-
 Requires:		coreutils
 Requires:		httpd
 Requires:		mod_auth_shadow
 Requires:		mod_ssl
-Requires:               nagios-plugins-all
+Requires:       nagios-plugins-all
 Requires:		nscd
-Requires:		ntp
-Requires:		fail2ban
-Requires:		iptables
-Requires:		iptables-ipv6
 Requires:		yum-cron
 
 Obsoletes:		perl-perfSONAR_PS-TopologyService
@@ -130,9 +129,10 @@ Requires(post):	perl
 Requires(post):	perl-perfSONAR_PS-LSCacheDaemon
 Requires(post):	perl-perfSONAR_PS-LSRegistrationDaemon
 Requires(post):	perl-perfSONAR_PS-serviceTest
-Requires(post):	esmond
 Requires(post):	perl-perfSONAR_PS-RegularTesting
+Requires(post):	perl-perfSONAR_PS-ntp
 
+Requires(post):	esmond
 Requires(post):	bwctl-client
 Requires(post):	bwctl-server
 Requires(post):	ndt
@@ -146,7 +146,7 @@ Requires(post):	iperf
 Requires(post):	mod_auth_shadow
 Requires(post):	mod_ssl
 Requires(post):	nscd
-Requires(post):	ntp
+
 
 %description
 The pS-Performance Toolkit web GUI and associated services.
@@ -155,10 +155,13 @@ The pS-Performance Toolkit web GUI and associated services.
 Summary:		pS-Performance Toolkit NetInstall System Configuration
 Group:			Development/Tools
 Requires:		perl-perfSONAR_PS-Toolkit
+Requires:       perl-perfSONAR_PS-security
+Requires:       perl-perfSONAR_PS-sysctl
+Requires:       perl-perfSONAR_PS-ntp
+Requires:       perl-perfSONAR_PS-Toolkit-Library
 Requires(post):	Internet2-repo
 Requires(post):	bwctl-server
 Requires(post):	owamp-server
-
 Requires(post):	acpid
 Requires(post):	avahi
 Requires(post):	bluez-utils
@@ -172,7 +175,6 @@ Requires(post):	mdadm
 Requires(post):	mysql
 Requires(post):	mysql-server
 Requires(post):	nfs-utils
-Requires(post):	ntp
 Requires(post):	pcsc-lite
 Requires(post):	php-common
 Requires(post):	readahead
@@ -181,28 +183,80 @@ Requires(post):	rsyslog
 Requires(post):	setup
 Requires(post):	smartmontools
 Requires(post):	sudo
-Requires(post): system-config-firewall-base
-
-
-%package PSIptables
-Summary:      pS-Performance IPTables
-Group:        Development/Tools
-Requires:     iptables
-Requires:     iptables-ipv6
-
 
 %description SystemEnvironment
 Tunes and configures the system according to performance and security best
 practices.
 
-%description PSIptables
-Installs iptables rules for perfSONAR Toolkit
+%package Toolkit-Library
+Summary:                pS-Performance Toolkit library
+Group:                  Development/Tools
+
+%description Toolkit-Library
+Installs the library files
+
+
+%package security
+Summary:                pS-Performance Toolkit IPTables configuration
+Group:                  Development/Tools
+Requires:               iptables
+Requires:               iptables-ipv6
+Requires:               fail2ban
+Requires(post):         system-config-firewall-base
+
+%description security
+Configures IPTables rules and installs fail2ban for perfSONAR Toolkit
+
+%package sysctl
+Summary:                pS-Performance Toolkit sysctl configuration
+Group:                  Development/Tools
+
+%description sysctl
+Configures sysctl for the Toolkit
+
+%package ntp
+Summary:                pS-Performance Toolkit ntp configuration
+Group:                  Development/Tools
+Requires:    	        ntp
+Requires:               perl-perfSONAR_PS-Toolkit-Library
+
+%description ntp
+Configures ntp servers for the Toolkit
+
+%package service-watcher
+Summary:                pS-Performance Toolkit service watcher
+Group:                  Development/Tools
+Requires:               ntp
+Requires:               perl-perfSONAR_PS-Toolkit-Library
+
+%description service-watcher
+Installs the service-watcher package
 
 %pre
 /usr/sbin/groupadd perfsonar 2> /dev/null || :
 /usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 
 %pre SystemEnvironment
+rm -rf %{_localstatedir}/lib/rpm-state
+mkdir -p %{_localstatedir}/lib/rpm-state
+rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
+
+%pre sysctl
+rm -rf %{_localstatedir}/lib/rpm-state
+mkdir -p %{_localstatedir}/lib/rpm-state
+rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
+
+%pre security
+rm -rf %{_localstatedir}/lib/rpm-state
+mkdir -p %{_localstatedir}/lib/rpm-state
+rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
+
+%pre ntp
+rm -rf %{_localstatedir}/lib/rpm-state
+mkdir -p %{_localstatedir}/lib/rpm-state
+rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
+
+%pre service-watcher
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
@@ -216,7 +270,6 @@ rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_local
 rm -rf %{buildroot}
 
 make ROOTPATH=%{buildroot}/%{install_base} rpminstall
-
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_2} %{buildroot}/etc/cron.d/%{crontab_2}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
@@ -231,7 +284,6 @@ install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_
 install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_script_4}
 
 # Clean up unnecessary files
-rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_2}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
 rm -rf %{buildroot}/%{install_base}/scripts/%{cron_hourly_1}
@@ -266,25 +318,6 @@ if [ $1 -eq 1 ] ; then
     /usr/sbin/usermod -a -Gwheel root
 fi
 
-#if upgrade then delete old firewall config and script. From 3.5 onwards firewall install is handled by PSIptables package
-if [ $1 -eq 2 ] ; then
-    if [ -e /opt/perfsonar_ps/toolkit/scripts/configure_firewall ]; then 
-        rm /opt/perfsonar_ps/toolkit/scripts/configure_firewall
-    fi
-   
-    if [ -e /opt/perfsonar_ps/toolkit/etc/default_system_firewall_settings.conf ]; then
-        rm /opt/perfsonar_ps/toolkit/etc/default_system_firewall_settings.conf
-    fi
-
-    if [ -e /opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf ]; then
-        rm /opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf
-    fi
-
-    if [ -e /opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf ]; then
-        rm /opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf
-    fi
-
-fi
 
 mkdir -p /var/run/web_admin_sessions
 chown apache /var/run/web_admin_sessions
@@ -332,7 +365,6 @@ chkconfig %{init_script_2} on
 chkconfig %{init_script_3} on
 chkconfig %{init_script_4} on
 
-chkconfig fail2ban on
 # apache needs to be on for the toolkit to work
 chkconfig --level 2345 httpd on
 
@@ -372,18 +404,66 @@ fi
 #########################################################################
 service httpd reload || :
 
-%post PSIptables
+%post security
 #starting iptables
 chkconfig iptables on
 chkconfig ip6tables on
+chkconfig fail2ban on
+
+#if upgrade then delete old firewall config and script. From 3.5 onwards firewall install is handled by perfSONAR_PS-security package
+if [ $1 -eq 2 ] ; then
+    if [ -e /opt/perfsonar_ps/toolkit/scripts/configure_firewall ]; then 
+        rm /opt/perfsonar_ps/toolkit/scripts/configure_firewall
+    fi
+   
+    if [ -e /opt/perfsonar_ps/toolkit/etc/default_system_firewall_settings.conf ]; then
+        rm /opt/perfsonar_ps/toolkit/etc/default_system_firewall_settings.conf
+    fi
+
+    if [ -e /opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf ]; then
+        rm /opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf
+    fi
+
+    if [ -e /opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf ]; then
+        rm /opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf
+    fi
+
+fi
+
+if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
+    PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
+    rm %{_localstatedir}/lib/rpm-state/previous_version
+fi
+if [ $1 -eq 1 ] ; then
+	echo "Running: configure_firewall new"
+    %{install_base}/scripts/system_environment/configure_firewall new
+else
+    echo "Running: configure_firewall upgrade ${PREV_VERSION}"
+    %{install_base}/scripts/system_environment/configure_firewall upgrade ${PREV_VERSION}
+fi
+
+%post sysctl
+
+if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
+    PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
+    rm %{_localstatedir}/lib/rpm-state/previous_version
+fi
+
+if [ $1 -eq 1 ] ; then
+	echo "Running:  new"
+    %{install_base}/scripts/system_environment/configure_sysctl new
+else
+    echo "Running: configure_sysctl upgrade ${PREV_VERSION}"
+    %{install_base}/scripts/system_environment/configure_sysctl upgrade ${PREV_VERSION}
+fi
+
+%post service-watcher
+
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
-%doc %{install_base}/doc/*
 %config(noreplace) %{install_base}/etc/*
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
-%{install_base}/lib/*
-%{install_base}/python_lib/*
 %{install_base}/web/*
 %config(noreplace) %{install_base}/web/root/gui/services/etc/web_admin.conf
 %{install_base}/templates/*
@@ -414,7 +494,6 @@ chkconfig ip6tables on
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_cacti
@@ -426,18 +505,50 @@ chkconfig ip6tables on
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/update_administrative_info.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade/*
 
 %files SystemEnvironment
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
 
-%files PSIptables
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/security/*
-%config(noreplace) %{install_base}/etc/security/*
+%files security
+%config(noreplace) %{install_base}/etc/default_system_firewall_settings.conf
+%config(noreplace) %{install_base}/etc/old_firewall_settings.conf
+%config(noreplace) %{install_base}/etc/perfsonar_firewall_settings.conf
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_firewall
+
+%files sysctl
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_sysctl
+
+%files ntp
+%config(noreplace) %{install_base}/etc/ntp_known_servers
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_ntpd
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/enable_ntpd
+
+%files Toolkit-Library
+%{install_base}/lib/*
+%{install_base}/python_lib/*
+%doc %{install_base}/doc/*
+
+%files service-watcher
+%config(noreplace) %{install_base}/etc/service_watcher.conf
+%config(noreplace) %{install_base}/etc/service_watcher-logger.conf
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 
 %changelog
+* Thu Feb 25 2015 sowmya@es.net 3.5
+- Splitting service watcher
+
+* Thu Feb 12 2015 sowmya@es.net 3.5
+- Splitting ntp package
+
+* Tue Feb 9 2015 sowmya@es.net 3.5
+- Splitting out sysctl package
+
+* Mon Feb 9 2015 sowmya@es.net 3.5
+- rpm bundling of iptables
+
 * Thu Jun 19 2014 andy@es.net 3.4-4
 - 3.4rc2 release
 
@@ -466,4 +577,4 @@ chkconfig ip6tables on
 - -rc3 RPM release
 
 * Wed Jun 18 2010 aaron@internet2.edu 3.2-1
-- Initial -rc1 RPM release
+- Initial -rc1 RPM release perfSONAR_PS-Toolkit-3.4.2.4.tar.gz

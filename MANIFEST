@@ -14,11 +14,11 @@ etc/config_daemon.conf
 etc/default_service_configs/ls_registration_daemon.conf
 etc/default_service_configs/pg_hba.conf
 etc/default_service_configs/regular_testing.conf
+etc/default_system_firewall_settings.conf
 etc/enabled_services
 etc/ntp_known_servers
-etc/security/default_system_firewall_settings.conf
-etc/security/old_firewall_settings.conf
-etc/security/perfsonar_firewall_settings.conf
+etc/old_firewall_settings.conf
+etc/perfsonar_firewall_settings.conf
 etc/service_watcher-logger.conf
 etc/service_watcher.conf
 init_scripts/config_daemon
@@ -172,7 +172,6 @@ lib/perfSONAR_PS/Utils/ParameterValidation.pm
 lib/perfSONAR_PS/Web/Sidebar.pm
 lib/perfSONAR_PS/XML/Document.pm
 lib/psTracerouteUtils.pm
-perfSONAR_PS-Toolkit-3.4.2.4.tar.gz
 perl-perfSONAR_PS-Toolkit.spec
 python_lib/Internet2Commands.py
 python_lib/Internet2Consts.py
@@ -195,7 +194,6 @@ scripts/ps-toolkit-migrate-backup.sh
 scripts/ps-toolkit-migrate-restore.sh
 scripts/psb_to_esmond.pl
 scripts/remove_home_partition
-scripts/security/configure_firewall
 scripts/service_watcher
 scripts/system_environment/add_dbxml_path
 scripts/system_environment/add_sbin_path
@@ -203,6 +201,7 @@ scripts/system_environment/add_toolkit_dirs_path
 scripts/system_environment/bwctl_port_verify
 scripts/system_environment/configure_bwctld_log_location
 scripts/system_environment/configure_esmond
+scripts/system_environment/configure_firewall
 scripts/system_environment/configure_ntpd
 scripts/system_environment/configure_regular_testing
 scripts/system_environment/configure_sysctl
