@@ -6,9 +6,13 @@ use warnings;
 use FindBin qw($RealBin);
 use lib "$RealBin/../lib";
 
-use perfSONAR_PS::NPToolkit::ConfigManager::Utils qw( restart_service );
+use perfSONAR_PS::NPToolkit::ConfigManager::Utils qw( stop_service restart_service );
 
 my $datadir = "/var/lib/perfsonar/regular_testing";
 
 system('find '.$datadir.' -type f -mtime +7 -exec rm {} \;');
+stop_service( { name => "regular_testing" } );
+sleep(10);
+#clean-up any leftovers
+system('pkill -9 -f regular_testing/');
 restart_service( { name => "regular_testing" } );
