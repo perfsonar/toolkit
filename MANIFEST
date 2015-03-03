@@ -180,11 +180,9 @@ scripts/apache-toolkit_web_gui.conf
 scripts/autoselect_ntp_servers
 scripts/clean_esmond_db.sh
 scripts/clean_owampd
-scripts/clean_regular_testing
 scripts/configure_cacti
 scripts/cron-clean_esmond_db
 scripts/cron-owamp_cleaner
-scripts/cron-regular_testing_cleaner
 scripts/cron-service_watcher
 scripts/manage_users
 scripts/mod_interface_route
