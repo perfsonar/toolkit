@@ -179,10 +179,8 @@ scripts/add_psadmin_user
 scripts/apache-toolkit_web_gui.conf
 scripts/autoselect_ntp_servers
 scripts/clean_esmond_db.sh
-scripts/clean_owampd
 scripts/configure_cacti
 scripts/cron-clean_esmond_db
-scripts/cron-owamp_cleaner
 scripts/cron-service_watcher
 scripts/manage_users
 scripts/mod_interface_route

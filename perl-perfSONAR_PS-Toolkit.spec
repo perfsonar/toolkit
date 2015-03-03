@@ -9,7 +9,6 @@
 %define init_script_4 psb_to_esmond
 
 %define crontab_1     cron-service_watcher
-%define crontab_2     cron-owamp_cleaner
 %define crontab_3     cron-clean_esmond_db
 
 %define cron_hourly_1 logscraper.cron
@@ -207,7 +206,6 @@ rm -rf %{buildroot}
 make ROOTPATH=%{buildroot}/%{install_base} rpminstall
 
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
-install -D -m 0600 scripts/%{crontab_2} %{buildroot}/etc/cron.d/%{crontab_2}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 
 install -D -m 0600 scripts/%{cron_hourly_1} %{buildroot}/etc/cron.hourly/%{cron_hourly_1}
@@ -221,7 +219,6 @@ install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_
 
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
-rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_2}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
 rm -rf %{buildroot}/%{install_base}/scripts/%{cron_hourly_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
@@ -359,7 +356,6 @@ service httpd reload || :
 %{install_base}/dependencies
 /etc/httpd/conf.d/*
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
-%attr(0644,root,root) /etc/cron.d/%{crontab_2}
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
 %attr(0755,root,root) /etc/cron.hourly/%{cron_hourly_1}
 # Make sure the cgi scripts are all executable
@@ -385,7 +381,6 @@ service httpd reload || :
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_owampd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_cacti
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
