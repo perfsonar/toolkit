@@ -14,11 +14,11 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  4 
+%define relnum  1 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
-Version:		3.4.2
+Version:		3.5.0
 Release:		%{relnum}.%{disttag}
 Summary:		perfSONAR_PS Toolkit
 License:		Distributable, see LICENSE
@@ -100,6 +100,7 @@ Requires:       perl-perfSONAR-OPPD-MP-BWCTL
 Requires:       perl-perfSONAR-OPPD-MP-OWAMP
 Requires:       perl-perfSONAR_PS-ntp
 Requires:       perl-perfSONAR_PS-Toolkit-Library
+Requires:       perl-perfSONAR_PS-Toolkit-Install-Scripts
 
 #perfSONAR service packages
 Requires:		esmond
@@ -188,13 +189,20 @@ Requires(post):	sudo
 Tunes and configures the system according to performance and security best
 practices.
 
-%package Toolkit-Library
+%package Library
 Summary:                pS-Performance Toolkit library
 Group:                  Development/Tools
 
-%description Toolkit-Library
+%description Library
 Installs the library files
 
+%package Install-Scripts
+Summary:                pS-Performance Toolkit Core Scripts
+Group:                  Development/Tools
+Requires:       perl-perfSONAR_PS-Toolkit-Library
+
+%description Install-Scripts
+Installs install scripts
 
 %package security
 Summary:                pS-Performance Toolkit IPTables configuration
@@ -255,6 +263,11 @@ rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_local
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
+
+if ! id -u "perfsonar" >/dev/null 2>&1 ; then
+    /usr/sbin/groupadd perfsonar 2> /dev/null || :
+    /usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
+fi
 
 %pre service-watcher
 rm -rf %{_localstatedir}/lib/rpm-state
@@ -373,6 +386,11 @@ chkconfig --add cassandra
 chkconfig cassandra on
 chkconfig postgresql on
 
+#starting iptables
+chkconfig iptables on
+chkconfig ip6tables on
+chkconfig fail2ban on
+
 %post SystemEnvironment
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
     PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
@@ -405,42 +423,25 @@ fi
 service httpd reload || :
 
 %post security
-#starting iptables
-chkconfig iptables on
-chkconfig ip6tables on
-chkconfig fail2ban on
-
-#if upgrade then delete old firewall config and script. From 3.5 onwards firewall install is handled by perfSONAR_PS-security package
-if [ $1 -eq 2 ] ; then
-    if [ -e /opt/perfsonar_ps/toolkit/scripts/configure_firewall ]; then 
-        rm /opt/perfsonar_ps/toolkit/scripts/configure_firewall
-    fi
-   
-    if [ -e /opt/perfsonar_ps/toolkit/etc/default_system_firewall_settings.conf ]; then
-        rm /opt/perfsonar_ps/toolkit/etc/default_system_firewall_settings.conf
-    fi
-
-    if [ -e /opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf ]; then
-        rm /opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf
-    fi
-
-    if [ -e /opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf ]; then
-        rm /opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf
-    fi
-
-fi
 
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
     PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
     rm %{_localstatedir}/lib/rpm-state/previous_version
 fi
-if [ $1 -eq 1 ] ; then
-	echo "Running: configure_firewall new"
-    %{install_base}/scripts/system_environment/configure_firewall new
-else
-    echo "Running: configure_firewall upgrade ${PREV_VERSION}"
-    %{install_base}/scripts/system_environment/configure_firewall upgrade ${PREV_VERSION}
-fi
+
+#if [ $1 -eq 1 ] ; then
+#	echo "Running: configure_firewall install"
+#    %{install_base}/scripts/system_environment/configure_firewall new
+#else
+#    echo "Running: configure_firewall install ${PREV_VERSION}"
+#    %{install_base}/scripts/system_environment/configure_firewall upgrade ${PREV_VERSION}
+#fi
+echo "Running: configure_firewall install"
+%{install_base}/scripts/system_environment/configure_firewall install
+
+%postun security
+echo "Running: configure_firewall uninstall"
+%{install_base}/scripts/system_environment/configure_firewall uninstall
 
 %post sysctl
 
@@ -499,8 +500,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_cacti
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-backup.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
@@ -517,6 +516,11 @@ fi
 %config(noreplace) %{install_base}/etc/perfsonar_firewall_settings.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_firewall
 
+%files Install-Scripts
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
+
 %files sysctl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_sysctl
 
@@ -526,7 +530,7 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_ntpd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/enable_ntpd
 
-%files Toolkit-Library
+%files Library
 %{install_base}/lib/*
 %{install_base}/python_lib/*
 %doc %{install_base}/doc/*
@@ -537,16 +541,19 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 
 %changelog
-* Thu Feb 25 2015 sowmya@es.net 3.5
+* Thu Mar 4 2015 sowmya@es.net
+- Splitting out Install Script package and Toolkit Library package
+
+* Thu Feb 25 2015 sowmya@es.net
 - Splitting service watcher
 
-* Thu Feb 12 2015 sowmya@es.net 3.5
+* Thu Feb 12 2015 sowmya@es.net
 - Splitting ntp package
 
-* Tue Feb 9 2015 sowmya@es.net 3.5
+* Tue Feb 9 2015 sowmya@es.net
 - Splitting out sysctl package
 
-* Mon Feb 9 2015 sowmya@es.net 3.5
+* Mon Feb 9 2015 sowmya@es.net 
 - rpm bundling of iptables
 
 * Thu Jun 19 2014 andy@es.net 3.4-4
