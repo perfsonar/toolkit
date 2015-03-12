@@ -1,2 +1,0 @@
-MAILTO=root
-0 1 * * * root /opt/perfsonar_ps/toolkit/scripts/clean_owampd &> /var/log/perfsonar/owampd_cleaner_error.log
