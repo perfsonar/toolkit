@@ -124,7 +124,7 @@ sub delete_table {
                 chomp;
                 my $route = $_;
 
-                system("ip -$family route del ".$route);
+                system("ip -$family route del ".$route." table $table");
             }
             close(ROUTES);
         }
