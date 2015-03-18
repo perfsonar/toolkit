@@ -1,1 +1,1 @@
-../../../Shared/lib/OWP/Conf.pm
+../../shared/lib/OWP/Conf.pm

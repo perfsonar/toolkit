@@ -1,1 +1,1 @@
-../../../../Shared/lib/perfSONAR_PS/Client/MA.pm
+../../../shared/lib/perfSONAR_PS/Client/MA.pm

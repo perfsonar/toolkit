@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/PINGER_DATATYPES/v2_0/NSMap.pm
+../../../../shared/lib/perfSONAR_PS/PINGER_DATATYPES/v2_0/NSMap.pm

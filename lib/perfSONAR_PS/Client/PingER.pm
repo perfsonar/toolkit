@@ -1,1 +1,1 @@
-../../../../Shared/lib/perfSONAR_PS/Client/PingER.pm
+../../../shared/lib/perfSONAR_PS/Client/PingER.pm

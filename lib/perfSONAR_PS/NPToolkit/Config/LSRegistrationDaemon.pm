@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/NPToolkit/Config/LSRegistrationDaemon.pm
+../../../../shared/lib/perfSONAR_PS/NPToolkit/Config/LSRegistrationDaemon.pm
