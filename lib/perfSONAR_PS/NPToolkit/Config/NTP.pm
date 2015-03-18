@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/NPToolkit/Config/NTP.pm
+../../../../shared/lib/perfSONAR_PS/NPToolkit/Config/NTP.pm

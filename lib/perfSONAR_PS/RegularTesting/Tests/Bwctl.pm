@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/Tests/Bwctl.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/Tests/Bwctl.pm

@@ -1,1 +1,1 @@
-../../../../../../Shared/lib/perfSONAR_PS/Client/LS/PSRecords/PSTest.pm
+../../../../../shared/lib/perfSONAR_PS/Client/LS/PSRecords/PSTest.pm

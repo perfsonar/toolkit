@@ -1,1 +1,1 @@
-../../../../Shared/lib/perfSONAR_PS/Web/Sidebar.pm
+../../../shared/lib/perfSONAR_PS/Web/Sidebar.pm

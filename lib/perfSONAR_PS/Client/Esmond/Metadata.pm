@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/Client/Esmond/Metadata.pm
+../../../../shared/lib/perfSONAR_PS/Client/Esmond/Metadata.pm

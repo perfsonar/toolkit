@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/NPToolkit/Services/ServicesMap.pm
+../../../../shared/lib/perfSONAR_PS/NPToolkit/Services/ServicesMap.pm

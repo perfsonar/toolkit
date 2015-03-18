@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/Results/LatencyTest.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/Results/LatencyTest.pm

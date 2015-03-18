@@ -1,1 +1,1 @@
-../../../Shared/lib/Net/NTP.pm
+../../shared/lib/Net/NTP.pm

@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/Tests/Base.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/Tests/Base.pm

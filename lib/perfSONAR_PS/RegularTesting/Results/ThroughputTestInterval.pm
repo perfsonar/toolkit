@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/Results/ThroughputTestInterval.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/Results/ThroughputTestInterval.pm

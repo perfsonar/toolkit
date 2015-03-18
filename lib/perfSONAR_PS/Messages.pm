@@ -1,1 +1,1 @@
-../../../Shared/lib/perfSONAR_PS/Messages.pm
+../../shared/lib/perfSONAR_PS/Messages.pm

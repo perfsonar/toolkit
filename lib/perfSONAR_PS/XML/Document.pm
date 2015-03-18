@@ -1,1 +1,1 @@
-../../../../Shared/lib/perfSONAR_PS/XML/Document.pm
+../../../shared/lib/perfSONAR_PS/XML/Document.pm

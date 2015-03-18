@@ -1,1 +1,1 @@
-../../../../../../Shared/lib/perfSONAR_PS/Client/LS/PSQueryObjects/PSTestQueryObject.pm
+../../../../../shared/lib/perfSONAR_PS/Client/LS/PSQueryObjects/PSTestQueryObject.pm

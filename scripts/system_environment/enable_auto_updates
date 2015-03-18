@@ -2,7 +2,8 @@
 
 # Enables automatic updates by default
 
-PREV_VERSION=$2
+#set arbitrarily high version 99.99 if no version provided
+PREV_VERSION=${2:-99.99}
 
 #Need to activate if new install or if they were previously running 3.3.2 or older
 if [ "$1" == "new" -o `echo "${PREV_VERSION:0:3} < 3.4" | bc` -eq 1 ]; then

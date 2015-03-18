@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/Tests/Powstream.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/Tests/Powstream.pm
