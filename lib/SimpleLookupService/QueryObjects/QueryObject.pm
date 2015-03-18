@@ -1,1 +1,1 @@
-../../../../Shared/lib/SimpleLookupService/QueryObjects/QueryObject.pm
+../../../shared/lib/SimpleLookupService/QueryObjects/QueryObject.pm

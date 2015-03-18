@@ -1,1 +1,1 @@
-../../../../Shared/lib/SimpleLookupService/Keywords/RecordTypeMapping.pm
+../../../shared/lib/SimpleLookupService/Keywords/RecordTypeMapping.pm

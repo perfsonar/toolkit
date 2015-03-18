@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/Parsers/Ping.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/Parsers/Ping.pm

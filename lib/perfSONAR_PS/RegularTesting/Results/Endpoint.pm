@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/Results/Endpoint.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/Results/Endpoint.pm

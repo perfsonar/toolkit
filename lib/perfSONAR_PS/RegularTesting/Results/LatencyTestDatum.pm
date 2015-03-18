@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/Results/LatencyTestDatum.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/Results/LatencyTestDatum.pm

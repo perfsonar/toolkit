@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondThroughput.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondThroughput.pm

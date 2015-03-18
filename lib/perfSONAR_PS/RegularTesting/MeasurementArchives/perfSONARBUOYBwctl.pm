@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/MeasurementArchives/perfSONARBUOYBwctl.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/MeasurementArchives/perfSONARBUOYBwctl.pm

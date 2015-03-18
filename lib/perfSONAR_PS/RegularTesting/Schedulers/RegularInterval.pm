@@ -1,1 +1,1 @@
-../../../../../Shared/lib/perfSONAR_PS/RegularTesting/Schedulers/RegularInterval.pm
+../../../../shared/lib/perfSONAR_PS/RegularTesting/Schedulers/RegularInterval.pm

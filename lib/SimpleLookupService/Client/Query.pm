@@ -1,1 +1,1 @@
-../../../../Shared/lib/SimpleLookupService/Client/Query.pm
+../../../shared/lib/SimpleLookupService/Client/Query.pm
