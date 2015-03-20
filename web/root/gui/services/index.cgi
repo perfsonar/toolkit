@@ -8,7 +8,7 @@ use Template;
 use POSIX;
 use Data::Dumper;
 use JSON::XS;
-
+use Sys::MemInfo qw(totalmem);
 use FindBin qw($RealBin);
 
 my $basedir = "$RealBin/";
@@ -230,6 +230,7 @@ if ($format eq "json") {
         },
         meshes => get_meshes(),
         globally_registered => $is_registered
+        host_memory => get
     );
 
     print $cgi->header('application/json');
