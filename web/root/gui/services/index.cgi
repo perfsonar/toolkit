@@ -229,8 +229,8 @@ if ($format eq "json") {
             synchronized => $ntp->is_synced(),
         },
         meshes => get_meshes(),
-        globally_registered => $is_registered
-        host_memory => get
+        globally_registered => $is_registered,
+        host_memory => floor((&totalmem()/(1024*1024)))
     );
 
     print $cgi->header('application/json');
