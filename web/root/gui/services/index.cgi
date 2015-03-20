@@ -230,7 +230,7 @@ if ($format eq "json") {
         },
         meshes => get_meshes(),
         globally_registered => $is_registered,
-        host_memory => floor((&totalmem()/(1024*1024)))
+        host_memory => int((&totalmem()/(1024*1024*1024) + .5)) #round to nearest GB
     );
 
     print $cgi->header('application/json');
@@ -257,6 +257,7 @@ else {
     $vars{mtu}     = $external_address_mtu;
     $vars{ntp_sync_status}     = $ntp->is_synced();
     $vars{global_reg} 		= $is_registered;
+    $vars{memory} = int((&totalmem()/(1024*1024*1024) + .5)); #round to nearest GB
     set_sidebar_vars( { vars => \%vars } );
 
     print $cgi->header;

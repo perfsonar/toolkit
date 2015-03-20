@@ -88,6 +88,17 @@
         </tr>
         
         <tr>
+            <td style="width: 200px">Memory</td>
+            <td>
+		[% IF memory >= 4 %]
+		<div>[% memory %]GB</div>
+		[% ELSE %]
+		<div style="color:red">[% memory %]GB (< recommended 4GB)</div>
+		[% END %]
+            </td>
+        </tr>
+        
+        <tr>
         <td style="width: 200px">Globally registered</td>
         <td>
 		[% IF ! global_reg.defined %]
