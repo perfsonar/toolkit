@@ -108,6 +108,7 @@
 	<table class="basic_table">
 		<tr><th  style="width: 600px" colspan=2>Services Offered</th></tr>
 	[% FOREACH service IN services.values %]
+		[% NEXT IF service.name == "iperf3" %]
 		[% IF service.name == "ndt"; service.name = "Network Diagnostic Tester (NDT)"; service.url = "http://software.internet2.edu/ndt/"; END %]
 		[% IF service.name == "npad"; service.name = "Network Path and Application Diagnosis (NPAD)"; service.url = "http://www.psc.edu/networking/projects/pathdiag/"; END %]
 		[% IF service.name == "regular_testing"; service.name = "Regular Testing"; service.url = "http://www.perfsonar.net"; END %]
