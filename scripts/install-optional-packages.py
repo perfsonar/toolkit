@@ -4,28 +4,55 @@
 #
 # Author: Sowmya Balasubramanian
 
-from subprocess import call
+import yum 
+import sys
+import Internet2Lib
+import Internet2Consts
 
-psBundle=['testpoint','toolkit']
-tpPackages=['perl-perfSONAR_PS-Toolkit-ntp','perl-perfSONAR_PS-Toolkit-security','perl-perfSONAR_PS-Toolkit-service-watcher','perl-perfSONAR_PS-Toolkit-sysctl']
+optionalPackages=['perl-perfSONAR_PS-Toolkit-ntp','perl-perfSONAR_PS-Toolkit-security','perl-perfSONAR_PS-Toolkit-service-watcher','perl-perfSONAR_PS-Toolkit-sysctl']
 
+def installPackages(yumHandle, packageNames):
+    userChoice=[]
+    for package in packageNames:
+        print "\nWould you like to install "+package+"?"
+        choice = raw_input("\nEnter y|N: ")
+        if(choice == 'y' or choice == 'Y'):
+            userChoice.append(package)
+    
+    for package in userChoice:
+        print "Installing "+package
+        try:
+            yumHandle.install(name=package)
+        except yum.Errors.InstallError, err:
+            print "Error installing package"+str(err)
 
+    if userChoice:
+        yumHandle.resolveDeps()
+        yumHandle.processTransaction()
+        print "\n Installed the following packages: \n"
+        for package in userChoice:
+            print package
 
-def testPointInstall():
-    for package in tpPackages:
-        print "Would you like to install"+package
-        choice = raw_input("y|N: ")
-        if(choice == 'y' or choice == 'n'):
-            call(['/usr/bin/yum', 'install', package])
+def findInstalledPackages(yumHandle, packageNames):
+    toInstall = []
+    for package in packageNames:
+        if not yumHandle.rpmdb.searchNevra(name=package):
+            toInstall.append(package)
+            print package
+    return toInstall
+    
+###MAIN 
+yHandle = yum.YumBase();
+if not Internet2Lib.isRoot():
+    print Internet2Consts.YELLOW + "You must run the perfSONAR install-optional-packages script as root." + Internet2Consts.NORMAL
+    sys.exit(1)
 
-###MAIN  
-i=1
-for bundle in psBundle:
-    print str(i)+". "+bundle
-    i+=1
-  
-bundleType = raw_input("Enter bundle type(1,2..): ")
-if (bundleType == '1'):
-    testPointInstall()
+#find what packages need to be installed
+packagesToInstall = findInstalledPackages(yHandle, optionalPackages)
+
+if packagesToInstall:
+    installPackages(yHandle, packagesToInstall)
 else:
-    print "TBD soon!!" 
+    print "All optional packages have been installed \n"
+    for package in optionalPackages:
+        print package
