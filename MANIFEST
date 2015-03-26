@@ -184,6 +184,7 @@ scripts/clean_esmond_db.sh
 scripts/configure_cacti
 scripts/cron-clean_esmond_db
 scripts/cron-service_watcher
+scripts/install-optional-packages.py
 scripts/logscraper.cron
 scripts/manage_users
 scripts/mod_interface_route
