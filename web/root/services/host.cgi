@@ -8,12 +8,13 @@ use Template;
 use POSIX;
 use Data::Dumper;
 use JSON::XS;
+use XML::Simple;
 use Sys::MemInfo qw(totalmem);
 use FindBin qw($RealBin);
 
-my $basedir = "$RealBin/";
+my $basedir = "$RealBin/../../";
 
-use lib "$RealBin/../../../../lib";
+use lib "$RealBin/../../../lib";
 
 use perfSONAR_PS::NPToolkit::Config::Version;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
@@ -78,8 +79,8 @@ if ($external_addresses) {
 
 if ($external_address) {
     eval {
-	# Make sure it returns in a reasonable amount of time if reverse DNS
-	# lookups are failing for some reason.
+        # Make sure it returns in a reasonable amount of time if reverse DNS
+        # lookups are failing for some reason.
         local $SIG{ALRM} = sub { die "alarm" };
         alarm(2);
         $is_registered = is_host_registered($external_address);
@@ -165,18 +166,18 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
 
     $logger->debug("Checking ".$service_name);
     my $is_running = $service->check_running();
-   
+
     my $addr_list;
     if ($service->can("get_addresses")) {
         $addr_list = $service->get_addresses();
     }
 
     my $is_running_output = ($is_running)?"yes":"no";
-    
+
     if ($service->disabled) {
         $is_running_output = "disabled" unless $is_running;
     }
-    
+
     my %service_info = ();
     $service_info{"name"}       = $service_name;
     $service_info{"is_running"} = $is_running_output;
@@ -196,83 +197,51 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
 
 my $cgi = CGI->new();
 
-my $format = "html";
-$format = $cgi->param("format") if ($cgi->param("format"));
+my @services = values %services;
 
-if ($format eq "json") {
-    my @services = values %services;
+my %json = (
+    administrator => {
+        name => $administrative_info_conf->get_administrator_name(),
+        email => $administrative_info_conf->get_administrator_email(),
+    },
+    location => {
+        city => $administrative_info_conf->get_city(),
+        state => $administrative_info_conf->get_state(),
+        country => $administrative_info_conf->get_country(),
+        zipcode => $administrative_info_conf->get_zipcode(),
+        latitude => $administrative_info_conf->get_latitude(),
+        longitude => $administrative_info_conf->get_longitude(),
+    },
+    keywords => $administrative_info_conf->get_keywords(),
+    toolkit_version => $version_conf->get_version(),
+    toolkit_rpm_version => $toolkit_rpm_version,
+    external_address => {
+        address => $external_address,
+        ipv4_address => $external_address_ipv4,
+        ipv6_address => $external_address_ipv6,
+        mtu => $external_address_mtu,
+    },
+    services => \@services,
+    ntp => {
+        synchronized => $ntp->is_synced(),
+    },
+    meshes => get_meshes(),
+    globally_registered => $is_registered,
+    host_memory => int((&totalmem()/(1024*1024*1024) + .5)) #round to nearest GB
+);
 
-    my %json = (
-        administrator => {
-            name => $administrative_info_conf->get_administrator_name(),
-            email => $administrative_info_conf->get_administrator_email(),
-        },
-        location => {
-            city => $administrative_info_conf->get_city(),
-            state => $administrative_info_conf->get_state(),
-            country => $administrative_info_conf->get_country(),
-            zipcode => $administrative_info_conf->get_zipcode(),
-            latitude => $administrative_info_conf->get_latitude(),
-            longitude => $administrative_info_conf->get_longitude(),
-        },
-        keywords => $administrative_info_conf->get_keywords(),
-        toolkit_version => $version_conf->get_version(),
-        toolkit_rpm_version => $toolkit_rpm_version,
-        external_address => {
-            address => $external_address,
-            ipv4_address => $external_address_ipv4,
-            ipv6_address => $external_address_ipv6,
-            mtu => $external_address_mtu,
-        },
-        services => \@services,
-        ntp => {
-            synchronized => $ntp->is_synced(),
-        },
-        meshes => get_meshes(),
-        globally_registered => $is_registered,
-        host_memory => int((&totalmem()/(1024*1024*1024) + .5)) #round to nearest GB
-    );
+        my $format = "json";
+        $format = $cgi->param("format") if ($cgi->param("format"));
 
-    print $cgi->header('application/json');
-    print encode_json(\%json);
-}
-else {
-
-    my %vars = ();
-    $vars{site_name}       = $administrative_info_conf->get_organization_name();
-    $vars{site_location}   = $administrative_info_conf->get_location();
-    $vars{city}   = $administrative_info_conf->get_city();
-    $vars{state}   = $administrative_info_conf->get_state();
-    $vars{country}   = $administrative_info_conf->get_country();
-    $vars{zipcode}   = $administrative_info_conf->get_zipcode();
-    $vars{latitude}   = $administrative_info_conf->get_latitude();
-    $vars{longitude}   = $administrative_info_conf->get_longitude();
-    $vars{keywords}        = $administrative_info_conf->get_keywords();
-    $vars{toolkit_version} = $version_conf->get_version();
-    $vars{toolkit_rpm_version} = $toolkit_rpm_version;
-    $vars{services}        = \%services;
-    $vars{admin_name}      = $administrative_info_conf->get_administrator_name();
-    $vars{admin_email}     = $administrative_info_conf->get_administrator_email();
-    $vars{external_address}     = $external_address;
-    $vars{mtu}     = $external_address_mtu;
-    $vars{ntp_sync_status}     = $ntp->is_synced();
-    $vars{global_reg} 		= $is_registered;
-    $vars{memory} = int((&totalmem()/(1024*1024*1024) + .5)); #round to nearest GB
-    set_sidebar_vars( { vars => \%vars } );
-
-    print $cgi->header;
-
-    my $tt = Template->new( INCLUDE_PATH => $conf{template_directory} ) or die( "Couldn't initialize template toolkit" );
-
-    my $html;
- 
-    $tt->process( "status.tmpl", \%vars, \$html ) or die $tt->error();
-
-    print $html;
-}
-
+        if ($format eq 'json') {
+            print $cgi->header('application/json');
+            print encode_json(\%json);
+        } elsif ($format eq 'xml') {
+            print $cgi->header('application/xml');
+            my $xml = XML::Simple::XMLout(\%json);
+            print $xml;
+        }
 exit 0;
-# vim: expandtab shiftwidth=4 tabstop=4
 
 sub get_meshes {
     my @mesh_urls = ();
@@ -297,3 +266,5 @@ sub get_meshes {
     }
     return \@mesh_urls;
 }
+
+# vim: expandtab shiftwidth=4 tabstop=4

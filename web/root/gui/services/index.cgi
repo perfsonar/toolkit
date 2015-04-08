@@ -11,7 +11,7 @@ use JSON::XS;
 use Sys::MemInfo qw(totalmem);
 use FindBin qw($RealBin);
 
-my $basedir = "$RealBin/";
+my $basedir = "$RealBin/../../..";
 
 use lib "$RealBin/../../../../lib";
 
