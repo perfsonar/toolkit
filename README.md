@@ -1,6 +1,8 @@
-# perfSONAR Toolkit
+# perfSONAR Toolkit Next Generation
 
 This repository contains scripts and GUIs included with the Toolkit distribution of perfSONAR. A Toolkit includes a full operating system with a consistent environment in terms of default system tunings, firewalls, and software configurations. It also includes GUIs used to manage the Toolkit system and display measurement results. 
+
+To use the Next Generation web UI, checkout the "toolkit-ng" branch
 
 ##Getting the Code
 You may checkout the code with the following command:

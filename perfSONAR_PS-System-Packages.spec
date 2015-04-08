@@ -1,4 +1,4 @@
-%define install_base /opt/perfsonar_ps/toolkit
+%define install_base /opt/perfsonar_ps/toolkit-ng
 
 %define relnum 1
 %define disttag pSPS

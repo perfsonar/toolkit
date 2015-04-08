@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 0
-%define install_base /opt/perfsonar_ps/toolkit
+%define install_base /opt/perfsonar_ps/toolkit-ng
 
-%define apacheconf apache-toolkit_web_gui.conf
+%define apacheconf apache-toolkit-ng_web_gui.conf
 
 %define init_script_1 config_daemon
 %define init_script_2 generate_motd
@@ -16,14 +16,14 @@
 %define relnum  12 
 %define disttag pSPS
 
-Name:			perl-perfSONAR_PS-Toolkit
+Name:			perl-perfSONAR_PS-Toolkit-ng
 Version:		3.4.2
 Release:		%{relnum}.%{disttag}
-Summary:		perfSONAR_PS Toolkit
+Summary:		perfSONAR_PS Toolkit (Next Generation)
 License:		Distributable, see LICENSE
 Group:			Applications/Communications
 URL:			http://www.perfsonar.net/
-Source0:		perfSONAR_PS-Toolkit-%{version}.%{relnum}.tar.gz
+Source0:		perfSONAR_PS-Toolkit-ng-%{version}.%{relnum}.tar.gz
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:		noarch
 Requires:		perl
@@ -148,12 +148,12 @@ Requires(post):	nscd
 Requires(post):	ntp
 
 %description
-The pS-Performance Toolkit web GUI and associated services.
+The pS-Performance Toolkit Next Generation web GUI and associated services.
 
 %package SystemEnvironment
 Summary:		pS-Performance Toolkit NetInstall System Configuration
 Group:			Development/Tools
-Requires:		perl-perfSONAR_PS-Toolkit
+Requires:		perl-perfSONAR_PS-Toolkit-ng
 Requires(post):	Internet2-repo
 Requires(post):	bwctl-server
 Requires(post):	owamp-server
@@ -256,34 +256,34 @@ fi
 mkdir -p /var/run/web_admin_sessions
 chown apache /var/run/web_admin_sessions
 
-mkdir -p /var/run/toolkit/
+mkdir -p /var/run/toolkit-ng/
 
-# Modify the perl-perfSONAR_PS-serviceTest CGIs to use the toolkit's header/footer/sidebar
-ln -sf /opt/perfsonar_ps/toolkit/web/templates/header.tmpl /opt/perfsonar_ps/serviceTest/templates/
-ln -sf /opt/perfsonar_ps/toolkit/web/templates/sidebar.html /opt/perfsonar_ps/serviceTest/templates/
-ln -sf /opt/perfsonar_ps/toolkit/web/templates/footer.tmpl /opt/perfsonar_ps/serviceTest/templates/
+# Modify the perl-perfSONAR_PS-serviceTest CGIs to use the toolkit-ng's header/footer/sidebar
+ln -sf /opt/perfsonar_ps/toolkit-ng/web/templates/header.tmpl /opt/perfsonar_ps/serviceTest/templates/
+ln -sf /opt/perfsonar_ps/toolkit-ng/web/templates/sidebar.html /opt/perfsonar_ps/serviceTest/templates/
+ln -sf /opt/perfsonar_ps/toolkit-ng/web/templates/footer.tmpl /opt/perfsonar_ps/serviceTest/templates/
 
 # Install a link to the logs into the web location
-ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web/root/admin/logs
+ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit-ng/web/root/admin/logs
 
 # Overwrite the existing configuration files for the services with new
 # configuration files containing the default settings.
-cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/ls_registration_daemon.conf /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
+cp -f /opt/perfsonar_ps/toolkit-ng/etc/default_service_configs/ls_registration_daemon.conf /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
 
 #Remove old pS-NPToolkit-* community from admin_info (removal added in version 3.4)
-grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrative_info > /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp
-mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
+grep -v "site_project=pS-NPToolkit-ng" /opt/perfsonar_ps/toolkit-ng/etc/administrative_info > /opt/perfsonar_ps/toolkit-ng/etc/administrative_info.tmp
+mv /opt/perfsonar_ps/toolkit-ng/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit-ng/etc/administrative_info
 
 #Make sure that the administrator_info file gets reloaded
-/opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl 2> /dev/null
+/opt/perfsonar_ps/toolkit-ng/scripts/update_administrative_info.pl 2> /dev/null
 
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
 # so we'll put that in the "maybe" category.
 chmod o+r /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
-chmod o+r /opt/perfsonar_ps/toolkit/etc/administrative_info
-chmod o+r /opt/perfsonar_ps/toolkit/etc/enabled_services
-chmod o+r /opt/perfsonar_ps/toolkit/etc/ntp_known_servers
+chmod o+r /opt/perfsonar_ps/toolkit-ng/etc/administrative_info
+chmod o+r /opt/perfsonar_ps/toolkit-ng/etc/enabled_services
+chmod o+r /opt/perfsonar_ps/toolkit-ng/etc/ntp_known_servers
 chmod o+r /etc/bwctld/bwctld.limits 2> /dev/null
 chmod o+r /etc/bwctld/bwctld.keys 2> /dev/null
 chmod o+r /etc/owampd/owampd.limits 2> /dev/null
@@ -300,7 +300,7 @@ chkconfig %{init_script_3} on
 chkconfig %{init_script_4} on
 
 chkconfig fail2ban on
-# apache needs to be on for the toolkit to work
+# apache needs to be on for the toolkit-ng to work
 chkconfig --level 2345 httpd on
 
 #starting iptables
@@ -332,7 +332,7 @@ done
 if [ $1 -eq 1 ] ; then
 cat >> /root/.bashrc <<EOF
 # Run the add_psadmin_user script to ensure that a psadmin user has been created
-/opt/perfsonar_ps/toolkit/scripts/add_psadmin_user --auto
+/opt/perfsonar_ps/toolkit-ng/scripts/add_psadmin_user --auto
 EOF
 fi
 
@@ -398,6 +398,9 @@ service httpd reload || :
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
 
 %changelog
+* Wed Apr 8 2015 mj82@grnoc.iu.edu 3.4-5
+- Create -ng package
+
 * Thu Jun 19 2014 andy@es.net 3.4-4
 - 3.4rc2 release
 
