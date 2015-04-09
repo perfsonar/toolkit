@@ -13,7 +13,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  1 
+%define relnum  2 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -97,7 +97,6 @@ Requires:		perl-perfSONAR_PS-RegularTesting
 Requires:		perl-perfSONAR_PS-MeshConfig-JSONBuilder
 Requires:       perl-perfSONAR-OPPD-MP-BWCTL
 Requires:       perl-perfSONAR-OPPD-MP-OWAMP
-Requires:       perl-perfSONAR_PS-ntp
 Requires:       perl-perfSONAR_PS-Toolkit-Library
 Requires:       perl-perfSONAR_PS-Toolkit-Install-Scripts
 
@@ -130,7 +129,6 @@ Requires(post):	perl-perfSONAR_PS-LSCacheDaemon
 Requires(post):	perl-perfSONAR_PS-LSRegistrationDaemon
 Requires(post):	perl-perfSONAR_PS-serviceTest
 Requires(post):	perl-perfSONAR_PS-RegularTesting
-Requires(post):	perl-perfSONAR_PS-ntp
 
 Requires(post):	esmond
 Requires(post):	bwctl-client
@@ -155,9 +153,10 @@ The pS-Performance Toolkit web GUI and associated services.
 Summary:		pS-Performance Toolkit NetInstall System Configuration
 Group:			Development/Tools
 Requires:		perl-perfSONAR_PS-Toolkit
-Requires:       perl-perfSONAR_PS-security
-Requires:       perl-perfSONAR_PS-sysctl
-Requires:       perl-perfSONAR_PS-ntp
+Requires:       perl-perfSONAR_PS-Toolkit-security
+Requires:       perl-perfSONAR_PS-Toolkit-sysctl
+Requires:       perl-perfSONAR_PS-Toolkit-service-watcher
+Requires:       perl-perfSONAR_PS-Toolkit-ntp
 Requires:       perl-perfSONAR_PS-Toolkit-Library
 Requires(post):	Internet2-repo
 Requires(post):	bwctl-server
@@ -437,10 +436,6 @@ fi
 echo "Running: configure_firewall install"
 %{install_base}/scripts/system_environment/configure_firewall install
 
-%postun security
-echo "Running: configure_firewall uninstall"
-%{install_base}/scripts/system_environment/configure_firewall uninstall
-
 %post sysctl
 
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
@@ -468,7 +463,6 @@ fi
 %{install_base}/templates/*
 %{install_base}/dependencies
 /etc/httpd/conf.d/*
-%attr(0644,root,root) /etc/cron.d/%{crontab_1}
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
 %attr(0755,root,root) /etc/cron.hourly/%{cron_hourly_1}
 # Make sure the cgi scripts are all executable
@@ -525,6 +519,7 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_ntpd
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/enable_ntpd
+%{install_base}/templates/config/ntp_conf.tmpl
 
 %files Library
 %{install_base}/lib/*
@@ -535,6 +530,7 @@ fi
 %config(noreplace) %{install_base}/etc/service_watcher.conf
 %config(noreplace) %{install_base}/etc/service_watcher-logger.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
+%attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
 %changelog
 * Thu Mar 4 2015 sowmya@es.net
