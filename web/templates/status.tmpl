@@ -8,6 +8,7 @@
 
 
 [% INCLUDE header.tmpl %]
+<script src="/toolkit-ng/js/ps-dashboard.js"></script>
 
 <div class="mainContainer">
 <div class="rContainer">
@@ -18,13 +19,13 @@
         <th colspan=2 style="width: 400px">Host Information</th>
         </tr>
         <tr>
-        <td style="width: 200px">Organization Name</td><td>[% site_name %]</td>
+        <td style="width: 200px">Organization Name</td><td><span id="host_org"></span></td>
         </tr>
         <tr>
-        <td>City, State, Country</td><td>[% city %], [% state %], [% country %]</td>
+        <td>City, State, Country</td><td><span id="host_city"></span>, <span id="host_state"></span>, <span id="host_country"></span></td>
         </tr>
         <tr>
-        <td>Postal Code</td><td>[% zipcode %]</td>
+        <td>Postal Code</td><td><span id="host_postal_code"></span></td>
         </tr>
         <tr>
         <td>Latitude,Longitude</td><td>[% latitude %],[% longitude %]</td>
