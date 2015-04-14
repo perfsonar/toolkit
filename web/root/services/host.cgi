@@ -30,13 +30,12 @@ use perfSONAR_PS::NPToolkit::Config::BWCTL;
 use perfSONAR_PS::NPToolkit::Config::OWAMP;
 
 use Config::General;
+use Time::HiRes qw(gettimeofday tv_interval);
+
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 our %conf = $conf_obj->getall;
-
-$conf{template_directory} = "templates" unless ( $conf{template_directory} );
-$conf{template_directory} = $basedir . "/" . $conf{template_directory} unless ( $conf{template_directory} =~ /^\// );
 
 if ( $conf{logger_conf} ) {
     unless ( $conf{logger_conf} =~ /^\// ) {
@@ -56,8 +55,13 @@ if ( $conf{debug} ) {
     $logger->level( $DEBUG );
 }
 
+my $start_time = gettimeofday();
+my $end_time;
+
 my $version_conf = perfSONAR_PS::NPToolkit::Config::Version->new();
 $version_conf->init();
+
+# Getting the external addresses seems to be by far the slowest thing here (~0.9 sec)
 
 my $external_addresses = discover_primary_address({
                                                     interface => $conf{primary_interface},
@@ -87,6 +91,11 @@ if ($external_address) {
         alarm(0);
     };
 }
+my $start_time2;
+
+$end_time = gettimeofday();
+$logger->debug( "getting external addresses: " . ($end_time - $start_time));
+$start_time2 = $end_time;
 
 my @bwctl_test_ports = ();
 my $bwctld_cfg = perfSONAR_PS::NPToolkit::Config::BWCTL->new();
@@ -141,6 +150,10 @@ else {
     };
 }
 
+$end_time = gettimeofday();
+$logger->debug( "getting port ranges: " . ($end_time - $start_time2));
+$start_time2 = $end_time;
+
 my $administrative_info_conf = perfSONAR_PS::NPToolkit::Config::AdministrativeInfo->new();
 $administrative_info_conf->init( { administrative_info_file => $conf{administrative_info_file} } );
 
@@ -167,9 +180,16 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
     $logger->debug("Checking ".$service_name);
     my $is_running = $service->check_running();
 
-    my $addr_list;
+    my @addr_list;
     if ($service->can("get_addresses")) {
-        $addr_list = $service->get_addresses();
+        @addr_list = @{$service->get_addresses()};
+        if (@addr_list > 0) {
+            my @del_indexes = reverse(grep { $addr_list[$_] =~ /^tcp/ } 0..$#addr_list);
+            #my @del_indexes = reverse(grep { $addr_list[$_] =~ /^tcp:/ } 0..$#addr_list);
+            foreach my $index (@del_indexes) {
+                splice (@addr_list, $index, 1);
+            }
+        }
     }
 
     my $is_running_output = ($is_running)?"yes":"no";
@@ -181,7 +201,7 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
     my %service_info = ();
     $service_info{"name"}       = $service_name;
     $service_info{"is_running"} = $is_running_output;
-    $service_info{"addresses"}  = $addr_list;
+    $service_info{"addresses"}  = \@addr_list;
     $service_info{"version"}    = $service->package_version;
 
     if ($service_name eq "bwctl") {
@@ -194,6 +214,10 @@ foreach my $service_name ( "owamp", "bwctl", "npad", "ndt", "regular_testing", "
 
     $services{$service_name} = \%service_info;
 }
+
+$end_time = gettimeofday();
+$logger->debug( "getting services/ports: " . ($end_time - $start_time2));
+$start_time2 = $end_time;
 
 my $cgi = CGI->new();
 
@@ -230,6 +254,10 @@ my %json = (
     host_memory => int((&totalmem()/(1024*1024*1024) + .5)) #round to nearest GB
 );
 
+        $end_time = gettimeofday();
+        $logger->debug( "getting other json values: " . ($end_time - $start_time2));
+        $start_time2 = $end_time;
+
         my $format = "json";
         $format = $cgi->param("format") if ($cgi->param("format"));
 
@@ -241,10 +269,15 @@ my %json = (
             my $xml = XML::Simple::XMLout(\%json);
             print $xml;
         }
-exit 0;
+
+        $end_time = gettimeofday();
+        $logger->debug( "total time: " . ($end_time - $start_time));
+
+        exit 0;
 
 sub get_meshes {
     my @mesh_urls = ();
+my $start_time = gettimeofday();
     eval {
         my $mesh_config_conf = "/opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf";
 
@@ -264,6 +297,8 @@ sub get_meshes {
     if ($@) {
         @mesh_urls = [];
     }
+my $end_time = gettimeofday();
+$logger->debug( "getting meshes: " . ($end_time - $start_time));
     return \@mesh_urls;
 }
 
