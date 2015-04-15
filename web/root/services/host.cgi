@@ -45,7 +45,7 @@ if ( $conf{debug} ) {
 
 my $data;
 my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( { 'config_file' => $config_file  } );
-$data = $host_info->get_host_status();
+$data = $host_info->get_summary();
 
 my $cgi = CGI->new();
 
