@@ -16,6 +16,8 @@ my $basedir = "$RealBin/../../";
 use lib "$RealBin/../../../lib";
 
 use perfSONAR_PS::NPToolkit::DataService::Host;
+use perfSONAR_PS::NPToolkit::WebService::Method;
+use perfSONAR_PS::NPToolkit::WebService::Router;
 
 use Config::General;
 use Time::HiRes qw(gettimeofday tv_interval);
@@ -45,20 +47,17 @@ if ( $conf{debug} ) {
 
 my $data;
 my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( { 'config_file' => $config_file  } );
-$data = $host_info->get_summary();
 
 my $cgi = CGI->new();
 
-my $format = "json";
-$format = $cgi->param("format") if ($cgi->param("format"));
+my $info_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "get_info",
+    description     =>  "Retrieves host information",
+    callback        =>  sub { $host_info->get_summary(@_); }
+    );
 
-if ($format eq 'json') {
-    print $cgi->header('application/json');
-    print encode_json($data);
-} elsif ($format eq 'xml') {
-    print $cgi->header('application/xml');
-    my $xml = XML::Simple::XMLout($data);
-    print $xml;
-}
+my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
+$router->add_method($info_method);
+$router->handle_request();
 
 # vim: expandtab shiftwidth=4 tabstop=4
