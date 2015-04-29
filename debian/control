@@ -1,0 +1,39 @@
+Source: perfsonar-toolkit
+Section: net
+Priority: optional
+Maintainer: Valentin Vidic <Valentin.Vidic@CARNet.hr>
+Build-Depends: debhelper (>= 9.0.0), quilt, dh-exec
+Standards-Version: 3.9.3
+Homepage: http://www.perfsonar.net/
+Vcs-Git: git://github.com/perfsonar/toolkit
+Vcs-Browser: https://github.com/perfsonar/toolkit
+
+Package: perfsonar-toolkit-library
+Architecture: all
+Depends: libperfsonar-perl, ${misc:Depends}
+Description: pS-Performance Toolkit library
+ Perl libraries for pS-Performance Toolkit.
+
+Package: perfsonar-toolkit-security
+Architecture: all
+Depends: iptables-persistent, fail2ban, ${misc:Depends}
+Description: pS-Performance Toolkit firewall configuration
+ Configures IPTables rules and installs fail2ban for perfSONAR Toolkit.
+
+Package: perfsonar-toolkit-sysctl
+Architecture: all
+Depends: ${misc:Depends}
+Description: pS-Performance Toolkit sysctl configuration
+ Configures sysctl settings for perfSONAR Toolkit.
+
+Package: perfsonar-toolkit-service-watcher
+Architecture: all
+Depends: perfsonar-toolkit-ntp, chkconfig, ${misc:Depends}
+Description: pS-Performance Toolkit service watcher
+ Installs the service-watcher cron job.
+
+Package: perfsonar-toolkit-ntp
+Architecture: all
+Depends: ntp, perfsonar-toolkit-library, ${misc:Depends}
+Description: pS-Performance Toolkit ntp configuration
+ Configures ntp servers for perfSONAR Toolkit.

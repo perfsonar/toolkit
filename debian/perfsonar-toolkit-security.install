@@ -1,0 +1,4 @@
+etc/default_system_firewall_settings.conf etc/perfsonar/toolkit
+etc/old_firewall_settings.conf etc/perfsonar/toolkit
+etc/perfsonar_firewall_settings.conf etc/perfsonar/toolkit
+scripts/system_environment/configure_firewall /usr/lib/perfsonar/scripts/system_environment

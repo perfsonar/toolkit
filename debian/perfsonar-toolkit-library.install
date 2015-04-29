@@ -1,0 +1,6 @@
+lib/perfSONAR_PS/Utils/Closest.pm usr/lib/perfsonar/lib/perfSONAR_PS/Utils
+lib/perfSONAR_PS/Utils/Config/* usr/lib/perfsonar/lib/perfSONAR_PS/Utils/Config
+lib/perfSONAR_PS/Client/gLS/Keywords.pm usr/lib/perfsonar/lib/perfSONAR_PS/Client/gLS
+lib/perfSONAR_PS/Config/OWP/* usr/lib/perfsonar/lib/perfSONAR_PS/Config/OWP
+lib/OWP/* usr/lib/perfsonar/lib/OWP
+lib/psTracerouteUtils.pm usr/lib/perfsonar/lib

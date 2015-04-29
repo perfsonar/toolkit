@@ -1,0 +1,21 @@
+--- a/scripts/service_watcher
++++ b/scripts/service_watcher
+@@ -15,8 +15,8 @@
+ 
+ my ( $status, $res );
+ 
+-my $default_config             = "/opt/perfsonar_ps/toolkit/etc/service_watcher.conf";
+-my $default_logger_config      = "/opt/perfsonar_ps/toolkit/etc/service_watcher-logger.conf";
++my $default_config             = "/etc/perfsonar/toolkit/service_watcher.conf";
++my $default_logger_config      = "/etc/perfsonar/toolkit/service_watcher-logger.conf";
+ 
+ 
+ my ($LOGGER_CONF, $CONFIG_FILE, $REGULAR_RESTART, $DEBUGFLAG);
+--- a/scripts/cron-service_watcher
++++ b/scripts/cron-service_watcher
+@@ -1,3 +1,3 @@
+ MAILTO=root
+-0 * * * * root /opt/perfsonar_ps/toolkit/scripts/service_watcher &> /var/log/perfsonar/service_watcher_error.log
+-5 1 * * * root /opt/perfsonar_ps/toolkit/scripts/service_watcher --regular_restart &> /var/log/perfsonar/service_watcher_error.log
++0 * * * * root /usr/lib/perfsonar/scripts/service_watcher &> /var/log/perfsonar/service_watcher_error.log
++5 1 * * * root /usr/lib/perfsonar/scripts/service_watcher --regular_restart &> /var/log/perfsonar/service_watcher_error.log

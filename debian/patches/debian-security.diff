@@ -1,0 +1,27 @@
+--- a/scripts/system_environment/configure_firewall
++++ b/scripts/system_environment/configure_firewall
+@@ -10,11 +10,11 @@
+ OWAMPPARAMS=("testports")
+ OWAMPDEFAULTS=("8760:9960")
+ 
+-BWCTLFILE="/etc/bwctld/bwctld.conf"
++BWCTLFILE="/etc/bwctl/bwctld.conf"
+ OWAMPFILE="/etc/owampd/owampd.conf"
+-FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf"
+-DEFAULT_FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/default_system_firewall_settings.conf"
+-OLD_FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf"
++FIREWALL_RULES="/etc/perfsonar/toolkit/perfsonar_firewall_settings.conf"
++DEFAULT_FIREWALL_RULES="/etc/perfsonar/toolkit/default_system_firewall_settings.conf"
++OLD_FIREWALL_RULES="/etc/perfsonar/toolkit/old_firewall_settings.conf"
+ 
+ if [ ! -f $FIREWALL_RULES ]; then
+     echo "Couldn't find firewall rules"
+@@ -95,7 +95,7 @@
+ }
+ 
+ saveFirewallRules() {
+-    for iptables_cmd in "iptables" "ip6tables"; do
++    for iptables_cmd in "iptables-persistent"; do
+         service $iptables_cmd save
+     done
+ }
