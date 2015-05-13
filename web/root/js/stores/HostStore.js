@@ -25,7 +25,6 @@ HostStore._retrieveInfo = function() {
             contentType: "application/json",
             dataType: "json",
             success: function (data) {
-                console.log('Success retrieving host info:');
                 HostStore.hostInfo = data;
                 Dispatcher.publish('store.change.host_info');
             },
@@ -42,7 +41,6 @@ HostStore._retrieveStatus = function() {
             contentType: "application/json",
             dataType: "json",
             success: function (data) {
-                console.log('Success retrieving host status:');
                 HostStore.hostStatus = data;
                 Dispatcher.publish('store.change.host_status');
             },
@@ -58,9 +56,6 @@ HostStore._createSummaryTopic = function() {
 };
 
 HostStore._setSummaryData = function (topic, data) {
-    console.log('setting summary');
-    console.log('summary topic: ' + topic);
-    //console.log('summary data: ' + data);
     if (topic == 'store.change.host_status') {
         var data = HostStore.getHostStatus();
         jQuery.extend(HostStore.hostSummary.data, data);

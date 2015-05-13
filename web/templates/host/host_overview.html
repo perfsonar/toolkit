@@ -1,0 +1,32 @@
+<div class="host-overview overview" id="host_overview">
+    <script id="host-overview-template" type="text/x-handlebars-template">
+        <h2 class="overview--title"><i class="fa fa-map-marker"></i> <span id="primary_hostname">&nbsp;</span> <small id="display_primary_ipv4_address">at <span class="font-bold"><span id="primary_ipv4_address"></span></span></small></h2>
+        <dl class="overview--list">
+            <dt>Organization:</dt>
+                <dd><span id="host_organization">{{administrator.organization}}</span></dd>
+                <dt>Address:</dt>
+                <dd>
+                <span id="host_street_address">
+                    {{location.city}}{{#if location.state}}{{#if location.city}}, {{location.state}}{{/if}}{{/if}} 
+                    {{location.zipcode}} 
+                    {{location.country}}
+                </span> 
+                <span id="map_link">
+                    (<a href="{{map_url}}" target="_blank">map</a>)
+                </span>
+                </dd>
+            <dt>Administrator:</dt>
+            <dd><span id="host_administrator">{{administrator.name}}{{#if administrator.email}} &lt;<a href="mailto:{{administrator.email}}">{{administrator.email}}{{/if}}</a>&gt;</span></dd>
+        </dl>
+        <a class="overview--edit" href="configuration"><i class="fa fa-pencil"></i> Edit</a>
+
+        <div class="key" style="display:none;">
+            <ul class="key__items">
+                <li class="key__item key__item--normal"><i class="fa fa-map-marker"></i> Normal</li>
+                <li class="key__item key__item--vm"><i class="fa fa-map-marker"></i> Virtual Machine (VM)</li>
+                <li class="key__item key__item--small"><i class="fa fa-map-marker"></i> Small Node</li>
+            </ul>
+        </div>
+    </script>
+</div>
+
