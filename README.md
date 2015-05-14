@@ -16,6 +16,8 @@ git checkout toolkit-ng
 
 Note the use of the `--recursive` option to ensure any submodule trees are included in the clone.
 
+You will need to copy/adapt the apache config under `scripts/apache-toolkit_web_gui.conf`
+
 ##Using the *shared* Submodule
 This repository contains a [git submodule](http://git-scm.com/book/en/v2/Git-Tools-Submodules) to the perfSONAR [shared](https://github.com/perfsonar/perl-shared) repository. This submodule is used to access common perfSONAR libraries. You will find a number of symbolic links to these modules under *lib*. The use of a submodule has a few implications when working with the code in this repository:
 
