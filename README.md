@@ -9,7 +9,9 @@ You may checkout the code with the following commands. For now, doing it manuall
 
 ```
 git clone --recursive https://github.com/perfsonar/toolkit.git
+# Switch to the toolkit-ng branch - IMPORTANT!
 git checkout toolkit-ng toolkit-ng/
+# Switch to the toolkit-ng branch for the shared libraries - IMPORTANT!
 cd toolkit-ng/shared
 git checkout toolkit-ng
 ```
