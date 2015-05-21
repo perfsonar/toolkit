@@ -24,7 +24,8 @@ HostInfoComponent._setInfo = function( topic ) {
     var template = Handlebars.compile(host_overview_template);
     var address_formatted = data.location.city + ", " + data.location.state + " " + data.location.zipcode + " " + data.location.country;
     data.address_formatted = address_formatted;
-    var latlon = data.location.latitude + "," + data.location.longitude;
+    // TODO: add host address (numeric) back in
+    var latlon = data.location.latitude + "," + data.location.longitude;    
     // the url below will have a map pin
     var map_url = 'http://www.google.com/maps/place/' + latlon + '/@' + latlon + ',12z';
     // this link will show the location, with no map pin

@@ -15,11 +15,13 @@ $(document).ready(function() {
         e.stopPropagation();
     });
 
-    $(".services--title-link").click(function(e) {
+    // Show/hide the services. use the on() event to allow DOM elements 
+    // created later to still trigger the event
+    $("div#host_services").on("click", ".services--title-link", function(e) {
         e.preventDefault();
         $(this).next(".services--list").toggleClass("visible-inline");
-    });
 
+    });
     $(".alert--dismiss").click(function(e) {
         e.preventDefault();
         $(this).parent().fadeOut();

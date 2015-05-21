@@ -24,7 +24,7 @@ my $tt = Template->new({
 
 my $page = 'components/dashboard.html';
 my $css = [ 'css/toolkit.css' ];
-my $js_files = [ 'js/pubsub/jquery.pubsub.js', 'js/actions/Dispatcher.js', 'js/stores/HostStore.js', 'js/handlebars/handlebars.js', 'js/components/HostInfoComponent.js', 'js/components/HostStatusSidebarComponent.js' ];
+my $js_files = [ 'js/pubsub/jquery.pubsub.js', 'js/actions/Dispatcher.js', 'js/stores/HostStore.js', 'js/handlebars/handlebars.js', 'js/components/HostInfoComponent.js', 'js/components/HostStatusSidebarComponent.js', 'js/components/HostServicesComponent.js' ];
 my $vars = {};
 $vars->{'page'} = $page;
 $vars->{'css'} = $css;

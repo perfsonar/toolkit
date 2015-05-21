@@ -4,6 +4,7 @@
 var HostStore = {
     hostInfo: null,
     hostStatus: null,
+    hostServices: null,
     hostCommunities: null,
     hostSummary: {}
 };
@@ -11,11 +12,13 @@ var HostStore = {
 HostStore.initialize = function() {
     HostStore._retrieveInfo();
     HostStore._retrieveStatus();
+    HostStore._retrieveServices();
     HostStore._createSummaryTopic();
     HostStore.hostSummary.data = {};
     HostStore.hostSummary.infoSet = false;
     HostStore.hostSummary.statusSet = false;
     HostStore.hostSummary.summarySet = false;
+    HostStore.hostSummary.servicesSet = false;
 };
 
 HostStore._retrieveInfo = function() {
@@ -50,9 +53,28 @@ HostStore._retrieveStatus = function() {
         });
 };
 
+HostStore._retrieveServices = function() {
+    $.ajax({
+            url: "/toolkit-ng/services/host.cgi?method=get_services",
+            type: 'GET',
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                HostStore.hostServices = data;
+                console.log("setting services: ");
+                console.log(data);
+                Dispatcher.publish('store.change.host_services');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+};
+
 HostStore._createSummaryTopic = function() {
     Dispatcher.subscribe('store.change.host_status', HostStore._setSummaryData);
     Dispatcher.subscribe('store.change.host_info', HostStore._setSummaryData);
+    Dispatcher.subscribe('store.change.host_services', HostStore._setSummaryData);
 };
 
 HostStore._setSummaryData = function (topic, data) {
@@ -64,8 +86,12 @@ HostStore._setSummaryData = function (topic, data) {
         var data = HostStore.getHostInfo();
         jQuery.extend(HostStore.hostSummary.data, data);
         HostStore.hostSummary.infoSet = true;
+    } else if (topic == 'store.change.host_services') {
+        var data = HostStore.getHostServices();
+        jQuery.extend(HostStore.hostSummary.data, data);
+        HostStore.hostSummary.servicesSet = true;
     }
-    if (HostStore.hostSummary.infoSet && HostStore.hostSummary.statusSet) {
+    if (HostStore.hostSummary.infoSet && HostStore.hostSummary.statusSet & HostStore.hostSummary.servicesSet) {
         HostStore.hostSummary.summarySet = true;
         Dispatcher.publish('store.change.host_summary');
     }    
@@ -76,6 +102,9 @@ HostStore.getHostInfo = function() {
 };
 HostStore.getHostStatus = function() {
     return HostStore.hostStatus;
+};
+HostStore.getHostServices = function() {
+    return HostStore.hostServices;
 };
 HostStore.getHostSummary = function() {
     return HostStore.hostSummary.data;
