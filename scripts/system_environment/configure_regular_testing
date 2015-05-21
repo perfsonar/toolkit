@@ -35,3 +35,17 @@ fi
 if [ -f /opt/perfsonar_ps/PingER/etc/pinger-landmarks.xml -o /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf  ]; then
     /opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_regular_tests
 fi
+
+#set powstream test ports if no default parameters
+TESTPORTS=`grep testports /etc/owampd/owampd.conf | cut -f2 -d " "`
+if [ -n "$TESTPORTS" ]; then
+    RECVPORTS_SET=`grep receive_port_range /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf`
+    if [ -z "$RECVPORTS_SET" ]; then
+       echo "" >> /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf
+       echo "#Default testports set by automated toolkit script" >> /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf
+       echo "<default_parameters>" >> /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf
+       echo "   type  powstream" >> /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf
+       echo "   receive_port_range $TESTPORTS" >> /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf
+       echo "</default_parameters>" >> /opt/perfsonar_ps/regular_testing/etc/regular_testing.conf
+    fi
+fi 
