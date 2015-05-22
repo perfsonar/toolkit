@@ -33,8 +33,21 @@ HostServicesComponent._setServices = function( topic ) {
 
         data.services[h].ports_formatted = ports_formatted;
         data.services[h].has_details = (data.services[h].addresses.length > 0 || data.services[h].ports_formatted != '');
+        var status = '';
+        var status_class = '';
+        if (data.services[h].is_running == 'yes') {
+            status = 'Running';
+            status_class = 'running';
+        } else if (data.services[h].is_running == 'no') {
+            status = 'Not Running';
+            status_class = 'off';
+        } else {
+            status = 'Disabled';
+            status_class = 'disabled';
+        }
+        data.services[h].status = status;
+        data.services[h].status_class = status_class;
     }
-
     var host_services_template = $("#host-services-template").html();
     var template = Handlebars.compile(host_services_template);
     var services = template(data);

@@ -40,7 +40,7 @@
   color: #a9b1b5 !important;
 }
 
-.color-red {
+.color-red, #host_services .off {
   color: #ef402f !important;
 }
 
@@ -48,8 +48,12 @@
   color: #e5b53e !important;
 }
 
-.color-green {
+.color-green, #host_services .running {
   color: #32a066 !important;
+}
+
+#host_services .disabled {
+  color: #A9B1B5;  
 }
 
 /* Typography classes */
@@ -1183,13 +1187,14 @@ table thead tr th {
 
 .services--title {
   /*color: #a9b1b5;*/
-  color:##383F44;
+  /* color:##383F44; */
+  color: #0089FF;
   display: block;
   font-weight: 700;
   text-decoration: none;
 }
 
-.services--title-link {
+.services--title-link, .services--title a {
   display: block;
   font-weight: 700;
   text-decoration: none;
