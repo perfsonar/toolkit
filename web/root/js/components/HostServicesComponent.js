@@ -32,6 +32,7 @@ HostServicesComponent._setServices = function( topic ) {
         }
 
         data.services[h].ports_formatted = ports_formatted;
+        data.services[h].has_details = (data.services[h].addresses || data.services[h].port_formatted);
     }
 
     var host_services_template = $("#host-services-template").html();

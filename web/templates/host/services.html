@@ -24,12 +24,18 @@
             {{#each services}}
             <tr class="services--row">
                 <td width="400">
+                    {{#if has_details}}
                     <a class="services--title-link" href="#">{{name}} <i class="fa fa-caret-down"></i></a>
+                    {{else}}
+                    <span class="services--title">{{name}}</span>
+                    {{/if}}
                     <ul class="services--list">
                         {{#each addresses}}
                         <li><a href="{{this}}">{{this}}</a></li>
                         {{/each}}
+                        {{#if ports_formatted}}
                         <li>Test ports: {{ports_formatted}}</li>
+                        {{/if}}
                     </ul>
                 </td>
                 <td><span class="color-green">{{is_running}}</span></td>
