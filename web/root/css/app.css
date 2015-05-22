@@ -1102,11 +1102,13 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
 .sidebar-list__parameter {
   width: 50%;
   float: left;
+  overflow-wrap: break-word;
 }
 
 .sidebar-list__value {
   float: left;
   width: 50%;
+  overflow-wrap: break-word;
 }
 
     /*------------------------------------------------------------------------------
@@ -1170,6 +1172,7 @@ table thead tr th {
   color: #a9b1b5;
   text-transform: uppercase;
   letter-spacing: .07em;
+  padding: .75em .5em;
 }
 
 .services {
@@ -1177,6 +1180,7 @@ table thead tr th {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
 .services--title {
   /*color: #a9b1b5;*/
   color:##383F44;
@@ -1184,6 +1188,7 @@ table thead tr th {
   font-weight: 700;
   text-decoration: none;
 }
+
 .services--title-link {
   display: block;
   font-weight: 700;
@@ -1198,7 +1203,6 @@ table thead tr th {
   list-style-type: none;
   margin-top: .75em;
   /* This (-999px) is a hack to fix some weirdness caused by the jQuery toggle we are using */
-  margin-right: -999px;
   padding-left: 1em;
   border-left: 5px solid #ddd;
 }
@@ -1432,7 +1436,8 @@ input.button-alternate,
 input.button-alternate--small {
   display: inline-block;
   margin: 1em 1em 0 0;
-  padding: 1em 1.5em;
+  padding: .25em .45em;
+  line-height: 1.65;
   min-width: 120px;
   min-height: 37px;
   color: white;
@@ -1489,7 +1494,9 @@ input.button-alternate--small:hover {
 .button-quiet--small,
 input.button-quiet,
 input.button-quiet--small {
-  background-color: #a9b1b5;
+  background-color: transparent;
+  border: 1px solid #a9b1b5;
+  color: #4d565b;
 }
 .button-quiet:hover,
 .button-quiet--small:hover,
@@ -1870,31 +1877,42 @@ to put the stuff inside. */
     Communities module
 
 ------------------------------------------------------------------------------*/
-.communities {
+.communities,
+.servers {
   padding: 1em 0;
   border-bottom: 1px solid #ddd;
   margin-bottom: 1em;
 }
-.communities:after {
+.communities:after,
+.servers:after {
   content: "";
   clear: both;
   display: block;
 }
 
-.communities__popular {
+.communities__popular,
+.servers__popular {
   display: none;
+  padding: 1em 0;
 }
 
-.communities__popular input {
+.communities__popular a:hover,
+.servers__popular a:hover {
+  background-color: #32a066;
+}
+
+.communities__popular input,
+.servers__popular input {
   margin: 0;
 }
 
 @media screen and (max-width: 850px) {
-  .communities__popular input {
+  .servers__popular input {
     margin-bottom: 1em;
   }
 }
-.communities__node {
+.communities__node,
+.servers__node {
   position: relative;
   border: 1px solid #ddd;
   -webkit-border-radius: 4px;
@@ -1903,34 +1921,29 @@ to put the stuff inside. */
   -o-border-radius: 4px;
   border-radius: 4px;
   margin: 0 .875em .875em 0;
-  padding-left: .5em;
+  padding-left: .75em;
   background-color: #f7f7f7;
   overflow: hidden;
 }
 
-.communities__node a {
+.communities__node a,
+.servers__node a {
   text-decoration: none;
   display: inline-block;
   padding: .25em .5em;
   margin-left: .5em;
   font-size: .875em;
-  color: #a9b1b5;
+  color: #ef402f;
   border-left: 1px solid #ddd;
 }
-.communities__node a:hover {
+.communities__node a:hover,
+.servers__node a:hover {
   background-color: #ef402f;
   color: white;
 }
 
-.communities__popular {
-  padding: 1em 0;
-}
-
-.communities__popular a:hover {
-  background-color: #32a066;
-}
-
-.communities__add {
+.communities__add,
+.servers__add {
   display: inline-block;
   margin: 1em 0;
 }

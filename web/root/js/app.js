@@ -27,9 +27,9 @@ $(document).ready(function() {
         $(this).parent().fadeOut();
     });
 
-    $(".communities__add").click(function(e) {
+    $(".communities__add, .servers__add").click(function(e) {
         e.preventDefault();
-        $(".communities__popular").toggle(); 
+        $(".communities__popular, .servers__popular").toggle(); 
     });
 
     $(".config__input").keypress(function(e) {
