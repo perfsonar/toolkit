@@ -12,7 +12,7 @@
   color: #f7f7f7 !important;
 }
 
-.color-light {
+.color-light, .test_results .host_ip {
   color: #a9b1b5 !important;
 }
 

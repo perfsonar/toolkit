@@ -1,0 +1,38 @@
+ <div class="module test-results">
+     <header class="module-header">
+         <h2 class="module-header__title color-bg-accent">Test Results &nbsp; <span class="color-light">(18 Active tests)</span></h2>
+         <a class="module-header__action" href="#">Configure tests &nbsp; <i class="fa fa-cog"></i></a>
+     </header>
+</div>
+<div id="test_results"></div>
+<script id="test-results-template" type="text/x-handlebars-template">
+    <b>Tests</b>
+    <table class="test_results">
+        <thead>
+            <tr>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Latency (ms)</th>
+                <th>Loss (%)</th>
+            </tr>
+        </thead>        
+        <tbody>
+            {{#each test_results}}
+                <tr>
+                    <td>
+                        <div class="hostname">{{source_host}}</div>
+                        <div class="host_ip">{{source_ip}}</div>
+                    </td>
+                    <td>
+                        <div class="hostname">{{destination_host}}</div>
+                        <div class="host_ip">{{destination_ip}}</div>
+                    </td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+            {{/each}}
+
+        </tbody>
+
+    </table>
+</script>
