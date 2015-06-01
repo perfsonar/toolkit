@@ -12,6 +12,7 @@
             <tr>
                 <th>Source</th>
                 <th>Destination</th>
+                <th>Throughput</th>
                 <th>Latency (ms)</th>
                 <th>Loss (%)</th>
             </tr>
@@ -22,13 +23,29 @@
                     <td>
                         <div class="hostname">{{source_host}}</div>
                         <div class="host_ip">{{source_ip}}</div>
+                        <div class="host_actions">
+                            <a href="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url=http%3A%2F%2Flocalhost%2Fesmond%2Fperfsonar%2Farchive%2F" target="_blank">
+                                Details
+                            </a>
+                            | 
+                            <a href="#">Traceroute</a>
                     </td>
                     <td>
                         <div class="hostname">{{destination_host}}</div>
                         <div class="host_ip">{{destination_ip}}</div>
                     </td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
+                    <td>
+                        src-dest: {{formatValue this.throughput_src_average "throughput_src"}}<br />
+                        dest-src: {{formatValue this.throughput_dst_average "throughput_dst"}}
+                    </td>
+                    <td>
+                        src-dest: {{formatValue this.owdelay_src_average "owdelay_src"}}<br />
+                        dest-src: {{formatValue this.owdelay_dst_average "owdelay_dst"}}
+                    </td>
+                    <td>
+                        src-dest: {{formatValue this.loss_src_average "loss_src"}}<br />
+                        dest-src: {{formatValue this.loss_dst_average "loss_dst"}}                    
+                    </td>
                 </tr>
             {{/each}}
 

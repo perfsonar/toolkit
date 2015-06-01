@@ -30,10 +30,12 @@ my $js_files = [
     'js/stores/HostStore.js', 
     'js/stores/TestStore.js', 
     'js/handlebars/handlebars.js', 
+    '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
+    '/serviceTest/JS/TestResultUtils.js', # TODO: fix to better relative URL
     'js/components/HostInfoComponent.js', 
     'js/components/HostStatusSidebarComponent.js', 
     'js/components/HostServicesComponent.js', 
-    'js/components/TestResultsComponent.js' 
+    'js/components/TestResultsComponent.js'
     ];
 
 my $vars = {};

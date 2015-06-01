@@ -8,14 +8,17 @@ var ma_url = 'http%3A%2F%2Flocalhost%2Fesmond%2Fperfsonar%2Farchive%2F';
 
 var TestStore = {
     testList: null,
+    tests: null,
     testSummary: {}
 };
 
 TestStore.initialize = function() {
     TestStore._retrieveList();
+    TestStore._retrieveTests();
     TestStore._createSummaryTopic();
     TestStore.testSummary.data = {};
     TestStore.testSummary.listSet = false;
+    TestStore.testSummary.testsSet = false;
     TestStore.testSummary.summarySet = false;
 };
 
@@ -27,8 +30,6 @@ TestStore._retrieveList = function() {
             dataType: "json",
             success: function (data) {
                 TestStore.testList = data;
-                console.log('testList');
-                console.log(data);
                 Dispatcher.publish('store.change.test_list');
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -37,15 +38,15 @@ TestStore._retrieveList = function() {
         });
 };
 
-TestStore._retrieveStatus = function() {
+TestStore._retrieveTests = function() {
     $.ajax({
-            url: "/toolkit-ng/services/host.cgi?method=get_status",
+            url: "/serviceTest/graphData.cgi?action=tests&url=" + ma_url,
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
             success: function (data) {
-                TestStore.hostStatus = data;
-                Dispatcher.publish('store.change.host_status');
+                TestStore.tests = data;
+                Dispatcher.publish('store.change.tests');
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(errorThrown);
@@ -61,8 +62,6 @@ TestStore._retrieveServices = function() {
             dataType: "json",
             success: function (data) {
                 TestStore.hostServices = data;
-                console.log("setting services: ");
-                console.log(data);
                 Dispatcher.publish('store.change.host_services');
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -87,6 +86,9 @@ TestStore._setSummaryData = function (topic, data) {
     }    
 };
 
+TestStore.getTests = function() {
+    return TestStore.tests;
+};
 TestStore.getTestList = function() {
     return TestStore.testList;
 };
