@@ -41,5 +41,4 @@ $(document).ready(function() {
         $(".sticky-bar--unsaved").fadeOut("fast");
         $(".sticky-bar--saved").fadeIn("fast").delay(1500).fadeOut("slow");
     });
-
 });

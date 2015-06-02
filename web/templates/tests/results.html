@@ -1,6 +1,6 @@
  <div class="module test-results">
      <header class="module-header">
-         <h2 class="module-header__title color-bg-accent">Test Results &nbsp; <span class="color-light">(18 Active tests)</span></h2>
+     <h2 class="module-header__title color-bg-accent">Test Results &nbsp; <span class="color-light" id="num_test_results_holder" style="display:none;">(<span id="num_test_results"></span> Results)</span></h2>
          <a class="module-header__action" href="#">Configure tests &nbsp; <i class="fa fa-cog"></i></a>
      </header>
 </div>
@@ -24,7 +24,7 @@
                         <div class="hostname">{{source_host}}</div>
                         <div class="host_ip">{{source_ip}}</div>
                         <div class="host_actions">
-                            <a href="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url=http%3A%2F%2Flocalhost%2Fesmond%2Fperfsonar%2Farchive%2F" target="_blank">
+                            <a href="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url={{../ma_url}}" target="_blank">
                                 Details
                             </a>
                             | 
@@ -34,17 +34,17 @@
                         <div class="hostname">{{destination_host}}</div>
                         <div class="host_ip">{{destination_ip}}</div>
                     </td>
-                    <td>
-                        src-dest: {{formatValue this.throughput_src_average "throughput_src"}}<br />
-                        dest-src: {{formatValue this.throughput_dst_average "throughput_dst"}}
+                    <td class="test-values">
+                        <i class="fa fa-arrow-up"></i> {{formatValue this.throughput_src_average "throughput_src"}}<br />
+                        <i class="fa fa-arrow-down"></i> {{formatValue this.throughput_dst_average "throughput_dst"}}
                     </td>
-                    <td>
-                        src-dest: {{formatValue this.owdelay_src_average "owdelay_src"}}<br />
-                        dest-src: {{formatValue this.owdelay_dst_average "owdelay_dst"}}
+                    <td class="test-values">
+                        <i class="fa fa-arrow-up"></i> {{formatValue this.owdelay_src_average "owdelay_src"}}<br />
+                        <i class="fa fa-arrow-down"></i> {{formatValue this.owdelay_dst_average "owdelay_dst"}}
                     </td>
-                    <td>
-                        src-dest: {{formatValue this.loss_src_average "loss_src"}}<br />
-                        dest-src: {{formatValue this.loss_dst_average "loss_dst"}}                    
+                    <td class="test-values">
+                        <i class="fa fa-arrow-up"></i>  {{formatValue this.loss_src_average "loss_src"}}<br />
+                        <i class="fa fa-arrow-down"></i> {{formatValue this.loss_dst_average "loss_dst"}}                    
                     </td>
                 </tr>
             {{/each}}

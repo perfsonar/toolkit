@@ -1107,12 +1107,14 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
   width: 50%;
   float: left;
   overflow-wrap: break-word;
+  font-weight:700;
 }
 
 .sidebar-list__value {
   float: left;
   width: 50%;
   overflow-wrap: break-word;
+  color:#a9b1b5;
 }
 
     /*------------------------------------------------------------------------------
@@ -1232,6 +1234,16 @@ table thead tr th {
 .test-results table tr td a {
   display: block;
   line-height: 1.5;
+}
+
+/* Pay special attention here. For some reason, this fontawesome override doesn't work with .test-results, only .test_results. */
+.test_results i.fa {
+  font-size: 10px;
+  color: #a9b1b5;
+}
+
+td.test-values {
+  font-weight:bold;
 }
 
 .test-results--warnings {

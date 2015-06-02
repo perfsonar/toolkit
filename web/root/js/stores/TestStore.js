@@ -1,18 +1,31 @@
 // Make sure jquery loads first
 // assues Dispatcher has already been declared (so load that first as well)
 
-// TODO: Adapt for Test Results
-
 // TODO: make ma_url changeable
-var ma_url = 'http%3A%2F%2Flocalhost%2Fesmond%2Fperfsonar%2Farchive%2F';
 
 var TestStore = {
     testList: null,
     tests: null,
+    ma_url: 'http://localhost/esmond/perfsonar/archive/',
+    ma_url_enc: null,
     testSummary: {}
 };
 
+// TODO: move $.urlParam to a common utility library
+$.urlParam = function(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results==null){
+       return null;
+    }
+    else{
+       return results[1] || 0;
+    }
+};
+
 TestStore.initialize = function() {
+    var ma_url = $.urlParam('url') || TestStore.ma_url;
+    TestStore.ma_url = ma_url;
+    TestStore.ma_url_enc = encodeURIComponent(ma_url);
     TestStore._retrieveList();
     TestStore._retrieveTests();
     TestStore._createSummaryTopic();
@@ -24,7 +37,7 @@ TestStore.initialize = function() {
 
 TestStore._retrieveList = function() {
         $.ajax({
-            url: "/serviceTest/graphData.cgi?action=test_list&url=" + ma_url,
+            url: "/serviceTest/graphData.cgi?action=test_list&url=" + TestStore.ma_url_enc,
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
@@ -40,7 +53,7 @@ TestStore._retrieveList = function() {
 
 TestStore._retrieveTests = function() {
     $.ajax({
-            url: "/serviceTest/graphData.cgi?action=tests&url=" + ma_url,
+            url: "/serviceTest/graphData.cgi?action=tests&url=" + TestStore.ma_url_enc,
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
@@ -94,6 +107,9 @@ TestStore.getTestList = function() {
 };
 TestStore.getHostSummary = function() {
     return TestStore.testSummary.data;
+};
+TestStore.getMAURL = function() {
+    return TestStore.ma_url;
 };
 
 TestStore.initialize();
