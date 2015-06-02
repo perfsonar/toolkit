@@ -18,9 +18,7 @@ $.urlParam = function(name){
 
 TestResultsComponent.initialize = function() {
     var ma_url = TestStore.getMAURL();
-    //var ma_url = $.urlParam('url') || TestResultsComponent.ma_url;
     TestResultsComponent.ma_url = ma_url;
-    $('#loading-modal').foundation('reveal', 'open');
     TestResultsComponent._registerHelpers();
     Dispatcher.subscribe(TestResultsComponent.tests_topic, TestResultsComponent._setTestResults);
 };
@@ -30,7 +28,6 @@ TestResultsComponent._setTestResults = function( topic ) {
     data.test_results = TestStore.getTests();
     data.ma_url = encodeURIComponent(TestResultsComponent.ma_url);
     data.num_test_results = data.test_results.length || 'None';
-    $('#loading-modal').foundation('reveal', 'close');
     $('#num_test_results').html(data.num_test_results);
     $('#num_test_results_holder').show();
     console.log('url: ' + data.ma_url);

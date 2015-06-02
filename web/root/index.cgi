@@ -35,7 +35,8 @@ my $js_files = [
     'js/components/HostInfoComponent.js', 
     'js/components/HostStatusSidebarComponent.js', 
     'js/components/HostServicesComponent.js', 
-    'js/components/TestResultsComponent.js'
+    'js/components/TestResultsComponent.js',
+    'js/pages/DashboardPage.js'
     ];
 
 my $vars = {};
