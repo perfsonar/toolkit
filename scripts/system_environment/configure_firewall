@@ -22,21 +22,26 @@ if [ ! -f $FIREWALL_RULES ]; then
 fi
 
 main() {
-    if [ "${COMMAND}" == "new" ]; then
+#    if [ "${COMMAND}" == "new" ]; then
 	# We're running as part of a NetInstall. Configure the firewall by hand
 	# since iptables isn't available during NetInstall.
-        buildStaticFirewallRules v4_rules "v4"
-        buildStaticFirewallRules v6_rules "v6"
+#        buildStaticFirewallRules v4_rules "v4"
+#        buildStaticFirewallRules v6_rules "v6"
 
-        mv $v4_rules /etc/sysconfig/iptables
-        mv $v6_rules /etc/sysconfig/ip6tables
-    elif [ "${COMMAND}" == "upgrade" ]; then
+#        mv $v4_rules /etc/sysconfig/iptables
+#        mv $v6_rules /etc/sysconfig/ip6tables
+#    elif [ "${COMMAND}" == "upgrade" ]; then
+    
+    if [ "${COMMAND}" == "install" ]; then   
+
         deleteOldFirewallRules
 
         echo "Adding perfSONAR firewall rules"
         addFirewallRules
 
         saveFirewallRules
+    elif ["${COMMAND}" == "uninstall" ]; then
+        deleteFirewallRules
     fi
 }
 
