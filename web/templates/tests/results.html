@@ -27,6 +27,19 @@
                             <a href="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url={{../ma_url}}" target="_blank">
                                 Details
                             </a>
+                            |
+<div id="dialogGraph{{rowID}}" class="reveal-modal xlarge" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Graph</h2>
+    <!-- TODO: may need to add width/height to iframe -->
+    <!-- TODO: fix the iframe width/height -->
+<!-- 
+<iframe src="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url={{../ma_url}}" frameborder="0" width="100%" height="60%"></iframe>
+-->
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div> 
+<a href="#" data-reveal-id="dialogGraph{{rowID}}">
+                                New Details
+                            </a>
                             | 
                             <a href="#">Traceroute</a>
                     </td>
@@ -35,16 +48,16 @@
                         <div class="host_ip">{{destination_ip}}</div>
                     </td>
                     <td class="test-values">
-                        <i class="fa fa-arrow-up"></i> {{formatValue this.throughput_src_average "throughput_src"}}<br />
-                        <i class="fa fa-arrow-down"></i> {{formatValue this.throughput_dst_average "throughput_dst"}}
+                        <i class="fa fa-arrow-right"></i> {{formatValue this.throughput_src_average "throughput_src"}}<br />
+                        <i class="fa fa-arrow-left"></i> {{formatValue this.throughput_dst_average "throughput_dst"}}
                     </td>
                     <td class="test-values">
-                        <i class="fa fa-arrow-up"></i> {{formatValue this.owdelay_src_average "owdelay_src"}}<br />
-                        <i class="fa fa-arrow-down"></i> {{formatValue this.owdelay_dst_average "owdelay_dst"}}
+                        <i class="fa fa-arrow-right"></i> {{formatValue this.owdelay_src_average "owdelay_src"}}<br />
+                        <i class="fa fa-arrow-left"></i> {{formatValue this.owdelay_dst_average "owdelay_dst"}}
                     </td>
                     <td class="test-values">
-                        <i class="fa fa-arrow-up"></i>  {{formatValue this.loss_src_average "loss_src"}}<br />
-                        <i class="fa fa-arrow-down"></i> {{formatValue this.loss_dst_average "loss_dst"}}                    
+                        <i class="fa fa-arrow-right"></i>  {{formatValue this.loss_src_average "loss_src"}}<br />
+                        <i class="fa fa-arrow-left"></i> {{formatValue this.loss_dst_average "loss_dst"}}                    
                     </td>
                 </tr>
             {{/each}}

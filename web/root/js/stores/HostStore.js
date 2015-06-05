@@ -2,6 +2,7 @@
 // assues Dispatcher has already been declared (so load that first as well)
 
 var HostStore = {
+    hostHealth: null,
     hostInfo: null,
     hostStatus: null,
     hostServices: null,
@@ -13,8 +14,10 @@ HostStore.initialize = function() {
     HostStore._retrieveInfo();
     HostStore._retrieveStatus();
     HostStore._retrieveServices();
+    HostStore._retrieveHealth();
     HostStore._createSummaryTopic();
     HostStore.hostSummary.data = {};
+    HostStore.hostSummary.healthSet = false;
     HostStore.hostSummary.infoSet = false;
     HostStore.hostSummary.statusSet = false;
     HostStore.hostSummary.summarySet = false;
@@ -32,7 +35,7 @@ HostStore._retrieveInfo = function() {
                 Dispatcher.publish('store.change.host_info');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
+                console.log(errorThrown);
             }
         });
 };
@@ -48,7 +51,7 @@ HostStore._retrieveStatus = function() {
                 Dispatcher.publish('store.change.host_status');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
+                console.log(errorThrown);
             }
         });
 };
@@ -61,12 +64,28 @@ HostStore._retrieveServices = function() {
             dataType: "json",
             success: function (data) {
                 HostStore.hostServices = data;
-                console.log("setting services: ");
-                console.log(data);
                 Dispatcher.publish('store.change.host_services');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
+                console.log("retrieveServices error");
+                console.log(errorThrown);
+            }
+        });
+};
+
+HostStore._retrieveHealth = function() {
+        $.ajax({
+            url: "/toolkit-ng/services/host.cgi?method=get_health",
+            type: 'GET',
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                HostStore.hostHealth = data;
+                Dispatcher.publish('store.change.health_status');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log("retrieveHealth error");
+                console.log(errorThrown);
             }
         });
 };
@@ -75,6 +94,7 @@ HostStore._createSummaryTopic = function() {
     Dispatcher.subscribe('store.change.host_status', HostStore._setSummaryData);
     Dispatcher.subscribe('store.change.host_info', HostStore._setSummaryData);
     Dispatcher.subscribe('store.change.host_services', HostStore._setSummaryData);
+    Dispatcher.subscribe('store.change.health_status', HostStore._setSummaryData);
 };
 
 HostStore._setSummaryData = function (topic, data) {
@@ -90,10 +110,20 @@ HostStore._setSummaryData = function (topic, data) {
         var data = HostStore.getHostServices();
         jQuery.extend(HostStore.hostSummary.data, data);
         HostStore.hostSummary.servicesSet = true;
+    } else if (topic == 'store.change.health_status') {
+        var data = HostStore.getHealthStatus();
+        jQuery.extend(HostStore.hostSummary.data, data);
+        HostStore.hostSummary.healthSet = true;
     }
-    if (HostStore.hostSummary.infoSet && HostStore.hostSummary.statusSet & HostStore.hostSummary.servicesSet) {
+    if (HostStore.hostSummary.infoSet 
+            && HostStore.hostSummary.statusSet 
+            && HostStore.hostSummary.servicesSet 
+            && HostStore.hostSummary.healthSet) {
         HostStore.hostSummary.summarySet = true;
         Dispatcher.publish('store.change.host_summary');
+        // TODO: see if this summary needs to be disconnected due to the health updates
+        //console.log('summary data');
+        //console.log(data);
     }    
 };
 
@@ -102,6 +132,9 @@ HostStore.getHostInfo = function() {
 };
 HostStore.getHostStatus = function() {
     return HostStore.hostStatus;
+};
+HostStore.getHealthStatus = function() {
+    return HostStore.hostHealth;
 };
 HostStore.getHostServices = function() {
     return HostStore.hostServices;

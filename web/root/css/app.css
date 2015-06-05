@@ -1107,14 +1107,13 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
   width: 50%;
   float: left;
   overflow-wrap: break-word;
-  font-weight:700;
+  color:#a9b1b5;
 }
 
 .sidebar-list__value {
   float: left;
   width: 50%;
   overflow-wrap: break-word;
-  color:#a9b1b5;
 }
 
     /*------------------------------------------------------------------------------

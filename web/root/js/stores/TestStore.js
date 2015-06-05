@@ -1,8 +1,6 @@
 // Make sure jquery loads first
 // assues Dispatcher has already been declared (so load that first as well)
 
-// TODO: make ma_url changeable
-
 var TestStore = {
     testList: null,
     tests: null,

@@ -26,7 +26,6 @@ DashboardPage._setTopics = function() {
 };
 
 DashboardPage._dataStoreReturned = function(topic, data) {
-    console.log('store returned: ' + topic);
     DashboardPage.numTopics--;
     if (DashboardPage.numTopics == 0) {
         $('#loading-modal').foundation('reveal', 'close');
