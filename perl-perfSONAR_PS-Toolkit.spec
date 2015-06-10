@@ -350,6 +350,12 @@ cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/ls_registration_daem
 grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrative_info > /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp
 mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
 
+#Set bundle type and version
+grep -v "bundle" /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf > /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
+echo "bundle_type  perfsonar-toolkit" >> /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
+echo "bundle_version  %{version}" >> /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
+mv /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
+
 #Make sure that the administrator_info file gets reloaded
 /opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl 2> /dev/null
 
