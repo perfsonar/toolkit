@@ -40,13 +40,91 @@ TestResultsComponent._setTestResults = function( topic ) {
     var template = Handlebars.compile(test_results_template);
     var test_results = template(data);
     $("#test_results").html(test_results);
-
+    for (var i in data.test_results) {
+        var row = data.test_results[i];
+        var container_id = "trace_" + TestResultsComponent.ipToID(row.source_ip) + "_"
+            + TestResultsComponent.ipToID(row.destination_ip);
+        TestResultsComponent.setTracerouteLink(row.source_ip, row.destination_ip, container_id);
+    }
 };
 
 TestResultsComponent._registerHelpers = function() {
     Handlebars.registerHelper ("formatValue", function (value, type) {
-       return TestResultUtils.formatValue(value, type);
+        return TestResultUtils.formatValue(value, type);
     });
+    Handlebars.registerHelper ("ipToID", function (ip) {
+        return TestResultsComponent.ipToID(ip);
+    });
+};
+
+TestResultsComponent.ipToID = function(ip) {
+    var ret = ip;
+    ret = ret.replace(/\./g, '_');
+    ret = ret.replace(/:/g, '_');
+    return ret;
+};
+
+// onclick="showResultsGraph({{source_host}}, {{destination_host }}, {{../ma_url}})">
+    // test-results-graph-iframe
+//
+TestResultsComponent.showResultsGraph = function(src, dst, ma_url) {
+    // first, clear the URL of the existing iframe
+    $("#test-results-graph-iframe").attr('src', '');
+    var url = "/serviceTest/graphWidget.cgi?source=" + src;
+    url += "&dest=" + dst + "&url=" + ma_url;
+    //$("#test-results-graph-iframe").attr('src', url);
+    $('<iframe />', {
+        name: 'Graph Frame',
+        id:   'test-results-graph-iframe-dynamic',
+        src: url,
+        width: '100%',
+        height: '70%'
+    }).appendTo('#dialogGraphContainer');
+    return false;
+};
+
+TestResultsComponent.closeFrame = function() {
+    $('#test-results-graph-iframe-dynamic').src = '';
+    $('#test-results-graph-iframe-dynamic').remove();
+};
+
+TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_id) {
+    var ma_url = TestResultsComponent.ma_url;
+    var container = $('#' + container_id);
+    var link = $('#' + container_id + ' a.traceroute_link');
+    var tr_url = '/serviceTest/graphData.cgi?action=has_traceroute_data&url=' + ma_url
+            + '&source=' + source_ip + '&dest=' + dest_ip;
+    $.ajax({
+        url: tr_url,
+        type: 'GET',
+        contentType: "application/json",
+        success: function(trace_data) {
+            if (typeof trace_data !== "undefined") {
+                if (typeof trace_data.has_traceroute !== "undefined" && trace_data.has_traceroute == 1) {
+                    var trace_url = '/toolkit/gui/psTracerouteViewer/index.cgi?';
+                    trace_url += '&mahost=' + trace_data.ma_url;
+                    trace_url += '&stime=yesterday';
+                    trace_url += '&etime=now';
+                    //trace_url += '&tzselect='; // Commented out (allow default to be used)
+                    trace_url += '&epselect=' + trace_data.traceroute_uri;
+                    trace_url += '';
+
+                    link.attr("href", trace_url);
+                    container.addClass('has_traceroute');
+                } else {
+                    container.removeClass('has_traceroute');
+                    link.attr("href", "");
+                }
+            }
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+
+
+
 };
 
 TestResultsComponent.initialize();

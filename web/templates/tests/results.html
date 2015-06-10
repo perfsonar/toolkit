@@ -1,12 +1,15 @@
  <div class="module test-results">
      <header class="module-header">
      <h2 class="module-header__title color-bg-accent">Test Results &nbsp; <span class="color-light" id="num_test_results_holder" style="display:none;">(<span id="num_test_results"></span> Results)</span></h2>
-         <a class="module-header__action" href="#">Configure tests &nbsp; <i class="fa fa-cog"></i></a>
+         <a class="module-header__action" href="/toolkit/admin/regular_testing/" target="_blank">Configure tests &nbsp; <i class="fa fa-cog"></i></a>
      </header>
 </div>
 <div id="test_results"></div>
 <script id="test-results-template" type="text/x-handlebars-template">
     <b>Tests</b>
+    <div id="dialogGraphContainer" class="reveal-modal xlarge" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <a class="close-reveal-modal" aria-label="Close" onclick="TestResultsComponent.closeFrame()">&#215;</a>
+</div>
     <table class="test_results">
         <thead>
             <tr>
@@ -24,24 +27,21 @@
                         <div class="hostname">{{source_host}}</div>
                         <div class="host_ip">{{source_ip}}</div>
                         <div class="host_actions">
-                            <a href="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url={{../ma_url}}" target="_blank">
+<div id="dialogGraph{{rowID}}" class="reveal-modal xlarge" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+<iframe src="" frameborder="0" width="100%" height="60%" id="test-results-graph-iframe"></iframe>
+  <a class="close-reveal-modal" aria-label="Close" onclick="$('#test-results-graph-iframe').attr('src', '')">&#215;</a>
+</div> 
+<a href="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url={{../ma_url}}" data-reveal-id="dialogGraphContainer" onclick="TestResultsComponent.showResultsGraph('{{source_host}}', '{{destination_host}}', '{{../ma_url}}')">
                                 Details
                             </a>
-                            |
-<div id="dialogGraph{{rowID}}" class="reveal-modal xlarge" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-    <h2 id="modalTitle">Graph</h2>
-    <!-- TODO: may need to add width/height to iframe -->
-    <!-- TODO: fix the iframe width/height -->
-<!-- 
-<iframe src="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url={{../ma_url}}" frameborder="0" width="100%" height="60%"></iframe>
--->
-  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-</div> 
-<a href="#" data-reveal-id="dialogGraph{{rowID}}">
-                                New Details
-                            </a>
                             | 
-                            <a href="#">Traceroute</a>
+                             <a href="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url={{../ma_url}}" target="_blank">
+                                New window
+                            </a>
+                            <span id="trace_{{ipToID source_ip}}_{{ipToID destination_ip}}" class="traceroute_link_container">
+                                  
+                                | <a href="#" class="traceroute_link" target="_blank">Traceroute</a>
+                            </span>
                     </td>
                     <td>
                         <div class="hostname">{{destination_host}}</div>

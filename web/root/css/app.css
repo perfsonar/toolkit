@@ -1053,7 +1053,7 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
 .sidebar {
   width: 25%;
   float: left;
-  height: 100%;
+  min-height: 100%;
   background-color: #f7f7f7;
   border-left: 1px solid #ddd;
   float: right;
@@ -1226,13 +1226,19 @@ table thead tr th {
   clear: both;
   display: block;
 }
-.test-results table tr {
+table.test_results tr {
   vertical-align: top;
 }
 .test-results table tr td span,
 .test-results table tr td a {
   display: block;
   line-height: 1.5;
+}
+.test_results .traceroute_link_container.has_traceroute {
+    display:inline;
+}
+.test_results .traceroute_link_container {
+    display:none;
 }
 
 /* Pay special attention here. For some reason, this fontawesome override doesn't work with .test-results, only .test_results. */

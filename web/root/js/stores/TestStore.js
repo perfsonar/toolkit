@@ -44,7 +44,7 @@ TestStore._retrieveList = function() {
                 Dispatcher.publish('store.change.test_list');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
+                console.log(errorThrown);
             }
         });
 };
