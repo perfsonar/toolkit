@@ -7,7 +7,9 @@ var DashboardPage = {
 };
 
 DashboardPage.initialize = function() {
-    $('#loading-modal').foundation('reveal', 'open');
+    //if (!HostStore.hostSummary.summarySet) {
+        $('#loading-modal').foundation('reveal', 'open');
+    //}
     DashboardPage.dashboardTopics = [
         'store.change.host_status',
         'store.change.host_info',
@@ -32,4 +34,10 @@ DashboardPage._dataStoreReturned = function(topic, data) {
     }
 };
 
+/*
+$( document ).on( "pagechange", function() {
+        //$('#loading-modal').foundation('reveal', 'close');
+        $('#loading-modal').hide(); 
+             });
+*/
 DashboardPage.initialize();

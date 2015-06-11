@@ -15,6 +15,12 @@ use Data::Dumper;
 
 my $cgi = CGI->new();
 
+my $remote_user = $cgi->remote_user();
+my $auth_type = $cgi->auth_type();
+my $authenticated = 0;
+$authenticated = 1 if ($auth_type ne '');
+
+
 print $cgi->header('text/html');
 
 my $tt = Template->new({
@@ -43,6 +49,7 @@ my $vars = {};
 $vars->{'page'} = $page;
 $vars->{'css'} = $css;
 $vars->{'js_files'} = $js_files;
-
+$vars->{'authenticated'} = $authenticated;
+$vars->{'remote_user'} = $remote_user;
 $tt->process('page.html', $vars) || die $tt->error(), "\n";
 

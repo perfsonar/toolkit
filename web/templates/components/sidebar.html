@@ -1,7 +1,9 @@
 
         <aside class="sidebar">
-            <nav>
+        <nav>
+            [% IF authenticated %]
                 [% INCLUDE host/sidebar_host_health.html %]
+            [% END %]
                 [% INCLUDE host/sidebar_host_status.html %]
                     
                 <h3 class="sidebar__heading"><i class="fa fa-wrench"></i> &nbsp; On-demand testing tools</h3>
