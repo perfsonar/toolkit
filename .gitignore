@@ -1,2 +1,4 @@
-#Ignore mac hidden file
+#i Ignore mac hidden file
 .DS_Store
+# Ignore quilt patches
+.pc
