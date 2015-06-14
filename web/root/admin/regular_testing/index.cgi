@@ -575,8 +575,6 @@ sub fill_variables_keywords {
         my $min = $popular_keywords->{ $frequencies[$#frequencies] };
 
         foreach my $keyword ( sort { lc($a) cmp lc($b) } keys %$popular_keywords ) {
-            next unless ( $keyword =~ /^project:/ );
-
             my $class;
 
             if ( $max == $min ) {
@@ -1246,70 +1244,27 @@ sub lookup_servers_cache {
 
     my $project_keyword = "project:" . $keyword;
 
-    # Find out which hLSes contain services with the keywords we want (this is,
-    # i think, the best we can do with the cache, if a service is in an hLS and
-    # that hLS has a certain set of keywords in it, we assume that service has
-    # that set of keywords).
-    my %hlses = ();
-
-    open(HLS_CACHE_FILE, "<", $conf{cache_directory}."/list.hls") or $logger->debug("Couldn't open ".$conf{cache_directory}."/list.hls");
-    while(<HLS_CACHE_FILE>) {
-        chomp;
-
-        my ($url, $name, $type, $description, $keywords) = split(/\|/, $_);
-
-        next unless ($keywords);
-
-        #$logger->debug("Found hLS $url/$name/$type/$description/$keywords");
-        foreach my $curr_keyword (split(/,/, $keywords)) {
-            #$logger->debug("hLS $url has keyword $curr_keyword($project_keyword)");
-            if ($curr_keyword eq $project_keyword) {
-                #$logger->debug("hLS $url has keyword $keyword. Adding to hlses hash");
-                $hlses{$url} = 1;
-            }
-        }
-    }
-    close(HLS_CACHE_FILE);
-
-    # Find out which services are contained in the hLSes found above.
-    my %services = ();
-
-    open(HLS_MAP_FILE, "<", $conf{cache_directory}."/list.hlsmap");
-    while(<HLS_MAP_FILE>) {
-        chomp;
-
-        my ($url, $hosts) = split(/\|/, $_);
-
-        #$logger->debug("Checking hLS $url which has hosts '$hosts'");
-        next unless $hlses{$url};
-        #$logger->debug("hLS $url was found");
-
-        foreach my $curr_addr (split(',', $hosts)) {
-            #$logger->debug("hLS $url has service $curr_addr");
-            $services{$curr_addr} = 1;
-        }
-    }
-    close(HLS_MAP_FILE);
-
-    # Find out which services are in hLSes that contain the keyword we're
-    # looking for.
     my @hosts = ();
 
     open(SERVICE_FILE, "<", $conf{cache_directory}."/".$service_cache_file);
     while(<SERVICE_FILE>) {
         chomp;
 
-        my ($url, $name, $type, $description) = split(/\|/, $_);
+        my ($url, $name, $type, $description, $keyword_list) = split(/\|/, $_);
 
-        #$logger->debug("Found service $url");
-
-        next unless $services{$url};
-
-        #$logger->debug("service $url is in the set to return");
+        my @keywords = split ',', $keyword_list;
+        my $kw_found = 0;
+        foreach my $kw(@keywords){
+            if($kw eq $project_keyword){
+                $kw_found = 1;
+                last;
+            }
+        }
+        next unless($kw_found);
 
         push @hosts, { addresses => [ $url ], name => $name, description => $description };
     }
-    close(HLS_MAP_FILE);
+    close(SERVICE_FILE);
 
     my ( $mtime ) = ( stat( $conf{cache_directory}."/".$service_cache_file ) )[9];
 

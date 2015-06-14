@@ -88,6 +88,17 @@
         </tr>
         
         <tr>
+            <td style="width: 200px">Memory</td>
+            <td>
+		[% IF memory >= 4 %]
+		<div>[% memory %]GB</div>
+		[% ELSE %]
+		<div style="color:red">[% memory %]GB (< recommended 4GB)</div>
+		[% END %]
+            </td>
+        </tr>
+        
+        <tr>
         <td style="width: 200px">Globally registered</td>
         <td>
 		[% IF ! global_reg.defined %]
@@ -108,6 +119,7 @@
 	<table class="basic_table">
 		<tr><th  style="width: 600px" colspan=2>Services Offered</th></tr>
 	[% FOREACH service IN services.values %]
+		[% NEXT IF service.name == "iperf3" %]
 		[% IF service.name == "ndt"; service.name = "Network Diagnostic Tester (NDT)"; service.url = "http://software.internet2.edu/ndt/"; END %]
 		[% IF service.name == "npad"; service.name = "Network Path and Application Diagnosis (NPAD)"; service.url = "http://www.psc.edu/networking/projects/pathdiag/"; END %]
 		[% IF service.name == "regular_testing"; service.name = "Regular Testing"; service.url = "http://www.perfsonar.net"; END %]

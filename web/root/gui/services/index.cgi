@@ -8,7 +8,7 @@ use Template;
 use POSIX;
 use Data::Dumper;
 use JSON::XS;
-
+use Sys::MemInfo qw(totalmem);
 use FindBin qw($RealBin);
 
 my $basedir = "$RealBin/";
@@ -229,7 +229,8 @@ if ($format eq "json") {
             synchronized => $ntp->is_synced(),
         },
         meshes => get_meshes(),
-        globally_registered => $is_registered
+        globally_registered => $is_registered,
+        host_memory => int((&totalmem()/(1024*1024*1024) + .5)) #round to nearest GB
     );
 
     print $cgi->header('application/json');
@@ -256,6 +257,7 @@ else {
     $vars{mtu}     = $external_address_mtu;
     $vars{ntp_sync_status}     = $ntp->is_synced();
     $vars{global_reg} 		= $is_registered;
+    $vars{memory} = int((&totalmem()/(1024*1024*1024) + .5)); #round to nearest GB
     set_sidebar_vars( { vars => \%vars } );
 
     print $cgi->header;

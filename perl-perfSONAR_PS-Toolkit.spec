@@ -13,11 +13,11 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  2 
+%define relnum  12 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
-Version:		3.5
+Version:		3.4.2
 Release:		%{relnum}.%{disttag}
 Summary:		perfSONAR_PS Toolkit
 License:		Distributable, see LICENSE
@@ -349,6 +349,12 @@ cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/ls_registration_daem
 #Remove old pS-NPToolkit-* community from admin_info (removal added in version 3.4)
 grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrative_info > /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp
 mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
+
+#Set bundle type and version
+grep -v "bundle" /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf > /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
+echo "bundle_type  perfsonar-toolkit" >> /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
+echo "bundle_version  %{version}" >> /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
+mv /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
 
 #Make sure that the administrator_info file gets reloaded
 /opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl 2> /dev/null

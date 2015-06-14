@@ -85,7 +85,7 @@ sub get_cached_keywords {
     my ( $self, @args ) = @_;
     my $parameters = validateParams( @args, {} );
 
-    my $res = open( CACHE, "<", $self->{CACHE_DIRECTORY} . "/list.hls" );
+    my $res = open( CACHE, "<", $self->{CACHE_DIRECTORY} . "/list.keywords" );
 
     return (-1, "Couldn't open keyword cache") unless ( $res );
 
@@ -95,18 +95,15 @@ sub get_cached_keywords {
         chomp;
         my @fields = split( /\|/ );
 
-        next unless ( $fields[4] );
+        next unless ( $fields[1] );
 
-        my @keywords = split( /,/, $fields[4] );
-        foreach my $keyword ( @keywords ) {
-            $keywords{$keyword} = 0 unless ( $keywords{$keyword} );
-
-            $keywords{$keyword}++;
-        }
+        $keywords{$fields[1]} = 0 unless ( $keywords{$fields[1]} );
+        #Add line below back to get word cloud effect
+        #$keywords{$fields[1]}++;
     }
     close( CACHE );
 
-    my ( $mtime ) = ( stat( $self->{CACHE_DIRECTORY}."/list.hls" ) )[9];
+    my ( $mtime ) = ( stat( $self->{CACHE_DIRECTORY}."/list.keywords" ) )[9];
 
     return (0, { time => $mtime, keywords => \%keywords });
 }
