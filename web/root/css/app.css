@@ -2007,8 +2007,9 @@ to put the stuff inside. */
 }
 
 /* Modals */
-.reveal-modal {
+.reveal-modal.xlarge {
   text-align: center;
+  max-width:none;
 }
 
 .reveal-modal__heading {

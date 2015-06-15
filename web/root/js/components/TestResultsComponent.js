@@ -30,7 +30,7 @@ TestResultsComponent._setTestResults = function( topic ) {
     var data = {};
     data.test_results = TestStore.getTests();
     for(var i=0; i<data.test_results; i++) {
-        data[i].rowID = i;
+        data.test_results[i].rowID = i;
     }
     data.ma_url = encodeURIComponent(TestResultsComponent.ma_url);
     data.num_test_results = data.test_results.length || 'None';
@@ -67,25 +67,30 @@ TestResultsComponent.ipToID = function(ip) {
 // onclick="showResultsGraph({{source_host}}, {{destination_host }}, {{../ma_url}})">
     // test-results-graph-iframe
 //
-TestResultsComponent.showResultsGraph = function(src, dst, ma_url) {
+TestResultsComponent.showResultsGraph = function(container, src, dst, ma_url, rowID) {
     // first, clear the URL of the existing iframe
-    $("#test-results-graph-iframe").attr('src', '');
+//$("#test-results-graph-iframe").attr('src', '');
     var url = "/serviceTest/graphWidget.cgi?source=" + src;
     url += "&dest=" + dst + "&url=" + ma_url;
-    //$("#test-results-graph-iframe").attr('src', url);
-    $('<iframe />', {
+    
+     $('<iframe />', {
         name: 'Graph Frame',
-        id:   'test-results-graph-iframe-dynamic',
+        id:   'test-results-graph-iframe-' + rowID,
         src: url,
         width: '100%',
-        height: '70%'
-    }).appendTo('#dialogGraphContainer');
+        height: '692px'
+        //height: '80%'
+    }).appendTo(container);
+    
     return false;
 };
 
-TestResultsComponent.closeFrame = function() {
-    $('#test-results-graph-iframe-dynamic').src = '';
-    $('#test-results-graph-iframe-dynamic').remove();
+TestResultsComponent.closeFrame = function(iframe) {
+    if (iframe === undefined) {
+        iframe = '#test-results-graph-iframe-dynamic';
+    }
+    $(iframe).src = '';
+    $(iframe).remove();
 };
 
 TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_id) {

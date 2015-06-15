@@ -100,6 +100,7 @@ HostStore._createSummaryTopic = function() {
 HostStore._setSummaryData = function (topic, data) {
     if (topic == 'store.change.host_status') {
         var data = HostStore.getHostStatus();
+        //console.log('host_status', data);
         jQuery.extend(HostStore.hostSummary.data, data);
         HostStore.hostSummary.statusSet = true;
     } else if (topic == 'store.change.host_info') {

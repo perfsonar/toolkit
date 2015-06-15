@@ -97,6 +97,10 @@ HostStatusSidebarComponent._setHealthStatus = function( topic ) {
     var data = HostStore.getHealthStatus();
     var health_values = HostStatusSidebarComponent._getHealthVariables(data);
 
+    if ( $("#sidebar-health-template").length == 0 ) {
+        return;
+    }
+    
     var health_template = $("#sidebar-health-template").html();
     var template = Handlebars.compile(health_template);
 
