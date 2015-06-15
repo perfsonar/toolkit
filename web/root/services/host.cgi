@@ -79,6 +79,7 @@ $router->add_method($status_method);
 my $health_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            => "get_health",
     description     =>  " Retrieves host health information",
+    auth_required   => 1,
     callback        => sub {$host_info->get_system_health();}
 );
 
