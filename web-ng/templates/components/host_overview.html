@@ -1,0 +1,24 @@
+
+            [% INCLUDE js/host_overview.js %]
+            <!-- <script src="js/host_overview.js"></script> -->
+            <div class="host-overview overview">
+                <h2 class="overview--title"><i class="fa fa-map-marker"></i> <span id="primary_hostname"></span> <!-- perfsonar-dev.grnoc.iu.edu --> <small id="display_primary_ipv4_address">at <span class="font-bold"><span id="primary_ipv4_address"></span><!-- 140.188.44.162 --></span></small></h2>
+                <dl class="overview--list">
+                    <dt>Organization:</dt>
+                    <dd><!-- GlobalNOC --><span id="host_organization"></span></dd>
+                    <dt>Address:</dt>
+                    <dd><!-- Bloomington, IN 47401 (USA) --><span id="host_street_address"></span></dd> <span id="map_link"></span> <!-- <a href="http://stats.es.net/ServicesDirectory/" target="_blank">map</a> --></dd>
+                    <dt>Administrator:</dt>
+                    <dd><span id="host_administrator"></span> <!-- Michael Johnson <a href="mailto:mj82@grnoc.iu.edu">mj82@grnoc.iu.edu</a> --></dd>
+                </dl>
+                <a class="overview--edit" href="configuration"><i class="fa fa-pencil"></i> Edit</a>
+
+                <div class="key">
+                <ul class="key__items">
+                    <li class="key__item key__item--normal"><i class="fa fa-map-marker"></i> Normal</li>
+                    <li class="key__item key__item--vm"><i class="fa fa-map-marker"></i> Virtual Machine (VM)</li>
+                    <li class="key__item key__item--small"><i class="fa fa-map-marker"></i> Small Node</li>
+                </ul>
+            </div>
+        </div>
+        

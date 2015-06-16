@@ -74,6 +74,7 @@ Requires:		perl(Scalar::Util)
 Requires:		perl(Socket)
 Requires:		perl(Storable)
 Requires:		perl(Sys::Hostname)
+Requires:		perl(Sys::Statistics::Linux)
 Requires:		perl(Template)
 Requires:		perl(Term::ReadLine)
 Requires:		perl(Time::HiRes)
@@ -465,6 +466,7 @@ fi
 %config(noreplace) %{install_base}/etc/*
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web/*
+%{install_base}/web-ng/*
 %config(noreplace) %{install_base}/web/root/gui/services/etc/web_admin.conf
 %{install_base}/templates/*
 %{install_base}/dependencies
