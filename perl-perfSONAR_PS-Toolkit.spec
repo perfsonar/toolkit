@@ -466,6 +466,7 @@ fi
 %config(noreplace) %{install_base}/etc/*
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web/*
+%{install_base}/web-ng/*
 %config(noreplace) %{install_base}/web/root/gui/services/etc/web_admin.conf
 %{install_base}/templates/*
 %{install_base}/dependencies
