@@ -12,10 +12,10 @@ cat > /etc/httpd/conf.d/toolkit_root_redirect.conf <<EOF
 # the hostname, or vice versa.
 RewriteEngine     on
 RewriteCond       %{HTTP_HOST} =""
-RewriteRule       ^/$    http://%{SERVER_ADDR}/toolkit/
+RewriteRule       ^/$    http://%{SERVER_ADDR}/toolkit-ng/
 
 RewriteCond       %{HTTP_HOST} !=""
-RewriteRule       ^/$    http://%{HTTP_HOST}/toolkit/
+RewriteRule       ^/$    https://%{HTTP_HOST}/toolkit-ng/
 EOF
 
 #######################
