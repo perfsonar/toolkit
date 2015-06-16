@@ -1,24 +1,30 @@
-# perfSONAR Toolkit Next Generation
+# perfSONAR Toolkit
 
 This repository contains scripts and GUIs included with the Toolkit distribution of perfSONAR. A Toolkit includes a full operating system with a consistent environment in terms of default system tunings, firewalls, and software configurations. It also includes GUIs used to manage the Toolkit system and display measurement results. 
 
-To use the Next Generation web UI, checkout the "toolkit-ng" branch
-
 ##Getting the Code
-You may checkout the code with the following commands. For now, doing it manually is the best approach:
+You may checkout the code with the following command:
 
 ```
 git clone --recursive https://github.com/perfsonar/toolkit.git
-# Switch to the toolkit-ng branch
-git checkout toolkit-ng toolkit-ng/
-# Switch to the toolkit-ng branch for the shared libraries
-cd toolkit-ng/shared
-git checkout toolkit-ng
 ```
 
 Note the use of the `--recursive` option to ensure any submodule trees are included in the clone.
 
-You will need to copy/adapt the apache config under `scripts/apache-toolkit_web_gui.conf`
+##Building and Installing
+
+To install the code on your system run:
+
+```bash
+make install
+```
+
+##Packaging
+You may create a source tarball of this code with the following:
+
+```bash
+make dist
+```
 
 ##Using the *shared* Submodule
 This repository contains a [git submodule](http://git-scm.com/book/en/v2/Git-Tools-Submodules) to the perfSONAR [shared](https://github.com/perfsonar/perl-shared) repository. This submodule is used to access common perfSONAR libraries. You will find a number of symbolic links to these modules under *lib*. The use of a submodule has a few implications when working with the code in this repository:
@@ -37,10 +43,6 @@ This repository contains a [git submodule](http://git-scm.com/book/en/v2/Git-Too
     git commit -a -m "Updating to latest shared"
     git push
     ```
-* You may need to specify the branch to push to:
-```
-git push -u origin toolkit-ng
-```
 * If you want to include a new file from the *shared* submodule, create a symbolic link under *lib*. For example, if you were to add a reference to the  *perfSONAR_PS::Utils::DNS* module you would run the following:
 
     ```bash
@@ -49,20 +51,4 @@ git push -u origin toolkit-ng
     ln -s ../../../shared/lib/perfSONAR_PS/Utils/DNS.pm DNS.pm
     ```
 For more information on using the submodule, see the *shared/README.md* file or access it [here](https://github.com/perfsonar/perl-shared/blob/master/README.md) 
-
-##Building and Installing
-NOTE: The build pieces are not complete (and were cloned from the old toolkit branch) -- ignore.
-To install the code on your system run:
-
-```bash
-make install
-```
-
-##Packaging
-NOTE: This is not ready, do not attempt.
-You may create a source tarball of this code with the following:
-
-```bash
-make dist
-```
 

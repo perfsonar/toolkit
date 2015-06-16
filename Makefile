@@ -1,5 +1,5 @@
-PACKAGE=perfSONAR_PS-Toolkit-ng
-ROOTPATH=/opt/perfsonar_ps/toolkit-ng
+PACKAGE=perfSONAR_PS-Toolkit
+ROOTPATH=/opt/perfsonar_ps/toolkit
 VERSION=3.4.2
 RELEASE=12
 
@@ -28,15 +28,15 @@ rpminstall:
 	tar ch --exclude '*.svn*' --exclude=web/* --exclude=etc/* --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
 	tar c --exclude '*.svn*' web | tar x -C ${ROOTPATH}
 	for i in `cat MANIFEST | grep ^etc`; do  mkdir -p `dirname $(ROOTPATH)/$${i}`; if [ -e $(ROOTPATH)/$${i} ]; then install -m 640 -c $${i} $(ROOTPATH)/$${i}.new; else install -m 640 -c $${i} $(ROOTPATH)/$${i}; fi; done
-	tar xzf ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit-ng.tar.gz -C ${ROOTPATH}/web/root/content/
-	rm -f ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit-ng.tar.gz
+	tar xzf ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz -C ${ROOTPATH}/web/root/content/
+	rm -f ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz
 
 install:
-	for i in `ls ./scripts`; do sed -i "s|/opt/perfsonar_ps/toolkit-ng|${ROOTPATH}|g" ./scripts/$${i}; done
-	for i in `ls ./init_scripts`; do sed -i "s|/opt/perfsonar_ps/toolkit-ng|${ROOTPATH}|g" ./init_scripts/$${i}; done
+	for i in `ls ./scripts`; do sed -i "s|/opt/perfsonar_ps/toolkit|${ROOTPATH}|g" ./scripts/$${i}; done
+	for i in `ls ./init_scripts`; do sed -i "s|/opt/perfsonar_ps/toolkit|${ROOTPATH}|g" ./init_scripts/$${i}; done
 	mkdir -p ${ROOTPATH}
 	tar ch --exclude '*.svn*' --exclude=web/* --exclude=etc/* --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
 	tar c --exclude '*.svn*' web | tar x -C ${ROOTPATH}
 	for i in `cat MANIFEST | grep ^etc`; do  mkdir -p `dirname $(ROOTPATH)/$${i}`; if [ -e $(ROOTPATH)/$${i} ]; then install -m 640 -c $${i} $(ROOTPATH)/$${i}.new; else install -m 640 -c $${i} $(ROOTPATH)/$${i}; fi; done
-	tar xzf ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit-ng.tar.gz -C ${ROOTPATH}/web/root/content/
-	rm -f ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit-ng.tar.gz
+	tar xzf ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz -C ${ROOTPATH}/web/root/content/
+	rm -f ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz
