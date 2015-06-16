@@ -1,0 +1,112 @@
+<div class="mainContainer">
+<div class="subTitle1">Scheduled Tests Configuration Tool</div>
+
+<input type="hidden" id="nptoolkit_is_modified" value="[% is_modified %]" />
+
+<input type="hidden" id="throughput_tests" value="[% throughput_tests %]" />
+<input type="hidden" id="owamp_tests" value="[% owamp_tests %]" />
+<input type="hidden" id="pinger_tests" value="[% pinger_tests %]" />
+
+[% IF owamp_port_range && owamp_port_range > 0 && owamp_port_usage > owamp_port_range %]
+<div class="status error">This host has owamp test ports configured ([% owamp_ports.min_port %]-[% owamp_ports.max_port %]). However, based on the number of hosts being tested against, at least [% owamp_port_usage %] ports need to be available.</div>
+[% END %]
+
+[% IF bwctl_port_range > 0 && bwctl_port_usage > bwctl_port_range %]
+<div class="status error">This host has bwctl test ports configured ([% bwctl_ports.min_port %]-[% bwctl_ports.max_port %]). However, based on the number of hosts being tested against, at least [% bwctl_port_usage %] ports need to be available.</div>
+[% END %]
+
+[% IF throughput_tests > 0 && owamp_tests > 0 %]
+<div class="status warning">This host is configured with both bandwidth and one-way latency tests. Bandwidth tests can interfere with one-way latency tests.</div>
+[% END %]
+
+[% INCLUDE status_messages.html %]
+
+[% IF throughput_tests > 0 %]
+[% IF network_percent_used >= 100 %]
+[% SET network_percentage_color = "red" %]
+[% ELSIF network_percent_used > 80 %]
+[% SET network_percentage_color = "#DDC022" %]
+[% ELSE %]
+[% SET network_percentage_color = "green" %]
+[% END %]
+<div style="color:[% network_percentage_color %]; margin:10px 0;">Throughput tests will be running [% network_percent_used %]% of the time</div>
+[% END %]
+
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save_config()">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset_config()">
+
+<div id="tests">
+
+<table style="width: 750px" class="basic_table">
+  [% IF tests.size == 0 %]
+  <tr>
+  <th>Scheduled Tests</th>
+  </tr>
+  <tr>
+  <td>
+  <center>No Tests Configured</center>
+  </td>
+  </tr>
+  [% ELSE %]
+  <tr>
+  <th colspan="3">Scheduled Tests</th>
+  </tr>
+  [% FOREACH test_info IN tests %]
+  <tr>
+    [% IF test_info.type == "owamp"; test_info.type_desc = "One-Way Delay Test"; END %]
+    [% IF test_info.type == "pinger"; test_info.type_desc = "Ping Test"; END %]
+    [% IF test_info.type == "bwctl/throughput"; test_info.type_desc = "Throughput Test"; END %]
+    [% IF test_info.type == "traceroute"; test_info.type_desc = "Traceroute Test"; END %]
+    <td [% IF test_info.id == current_test.id %] class="selected" [% END %] style="width: 400px">
+        [% IF test_info.disabled %]
+        <del>
+        [% END %]
+        [% test_info.description %]
+        [% IF test_info.disabled %]
+        </del>
+        [% END %]
+    </td>
+    <td [% IF test_info.id == current_test.id %] class="selected" [% END %] style="width: 150px">[% test_info.type_desc %]</td>
+    <td [% IF test_info.id == current_test.id %] class="selected" [% END %]>
+	<a href="#" onClick="show_test('[% test_info.id %]')">Configure</a>
+        <a href="#" onClick="remove_test('[% test_info.id %]')">Delete</a>
+        [% IF test_info.disabled %]
+        <a href="#" onClick="enable_test('[% test_info.id %]')">Enable</a>
+        [% ELSE %]
+        <a href="#" onClick="disable_test('[% test_info.id %]')">Disable</a>
+        [% END %]
+    </td>
+  </tr>
+  [% END %]
+  [% END %]
+</table>
+
+</div>
+
+<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_bwctl_throughput_test_dialog(null, '', 21600, 20, 'iperf3,iperf', 'tcp', 0, 0, 0, '', '');" value="Add New Throughput Test">
+<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_pinger_test_dialog(null, '', 1000, 10, 1, 300, 0, 255, '', '');" value="Add New Ping Test">
+<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_owamp_test_dialog(null, '', 0.1, 0, 108000, 6000, 0.001, 10, '', '')" value="Add New One-Way Delay Test">
+<input class="button" type="submit" name="display_add_test_button" id="display_add_test_button" onClick="display_traceroute_test_dialog(null, '', 600, 40, '', '', '', '')" value="Add New Traceroute Test">
+<br>
+
+<div id="test_configuration">
+[% IF current_test; INCLUDE test_configuration.tmpl; END %]
+</div>
+
+[% IF current_test %]
+<div class="subTitle1">Find Hosts To Test With</div>
+
+<div id="known_hosts">
+[% INCLUDE known_hosts.tmpl %]
+</div>
+
+<div id="known_keywords">
+[% INCLUDE known_keywords.tmpl %]
+</div>
+[% END %]
+
+<br>
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save_config()">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset_config()">
+
+</div>

@@ -1,0 +1,50 @@
+
+<!-- ********************************************
+    Services module
+******************************************** -->
+
+<div class="module services">
+    <header class="module-header">
+        <h2 class="module-header__title color-bg-accent">Services</h2>
+        <a class="module-header__action" href="/toolkit/admin/enabled_services/" target="_blank">Enable/disable services &nbsp; <i class="fa fa-cog"></i></a>
+    </header>
+<div id="host_services"></div>
+<script id="host-services-template" type="text/x-handlebars-template">
+    <table>
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th>Status</th>
+                <th>Version</th>
+                <th>Ports</th>
+                <th>Service logs</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each services}}
+            <tr class="services--row">
+                <td width="400">
+                    {{#if has_details}}
+                        <a class="services--title-link" href="#">{{name}} <i class="fa fa-caret-down"></i></a>
+                    {{else}}
+                    <span class="services--title">{{name}}</span>
+                    {{/if}}
+                    <ul class="services--list">
+                        {{#each addresses}}
+                        <li><a href="{{this}}">{{this}}</a></li>
+                        {{/each}}
+                        {{#if ports_formatted}}
+                        <li>Test ports: {{ports_formatted}}</li>
+                        {{/if}}
+                    </ul>
+                </td>
+                <td><span class="{{status_class}}">{{status}}</span></td>
+                <td>{{version}}</td>
+                <td>{{daemon_port}}</td>
+                <td><a href="#">View</a></td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</script>
+</div>

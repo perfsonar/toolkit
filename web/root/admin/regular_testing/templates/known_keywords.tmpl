@@ -1,0 +1,37 @@
+[% USE date %]
+
+<table class="basic_table">
+<tr><th style="width: 600px">Communities This Host Participates In (Click To Find Community Hosts)</th></tr>
+<tr><td>
+<ul class="tagcloud">
+[% FOREACH keyword IN member_keywords %]
+    <li><a class="tag5" href="#" onClick="handle_lookup_host('[% current_test.id %]', '[% keyword %]');">[% keyword %]</a></li>
+[% END %]
+</ul>
+</td></tr>
+</table>
+
+<table class="basic_table">
+<tr><th style="width: 600px">Other Communities [% IF known_keywords_check_time %] As Of [% date.format(known_keywords_check_time, '%Y-%m-%d %H:%M') %] [% END %] (Click To Find Community Hosts)</th></tr>
+[% IF known_keywords_check_time < (date.now - 24*60*60) %]
+<span dojoType="dijit.Tooltip" connectId="keyword_results_out_of_date_msg" toggle="fade">
+This error likely means that the caching program is either not running or is failing.<br>
+Make sure that cron is running and that the host has network connectivity.<br>
+If both are working and it's still failing, email the user list.
+</span>
+<tr><td><div id="keyword_results_out_of_date_msg" style="color:red">The list of popular keywords may be out of date. Ensure that the caching program is correctly running.</div></tr></td>
+[% END %]
+
+<tr><td>
+<ul class="tagcloud">
+[% FOREACH keyword_info IN known_keywords %]
+    <li><a class="tag[% keyword_info.class %]" href="#" onClick="handle_lookup_host('[% current_test.id %]', '[% keyword_info.keyword %]')">[% keyword_info.keyword %]</a></li>
+[% END %]
+</ul>
+</td></tr>
+</table>
+
+<p>
+<input type="text" id="community" value="" />
+<input class="button" type="submit" name="lookup_hosts_button" id="lookup_hosts_button" onClick="handle_lookup_host('[% current_test.id %]', dojo.byId('community').value);" value="Lookup Community Hosts">
+</p>

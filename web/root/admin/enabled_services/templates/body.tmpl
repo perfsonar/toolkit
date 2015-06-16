@@ -1,0 +1,223 @@
+<div class="mainContainer">
+<div class="subTitle1">Enabled Services Configuration Tool</div>
+
+[% INCLUDE status_messages.html %]
+<div id="web_admin_error" class="error status" style="display:none;">[% error_message %]</div>
+<div id="web_admin_status" class="success status" style="display:none;">[% status_message %]</div>
+
+<div class="rcontainer">
+
+
+<script type="text/javascript">
+function handle_save() {
+	display_waiting_dialog("Saving Configuration And Restarting Services");
+
+	var send_content = dijit.byId("services_form").attr('value');
+	for(var tmp in send_content) {
+		if (send_content[tmp] == '') {
+			send_content[tmp] = "off";
+		}
+	}
+	send_content["fname"] = "save_config";
+
+	dojo.xhrGet ({
+			url: '[% self_url %]',
+			handleAs: "json",
+			content: send_content,
+			timeout: 90000,
+			load: function(response, io_args) { hide_waiting_dialog(); handle_save_response(response, io_args); },
+			error: function (response, io_args) { hide_waiting_dialog(); dojo.byId('web_admin_error').innerHTML="Problem saving configuration"; },
+			mimetype: "text/json" 
+		});
+}
+
+function handle_save_response(response, io_args) {
+	if (response['error']) {
+		dojo.byId('web_admin_error').innerHTML=response['error'];
+        dojo.style(dojo.byId('web_admin_error'), "display", "block");
+		dojo.byId('web_admin_status').innerHTML="";
+        dojo.style(byId('web_admin_status'), "display", "none");
+	} else if (response['message']) {
+		dojo.byId('web_admin_error').innerHTML="";
+        dojo.style(dojo.byId('web_admin_error'), "display", "none");
+		dojo.byId('web_admin_status').innerHTML=response['message'];
+        dojo.style(dojo.byId('web_admin_status'), "display", "block");
+		dojo.byId('nptoolkit_is_modified').value = 0;
+	} else {
+		dojo.byId('web_admin_error').innerHTML="Received unknown response from service";
+        dojo.style(dojo.byId('web_admin_error'), "display", "block");
+        dojo.style(dojo.byId('web_admin_status'), "display", "none");
+		dojo.byId('web_admin_status').innerHTML="";
+	}
+}
+
+function handle_reset() {
+	dojo.xhrGet ({
+			url: '[% self_url %]',
+			handleAs: "json",
+			content: { 'fname': "reset_config" },
+			timeout: 15000,
+			load: handle_reset_response,
+			error: function (response, io_args) { dojo.byId('web_admin_error').innerHTML="Problem reseting configuration"; },
+			mimetype: "text/json" 
+		});
+}
+
+function handle_reset_response(response, io_args) {
+	if (response['error']) {
+		dojo.byId('web_admin_error').innerHTML=response['error'];
+	} else if (response['services']) {
+		for(var srv in response['services']) {
+			console.log("Service: "+srv);
+
+			var box = dijit.byId(srv);
+			if (!box) {
+				continue;
+			}
+
+			if (response['services'][srv]) {
+				box.attr('value', true);
+			}
+			else {
+				box.attr('value', false);
+			}
+		}
+
+		dojo.byId('nptoolkit_is_modified').value = 0;
+	} else {
+		dojo.byId('web_admin_error').innerHTML="Received unknown response from service";
+	}
+}
+
+function select_bandwidth_services() {
+	var bandwidth_services = [ "ndt", "npad", "bwctl"  ];
+	var latency_services = [ "owamp" ];
+	var disabled_services = [ ];
+
+	dojo.byId('nptoolkit_is_modified').value = 1;
+
+	for (var i = 0; i < disabled_services.length; i++) {
+		var service = disabled_services[i];
+
+		var checkbox = dijit.byId(service);
+		if (!checkbox) {
+			console.log("Did not find "+service);
+			continue;
+		}
+
+		checkbox.attr('value', false);
+	}
+
+	for (var i = 0; i < latency_services.length; i++) {
+		var service = latency_services[i];
+
+		var checkbox = dijit.byId(service);
+		if (!checkbox) {
+			continue;
+		}
+
+		checkbox.attr('value', false);
+	}
+
+	for (var i = 0; i < bandwidth_services.length; i++) {
+		var service = bandwidth_services[i];
+
+		var checkbox = dijit.byId(service);
+		if (!checkbox) {
+			continue;
+		}
+
+		checkbox.attr('value', true);
+	}
+}
+
+function select_latency_services() {
+	var bandwidth_services = [ "ndt", "npad", "bwctl"  ];
+	var latency_services = [ "owamp" ];
+	var disabled_services = [ ];
+
+	dojo.byId('nptoolkit_is_modified').value = 1;
+
+	for (var i = 0; i < disabled_services.length; i++) {
+		var service = disabled_services[i];
+
+		var checkbox = dijit.byId(service);
+		if (!checkbox) {
+			continue;
+		}
+
+		checkbox.attr('value', false);
+	}
+
+	for (var i = 0; i < bandwidth_services.length; i++) {
+		var service = bandwidth_services[i];
+
+		var checkbox = dijit.byId(service);
+		if (!checkbox) {
+			continue;
+		}
+
+		checkbox.attr('value', false);
+	}
+
+	for (var i = 0; i < latency_services.length; i++) {
+		var service = latency_services[i];
+
+		var checkbox = dijit.byId(service);
+		if (!checkbox) {
+			continue;
+		}
+
+		checkbox.attr('value', true);
+	}
+}
+</script>
+
+<input type="hidden" id="nptoolkit_is_modified" value="0" />
+
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save()">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset()">
+
+<form id="services_form" dojoType="dijit.form.Form">
+<table class="basic_table">
+        <tr>
+        <th></th><th>Services</th><th>Description</th>
+	</tr>
+	<tr>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="yum_cron" name="yum_cron" [% IF services.yum_cron.enabled %] checked="checked" [% END %] /></td>
+	<td style="padding: 0px 10px 0px 0px;">Automatic Updates</td>
+	<td>
+	<div class="dijitHidden"><span id="yumAutoReadMore" data-dojo-type="dijit.Dialog" data-dojo-props="title:'Important Considerations for Automatic Updates'">Automatic updates include all perfSONAR, operating system and third-party packages. Enabling this feature will help keep the latest security fixes on the system, but keep in mind it is possible some updates may break your host unexpectedly. Specifically kernel updates may break NDT and NPAD if a non-web100 version is applied. See this <a href="http://www.perfsonar.net/about/faq/#Q25">FAQ</a> for more information. The following rule of thumb may be useful when considering whether to enable this feature: <blockquote><i>If the machine is a critical server, for which unplanned downtime of a service on the machine can not be tolerated, then you should not use automatic updates. Otherwise, you <b>may</b> choose to use them.</i></blockquote> It is also important to note that automatic updates do not perform all required system reboots or service restarts. Enabling this feature still requires close monitoring of the host to make sure all updates are applied completely and properly.</span></div>
+	Automatically updates all software on a nightly basis. <a href="#" onclick="dijit.byId('yumAutoReadMore').show();">Click here</a> for important information regarding this service.
+	</td>
+	</tr>
+	<tr>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="bwctl" name="bwctl" [% IF services.bwctl.enabled %] checked="checked" [% END %] /></td>
+	<td>BWCTL</td>
+	<td>Allows clients at other sites to run Throughput, Traceroute and Latency tests to this host</td>
+	</tr>
+	<tr>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="owamp" name="owamp" [% IF services.owamp.enabled %] checked="checked" [% END %] /></td>
+	<td>OWAMP</td>
+	<td>Allows clients at other sites to run One-Way Latency tests to this host</td>
+	</tr>
+	<tr>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="ndt" name="ndt" [% IF services.ndt.enabled %] checked="checked" [% END %] /></td>
+	<td>NDT</td>
+	<td>Allows clients at other sites to run NDT tests to this host.</td>
+	</tr>
+	<tr>
+	<td><input type="checkbox" onClick="dojo.byId('nptoolkit_is_modified').value='1'" dojoType="dijit.form.CheckBox" value="on"  id="npad" name="npad" [% IF services.npad.enabled %] checked="checked" [% END %] /></td>
+	<td>NPAD</td>
+	<td>Allows clients at other sites to run NPAD tests to this host.</td>
+	</tr>
+</table>
+</form>
+
+<input class="button" type="submit" name="select_bandwidth" id="select_bandwidth" value="Only Enable Bandwidth Services" onClick="select_bandwidth_services()">
+<input class="button" type="submit" name="select_latency" id="select_latency" value="Only Enable Latency Services" onClick="select_latency_services()">
+<br>
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_save()">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_reset()">
+
+</div>

@@ -1,0 +1,192 @@
+[% title = "pS-Performance Node" %]
+[% IF site_name; SET title = "${title} For ${site_name}"; END %]
+[% connector = "In"; %]
+[% IF city; SET title = "${title} ${connector} ${city}"; SET connector = ","; END %]
+[% IF state; SET title = " ${title} ${connector} ${state}"; SET connector = ","; END %]
+[% IF country; SET title = " ${title} ${connector} ${country}"; END %]
+
+
+
+[% INCLUDE header.tmpl %]
+
+<div class="mainContainer">
+<div class="rContainer">
+<div class="subTitle1">[% title %]</div>
+
+<table class="basic_table">
+        <tr>
+        <th colspan=2 style="width: 400px">Host Information</th>
+        </tr>
+        <tr>
+        <td style="width: 200px">Organization Name</td><td>[% site_name %]</td>
+        </tr>
+        <tr>
+        <td>City, State, Country</td><td>[% city %], [% state %], [% country %]</td>
+        </tr>
+        <tr>
+        <td>Postal Code</td><td>[% zipcode %]</td>
+        </tr>
+        <tr>
+        <td>Latitude,Longitude</td><td>[% latitude %],[% longitude %]</td>
+        </tr>
+        <tr>
+        <td>Administrator Name</td><td>[% admin_name %]</td>
+        </tr>
+        <tr>
+        <td>Administrator Email</td><td><a href="mailto:[% admin_email %]">[% admin_email %]</a></td>
+        </tr>
+</table>
+
+<table class="basic_table">
+
+[% IF keywords %]
+<table class="basic_table">
+<tr><th style="width: 600px">Communities This Host Participates In</th></tr>
+<tr><td>
+<ul class="tagcloud">
+[% FOREACH keyword IN keywords %]
+    <li><a class="tag5">[% keyword %]</a></li>
+[% END %]
+</ul>
+</td></tr>
+</table>
+[% END %]
+
+<table class="basic_table">
+        <tr>
+        <th colspan=2 style="width: 400px">Host Status</th>
+        </tr>
+        <tr>
+            <td style="width: 200px">Primary Address</td>
+            <td>
+		[% IF external_address %]
+			[% external_address %]
+		[% ELSE %]
+		<div style="color:red">No External Address Configured</div>
+		[% END %]
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 200px">MTU</td>
+            <td>
+		[% IF mtu %]
+			[% mtu %]
+		[% ELSE %]
+		<div style="color:red">Could not retrieve MTU</div>
+		[% END %]
+            </td>
+        </tr>
+       <tr>
+            <td style="width: 200px">NTP Status</td>
+            <td>
+		[% IF ntp_sync_status %]
+		<div>Synced</div>
+		[% ELSE %]
+		<div style="color:red">Not synced</div>
+		[% END %]
+            </td>
+        </tr>
+        
+        <tr>
+            <td style="width: 200px">Memory</td>
+            <td>
+		[% IF memory >= 4 %]
+		<div>[% memory %]GB</div>
+		[% ELSE %]
+		<div style="color:red">[% memory %]GB (< recommended 4GB)</div>
+		[% END %]
+            </td>
+        </tr>
+        
+        <tr>
+        <td style="width: 200px">Globally registered</td>
+        <td>
+		[% IF ! global_reg.defined %]
+		<div style="color: orange">Unknown</div>
+		[% ELSE %]
+		   [% IF global_reg %]
+		   <div>Yes</div>
+		   [% ELSE %]
+		   <div style="color:red">No</div>
+		   [% END %]
+		[% END %]
+            </td>
+        </tr>
+
+</table>
+
+<div class="rcontainer">
+	<table class="basic_table">
+		<tr><th  style="width: 600px" colspan=2>Services Offered</th></tr>
+	[% FOREACH service IN services.values %]
+		[% NEXT IF service.name == "iperf3" %]
+		[% IF service.name == "ndt"; service.name = "Network Diagnostic Tester (NDT)"; service.url = "http://software.internet2.edu/ndt/"; END %]
+		[% IF service.name == "npad"; service.name = "Network Path and Application Diagnosis (NPAD)"; service.url = "http://www.psc.edu/networking/projects/pathdiag/"; END %]
+		[% IF service.name == "regular_testing"; service.name = "Regular Testing"; service.url = "http://www.perfsonar.net"; END %]
+		[% IF service.name == "esmond"; service.name = "esmond Measurement Archive"; service.url = "http://software.es.net/esmond/"; END %]
+		[% IF service.name == "owamp"; service.name = "One-Way Ping Service (OWAMP)"; service.url = "http://software.internet2.edu/owamp/"; END %]
+		[% IF service.name == "bwctl"; service.name = "Bandwidth Test Controller (BWCTL)"; service.url = "http://software.internet2.edu/bwctl/"; END %]
+		<tr>
+		<td class="top">[% service.name %]<sup>[<a target="_blank" href="[% service.url %]">1</a>]</sup></td>
+		<td class="top">
+		[% IF service.is_running == "yes" %]
+			<font color="green">Running</font>
+		[% ELSIF service.is_running == "no" %]
+			<font color="red">Not Running</font>	
+		[% ELSIF service.is_running == "disabled" %]
+			Disabled
+		[% END %]
+		[% IF service.name == "bwctl" && !ntp_sync_status %]
+             <br/><font color="red"> NTP not synced </font>
+        [% END %]
+
+		</td>
+		</tr>
+
+		<tr><td class="bottom" colspan=2>
+		[% IF service.addresses %]
+		<ul>
+		[% FOREACH address IN service.addresses %]
+			[% IF address.search('^https?://') %]
+                <li><a rel="external" target="_blank" href="[% address %]">[% address %]</a>
+			[% ELSE %]
+				<li>[% address %]
+			[% END %]
+		[% END %]
+		[% IF service.testing_ports %]
+		<li>Testing Ports:
+                    [%- FOREACH port_range IN service.testing_ports -%]
+                        [%- IF port_range != service.testing_ports.first -%], [%- END -%][%- port_range.min_port -%]-[%- port_range.max_port -%][%- IF port_range.type -%]([%- port_range.type -%])[%- END -%]
+                    [%- END -%]
+                </li>
+		[% END %]
+		</ul>
+		[% END %]
+		</td>
+		</tr>
+	[% END %]
+	</table>
+
+	<table class="basic_table">
+		<tr><th style="width: 400px" colspan=2>Software Versions</th></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.perfsonar.net">pS-Performance Toolkit</a></td><td>[% toolkit_version %] ([% toolkit_rpm_version %])</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://software.internet2.edu/bwctl/">BWCTL</a></td><td>[% services.bwctl.version %]</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://software.internet2.edu/owamp/">OWAMP</a></td><td>[% services.owamp.version %]</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://software.internet2.edu/ndt/">NDT</a></td><td>[% services.ndt.version %]</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.psc.edu/networking/projects/pathdiag/">NPAD</a></td><td>[% services.npad.version %]</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://software.es.net/esmond/">esmond Measurement Archive</a></td><td>[% services.esmond.version %]</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.perfsonar.net">perfSONAR-PS Regular Testing Daemon</a></td><td>[% services.regular_testing.version %]</td></tr>
+		<tr><td><a rel="external" target="_blank" href="http://www.perfsonar.net">iperf3</a></td><td>[% services.iperf3.version %]</td></tr>
+	</table>
+
+</div>
+
+<div class="mainjsonlink">
+    This page also available as <a href="index.cgi?format=json">JSON</a>
+</div>
+
+</div>
+</div>
+
+[% INCLUDE footer.tmpl %]
+

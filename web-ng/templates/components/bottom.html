@@ -1,0 +1,18 @@
+
+
+    </div> <!-- end initial wrapper div -->
+    
+
+    <!-- <script src="js/vendor/jquery.js"></script> -->
+    <!-- <script src="js/jquery/jquery-1.11.2.min.js"></script> -->
+<script src="js/foundation.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+    $(document).foundation();
+</script>
+
+    [% FOREACH file IN js_files %]
+    <script src="[% file %]"></script>
+    [% END %]
+</body>
+</html>

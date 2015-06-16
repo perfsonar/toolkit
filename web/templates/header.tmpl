@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+
+<style type="text/css">
+@import "/toolkit/content/dojo/dijit/themes/tundra/tundra.css";
+</style>
+
+<link rel="stylesheet" href="/toolkit/content/style.css" type="text/css" media="screen" />
+
+<script type="text/javascript" src="/toolkit/content/dojo/dojo/dojo.js" djConfig="parseOnLoad:true"></script>
+<script type="text/javascript" src="/toolkit/content/dojo/dojo/dojo-ps-toolkit.js"></script>
+
+<script>
+dojo.require("dijit.ProgressBar");
+dojo.require("dijit.Dialog");
+dojo.require("dijit.TooltipDialog");
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.form.CheckBox");
+dojo.require("dijit.form.TextBox");
+dojo.require("dijit.form.ValidationTextBox");
+dojo.require("dijit.form.NumberTextBox");
+dojo.require("dijit.form.FilteringSelect");
+dojo.require("dojo.data.ItemFileReadStore");
+dojo.require("dojox.validate.regexp");
+dojo.require("dojox.data.CsvStore");
+dojo.require("dojo/_base/lang");
+dojo.require("dojox/grid/DataGrid");
+dojo.require("dojo/data/ItemFileWriteStore");
+dojo.require("dojo/dom");
+dojo.require("dojo/domReady!");
+
+function display_waiting_dialog(message) {
+	var title = "";
+
+	var dialog_content = "";
+
+	dialog_content += "<div id='dialog_waiting_message'>"+message+"</span>";
+	dialog_content += "<div id='dialog_waiting_progressbar' dojoType='dijit.ProgressBar' indeterminate='true' style='width:400px'></div>";
+	//dialog_content += "<div id='dialog_waiting_progressbar' dojoType='dijit.ProgressBar' style='width:200px'></div>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "dialog_waiting" });
+
+	dialog.closeButtonNode.style.display='none';
+
+ 	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "dialog_waiting" ));
+
+	dialog.show();
+}
+
+function hide_waiting_dialog() {
+	dijit.byId('dialog_waiting').hide();
+}
+
+function handle_cgi_ajax_call(loading_message, error_message, set_body, fname, args) {
+	if (loading_message) {
+		display_waiting_dialog(loading_message);
+	}
+
+	var session_id_input = dojo.byId("session_id");
+	var session_id;
+	if (session_id_input) {
+		session_id = session_id_input.value;
+	}
+
+	dojo.xhrGet ({
+			url: '[% self_url %]',
+			content: { fname: fname, args: args, session_id: session_id },
+			timeout: 90000,
+			load: dojo.hitch(null,
+					function(do_set_body, do_hide_waiting, response, io_args) {
+						if (do_hide_waiting) { hide_waiting_dialog(); }
+						if (set_body) { handle_set_body_results(response, io_args) };
+					},
+					set_body, loading_message
+					),
+
+			error: dojo.hitch(null,
+					function(do_hide_waiting, response, io_args) {
+						if (do_hide_waiting) { hide_waiting_dialog(); }
+						dojo.byId('web_admin_error').innerHTML=error_message+": "+response;
+					},
+					loading_message
+					)
+		});
+}
+
+function handle_set_body_results(results, io_args) {
+	var body = dijit.byId("body");
+	body.setContent(results);
+}
+
+function check_need_save(e) {
+	var input = dojo.byId("nptoolkit_is_modified");
+	if (input) {
+		if (parseInt(input.value)) {
+			var mesg = "The configuration has been modified, but has not been saved. Navigating away from this page will lose these changes. Are you sure you want to leave?";
+			e.returnValue = mesg;
+			return mesg;
+		}
+	}
+
+	return null;
+}
+
+function init_check_need_save_function() {
+	dojo.connect(window, "onbeforeunload", check_need_save);
+}
+
+function strip_trailing_slash(url) {
+	if (url.charAt(url.length - 1) != '/') {
+		return url;
+	}
+
+	return url.substring(0, url.length - 1);
+}
+
+function close_dialog(dialog_name) {
+	dijit.byId(dialog_name).destroyRecursive();
+}
+
+function display_insecure_user_warning_dialog() {
+	var title = "Warning: Using root to login is insecure";
+	var dialog_content = "";
+
+	dialog_content += "<p>";
+	dialog_content += "You are currently logged in using the 'root' user. This can allow expose the root password on insecure networks."
+	dialog_content += "</p>";
+	dialog_content += "<p>";
+	dialog_content += "To fix this problem, you can login to this host via SSH or via the console, and configure a perfSONAR administrative user using the add_psadmin_user command. ";
+	dialog_content += "</p>";
+
+	dialog_content += "<button dojoType='dijit.form.Button' id='insecure_user_warning_ok'>Ok</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "insecure_user_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "insecure_user_dialog" ));
+	dojo.connect(dijit.byId('insecure_user_warning_ok'), 'onClick', function() { dijit.byId('insecure_user_dialog').hide(); });
+
+	dialog.show();
+}
+
+function display_jowping_warning_dialog() {
+	var title = "Warning: The Java OWAMP Client is experimental software";
+	var dialog_content = "";
+
+	dialog_content += "<p>";
+	dialog_content += "The Java OWAMP Client is experimental software that was written as part of the Goole Summer Of Code.";
+	dialog_content += "</p>";
+	dialog_content += "<p>";
+	dialog_content += "The authors are currently looking for people to evaluate the software and write usage documentation.";
+	dialog_content += "</p>";
+
+	dialog_content += "<button dojoType='dijit.form.Button' id='jowping_warning_run_jowping'>Run Java OWAMP Client</button>";
+	dialog_content += "<button dojoType='dijit.form.Button' id='jowping_warning_cancel'>Cancel</button>";
+
+	var dialog = new dijit.Dialog({ title: title, content: dialog_content, id: "jowping_warning_dialog" });
+
+	dojo.connect(dialog, 'hide', dojo.hitch(null, 'close_dialog', "jowping_warning_dialog" ));
+	dojo.connect(dijit.byId('jowping_warning_cancel'), 'onClick', function() { dijit.byId('jowping_warning_dialog').hide(); });
+	dojo.connect(dijit.byId('jowping_warning_run_jowping'), 'onClick', dojo.hitch(null,
+										function() {
+											location.href = "http://"+location.host+"/toolkit/gui/jowping";
+											dijit.byId('jowping_warning_dialog').hide();
+										}
+										)
+			);
+
+	dialog.show();
+}
+
+
+function highlight_selected_menu() {
+	if (dojo.byId("leftSideNavigation") == null) {
+		return;
+	}
+
+	dojo.query("li", dojo.byId("leftSideNavigation")).forEach(
+		function (entry, index, array) {
+			var location_url = strip_trailing_slash(location.href);
+			if (location.pathname == "/") {
+				location_url += "/gui/services";
+			}
+
+			dojo.query("a", entry).forEach(
+				function (link_entry, link_index, link_array) {
+					var link_href = strip_trailing_slash(link_entry.href);
+					if (link_href == location_url) {
+						link_entry.setAttribute("class", "selected");
+					}
+				}
+			);
+		}
+	);
+}
+
+dojo.addOnLoad(highlight_selected_menu);
+dojo.addOnLoad(init_check_need_save_function);
+
+</script>
+
+<title>pS-Performance Node - [% title %]</title>
+</head>
+
+<body class="tundra">
+
+[% IF session_id %]
+<input type="hidden" id="session_id" name="session_id" value="[% session_id %]" />
+[% END %]
+
+[% INCLUDE sidebar.html %]

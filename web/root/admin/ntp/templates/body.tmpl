@@ -1,0 +1,66 @@
+<div class="mainContainer">
+<div class="subTitle1">NTP Configuration Tool</div>
+
+[% INCLUDE status_messages.html %]
+
+<input type="hidden" id="nptoolkit_is_modified" value="[% is_modified %]" />
+
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_cgi_ajax_call('Saving configuration and restarting services...', 'Problem saving configuration or restarting services', true, 'save_config');">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_cgi_ajax_call('Reseting configuration...', 'Problem reseting configuration', true, 'reset_config');">
+<br>
+<input class="button" type="submit" name="display_add_server_button" id="display_add_server_button" onClick="dijit.byId('dialog_add_ntp_server').show()" value="Add NTP Server">
+<input class="button" type="submit" name="select_closest" id="select_closest" value="Select Closest Servers" onClick="handle_cgi_ajax_call('Querying servers to find closest...', 'Problem finding closest ntp services', true, 'select_closest', ['5']);">
+[% IF display_type != "manual" %]
+<input class="button" type="submit" name="manual_select" id="manual_select" value="Manually Select Servers" onClick="set_display_type('manual')">
+[% END %]
+
+<div id="servers">
+<table class="group_table">
+[% IF display_type == "manual" %]
+<h2>Known NTP Servers</h2>
+        <tr>
+        <th></th><th>Server</th><th>Description</th><th>Actions</th>
+        </tr>
+        [% FOREACH server_info IN servers %]
+        <tr>
+                <td align="center"><input type="checkbox" dojoType="dijit.form.CheckBox" onClick="toggle_server('[% server_info.address %]', null)" id="[% server_info.address %]_toggle" [% IF server_info.selected %] checked="checked" [% END %] /></td>
+		<td>
+		[% IF server_info.failed_connect %]
+                <span id="failed_[% server_info.address %]"><font color="red">[% server_info.display_address %]</font></span>
+		<span dojoType="dijit.Tooltip" connectId="failed_[% server_info.address %]" toggle="fade">There was a problem contacting this host</span>
+		[% ELSE %]
+                [% server_info.display_address %]
+		[% END %]
+		</td>
+                <td>[% server_info.description %]</td>
+                <td>
+                    <a href="#" onClick="handle_cgi_ajax_call(null, 'Deleted ntp server: [% server_info.address %]', true, 'delete_server', [ '[% server_info.address %]' ]);">Delete</a>
+                </td>
+        </tr>
+        [% END %]
+[% ELSE %]
+<h2>Selected NTP Servers</h2>
+        <tr>
+        <th>Server</th><th>Description</th><th>Actions</th>
+        </tr>
+        [% FOREACH server_info IN servers %]
+	[% IF server_info.selected %]
+        <tr>
+		<td>
+                [% server_info.display_address %]
+		</td>
+                <td>[% server_info.description %]</td>
+                <td>
+                    <a href="#" onClick="handle_cgi_ajax_call(null, 'Removed ntp server: [% server_info.address %]', true, 'toggle_server', [ '[% server_info.address %]', 'off' ]);">Remove</a>
+                </td>
+        </tr>
+	[% END %]
+        [% END %]
+[% END %]
+</table>
+</div>
+
+<input class="button" type="submit" name="save" id="save" value="Save" onClick="handle_cgi_ajax_call('Saving configuration and restarting services...', 'Problem saving configuration or restarting services', true, 'save_config');">
+<input class="button" type="submit" name="reset" id="reset" value="Reset" onClick="handle_cgi_ajax_call('Reseting configuration...', 'Problem reseting configuration', true, 'reset_config');">
+
+</div>
