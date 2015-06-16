@@ -47,7 +47,7 @@ Requires:		perl(English)
 Requires:		perl(Exporter)
 Requires:		perl(Fcntl)
 Requires:		perl(File::Basename)
-Requires:               perl(File::Spec)
+Requires:		perl(File::Spec)
 Requires:		perl(FindBin)
 Requires:		perl(Getopt::Long)
 Requires:		perl(IO::File)
@@ -113,6 +113,8 @@ Requires:		owamp-server
 # Misc performance/performance-related tools
 Requires:		nuttcp
 Requires:		iperf
+Requires:		iperf3
+Requires:		paris-traceroute
 Requires:		tcptrace
 Requires:		coreutils
 Requires:		httpd
