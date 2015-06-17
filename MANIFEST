@@ -126,6 +126,7 @@ lib/perfSONAR_PS/RegularTesting/MeasurementArchives/perfSONARBUOYBase.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/perfSONARBUOYBwctl.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/perfSONARBUOYOwamp.pm
 lib/perfSONAR_PS/RegularTesting/Parsers/Bwctl.pm
+lib/perfSONAR_PS/RegularTesting/Parsers/Bwctl2.pm
 lib/perfSONAR_PS/RegularTesting/Parsers/Iperf.pm
 lib/perfSONAR_PS/RegularTesting/Parsers/Iperf3.pm
 lib/perfSONAR_PS/RegularTesting/Parsers/Owamp.pm
