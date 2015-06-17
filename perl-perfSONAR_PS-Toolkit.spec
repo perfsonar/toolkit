@@ -105,6 +105,7 @@ Requires:       perl-perfSONAR_PS-Toolkit-Install-Scripts
 Requires:		esmond
 Requires:		bwctl-client
 Requires:		bwctl-server
+Requires:               bwctl2
 Requires:		ndt
 Requires:		npad
 Requires:		owamp-client
