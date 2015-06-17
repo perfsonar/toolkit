@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use CGI;
+use CGI qw( url );
 use Log::Log4perl qw(get_logger :easy :levels);
 use Template;
 #use POSIX;
@@ -20,6 +20,11 @@ my $auth_type = $cgi->auth_type();
 my $authenticated = 0;
 $authenticated = 1 if ($auth_type ne '');
 
+my $full_url = url( -path=>1, -query=>1);
+my $https_url = $full_url;
+#if (!$full_url =~ /^https/) {
+    $https_url =~ s/^http:/https:/i;
+#}
 
 print $cgi->header('text/html');
 
@@ -51,5 +56,6 @@ $vars->{'css'} = $css;
 $vars->{'js_files'} = $js_files;
 $vars->{'authenticated'} = $authenticated;
 $vars->{'remote_user'} = $remote_user;
+$vars->{'https_url'} = $https_url;
 $tt->process('page.html', $vars) || die $tt->error(), "\n";
 

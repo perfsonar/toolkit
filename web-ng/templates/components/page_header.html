@@ -8,7 +8,12 @@
                 <h1><a href="">perfSONAR Toolkit <span id="header_hostname"></span></a></h1>
             </div>
             <nav class="app-nav">
-                <ul>
+            <ul>
+                [% IF !authenticated %]
+                <li class="nav-dropdown">
+                    <a href="[% https_url %]" class="login_link">Log in</a>
+                    </li>
+                    [% END %]
                     <li class="nav-dropdown">
                         <a href="/toolkit/admin/administrative_info/" target="_blank"><i class="fa fa-cog"></i>Configuration</a>
                     </li>
