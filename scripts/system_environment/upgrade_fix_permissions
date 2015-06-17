@@ -34,4 +34,5 @@ chown -R owamp:owamp /var/lib/owamp
 mkdir -p /var/run/web_admin_sessions
 chown -R apache /var/run/web_admin_sessions
 
-chown -R apache /var/lib/cacti/rra
+#Try cacti data, but don't complain if it's not there
+chown -R apache /var/lib/cacti/rra 2> /dev/null
