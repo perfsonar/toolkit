@@ -13,7 +13,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.2.a1 
+%define relnum  0.3.a1 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -488,6 +488,13 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/bwctl.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/ndt.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/owamp.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/administrative_info/index.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/regular_testing/index.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/psTracerouteViewer/index.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/services/index.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_3}
