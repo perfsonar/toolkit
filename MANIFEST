@@ -413,6 +413,7 @@ web-ng/root/js/vendor/modernizr.js
 web-ng/root/services/host.cgi
 web-ng/templates/components/bottom.html
 web-ng/templates/components/dashboard.html
+web-ng/templates/components/explanation.html
 web-ng/templates/components/host_overview.html
 web-ng/templates/components/main.html
 web-ng/templates/components/page_header.html
