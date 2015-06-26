@@ -25,12 +25,14 @@ upgrade:
 
 rpminstall:
 	mkdir -p ${ROOTPATH}
-	tar ch --exclude '*.git*' --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
+	tar ch --exclude '*.git*' --exclude=web/* --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
+	tar c --exclude '*.git*' web | tar x -C ${ROOTPATH}
 	tar xzf ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz -C ${ROOTPATH}/web/root/content/
 	rm -f ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz
 
 install:
 	mkdir -p ${ROOTPATH}
-	tar ch --exclude '*.git*' --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
+	tar ch --exclude '*.git*' --exclude=web/* --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
+	tar c --exclude '*.git*' web | tar x -C ${ROOTPATH}
 	tar xzf ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz -C ${ROOTPATH}/web/root/content/
 	rm -f ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz
