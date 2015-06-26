@@ -108,7 +108,6 @@ Requires:		bwctl-client
 Requires:		bwctl-server
 Requires:		bwctl2
 Requires:		ndt
-Requires:		npad
 Requires:		owamp-client
 Requires:		owamp-server
 
@@ -140,7 +139,6 @@ Requires(post):	esmond
 Requires(post):	bwctl-client
 Requires(post):	bwctl-server
 Requires(post):	ndt
-Requires(post):	npad
 Requires(post):	owamp-client
 Requires(post):	owamp-server
 
