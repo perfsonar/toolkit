@@ -45,6 +45,7 @@ TestStore._retrieveList = function() {
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
+                Dispatcher.publish('store.change.test_list');
             }
         });
 };
@@ -60,7 +61,8 @@ TestStore._retrieveTests = function() {
                 Dispatcher.publish('store.change.tests');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
+                console.log(errorThrown);
+                Dispatcher.publish('store.change.tests');
             }
         });
 };
@@ -76,7 +78,7 @@ TestStore._retrieveServices = function() {
                 Dispatcher.publish('store.change.host_services');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
+                console.log(errorThrown);
             }
         });
 };

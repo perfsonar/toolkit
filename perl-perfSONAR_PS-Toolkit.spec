@@ -13,7 +13,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.4.a1 
+%define relnum  0.6.a1 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -95,6 +95,7 @@ Requires:		perl-perfSONAR_PS-LSCacheDaemon
 Requires:		perl-perfSONAR_PS-LSRegistrationDaemon
 Requires:		perl-perfSONAR_PS-serviceTest
 Requires:		perl-perfSONAR_PS-RegularTesting
+Requires:		perl-perfSONAR_PS-MeshConfig-Agent
 Requires:		perl-perfSONAR_PS-MeshConfig-JSONBuilder
 Requires:       perl-perfSONAR-OPPD-MP-BWCTL
 Requires:       perl-perfSONAR-OPPD-MP-OWAMP
@@ -105,9 +106,8 @@ Requires:       perl-perfSONAR_PS-Toolkit-Install-Scripts
 Requires:		esmond
 Requires:		bwctl-client
 Requires:		bwctl-server
-Requires:               bwctl2
+Requires:		bwctl2
 Requires:		ndt
-Requires:		npad
 Requires:		owamp-client
 Requires:		owamp-server
 
@@ -117,11 +117,12 @@ Requires:		iperf
 Requires:		iperf3
 Requires:		paris-traceroute
 Requires:		tcptrace
+Requires:		xplot-tcptrace
 Requires:		coreutils
 Requires:		httpd
 Requires:		mod_auth_shadow
 Requires:		mod_ssl
-Requires:       nagios-plugins-all
+Requires:		nagios-plugins-all
 Requires:		nscd
 Requires:		yum-cron
 
@@ -138,7 +139,6 @@ Requires(post):	esmond
 Requires(post):	bwctl-client
 Requires(post):	bwctl-server
 Requires(post):	ndt
-Requires(post):	npad
 Requires(post):	owamp-client
 Requires(post):	owamp-server
 

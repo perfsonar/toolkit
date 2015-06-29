@@ -10,12 +10,7 @@ cat > /etc/httpd/conf.d/toolkit_root_redirect.conf <<EOF
 # Redirects requests to "/" to "/toolkit". It's done in this strange way to
 # avoid confusing people who enter an IP address and would get redirected to
 # the hostname, or vice versa.
-RewriteEngine     on
-RewriteCond       %{HTTP_HOST} =""
-RewriteRule       ^/$    http://%{SERVER_ADDR}/toolkit-ng/
-
-RewriteCond       %{HTTP_HOST} !=""
-RewriteRule       ^/$    https://%{HTTP_HOST}/toolkit-ng/
+RedirectMatch ^/$ /toolkit-ng/
 EOF
 
 #######################
