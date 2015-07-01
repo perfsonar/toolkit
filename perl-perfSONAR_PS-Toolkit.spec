@@ -13,7 +13,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.9.a1 
+%define relnum  0.10.a1 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -222,7 +222,9 @@ Requires(post):         system-config-firewall-base
 Requires(post):         chkconfig
 Requires(post):         kernel-devel
 Requires(post):         kernel
-
+Requires(post):         kernel-headers
+Requires(post):         iptables
+Requires(post):         iptables-ipv6
 
 %description security
 Configures IPTables rules and installs fail2ban for perfSONAR Toolkit
