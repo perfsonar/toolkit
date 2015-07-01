@@ -210,6 +210,7 @@ Installs install scripts
 %package security
 Summary:                pS-Performance Toolkit IPTables configuration
 Group:                  Development/Tools
+Requires:               coreutils
 Requires:               kernel-devel
 Requires:               iptables
 Requires:               iptables-ipv6
@@ -223,6 +224,7 @@ Configures IPTables rules and installs fail2ban for perfSONAR Toolkit
 %package sysctl
 Summary:                pS-Performance Toolkit sysctl configuration
 Group:                  Development/Tools
+Requires:               coreutils
 
 %description sysctl
 Configures sysctl for the Toolkit
@@ -230,6 +232,7 @@ Configures sysctl for the Toolkit
 %package ntp
 Summary:                pS-Performance Toolkit ntp configuration
 Group:                  Development/Tools
+Requires:               coreutils
 Requires:    	        ntp
 Requires:               perl-perfSONAR_PS-Toolkit-Library
 Requires(post):         chkconfig
