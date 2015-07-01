@@ -168,6 +168,7 @@ Requires(post):	owamp-server
 Requires(post):	acpid
 Requires(post):	avahi
 Requires(post):	bluez-utils
+Requires(post):	chkconfig
 Requires(post): cpuspeed
 Requires(post):	cups
 Requires(post):	hal
@@ -214,6 +215,7 @@ Requires:               iptables
 Requires:               iptables-ipv6
 Requires:               fail2ban
 Requires(post):         system-config-firewall-base
+Requires(post):         chkconfig
 
 %description security
 Configures IPTables rules and installs fail2ban for perfSONAR Toolkit
@@ -230,6 +232,7 @@ Summary:                pS-Performance Toolkit ntp configuration
 Group:                  Development/Tools
 Requires:    	        ntp
 Requires:               perl-perfSONAR_PS-Toolkit-Library
+Requires(post):         chkconfig
 
 %description ntp
 Configures ntp servers for the Toolkit
@@ -394,11 +397,6 @@ chkconfig --add cassandra
 chkconfig cassandra on
 chkconfig postgresql on
 
-#starting iptables
-chkconfig iptables on
-chkconfig ip6tables on
-chkconfig fail2ban on
-
 %post SystemEnvironment
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
     PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
@@ -430,22 +428,33 @@ fi
 #########################################################################
 service httpd reload || :
 
-%post security
-
+%post ntp
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
     PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
     rm %{_localstatedir}/lib/rpm-state/previous_version
 fi
 
-#if [ $1 -eq 1 ] ; then
-#	echo "Running: configure_firewall install"
-#    %{install_base}/scripts/system_environment/configure_firewall new
-#else
-#    echo "Running: configure_firewall install ${PREV_VERSION}"
-#    %{install_base}/scripts/system_environment/configure_firewall upgrade ${PREV_VERSION}
-#fi
+if [ $1 -eq 1 ] ; then
+	echo "Running: configure_ntpd new"
+    %{install_base}/scripts/configure_ntpd new
+else
+    echo "Running: configure_ntpd upgrade ${PREV_VERSION}"
+    %{install_base}/scripts/configure_ntpd upgrade ${PREV_VERSION}
+fi
+
+#enabling ntp service
+chkconfig ntpd on
+
+%post security
+
+#configuring firewall
 echo "Running: configure_firewall install"
-%{install_base}/scripts/system_environment/configure_firewall install
+%{install_base}/scripts/configure_firewall install
+
+#enabling services
+chkconfig iptables on
+chkconfig ip6tables on
+chkconfig fail2ban on
 
 %post sysctl
 
@@ -456,10 +465,10 @@ fi
 
 if [ $1 -eq 1 ] ; then
 	echo "Running:  new"
-    %{install_base}/scripts/system_environment/configure_sysctl new
+    %{install_base}/scripts/configure_sysctl new
 else
     echo "Running: configure_sysctl upgrade ${PREV_VERSION}"
-    %{install_base}/scripts/system_environment/configure_sysctl upgrade ${PREV_VERSION}
+    %{install_base}/scripts/configure_sysctl upgrade ${PREV_VERSION}
 fi
 
 %post service-watcher
@@ -523,7 +532,7 @@ fi
 %config(noreplace) %{install_base}/etc/default_system_firewall_settings.conf
 %config(noreplace) %{install_base}/etc/old_firewall_settings.conf
 %config(noreplace) %{install_base}/etc/perfsonar_firewall_settings.conf
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_firewall
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_firewall
 
 %files Install-Scripts
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
@@ -531,13 +540,12 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
 
 %files sysctl
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_sysctl
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_sysctl
 
 %files ntp
 %config(noreplace) %{install_base}/etc/ntp_known_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_ntpd
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/enable_ntpd
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_ntpd
 %{install_base}/templates/config/ntp_conf.tmpl
 
 %files Library
