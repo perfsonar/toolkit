@@ -13,7 +13,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.8.a1 
+%define relnum  0.9.a1 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -128,6 +128,7 @@ Requires:		yum-cron
 
 Obsoletes:		perl-perfSONAR_PS-TopologyService
 
+Requires(pre):	rpm
 # Anaconda requires a Requires(post) to ensure that packages are installed before the %post section is run...
 Requires(post):	perl
 Requires(post):	perl-perfSONAR_PS-LSCacheDaemon
@@ -183,6 +184,7 @@ Requires(post):	pcsc-lite
 Requires(post):	php-common
 Requires(post):	readahead
 Requires(post):	rootfiles
+Requires(pre):	rpm
 Requires(post):	rsyslog
 Requires(post):	setup
 Requires(post):	smartmontools
@@ -211,12 +213,16 @@ Installs install scripts
 Summary:                pS-Performance Toolkit IPTables configuration
 Group:                  Development/Tools
 Requires:               coreutils
-Requires:               kernel-devel
 Requires:               iptables
 Requires:               iptables-ipv6
 Requires:               fail2ban
+Requires(pre):          rpm
+Requires(post):         coreutils
 Requires(post):         system-config-firewall-base
 Requires(post):         chkconfig
+Requires(post):         kernel-devel
+Requires(post):         kernel
+
 
 %description security
 Configures IPTables rules and installs fail2ban for perfSONAR Toolkit
@@ -225,6 +231,8 @@ Configures IPTables rules and installs fail2ban for perfSONAR Toolkit
 Summary:                pS-Performance Toolkit sysctl configuration
 Group:                  Development/Tools
 Requires:               coreutils
+Requires(pre):          rpm
+Requires(post):         coreutils
 
 %description sysctl
 Configures sysctl for the Toolkit
@@ -233,9 +241,11 @@ Configures sysctl for the Toolkit
 Summary:                pS-Performance Toolkit ntp configuration
 Group:                  Development/Tools
 Requires:               coreutils
-Requires:    	        ntp
+Requires:               ntp
 Requires:               perl-perfSONAR_PS-Toolkit-Library
+Requires(pre):          rpm
 Requires(post):         chkconfig
+Requires(post):         coreutils
 
 %description ntp
 Configures ntp servers for the Toolkit
@@ -243,8 +253,11 @@ Configures ntp servers for the Toolkit
 %package service-watcher
 Summary:                pS-Performance Toolkit service watcher
 Group:                  Development/Tools
+Requires:               coreutils
 Requires:               ntp
 Requires:               perl-perfSONAR_PS-Toolkit-Library
+Requires(pre):          rpm
+Requires(post):         coreutils
 
 %description service-watcher
 Installs the service-watcher package
@@ -254,31 +267,36 @@ Installs the service-watcher package
 /usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 
 %pre SystemEnvironment
+/usr/sbin/groupadd perfsonar 2> /dev/null || :
+/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %pre sysctl
+/usr/sbin/groupadd perfsonar 2> /dev/null || :
+/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %pre security
+/usr/sbin/groupadd perfsonar 2> /dev/null || :
+/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %pre ntp
+/usr/sbin/groupadd perfsonar 2> /dev/null || :
+/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
-if ! id -u "perfsonar" >/dev/null 2>&1 ; then
-    /usr/sbin/groupadd perfsonar 2> /dev/null || :
-    /usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
-fi
-
 %pre service-watcher
+/usr/sbin/groupadd perfsonar 2> /dev/null || :
+/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
