@@ -209,6 +209,7 @@ Installs install scripts
 %package security
 Summary:                pS-Performance Toolkit IPTables configuration
 Group:                  Development/Tools
+Requires:               kernel-devel
 Requires:               iptables
 Requires:               iptables-ipv6
 Requires:               fail2ban
