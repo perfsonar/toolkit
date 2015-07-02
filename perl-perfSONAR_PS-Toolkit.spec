@@ -13,7 +13,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.10.a1 
+%define relnum  0.11.rc1 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
