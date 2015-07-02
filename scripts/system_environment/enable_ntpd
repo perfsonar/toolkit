@@ -1,7 +1,0 @@
-#!/bin/bash
-
-#######################
-# Enable NTP. Does not matter if this is running in an 'upgrade' or 'new
-# install' context.
-#######################
-/sbin/chkconfig ntpd on
