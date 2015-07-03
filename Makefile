@@ -33,9 +33,13 @@ rpminstall:
 
 install:
 	mkdir -p ${ROOTPATH}
-	tar ch --exclude '*.git*' --exclude=web/* --exclude=etc/* --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
-	tar c --exclude '*.git*' web | tar x -C ${ROOTPATH}
-	tar c --exclude '*.git*' web-ng | tar x -C ${ROOTPATH}
-        for i in `cat MANIFEST | grep ^etc`; do  mkdir -p `dirname $(ROOTPATH)/$${i}`; if [ -e $(ROOTPATH)/$${i} ]; then install -m 640 -c $${i} $(ROOTPATH)/$${i}.new; else install -m 640 -c $${i} $(ROOTPATH)/$${i}; fi; done
+	tar ch --exclude '*.git*' --exclude=web/* --exclude=web-ng/* --exclude=etc/* --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
+	tar c --exclude '*.git*' web | tar x -C ${ROOTPATH} 
+	tar c --exclude '*.git*' web-ng | tar x -C ${ROOTPATH} 
+	for i in `cat MANIFEST | grep ^etc`; do  mkdir -p `dirname $(ROOTPATH)/$${i}`; if [ -e $(ROOTPATH)/$${i} ]; then install -m 755 -c $${i} $(ROOTPATH)/$${i}.new; else install -m 755 -c $${i} $(ROOTPATH)/$${i}; fi; done
 	tar xzf ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz -C ${ROOTPATH}/web/root/content/
 	rm -f ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz
+	chown -R apache:perfsonar ${ROOTPATH}
+	chmod -R 755 ${ROOTPATH}
+	chmod -R 755 ${ROOTPATH}/web
+	chmod -R 755 ${ROOTPATH}/web-ng
