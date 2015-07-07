@@ -16,11 +16,7 @@ use Data::Dumper;
 my $cgi = CGI->new();
 
 my $remote_user = $cgi->remote_user();
-my $auth_type = '';
-
-if($cgi->auth_type()){
-    $auth_type = $cgi->auth_type();
-}
+my $auth_type = $cgi->auth_type();
 my $authenticated = 0;
 $authenticated = 1 if ($auth_type ne '');
 
@@ -33,7 +29,7 @@ my $https_url = $full_url;
 print $cgi->header('text/html');
 
 my $tt = Template->new({
-        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
+        INCLUDE_PATH => '../templates/'
     }) || die "$Template::ERROR\n";
 
 
