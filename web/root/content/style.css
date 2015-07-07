@@ -541,7 +541,7 @@ a[rel="external"], a.external {
 .info {
     color: #00529B;
     background-color: #BDE5F8;
-    background-image: url('info.png');
+    background-image: url('/toolkit/content/images/info.png');
 }
 
 .success {

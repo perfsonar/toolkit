@@ -1,0 +1,17 @@
+<h3 class="sidebar__heading"><i class="fa fa-bar-chart"></i> &nbsp; Health</h3>
+<div id="sidebar_health_status"></div>
+<script id="sidebar-health-template" type="text/x-handlebars-template">
+<ul class="sidebar-list">
+    {{#each health_values}}
+    <li>
+        <div class="sidebar-list__parameter">{{label}}</div>
+        <div class="sidebar-list__value" id="{{id}}">{{value}}</div>
+        </li>
+    {{else}}
+        <li>
+            <div class="sidebar-list__parameter">Not available</div>
+            <div class="sidbar-list__value"></div>
+        </li>
+    {{/each}}  
+</ul>
+</script>
