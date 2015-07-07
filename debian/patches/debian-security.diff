@@ -1,5 +1,5 @@
---- a/scripts/system_environment/configure_firewall
-+++ b/scripts/system_environment/configure_firewall
+--- a/scripts/configure_firewall
++++ b/scripts/configure_firewall
 @@ -10,11 +10,11 @@
  OWAMPPARAMS=("testports")
  OWAMPDEFAULTS=("8760:9960")

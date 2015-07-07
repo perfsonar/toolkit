@@ -1,5 +1,5 @@
---- a/scripts/system_environment/configure_ntpd
-+++ b/scripts/system_environment/configure_ntpd
+--- a/scripts/configure_ntpd
++++ b/scripts/configure_ntpd
 @@ -45,7 +45,7 @@
  
  file=/etc/ntp/step-tickers
@@ -16,11 +16,3 @@
 -    /opt/perfsonar_ps/toolkit/scripts/autoselect_ntp_servers
 +    /usr/lib/perfsonar/scripts/autoselect_ntp_servers
  fi
---- a/scripts/system_environment/enable_ntpd
-+++ b/scripts/system_environment/enable_ntpd
-@@ -4,4 +4,4 @@
- # Enable NTP. Does not matter if this is running in an 'upgrade' or 'new
- # install' context.
- #######################
--/sbin/chkconfig ntpd on
-+update-rc.d ntp defaults
