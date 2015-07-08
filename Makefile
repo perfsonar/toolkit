@@ -36,3 +36,4 @@ install:
 	tar c --exclude '*.git*' web | tar x -C ${ROOTPATH}
 	tar xzf ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz -C ${ROOTPATH}/web/root/content/
 	rm -f ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz
+

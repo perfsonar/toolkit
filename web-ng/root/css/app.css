@@ -82,6 +82,13 @@
   float: right;
 }
 
+/* Lists add to ul and ol */
+
+.no-list {
+  list-style: none;
+  padding-left: 0;
+}
+
 /* Visibility classes */
 .hidden {
   display: none;
@@ -1057,6 +1064,19 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
   background-color: #f7f7f7;
   border-left: 1px solid #ddd;
   float: right;
+  position: relative;
+}
+
+.sidebar:after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: -1px;
+  bottom: -99em;
+  height: 99em;
+  width: 100%;
+  background: #f7f7f7;
+  border-left: 1px solid #ddd;
 }
 
 @media screen and (max-width: 850px) {
@@ -1867,21 +1887,22 @@ to put the stuff inside. */
   display: inline-block;
   text-decoration: none;
   padding: .5em 1em;
-  color: #a9b1b5;
+  color: #0089ff;
 }
 .nav-tabs__panel a:hover {
   background-color: #f1f1f1;
-  color: #383f44;
+  color: #a5d5ff;
 }
 
 .nav-tabs__panel--active a {
   background-color: #ddd;
   cursor: default;
-  color: #0089ff;
+  color: #999;
   border-color: #0089ff;
 }
 .nav-tabs__panel--active a:hover {
   background-color: #ddd;
+  color: #999;
 }
 
 /*------------------------------------------------------------------------------
@@ -1891,7 +1912,27 @@ to put the stuff inside. */
 ------------------------------------------------------------------------------*/
 .config__form {
   padding: 2em 0;
-  margin-bottom: 3em;
+  margin-bottom: 6em;
+}
+
+/*
+  Select2 add servers - Adding a bunch of rules to override conflicts between
+  Foundation and Select2 plugin
+*/
+
+.select2-search__field {
+  box-shadow: none !important;
+  transition: none !important;  
+}
+
+.servers input,
+.servers select,
+.servers li {
+  margin: 0;
+}
+
+.select2-container .select2-search--inline .select2-search__field {
+  margin: 0 !important;
 }
 
 /*------------------------------------------------------------------------------
@@ -1902,7 +1943,6 @@ to put the stuff inside. */
 .communities,
 .servers {
   padding: 1em 0;
-  border-bottom: 1px solid #ddd;
   margin-bottom: 1em;
 }
 .communities:after,
@@ -1925,7 +1965,7 @@ to put the stuff inside. */
 
 .communities__popular input,
 .servers__popular input {
-  margin: 0;
+  /*margin: 0;*/
 }
 
 @media screen and (max-width: 850px) {
@@ -1970,6 +2010,16 @@ to put the stuff inside. */
   margin: 1em 0;
 }
 
+.servers__options-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5em 0;
+}
+
+.servers__options-item {
+  padding: .5em 0;
+}
+
 /* Override Foundation's switch color */
 .switch input:checked + label {
   background-color: #32a066;
@@ -1990,26 +2040,9 @@ to put the stuff inside. */
   position: relative;
 }
 
-.sidebar {
-  position: relative;
-}
-
-.sidebar:after {
-  content: "";
-  display: block;
-  position: absolute;
-  left: -1px;
-  bottom: -99em;
-  height: 99em;
-  width: 100%;
-  background: #f7f7f7;
-  border-left: 1px solid #ddd;
-}
-
 /* Modals */
-.reveal-modal.xlarge {
+.reveal-modal {
   text-align: center;
-  max-width:none;
 }
 
 .reveal-modal__heading {
