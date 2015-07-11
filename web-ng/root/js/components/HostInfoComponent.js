@@ -13,7 +13,9 @@ HostInfoComponent.initialize = function() {
 
 HostInfoComponent._setStatus = function( topic ) {
     var data = HostStore.getHostSummary();
-    $("#primary_hostname").text(data.external_address.address);
+    var hostInfo = HostStore.getHostInfo();
+    //$("#primary_hostname").text(data.external_address.address);
+    $("#primary_hostname").text(hostInfo.toolkit_name);
     $("#header_hostname").text(" on " + data.external_address.address);
     $(document).prop('title', 'perfSONAR Toolkit | ' + data.external_address.address);
 
