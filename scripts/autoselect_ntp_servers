@@ -42,7 +42,7 @@ foreach my $key ( keys %{$ntp_servers} ) {
 
 my @succeeded_hosts = ();
 
-( $status, my $results ) = ping({ hostnames => \@servers, timeout => 5 });
+( $status, my $results ) = ping({ hostnames => \@servers, timeout => 60 });
 
 # Grab the hosts that we successfully ping'd
 foreach my $host (keys %$results) {
@@ -55,7 +55,7 @@ foreach my $host (keys %$results) {
 @succeeded_hosts = sort { $a->{rtt} <=> $b->{rtt} } @succeeded_hosts;
 
 # Make sure we only grab the maximum number
-if ( $MAXIMUM_SERVERS ) {
+if ( $MAXIMUM_SERVERS && scalar(@succeeded_hosts) > $MAXIMUM_SERVERS) {
     splice @succeeded_hosts, $MAXIMUM_SERVERS;
 }
 

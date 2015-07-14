@@ -93,7 +93,7 @@ Requires:		perl(warnings)
 #perfSONAR packages
 Requires:		perl-perfSONAR_PS-LSCacheDaemon
 Requires:		perl-perfSONAR_PS-LSRegistrationDaemon
-Requires:		perl-perfSONAR_PS-serviceTest
+Requires:		perl-perfSONAR-graphs
 Requires:		perl-perfSONAR_PS-RegularTesting
 Requires:		perl-perfSONAR_PS-MeshConfig-Agent
 Requires:		perl-perfSONAR_PS-MeshConfig-JSONBuilder
@@ -133,7 +133,7 @@ Requires(pre):	rpm
 Requires(post):	perl
 Requires(post):	perl-perfSONAR_PS-LSCacheDaemon
 Requires(post):	perl-perfSONAR_PS-LSRegistrationDaemon
-Requires(post):	perl-perfSONAR_PS-serviceTest
+Requires(post):	perl-perfSONAR-graphs
 Requires(post):	perl-perfSONAR_PS-RegularTesting
 
 Requires(post):	esmond

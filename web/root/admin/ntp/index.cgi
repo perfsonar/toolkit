@@ -361,7 +361,7 @@ sub find_closest_servers {
     my $servers = $parameters->{servers};
     my $maximum_number = $parameters->{maximum_number};
 
-    my ( $status, $results ) = ping({ hostnames => $servers, timeout => 5 });
+    my ( $status, $results ) = ping({ hostnames => $servers, timeout => 60 });
     my @failed_hosts = ();
     my @succeeded_hosts = ();
 
@@ -378,7 +378,7 @@ sub find_closest_servers {
 
     # make sure we only grab the maximum number
 
-    if ( $parameters->{maximum_number} ) {
+    if ( $parameters->{maximum_number} && scalar(@succeeded_hosts) > $parameters->{maximum_number}) {
         splice @succeeded_hosts, $maximum_number;
     }
 
@@ -386,3 +386,4 @@ sub find_closest_servers {
 }
 
 1;
+
