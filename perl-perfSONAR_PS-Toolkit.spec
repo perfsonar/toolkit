@@ -91,6 +91,7 @@ Requires:		perl(version)
 Requires:		perl(warnings)
 
 #perfSONAR packages
+Requires:		perfSONAR-Bundles-common
 Requires:		perl-perfSONAR_PS-LSCacheDaemon
 Requires:		perl-perfSONAR_PS-LSRegistrationDaemon
 Requires:		perl-perfSONAR-graphs
@@ -136,6 +137,7 @@ Requires(post):	perl-perfSONAR_PS-LSRegistrationDaemon
 Requires(post):	perl-perfSONAR-graphs
 Requires(post):	perl-perfSONAR_PS-RegularTesting
 
+Requires(post):	perfSONAR-Bundles-common
 Requires(post):	esmond
 Requires(post):	bwctl-client
 Requires(post):	bwctl-server
@@ -163,6 +165,7 @@ Requires:       perl-perfSONAR_PS-Toolkit-sysctl
 Requires:       perl-perfSONAR_PS-Toolkit-service-watcher
 Requires:       perl-perfSONAR_PS-Toolkit-ntp
 Requires:       perl-perfSONAR_PS-Toolkit-Library
+Requires(post):	perfSONAR-Bundles-common
 Requires(post):	Internet2-repo
 Requires(post):	bwctl-server
 Requires(post):	owamp-server
@@ -197,6 +200,7 @@ practices.
 %package Library
 Summary:                pS-Performance Toolkit library
 Group:                  Development/Tools
+Requires:               perfSONAR-Bundles-common
 
 %description Library
 Installs the library files
@@ -216,7 +220,9 @@ Requires:               coreutils
 Requires:               iptables
 Requires:               iptables-ipv6
 Requires:               fail2ban
+Requires:               perfSONAR-Bundles-common
 Requires(pre):          rpm
+Requires(post):         perfSONAR-Bundles-common
 Requires(post):         coreutils
 Requires(post):         system-config-firewall-base
 Requires(post):         chkconfig
@@ -233,8 +239,10 @@ Configures IPTables rules and installs fail2ban for perfSONAR Toolkit
 Summary:                pS-Performance Toolkit sysctl configuration
 Group:                  Development/Tools
 Requires:               coreutils
+Requires:               perfSONAR-Bundles-common
 Requires(pre):          rpm
 Requires(post):         coreutils
+Requires(post):         perfSONAR-Bundles-common
 
 %description sysctl
 Configures sysctl for the Toolkit
@@ -246,6 +254,7 @@ Requires:               coreutils
 Requires:               ntp
 Requires:               perl-perfSONAR_PS-Toolkit-Library
 Requires(pre):          rpm
+Requires(post):         perfSONAR-Bundles-common
 Requires(post):         chkconfig
 Requires(post):         coreutils
 
@@ -259,46 +268,33 @@ Requires:               coreutils
 Requires:               ntp
 Requires:               perl-perfSONAR_PS-Toolkit-Library
 Requires(pre):          rpm
+Requires(post):         perfSONAR-Bundles-common
 Requires(post):         coreutils
 
 %description service-watcher
 Installs the service-watcher package
 
-%pre
-/usr/sbin/groupadd perfsonar 2> /dev/null || :
-/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
-
 %pre SystemEnvironment
-/usr/sbin/groupadd perfsonar 2> /dev/null || :
-/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %pre sysctl
-/usr/sbin/groupadd perfsonar 2> /dev/null || :
-/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %pre security
-/usr/sbin/groupadd perfsonar 2> /dev/null || :
-/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %pre ntp
-/usr/sbin/groupadd perfsonar 2> /dev/null || :
-/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %pre service-watcher
-/usr/sbin/groupadd perfsonar 2> /dev/null || :
-/usr/sbin/useradd -g perfsonar -r -s /sbin/nologin -c "perfSONAR User" -d /tmp perfsonar 2> /dev/null || :
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
@@ -337,8 +333,6 @@ rm -rf %{buildroot}
 # Add a group of users who can login to the web ui
 /usr/sbin/groupadd psadmin 2> /dev/null || :
 
-mkdir -p /var/log/perfsonar
-chown perfsonar:perfsonar /var/log/perfsonar
 mkdir -p /var/log/perfsonar/web_admin
 chown apache:perfsonar /var/log/perfsonar/web_admin
 
