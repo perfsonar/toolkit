@@ -15,7 +15,27 @@ HostInfoComponent._setStatus = function( topic ) {
     var data = HostStore.getHostSummary();
     var hostInfo = HostStore.getHostInfo();
     //$("#primary_hostname").text(data.external_address.address);
-    $("#primary_hostname").text(hostInfo.toolkit_name);
+    var primaryHostName="";
+    if(data.external_address.dns_name){
+        primaryHostName += data.external_address.dns_name + " at ";
+    }
+    if(data.external_address.ipv4_address){
+        primaryHostName += data.external_address.ipv4_address;
+    }
+    if(data.external_address.ipv6_address){
+        if(data.external_address.ipv4_address){
+            primaryHostName += ", "+data.external_address.ipv6_address;   
+        }else{
+            primaryHostName += data.external_address.ipv6_address;
+        }
+        
+    }
+
+    if(!primaryHostName){
+        primaryHostName = data.toolkit_name;
+    }
+
+    $("#primary_hostname").text(primaryHostName);
     $("#header_hostname").text(" on " + data.external_address.address);
     $(document).prop('title', 'perfSONAR Toolkit | ' + data.external_address.address);
 
