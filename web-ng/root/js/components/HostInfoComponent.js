@@ -15,18 +15,19 @@ HostInfoComponent._setStatus = function( topic ) {
     var data = HostStore.getHostSummary();
     var hostInfo = HostStore.getHostInfo();
     //$("#primary_hostname").text(data.external_address.address);
+    var hostNameOrIP = data.external_address.dns_name || data.external_address.ipv4_address || data.external_address.ipv6_address || data.toolkit_name;
     var primaryHostName="";
     if(data.external_address.dns_name){
-        primaryHostName += data.external_address.dns_name + " at ";
+        primaryHostName += data.external_address.dns_name + '<span class="ip_address"> at ';
     }
     if(data.external_address.ipv4_address){
         primaryHostName += data.external_address.ipv4_address;
     }
     if(data.external_address.ipv6_address){
         if(data.external_address.ipv4_address){
-            primaryHostName += ", "+data.external_address.ipv6_address;   
+            primaryHostName += ", "+data.external_address.ipv6_address + "</span>";
         }else{
-            primaryHostName += data.external_address.ipv6_address;
+            primaryHostName += data.external_address.ipv6_address + "</span>";
         }
         
     }
@@ -35,9 +36,9 @@ HostInfoComponent._setStatus = function( topic ) {
         primaryHostName = data.toolkit_name;
     }
 
-    $("#primary_hostname").text(primaryHostName);
-    $("#header_hostname").text(" on " + data.external_address.address);
-    $(document).prop('title', 'perfSONAR Toolkit | ' + data.external_address.address);
+    $("#primary_hostname").html(primaryHostName);
+    $("#header_hostname").text(" on " + hostNameOrIP);
+    $(document).prop('title', 'perfSONAR Toolkit | ' + hostNameOrIP);
 
 };
 
