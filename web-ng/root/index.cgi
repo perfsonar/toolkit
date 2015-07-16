@@ -67,5 +67,6 @@ $vars->{'remote_user'} = $remote_user;
 $vars->{'https_url'} = $https_url;
 $vars->{'include_prefix'} = $include_prefix;
 $vars->{'sidebar'} = $sidebar;
+
 $tt->process('page.html', $vars) || die $tt->error(), "\n";
 
