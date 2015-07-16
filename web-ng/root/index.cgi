@@ -9,6 +9,10 @@ use Template;
 use Data::Dumper;
 #use FindBin qw($RealBin);
 
+# Set some variable to control the page layout
+my $include_prefix = '';
+my $sidebar = 1;
+
 #my $basedir = "$RealBin/../../..";
 
 #use lib "$RealBin/../../../../lib";
@@ -38,20 +42,20 @@ my $tt = Template->new({
 
 
 my $page = 'components/dashboard.html';
-my $css = [ 'css/toolkit.css' ];
+my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
-    'js/pubsub/jquery.pubsub.js', 
-    'js/actions/Dispatcher.js', 
-    'js/stores/HostStore.js', 
-    'js/stores/TestStore.js', 
-    'js/handlebars/handlebars.js', 
+    $include_prefix . 'js/pubsub/jquery.pubsub.js', 
+    $include_prefix . 'js/actions/Dispatcher.js', 
+    $include_prefix . 'js/stores/HostStore.js', 
+    $include_prefix . 'js/stores/TestStore.js', 
+    $include_prefix . 'js/handlebars/handlebars.js', 
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
     '/serviceTest/JS/TestResultUtils.js', # TODO: fix to better relative URL
-    'js/components/HostInfoComponent.js', 
-    'js/components/HostStatusSidebarComponent.js', 
-    'js/components/HostServicesComponent.js', 
-    'js/components/TestResultsComponent.js',
-    'js/pages/DashboardPage.js'
+    $include_prefix . 'js/components/HostInfoComponent.js', 
+    $include_prefix . 'js/components/HostStatusSidebarComponent.js', 
+    $include_prefix . 'js/components/HostServicesComponent.js', 
+    $include_prefix . 'js/components/TestResultsComponent.js',
+    $include_prefix . 'js/pages/DashboardPage.js'
     ];
 
 my $vars = {};
@@ -61,5 +65,8 @@ $vars->{'js_files'} = $js_files;
 $vars->{'authenticated'} = $authenticated;
 $vars->{'remote_user'} = $remote_user;
 $vars->{'https_url'} = $https_url;
+$vars->{'include_prefix'} = $include_prefix;
+$vars->{'sidebar'} = $sidebar;
+
 $tt->process('page.html', $vars) || die $tt->error(), "\n";
 
