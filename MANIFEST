@@ -192,6 +192,9 @@ scripts/apache-toolkit_web_gui.conf
 scripts/autoselect_ntp_servers
 scripts/clean_esmond_db.sh
 scripts/configure_cacti
+scripts/configure_firewall
+scripts/configure_ntpd
+scripts/configure_sysctl
 scripts/cron-clean_esmond_db
 scripts/cron-service_watcher
 scripts/install-optional-packages.py
@@ -211,10 +214,7 @@ scripts/system_environment/bwctl_port_verify
 scripts/system_environment/configure_bwctld_log_location
 scripts/system_environment/configure_esmond
 scripts/system_environment/configure_fail2ban
-scripts/system_environment/configure_firewall
-scripts/system_environment/configure_ntpd
 scripts/system_environment/configure_regular_testing
-scripts/system_environment/configure_sysctl
 scripts/system_environment/configure_syslog_local5_location
 scripts/system_environment/disable_http_trace
 scripts/system_environment/disable_mysql_network_access
@@ -226,7 +226,6 @@ scripts/system_environment/enable_apache_redirect
 scripts/system_environment/enable_auto_updates
 scripts/system_environment/enable_mysqld
 scripts/system_environment/enable_nscd
-scripts/system_environment/enable_ntpd
 scripts/system_environment/enable_web100_kernel_repository
 scripts/system_environment/enable_wheel_sudo
 scripts/system_environment/increase_owamp_limits
@@ -413,6 +412,7 @@ web-ng/root/js/vendor/modernizr.js
 web-ng/root/services/host.cgi
 web-ng/templates/components/bottom.html
 web-ng/templates/components/dashboard.html
+web-ng/templates/components/explanation.html
 web-ng/templates/components/host_overview.html
 web-ng/templates/components/main.html
 web-ng/templates/components/page_header.html

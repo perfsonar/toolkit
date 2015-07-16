@@ -41,4 +41,15 @@ $(document).ready(function() {
         $(".sticky-bar--unsaved").fadeOut("fast");
         $(".sticky-bar--saved").fadeIn("fast").delay(1500).fadeOut("slow");
     });
+
+    // Select2 plugin - https://select2.github.io/
+    $(".js-select-multiple").select2({
+        placeholder: "Add a new server"
+    });
+
+
+    $(".select2-search__field").keypress(function() {
+        $(".sticky-bar--unsaved").fadeIn("fast");    
+    });
+
 });

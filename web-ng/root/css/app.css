@@ -2049,9 +2049,8 @@ to put the stuff inside. */
 }
 
 /* Modals */
-.reveal-modal.xlarge {
+.reveal-modal {
   text-align: center;
-  max-width:none;
 }
 .reveal-modal {
   text-align: center;
