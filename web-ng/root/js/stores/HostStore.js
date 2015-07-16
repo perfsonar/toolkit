@@ -26,7 +26,7 @@ HostStore.initialize = function() {
 
 HostStore._retrieveInfo = function() {
         $.ajax({
-            url: "/toolkit-ng/services/host.cgi?method=get_info",
+            url: "/toolkit-ng/services/host.cgi?method=get_admin_info",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
@@ -42,7 +42,7 @@ HostStore._retrieveInfo = function() {
 
 HostStore._retrieveStatus = function() {
     $.ajax({
-            url: "/toolkit-ng/services/host.cgi?method=get_status",
+            url: "/toolkit-ng/services/host.cgi?method=get_details",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",

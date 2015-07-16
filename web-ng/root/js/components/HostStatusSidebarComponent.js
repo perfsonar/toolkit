@@ -50,6 +50,15 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
         status_values.push( {label: "MTU", value: primary_mtu} );
     }
 
+    var interfaces = data.interfaces; 
+    if (typeof interfaces != "undefined") {
+        for (i in interfaces){
+            if(typeof interfaces[i] != "undefined"){
+                status_values.push( {label: interfaces[i].iface, value: interfaces[i].mtu+" MTU"} );    
+            }
+        }
+    }
+
     var ntp_synchronized = (data.ntp.synchronized == 1 ? "Yes" : "No");
     status_values.push( {label: "NTP Synced", value: ntp_synchronized} );
 
@@ -66,6 +75,12 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
     var kernel = data.kernel_version;
     if (typeof kernel != "undefined") {
         status_values.push( {label: "Kernel version", value: kernel} );
+    }
+
+    var auto_updates = data.auto_updates;
+    if(typeof auto_updates != "undefined"){
+        var auto_updates_value = (auto_updates == 1 ? "ON" : "OFF");
+        status_values.push({label:"Auto Updates", value: auto_updates_value});       
     }
 
     var host_status_template = $("#sidebar-status-template").html();
