@@ -920,6 +920,14 @@ ul.list-grid-thirds li {
 }
 .app-logo h1 {
   font-size: 1.35em;
+  float:right;
+  margin-top: 0;
+}
+
+.app-header img.logo { 
+  height: auto;
+  max-width: 150px;
+  margin-right: 1em;
 }
 
 @media screen and (max-width: 580px) {
@@ -2041,6 +2049,9 @@ to put the stuff inside. */
 }
 
 /* Modals */
+.reveal-modal {
+  text-align: center;
+}
 .reveal-modal {
   text-align: center;
 }
