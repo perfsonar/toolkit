@@ -22,6 +22,7 @@ etc/old_firewall_settings.conf
 etc/perfsonar_firewall_settings.conf
 etc/service_watcher-logger.conf
 etc/service_watcher.conf
+etc/toolkit.version
 init_scripts/config_daemon
 init_scripts/configure_nic_parameters
 init_scripts/generate_motd
@@ -186,7 +187,6 @@ perl-perfSONAR_PS-Toolkit.spec
 python_lib/Internet2Commands.py
 python_lib/Internet2Consts.py
 python_lib/Internet2Lib.py
-scripts/NPToolkit.version
 scripts/add_psadmin_user
 scripts/apache-toolkit_web_gui.conf
 scripts/autoselect_ntp_servers
