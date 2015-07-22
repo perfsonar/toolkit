@@ -18,6 +18,9 @@ HostServicesComponent._setStatus = function( topic ) {
 };
 
 HostServicesComponent._setServices = function( topic ) {
+    if ($("#host-services-template").length == 0 || $("#host_services").length == 0) {
+        return;
+    }
     var data = HostStore.getHostServices();
     for(var h=0; h<data.services.length; h++) {
         var ports_formatted = '';

@@ -27,6 +27,9 @@ TestResultsComponent.initialize = function() {
 };
 
 TestResultsComponent._setTestResults = function( topic ) {
+    if ($('#num_test_results').length == 0 || $('#num_test_results_holder').length == 0 || $("#test_results").length == 0) {
+        return;
+    }
     var data = {};
     data.test_results = TestStore.getTests();
     for(var i=0; i<data.test_results; i++) {
@@ -82,8 +85,7 @@ TestResultsComponent.showResultsGraph = function(container, src, dst, ma_url, ro
         //height: '80%'
     }).appendTo(container);
     
-    return false;
-};
+    return false; };
 
 TestResultsComponent.closeFrame = function(iframe) {
     if (iframe === undefined) {
