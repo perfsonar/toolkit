@@ -26,6 +26,15 @@ ntp1.cais.rnp.br:RNP Time Server #6 - Brazil
 time1.ethz.ch:ETH Zurich - Zurich, Switzerland
 time2.ethz.ch:ETH Zurich - Zurich, Switzerland
 time3.ethz.ch:ETH Zurich - Zurich, Switzerland
-vega.cbk.poznan.pl:PIONIER - EU 
-tempus1.gum.gov.pl:PIONIER - EU
-ntp.itl.waw.pl:PIONIER - EU
+vega.cbk.poznan.pl:PIONIER - Poland, EU 
+tempus1.gum.gov.pl:PIONIER - Poland, EU
+ntp.itl.waw.pl:PIONIER - Poland, EU
+ntp1.oma.be:Royal Observatory of Belgium - Belgium, EU
+time.belnet.be:BELNET - Belgium, EU
+ntp3.fau.de:FAU - Germany, EU
+ntp2.gbg.netnod.se:Netnod - Sweden, EU
+canon.inria.fr:INRIA - France, EU
+ntp2.inrim.it:INRIM - Italy, EU
+ntp1.nl.net:NLnet - Netherlands, EU
+chronos.asda.gr:ASDA - Greece, EU
+
