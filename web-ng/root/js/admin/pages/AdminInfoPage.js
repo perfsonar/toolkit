@@ -7,10 +7,10 @@ var AdminInfoPage = {
 
 AdminInfoPage.initialize = function() {
     $('#loading-modal').foundation('reveal', 'open');
-    Dispatcher.subscribe(AdminInfoPage.adminInfoTopic, AdminInfoPage._dataStoreReturned);
+    //Dispatcher.subscribe(AdminInfoPage.adminInfoTopic, AdminInfoPage._dataStoreReturned);
 };
 
-AdminInfoPage._dataStoreReturned = function(topic, data) {
-}
+//AdminInfoPage._dataStoreReturned = function(topic, data) {
+//}
 
 AdminInfoPage.initialize();

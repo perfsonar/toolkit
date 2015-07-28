@@ -19,7 +19,7 @@ my $sidebar = 0;
 
 my $cgi = CGI->new();
 
-my $section = 'admin';
+my $section = 'services';
 my $remote_user = $cgi->remote_user();
 my $auth_type = '';
 
@@ -41,7 +41,7 @@ my $tt = Template->new({
         INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
     }) || die "$Template::ERROR\n";
 
-my $page = 'admin/components/admin_info.html';
+my $page = 'admin/components/services.html';
 my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
@@ -49,10 +49,8 @@ my $js_files = [
     $include_prefix . 'js/stores/HostStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
-    '/serviceTest/JS/TestResultUtils.js', # TODO: fix to better relative URL
-
-    $include_prefix . 'js/admin/components/AdminInfoUpdateComponent.js', 
-    $include_prefix . 'js/admin/pages/AdminInfoPage.js'
+    #$include_prefix . 'js/admin/components/ServicesUpdateComponent.js', 
+    $include_prefix . 'js/admin/pages/AdminServicesPage.js'
     ];
 
 my $vars = {};

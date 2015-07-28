@@ -23,7 +23,14 @@ HostServicesComponent._setServices = function( topic ) {
     }
     var data = HostStore.getHostServices();
     for(var h=0; h<data.services.length; h++) {
-        var ports_formatted = '';
+        console.log(data.services[h]);
+        console.log(data.services[h].is_installed);
+        var ports_formatted = '';        
+        if (data.services[h].is_installed === 0) {
+            data.services[h].show_service = false;
+        } else {
+            data.services[h].show_service = true;
+        }
         if (data.services[h].testing_ports !== undefined)  {
             for(var i=0; i<data.services[h].testing_ports.length; i++) {
                 var test_port = data.services[h].testing_ports[i];

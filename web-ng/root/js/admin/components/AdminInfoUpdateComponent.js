@@ -13,14 +13,6 @@ var AdminInfoUpdateComponent = {
 
 
 AdminInfoUpdateComponent.initialize = function() {
-    //var state_sel  = $("#admin_states");
-    //var state_text = $("#admin_state");
-    //var prev_state_sel = $("#previous_selected_state_val");
-
-    //AdminInfoUpdateComponent.state_sel = state_sel;
-    //AdminInfoUpdateComponent.state_text = state_text;
-    //AdminInfoUpdateComponent.prev_state_sel = prev_state_sel;
-
     AdminInfoUpdateComponent._getCountries();
     AdminInfoUpdateComponent.state_data_urls['US'] = '/toolkit-ng/data/us_states_hash.json';
     Dispatcher.subscribe(AdminInfoUpdateComponent.info_topic, AdminInfoUpdateComponent._setInfo);
@@ -53,7 +45,7 @@ AdminInfoUpdateComponent._save = function() {
             contentType: 'application/json',
             // TODO: handle success/failure better
             success: function(result) {
-                console.log("success?");
+                console.log("success");
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log("error: object: ", jqXHR, "textStatus", textStatus, "errorThrown", errorThrown);

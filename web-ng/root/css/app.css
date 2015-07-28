@@ -1826,6 +1826,41 @@ to put the stuff inside. */
   margin: 0 auto;
 }
 
+.config-panel-wrapper div.actions {
+    text-align:center;
+}
+
+.config-panel-wrapper div.actions a {
+    margin:1em;
+}
+
+.config-panel-wrapper .config__form label {
+    /* width:70px; */
+}
+
+.config-panel-wrapper .config__form dl dt input[type=checkbox] {
+    margin:0;
+}
+
+.uninstalled {
+    color:#999;
+}
+
+.config-panel-wrapper .config__form dl dt {
+    float:left;
+    clear:left;
+    width:7em;
+}
+
+.config-panel-wrapper .config__form dl dd {
+}
+
+.config-panel-wrapper span.label-description {
+    /*position:absolute;
+    left:10em;*/
+    /* margin-right:0.5em; */
+}
+
 @media screen and (max-width: 850px) {
   .dashboard-main {
     float: none;
@@ -1902,13 +1937,13 @@ to put the stuff inside. */
   color: #a5d5ff;
 }
 
-.nav-tabs__panel--active a {
+.nav-tabs__panel--active a, .nav-tabs__panel.active a {
   background-color: #ddd;
   cursor: default;
   color: #999;
   border-color: #0089ff;
 }
-.nav-tabs__panel--active a:hover {
+.nav-tabs__panel--active, .nav-tabs__panel.active a:hover {
   background-color: #ddd;
   color: #999;
 }

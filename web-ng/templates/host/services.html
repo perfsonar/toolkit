@@ -22,6 +22,7 @@
         </thead>
         <tbody>
             {{#each services}}
+                {{#if show_service }}
             <tr class="services--row">
                 <td width="400">
                     {{#if has_details}}
@@ -43,6 +44,7 @@
                 <td>{{daemon_port}}</td>
                 <td><a href="#">View</a></td>
             </tr>
+                {{/if}}
             {{/each}}
         </tbody>
     </table>
