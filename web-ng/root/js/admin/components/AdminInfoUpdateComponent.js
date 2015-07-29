@@ -37,9 +37,7 @@ AdminInfoUpdateComponent._save = function() {
 
     $.ajax({
             url: AdminInfoUpdateComponent.update_url,
-            // TODO: change method to PUT
-            //type: 'PUT',    
-            type: 'GET', 
+            type: 'POST',
             data: data,
             dataType: 'json',
             contentType: 'application/json',

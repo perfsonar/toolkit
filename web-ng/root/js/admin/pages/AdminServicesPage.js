@@ -89,8 +89,7 @@ AdminServicesPage._save = function() {
     }
     $.ajax({
         url: AdminServicesPage.updateURL,
-        // TODO: change method to 'PUT'
-        type: 'GET',
+        type: 'POST',
         data: data,
         contentType: 'application/json',
         // TODO: handle success/failure better
