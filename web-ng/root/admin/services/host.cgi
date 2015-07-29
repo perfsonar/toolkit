@@ -22,6 +22,8 @@ use perfSONAR_PS::NPToolkit::WebService::Router;
 use Config::General;
 use Time::HiRes qw(gettimeofday tv_interval);
 
+# TODO: add check for auth
+# TODO: add request method
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -186,6 +188,44 @@ my $services_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     );
 
 $router->add_method($services_method);
+
+my $services_update_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            => "update_enabled_services",
+    description     => "Updates enabled service configuration",
+    auth_required   => 1,
+    callback        => sub { $host_info->update_enabled_services(@_); },
+    min_params      => 1,
+    );
+
+$services_update_method->add_input_parameter(
+    name            => "bwctl",
+    description     => "Whether to enable the BWCTL service",
+    required        => 0,
+    type            => 'boolean',
+    );
+
+$services_update_method->add_input_parameter(
+    name            => "owamp",
+    description     => "Whether to enable the OWAMP service",
+    required        => 0,
+    type            => 'boolean',
+    );
+
+$services_update_method->add_input_parameter(
+    name            => "ndt",
+    description     => "Whether to enable the NDT service",
+    required        => 0,
+    type            => 'boolean',
+    );
+
+$services_update_method->add_input_parameter(
+    name            => "npad",
+    description     => "Whether to enable the NPAD service",
+    required        => 0,
+    type            => 'boolean',
+    );
+
+$router->add_method($services_update_method);
 
 my $communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_communities",

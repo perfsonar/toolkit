@@ -18,6 +18,7 @@ use lib "$RealBin/../../../../lib";
 use perfSONAR_PS::NPToolkit::Config::Version;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 
+use Sys::Hostname;
 use perfSONAR_PS::Utils::Host qw( discover_primary_address );
 use perfSONAR_PS::Utils::LookupService qw( is_host_registered );
 
@@ -77,14 +78,43 @@ if ($external_addresses) {
 }
 
 if ($external_address) {
+    
     eval {
 	# Make sure it returns in a reasonable amount of time if reverse DNS
 	# lookups are failing for some reason.
-        local $SIG{ALRM} = sub { die "alarm" };
-        alarm(2);
+        local $SIG{ALRM} = sub { die "Timeout" };
+        alarm(5);
         $is_registered = is_host_registered($external_address);
         alarm(0);
     };
+    if($@){
+        $logger->error("Unable to find host record using $external_address: $@");
+    }elsif($is_registered){
+        $logger->info("Found host record in LS using $external_address");
+    }else{
+        $logger->error("Unable to find host record using $external_address");
+    }
+}
+
+
+
+#try hostname if not registered
+unless($is_registered){
+    my $hostname = ""; 
+    eval{
+        local $SIG{ALRM} = sub { die "Timeout" };
+        alarm(5);
+        $hostname = hostname;
+        $is_registered = is_host_registered(hostname);
+        alarm(0);
+    };
+    if($@){
+        $logger->error("Unable to find host record using " . ( $hostname ? $hostname : "hostname" ) . ": $@");
+    }elsif($is_registered){
+        $logger->info("Found host record in LS using $hostname");
+    }else{
+        $logger->error("Unable to find host record using " . ( $hostname ? $hostname : "hostname" ));
+    }
 }
 
 my @bwctl_test_ports = ();

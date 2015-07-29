@@ -554,7 +554,6 @@ fi
 %files Install-Scripts
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/NPToolkit.version
 
 %files sysctl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_sysctl
@@ -569,6 +568,7 @@ fi
 %{install_base}/lib/*
 %{install_base}/python_lib/*
 %doc %{install_base}/doc/*
+%attr(0644,perfsonar,perfsonar) %{install_base}/etc/toolkit.version
 
 %files service-watcher
 %config(noreplace) %{install_base}/etc/service_watcher.conf
