@@ -76,6 +76,7 @@ my $info_update_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     auth_required   => 1,
     callback        => sub { $host_info->update_information(@_); },
     min_params      => 1,
+    request_methods => ['POST'],
     );
 
 $info_update_method->add_input_parameter(
@@ -195,6 +196,7 @@ my $services_update_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     auth_required   => 1,
     callback        => sub { $host_info->update_enabled_services(@_); },
     min_params      => 1,
+    request_methods => ['POST'],
     );
 
 $services_update_method->add_input_parameter(
