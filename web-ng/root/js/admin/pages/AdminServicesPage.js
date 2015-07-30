@@ -91,7 +91,8 @@ AdminServicesPage._save = function() {
         url: AdminServicesPage.updateURL,
         type: 'POST',
         data: data,
-        contentType: 'application/json',
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded',
         // TODO: handle success/failure better
         success: function(result) {
             console.log("success");
