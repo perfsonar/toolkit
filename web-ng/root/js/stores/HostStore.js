@@ -7,7 +7,9 @@ var HostStore = {
     hostStatus: null,
     hostServices: null,
     hostCommunities: null,
-    hostSummary: {}
+    hostSummary: {},
+    saveServicesTopic: 'store.host_services.save',
+    saveServicesErrorTopic: 'store.host_services.save_error',
 };
 
 HostStore.initialize = function() {
@@ -100,7 +102,6 @@ HostStore._createSummaryTopic = function() {
 HostStore._setSummaryData = function (topic, data) {
     if (topic == 'store.change.host_status') {
         var data = HostStore.getHostStatus();
-        //console.log('host_status', data);
         jQuery.extend(HostStore.hostSummary.data, data);
         HostStore.hostSummary.statusSet = true;
     } else if (topic == 'store.change.host_info') {
@@ -123,9 +124,32 @@ HostStore._setSummaryData = function (topic, data) {
         HostStore.hostSummary.summarySet = true;
         Dispatcher.publish('store.change.host_summary');
         // TODO: see if this summary needs to be disconnected due to the health updates
-        //console.log('summary data');
-        //console.log(data);
     }    
+};
+
+HostStore.saveServices = function(services) {
+    var topic = HostStore.saveServicesTopic;
+    var error_topic = HostStore.saveServicesErrorTopic;
+    $.ajax({
+        url: '/toolkit-ng/admin/services/host.cgi?method=update_enabled_services',
+        type: 'POST',
+        data: services,
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded',
+        // TODO: handle success/failure better
+        success: function(result) {
+            HostStore._retrieveServices();
+            Dispatcher.publish(topic, result.message);
+            // TODO: add event for successful save
+
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log("error: object: ", jqXHR, "textStatus", textStatus, "errorThrown", errorThrown);
+            Dispatcher.publish(error_topic, errorThrown);
+        }
+    });
+
+
 };
 
 HostStore.getHostInfo = function() {

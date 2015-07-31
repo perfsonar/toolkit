@@ -48,13 +48,14 @@ $(document).ready(function() {
         e.preventDefault();
         $(".sticky-bar--failure").fadeIn("fast");
     });
-    */
 
     $(".js-sticky-dismiss").click(function(e) {
         e.preventDefault();
         $(".js-unsaved-message").hide();
         $(".sticky-bar--failure").fadeOut("fast");
     });
+    */
+
 
     // Select2 plugin - https://select2.github.io/
     $(".js-select-multiple").select2({

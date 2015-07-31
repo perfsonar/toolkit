@@ -7,14 +7,17 @@ var AdminServicesPage = {
     formSuccessTopic: 'ui.form.success',
     formErrorTopic: 'ui.form.error',
     formCancelTopic: 'ui.form.cancel',
+    saveServicesTopic: 'store.host_services.save',
+    saveServicesErrorTopic: 'store.host_services.save_error',
     serviceList: ['bwctl', 'owamp', 'ndt', 'npad'],
     latencyServices: ['owamp'],
-    updateURL: '/toolkit-ng/admin/services/host.cgi?method=update_enabled_services',
 };
 
 AdminServicesPage.initialize = function() {
     $('#loading-modal').foundation('reveal', 'open');
     Dispatcher.subscribe(AdminServicesPage.adminServicesTopic, AdminServicesPage._setEnabledServices);
+    Dispatcher.subscribe(AdminServicesPage.saveServicesTopic, AdminServicesPage._saveSuccess);
+    Dispatcher.subscribe(AdminServicesPage.saveServicesErrorTopic, AdminServicesPage._saveError);
     $('#select_bandwidth_services').click('bandwidth', AdminServicesPage.selectServices);
     $('#select_latency_services').click('latency', AdminServicesPage.selectServices);
 
@@ -90,31 +93,22 @@ AdminServicesPage._save = function() {
         var value = (el.prop("checked") ? 1 : 0);
         data[service] = value;
     }
-    $.ajax({
-        url: AdminServicesPage.updateURL,
-        type: 'POST',
-        data: data,
-        dataType: 'json',
-        contentType: 'application/x-www-form-urlencoded',
-        // TODO: handle success/failure better
-        success: function(result) {
-            console.log("success", result);
-            //$(".js-unsaved-message").fadeOut("fast");
-            //$(".sticky-bar--saved").fadeIn("fast").delay(1500).fadeOut("slow");
-            Dispatcher.publish(AdminServicesPage.formSuccessTopic, result);
+    HostStore.saveServices(data);
+};
 
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.log("error: object: ", jqXHR, "textStatus", textStatus, "errorThrown", errorThrown);
-            Dispatcher.publish(AdminServicesPage.formErrorTopic, errorThrown);
-        }
-    });
+AdminServicesPage._saveSuccess = function( topic, message ) {
+    Dispatcher.publish(AdminServicesPage.formSuccessTopic, message);
+};
 
+AdminServicesPage._saveError = function( topic, message ) {
+    Dispatcher.publish(AdminServicesPage.formErrorTopic, message);
 };
 
 AdminServicesPage._cancel = function() {
-    Dispatcher.publish(AdminServicesPage.formCancelTopic);
     console.log('cancel clicked - load configuration');
+    Dispatcher.publish(AdminServicesPage.formCancelTopic);
+    Dispatcher.publish(AdminServicesPage.adminServicesTopic);
+
 };
 
 AdminServicesPage._checkService = function(serviceID, checked) {
