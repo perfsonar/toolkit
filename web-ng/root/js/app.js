@@ -32,14 +32,28 @@ $(document).ready(function() {
         $(".communities__popular, .servers__popular").toggle(); 
     });
 
-    $(".config__input").keypress(function(e) {
-        $(".sticky-bar--unsaved").fadeIn("fast");
+    $(".config__input").change(function(e) {
+        $(".js-unsaved-message").fadeIn("fast");
     });
 
+    /*
     $(".js-save-button").click(function(e) {
         e.preventDefault();
-        $(".sticky-bar--unsaved").fadeOut("fast");
+        $(".js-unsaved-message").fadeOut("fast");
         $(".sticky-bar--saved").fadeIn("fast").delay(1500).fadeOut("slow");
+    });
+    */
+    /*
+    $(".js-cancel-button").click(function(e) {
+        e.preventDefault();
+        $(".sticky-bar--failure").fadeIn("fast");
+    });
+    */
+
+    $(".js-sticky-dismiss").click(function(e) {
+        e.preventDefault();
+        $(".js-unsaved-message").hide();
+        $(".sticky-bar--failure").fadeOut("fast");
     });
 
     // Select2 plugin - https://select2.github.io/

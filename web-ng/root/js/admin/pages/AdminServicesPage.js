@@ -3,6 +3,10 @@
 
 var AdminServicesPage = { 
     adminServicesTopic: 'store.change.host_services',
+    formChangeTopic: 'ui.form.change',
+    formSuccessTopic: 'ui.form.success',
+    formErrorTopic: 'ui.form.error',
+    formCancelTopic: 'ui.form.cancel',
     serviceList: ['bwctl', 'owamp', 'ndt', 'npad'],
     latencyServices: ['owamp'],
     updateURL: '/toolkit-ng/admin/services/host.cgi?method=update_enabled_services',
@@ -13,13 +17,12 @@ AdminServicesPage.initialize = function() {
     Dispatcher.subscribe(AdminServicesPage.adminServicesTopic, AdminServicesPage._setEnabledServices);
     $('#select_bandwidth_services').click('bandwidth', AdminServicesPage.selectServices);
     $('#select_latency_services').click('latency', AdminServicesPage.selectServices);
-//    $('#select_all_services').click();
-//    $('#select_no_services').click();
 
     $('input:checkbox').filter(function() {
-         return this.id.match(/services_.+_cb$/);    
-    }).change(AdminServicesPage._showSaveBar);
+            return this.id.match(/services_.+_cb$/);    
+        }).change(AdminServicesPage._showSaveBar);
     $('#admin_info_save_button').click( AdminServicesPage._save );
+    $('#admin_info_cancel_button').click( AdminServicesPage._cancel);
 
 };
 
@@ -95,13 +98,23 @@ AdminServicesPage._save = function() {
         contentType: 'application/x-www-form-urlencoded',
         // TODO: handle success/failure better
         success: function(result) {
-            console.log("success");
+            console.log("success", result);
+            //$(".js-unsaved-message").fadeOut("fast");
+            //$(".sticky-bar--saved").fadeIn("fast").delay(1500).fadeOut("slow");
+            Dispatcher.publish(AdminServicesPage.formSuccessTopic, result);
+
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log("error: object: ", jqXHR, "textStatus", textStatus, "errorThrown", errorThrown);
+            Dispatcher.publish(AdminServicesPage.formErrorTopic, errorThrown);
         }
     });
 
+};
+
+AdminServicesPage._cancel = function() {
+    Dispatcher.publish(AdminServicesPage.formCancelTopic);
+    console.log('cancel clicked - load configuration');
 };
 
 AdminServicesPage._checkService = function(serviceID, checked) {
@@ -121,7 +134,7 @@ AdminServicesPage.clearServices = function() {
 };
 
 AdminServicesPage._showSaveBar = function() {
-    $(".sticky-bar--unsaved").fadeIn("fast");    
+    Dispatcher.publish(AdminServicesPage.formChangeTopic);
 };
 
 AdminServicesPage.initialize();

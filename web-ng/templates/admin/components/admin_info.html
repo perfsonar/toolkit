@@ -157,17 +157,4 @@
         </div>
         <!-- End config-panel-wrapper -->
 
-        <!-- Sticky save bar -->
-        <div class="sticky-bar sticky-bar--unsaved">
-            <span class="sticky-bar__message">You've made changes that haven't been saved.</span>
-            <span class="sticky-bar__error_message" style="display:none;">An error occurred saving your changes: <span id="sticky_bar_error_message"></span></span>
-            <a class="js-save-button buton-primary--hallow" id="admin_info_save_button">Save</a>
-        </div>
-        <div class="sticky-bar sticky-bar--saved">
-            <span class="sticky-bar__message">Your changes have been saved.</span>
-        </div>
-        <!--
-        <div class="sticky-bar sticky-bar--error">
-            <span class="sticky-bar__error_message">An error occurred saving your changes: <span id="sticky_bar_error_message"></span></span>
-        </div>
-        -->
+        [% INCLUDE admin/components/sticky_bar.html %]

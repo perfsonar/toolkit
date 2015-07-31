@@ -5,111 +5,90 @@
 
 </div>
 <div class="config-panel-wrapper">
-            <section class="dashboard-internal">
-                <div class="row">
-                    <div class="small-12 columns">
-                        <header>
-                            <nav>
-                                <ul class="nav--breadcrumbs u-list-nav">
-                                    <li><a href="../authenticated"><i class="fa fa-home fa-fw"></i>Home</a></li>
-                                    <li><a href="index.cgi">Configuration</a></li>
-                                    <li class="active"><a href="services.cgi">Services</a></li>
-                                </ul>
-                            </nav>
-                        </header>
-                    </div>
-                </div>
-
-
-
-<div class="config">
-    <div id="unsavedModal" class="reveal-modal small" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-        <h3 class="reveal-modal__heading" id="modalTitle">Leave this page?</h3>
-        <p>You have changes that haven't been saved. Would you like to save them before continuing?</p>
-        <a href="../host-configuration" style="margin-right: 1em;">Continue without saving</a>
-        <a href="../host-configuration" class="button button-primary--small">Save &amp; Continue</a>
-        <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a>
+    <section class="dashboard-internal">
+    <div class="row">
+        <div class="small-12 columns">
+            <header>
+            <nav>
+            <ul class="nav--breadcrumbs u-list-nav">
+                <li><a href="../authenticated"><i class="fa fa-home fa-fw"></i>Home</a></li>
+                <li><a href="index.cgi">Configuration</a></li>
+                <li class="active"><a href="services.cgi">Services</a></li>
+            </ul>
+            </nav>
+            </header>
+        </div>
     </div>
 
-    [% INCLUDE admin/components/admin_header_nav.html %]
+    <div class="config">
+
+        [% INCLUDE admin/components/admin_header_nav.html %]
 
 
-    <div class="row">
-        <div class="medium-9 columns">
-            <div class="config__form">
-                <form>
-                    <fieldset id="enabled_services_fields">
-                        <h4>Select services you want enabled on this host</h4>
-                        <div>&nbsp;</div>
-                        <dl>
-                            <dt class="services_bwctl">
-                               <input type="checkbox" id="services_bwctl_cb" />
-                               <label for="services_bwctl_cb" class="services_bwctl">BWCTL</label>
-                            </dt>
-                            <dd class="services_bwctl">
+        <div class="row">
+            <div class="medium-9 columns">
+                <div class="config__form">
+                    <form>
+                        <fieldset id="enabled_services_fields">
+                            <h4>Select services you want enabled on this host</h4>
+                            <div>&nbsp;</div>
+                            <dl>
+                                <dt class="services_bwctl">
+                                <input type="checkbox" id="services_bwctl_cb" />
+                                <label for="services_bwctl_cb" class="services_bwctl">BWCTL</label>
+                                </dt>
+                                <dd class="services_bwctl">
                                 Allows clients at other sites to run Throughput, Traceroute and Latency tests to this host
-                            </dd>
-                            <dt class="services_owamp">
-                               <input type="checkbox" id="services_owamp_cb" />
-                               <label for="services_owamp_cb" class="services_owamp">OWAMP</label>
-                            </dt>
-                            <dd class="services_owamp">
+                                </dd>
+                                <dt class="services_owamp">
+                                <input type="checkbox" id="services_owamp_cb" />
+                                <label for="services_owamp_cb" class="services_owamp">OWAMP</label>
+                                </dt>
+                                <dd class="services_owamp">
                                 Allows clients at other sites to run One-Way Latency tests to this host
-                            </dd>
-                            <dt class="services_ndt">
-                               <input type="checkbox" id="services_ndt_cb" />
-                               <label for="services_ndt_cb" class="services_ndt">NDT</label>
-                            </dt>
-                            <dd class="services_ndt">
+                                </dd>
+                                <dt class="services_ndt">
+                                <input type="checkbox" id="services_ndt_cb" />
+                                <label for="services_ndt_cb" class="services_ndt">NDT</label>
+                                </dt>
+                                <dd class="services_ndt">
                                 Allows clients at other sites to run NDT tests to this host
-                            </dd>
-                            <dt class="services_npad">
-                               <input type="checkbox" id="services_npad_cb" />
-                               <label for="services_npad_cb" class="services_npad">NPAD</label>
-                            </dt>
-                            <dd class="services_npad">
+                                </dd>
+                                <dt class="services_npad">
+                                <input type="checkbox" id="services_npad_cb" />
+                                <label for="services_npad_cb" class="services_npad">NPAD</label>
+                                </dt>
+                                <dd class="services_npad">
                                 Allows clients at other sites to run NPAD tests to this host
-                            </dd>
-                        </dl>
+                                </dd>
+                            </dl>
 
-                        <div class="actions">
-                            <a href="#" id="select_bandwidth_services">Select only bandwidth services</a>
-                            <a href="#" id="select_latency_services">Select only latency services</a>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-            <!-- End config__form -->  
-
-
-        </div>
-        <!-- End config -->
-        <div class="medium-3 columns">
-                    <aside class="aside aside--config">
-                        <h3 class="aside__heading">Resources</h3>
-                        <ul class="aside__list">
-                            <li><a href="#">Configuring Services</a></li>
-                        </ul>
-                    </aside>
+                            <div class="actions">
+                                <a href="#" id="select_bandwidth_services">Select only bandwidth services</a>
+                                <a href="#" id="select_latency_services">Select only latency services</a>
+                            </div>
+                        </fieldset>
+                    </form>
                 </div>
-            </div>
-            <!-- End row -->
-        </section>
-            <!-- End dashboard-internal -->
-        </div>
-        <!-- End services-panel-wrapper -->
+                <!-- End config__form -->  
 
-        <!-- Sticky save bar -->
-        <div class="sticky-bar sticky-bar--unsaved">
-            <span class="sticky-bar__message">You've made changes that haven't been saved.</span>
-            <span class="sticky-bar__error_message" style="display:none;">An error occurred saving your changes: <span id="sticky_bar_error_message"></span></span>
-            <a class="js-save-button buton-primary--hallow" id="admin_info_save_button">Save</a>
+
+            </div>
+            <!-- End config -->
+            <div class="medium-3 columns">
+                <aside class="aside aside--config">
+                <h3 class="aside__heading">Resources</h3>
+                <ul class="aside__list">
+                    <li><a href="#">Configuring Services</a></li>
+                </ul>
+                </aside>
+            </div>
         </div>
-        <div class="sticky-bar sticky-bar--saved">
-            <span class="sticky-bar__message">Your changes have been saved.</span>
-        </div>
-        <!--
-        <div class="sticky-bar sticky-bar--error">
-            <span class="sticky-bar__error_message">An error occurred saving your changes: <span id="sticky_bar_error_message"></span></span>
-        </div>
-        -->
+        <!-- End row -->
+        </section>
+        <!-- End dashboard-internal -->
+    </div>
+    <!-- End services-panel-wrapper -->
+
+    [% INCLUDE admin/components/sticky_bar.html %]
+

@@ -599,6 +599,10 @@ select {
   max-width: 100%;
 }
 
+.row--fixed {
+  max-width: 1080px;
+}
+
 /*------------------------------------------------------------------------------
 
     Utitilities
@@ -1467,9 +1471,7 @@ button,
 input[type="submit"],
 input[type="button"],
 .button-primary,
-.button-primary:hover,
 .button-primary--small,
-.button-primary--small:hover,
 .button-secondary,
 .button-secondary:hover,
 .button-secondary--small,
@@ -1485,7 +1487,6 @@ input.button-secondary--small,
 input.button-alternate,
 input.button-alternate--small {
   display: inline-block;
-  margin: 1em 1em 0 0;
   padding: .25em .45em;
   line-height: 1.65;
   min-width: 120px;
@@ -1498,6 +1499,7 @@ input.button-alternate--small {
   border: none;
   font-family: "Open Sans", "Helvetica Neue", "Helvetica", Arial, sans-serif;
   text-decoration: none;
+  text-align: center;
   border-radius: 4px;
 }
 
@@ -1512,6 +1514,20 @@ input.button-primary--small {
 input.button-primary:hover,
 input.button-primary--small:hover {
   background-color: #0074d8;
+}
+
+input[type='button']:disabled, input[type='button']:disabled.cancel, input[type='submit']:disabled { 
+    color:#ddd;
+    border-color:#ddd;
+}
+
+input[type='button']:disabled.button-primary,
+input[type='submit']:disabled.button-primary  {
+    background-color: rgba(0, 137, 255, 0.81);
+}
+
+input[type='button']:disabled.button-primary.cancel, input[type='button']:disabled.button-primary.cancel:hover {
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 .button-secondary,
@@ -1560,20 +1576,14 @@ input.button-quiet--small:hover {
 .button-alternate--small,
 input.button-primary--small,
 input.button-secondary--small,
-input.button-alternate--small,
-.button-primary--small:hover,
-.button-secondary--small:hover,
-.button-alternate--small:hover,
-input.button-primary--small:hover,
-input.button-secondary--small:hover,
-input.button-alternate--small:hover {
+input.button-alternate--small {
   padding: .25em .45em;
   line-height: 1.65;
 }
 
-.buton-primary--hallow {
+.button-primary--hollow, input[type='button'].cancel {
   display: inline-block;
-  background-color: none;
+  background-color: transparent;
   border: 1px solid #fff;
   color: #fff;
   text-decoration: none;
@@ -1581,10 +1591,10 @@ input.button-alternate--small:hover {
   border-radius: 4px;
   margin: 0;
 }
-.buton-primary--hallow:hover {
-  background-color: #0089ff;
-  border-color: #0089ff;
-  color: #fff;
+.button-primary--hollow:hover, input[type='button']:enabled.cancel:hover {
+  background-color: #f7f7f7;
+  border-color: #f7f7f7;
+  color: #383f44;
 }
 
 .overview {
@@ -1778,15 +1788,23 @@ input.button-alternate--small:hover {
   position: fixed;
   bottom: 0;
   right: 0;
-  text-align: center;
+  /*text-align: center;*/
   width: 100%;
   height: 70px;
   font-size: 1.15em;
 }
 
+.sticky-bar__message {
+  display: inline-block;
+}
+
+.js-unsaved-message {
+  display: none;
+}
+
 .sticky-bar--unsaved {
   background: rgba(56, 63, 68, 0.85);
-  display: none;
+  /*display: none;*/
   color: #ffffff;
   padding-top: 1.15em;
 }
@@ -1798,14 +1816,39 @@ input.button-alternate--small:hover {
   padding-top: 1.5em;
 }
 
+.sticky-bar--failure {
+  /*background-color: #ef402f;*/
+  background-color: #f7a9a1;
+  color: #a06d68;
+  display: none;
+  padding-top: 1.5em;
+}
+
+.sticky-bar--failure a {
+  color: #383f44;
+}
+
+.sticky-bar--failure a:hover {
+  text-decoration: none;
+}
+
 .sticky-bar__message {
   margin-right: 1em;
+  padding-left: 2.35em;
 }
 
 .sticky-bar__dismiss {
   position: absolute;
-  right: 1.35em;
-  top: 1.35em;
+  right: 1.4em;
+  top: 1.4em;
+}
+
+.sticky-bar__dismiss a {
+  text-decoration: none;
+}
+
+.sticky-bar__dismiss i:hover {
+  color: #a06d68;
 }
 
 /* ** Get rid of this thing once you figure out a better place

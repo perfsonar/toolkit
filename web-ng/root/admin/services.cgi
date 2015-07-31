@@ -50,6 +50,7 @@ my $js_files = [
     $include_prefix . 'js/handlebars/handlebars.js', 
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
     #$include_prefix . 'js/admin/components/ServicesUpdateComponent.js', 
+    $include_prefix . 'js/admin/components/StickySaveBar.js', 
     $include_prefix . 'js/admin/pages/AdminServicesPage.js'
     ];
 
