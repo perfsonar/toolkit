@@ -3,23 +3,29 @@
 
 var AdminServicesPage = { 
     adminServicesTopic: 'store.change.host_services',
+    formChangeTopic: 'ui.form.change',
+    formSuccessTopic: 'ui.form.success',
+    formErrorTopic: 'ui.form.error',
+    formCancelTopic: 'ui.form.cancel',
+    saveServicesTopic: 'store.host_services.save',
+    saveServicesErrorTopic: 'store.host_services.save_error',
     serviceList: ['bwctl', 'owamp', 'ndt', 'npad'],
     latencyServices: ['owamp'],
-    updateURL: '/toolkit-ng/admin/services/host.cgi?method=update_enabled_services',
 };
 
 AdminServicesPage.initialize = function() {
     $('#loading-modal').foundation('reveal', 'open');
     Dispatcher.subscribe(AdminServicesPage.adminServicesTopic, AdminServicesPage._setEnabledServices);
+    Dispatcher.subscribe(AdminServicesPage.saveServicesTopic, AdminServicesPage._saveSuccess);
+    Dispatcher.subscribe(AdminServicesPage.saveServicesErrorTopic, AdminServicesPage._saveError);
     $('#select_bandwidth_services').click('bandwidth', AdminServicesPage.selectServices);
     $('#select_latency_services').click('latency', AdminServicesPage.selectServices);
-//    $('#select_all_services').click();
-//    $('#select_no_services').click();
 
     $('input:checkbox').filter(function() {
-         return this.id.match(/services_.+_cb$/);    
-    }).change(AdminServicesPage._showSaveBar);
+            return this.id.match(/services_.+_cb$/);    
+        }).change(AdminServicesPage._showSaveBar);
     $('#admin_info_save_button').click( AdminServicesPage._save );
+    $('#admin_info_cancel_button').click( AdminServicesPage._cancel);
 
 };
 
@@ -87,19 +93,21 @@ AdminServicesPage._save = function() {
         var value = (el.prop("checked") ? 1 : 0);
         data[service] = value;
     }
-    $.ajax({
-        url: AdminServicesPage.updateURL,
-        type: 'POST',
-        data: data,
-        contentType: 'application/json',
-        // TODO: handle success/failure better
-        success: function(result) {
-            console.log("success");
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.log("error: object: ", jqXHR, "textStatus", textStatus, "errorThrown", errorThrown);
-        }
-    });
+    HostStore.saveServices(data);
+};
+
+AdminServicesPage._saveSuccess = function( topic, message ) {
+    Dispatcher.publish(AdminServicesPage.formSuccessTopic, message);
+};
+
+AdminServicesPage._saveError = function( topic, message ) {
+    Dispatcher.publish(AdminServicesPage.formErrorTopic, message);
+};
+
+AdminServicesPage._cancel = function() {
+    console.log('cancel clicked - load configuration');
+    Dispatcher.publish(AdminServicesPage.formCancelTopic);
+    Dispatcher.publish(AdminServicesPage.adminServicesTopic);
 
 };
 
@@ -120,7 +128,7 @@ AdminServicesPage.clearServices = function() {
 };
 
 AdminServicesPage._showSaveBar = function() {
-    $(".sticky-bar--unsaved").fadeIn("fast");    
+    Dispatcher.publish(AdminServicesPage.formChangeTopic);
 };
 
 AdminServicesPage.initialize();

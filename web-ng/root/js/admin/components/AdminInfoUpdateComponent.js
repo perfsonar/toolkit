@@ -40,7 +40,7 @@ AdminInfoUpdateComponent._save = function() {
             type: 'POST',
             data: data,
             dataType: 'json',
-            contentType: 'application/json',
+            contentType: 'application/x-www-form-urlencoded',
             // TODO: handle success/failure better
             success: function(result) {
                 console.log("success");

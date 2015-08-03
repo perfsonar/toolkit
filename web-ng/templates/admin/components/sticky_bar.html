@@ -1,0 +1,28 @@
+<!-- sticky save bar -->
+<div id="sticky-bar">
+
+<div class="sticky-bar sticky-bar--unsaved">
+    <div class="row">
+        <div class="medium-6 columns">
+            <span id="sticky-unsaved-message" class="sticky-bar__message js-unsaved-message" style="display: none;">You've made changes that haven't been saved.</span>
+        </div>
+        <div class="medium-6 columns text-right">
+            <input type="button" id="admin_info_cancel_button" disabled="disabled" class="cancel js-cancel-button button-primary button-primary--hollow admin-action-button" value="Cancel" />
+            <!-- <a class="js-save-button button-primary" id="admin_info_save_button">Save</a> -->
+            <input type="submit" name="submit" value="Save" class="js-save-button button-primary admin-action-button" id="admin_info_save_button" disabled="disabled" />
+        </div>
+    </div>
+</div>
+<div class="sticky-bar sticky-bar--saved">
+    <span class="sticky-bar__message">
+        <i class="fa fa-check-circle-o"></i>
+        <span id="sticky-saved-message">Your changes have been saved.</span>
+    </span>
+</div>
+<div class="sticky-bar sticky-bar--failure">
+    <span class="sticky-bar__message"><strong>Error - </strong> <span id="sticky-failure-message"></span> </span>
+    <a class="sticky-bar__dismiss js-sticky-dismiss" href="#"><i class="fa fa-close"></i> <span class="visuallyhidden">Dismiss</span></a>
+</div>
+
+</div>
+<!-- end sticky save bar -->
