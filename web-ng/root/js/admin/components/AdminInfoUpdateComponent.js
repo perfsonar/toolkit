@@ -1,6 +1,12 @@
 var AdminInfoUpdateComponent = {
     admin_info: null,
     info_topic: 'store.change.host_info',
+    saveAdminInfoTopic: 'store.host_admin_info.save',
+    saveAdminInfoErrorTopic: 'store.host_admin_info.save_error',
+    formChangeTopic: 'ui.form.change',
+    formSuccessTopic: 'ui.form.success',
+    formErrorTopic: 'ui.form.error',
+    formCancelTopic: 'ui.form.cancel',
     country_data_url: '/toolkit-ng/data/country_data.json',
     update_url: '/toolkit-ng/admin/services/host.cgi?method=update_info',
     countries: {},
@@ -16,7 +22,15 @@ AdminInfoUpdateComponent.initialize = function() {
     AdminInfoUpdateComponent._getCountries();
     AdminInfoUpdateComponent.state_data_urls['US'] = '/toolkit-ng/data/us_states_hash.json';
     Dispatcher.subscribe(AdminInfoUpdateComponent.info_topic, AdminInfoUpdateComponent._setInfo);
-    $('#admin_info_save_button').click( AdminInfoUpdateComponent._save );
+    $("#adminInfoForm").submit(function(e){
+            AdminInfoUpdateComponent._save();
+            e.preventDefault();
+    });
+    $('form#adminInfoForm input').change(AdminInfoUpdateComponent._showSaveBar);
+    $('form#adminInfoForm select').change(AdminInfoUpdateComponent._showSaveBar);
+    $('#admin_info_cancel_button').click( AdminInfoUpdateComponent._cancel);
+    Dispatcher.subscribe(AdminInfoUpdateComponent.saveAdminInfoTopic, AdminInfoUpdateComponent._saveSuccess);
+    Dispatcher.subscribe(AdminInfoUpdateComponent.saveAdminInfoErrorTopic, AdminInfoUpdateComponent._saveError);
 };
 
 AdminInfoUpdateComponent._save = function() {
@@ -35,20 +49,7 @@ AdminInfoUpdateComponent._save = function() {
     data.latitude = $("#admin_latitude").val();
     data.longitude = $("#admin_longitude").val();
 
-    $.ajax({
-            url: AdminInfoUpdateComponent.update_url,
-            type: 'POST',
-            data: data,
-            dataType: 'json',
-            contentType: 'application/x-www-form-urlencoded',
-            // TODO: handle success/failure better
-            success: function(result) {
-                console.log("success");
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log("error: object: ", jqXHR, "textStatus", textStatus, "errorThrown", errorThrown);
-            }
-        });
+    HostStore.saveAdminInfo(data);
 
 };
 
@@ -157,6 +158,24 @@ AdminInfoUpdateComponent._showStateTextInput = function(abbr) {
     state_sel.hide();
     state_text.show();
     //state_text.text();
+};
+
+AdminInfoUpdateComponent._saveSuccess = function( topic, message ) {
+    Dispatcher.publish(AdminInfoUpdateComponent.formSuccessTopic, message);
+};
+
+AdminInfoUpdateComponent._saveError = function( topic, message ) {
+    Dispatcher.publish(AdminInfoUpdateComponent.formErrorTopic, message);
+};
+
+AdminInfoUpdateComponent._cancel = function() {
+    Dispatcher.publish(AdminInfoUpdateComponent.formCancelTopic);
+    Dispatcher.publish(AdminInfoUpdateComponent.info_topic);
+
+};
+
+AdminInfoUpdateComponent._showSaveBar = function() {
+    Dispatcher.publish(AdminInfoUpdateComponent.formChangeTopic);
 };
 
 AdminInfoUpdateComponent.initialize();

@@ -32,9 +32,11 @@ $(document).ready(function() {
         $(".communities__popular, .servers__popular").toggle(); 
     });
 
+    /*
     $(".config__input").change(function(e) {
         $(".js-unsaved-message").fadeIn("fast");
     });
+    */
 
     /*
     $(".js-save-button").click(function(e) {

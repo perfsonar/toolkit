@@ -8,6 +8,8 @@ var HostStore = {
     hostServices: null,
     hostCommunities: null,
     hostSummary: {},
+    saveAdminInfoTopic: 'store.host_admin_info.save',
+    saveAdminInfoErrorTopic: 'store.host_admin_info.save_error',
     saveServicesTopic: 'store.host_services.save',
     saveServicesErrorTopic: 'store.host_services.save_error',
 };
@@ -127,6 +129,27 @@ HostStore._setSummaryData = function (topic, data) {
     }    
 };
 
+HostStore.saveAdminInfo = function(info) {
+    var topic = HostStore.saveAdminInfoTopic;
+    var error_topic = HostStore.saveAdminInfoErrorTopic;
+    $.ajax({
+        url: '/toolkit-ng/admin/services/host.cgi?method=update_info',
+        type: 'POST',
+        data: info,
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded',
+        success: function(result) {
+            HostStore._retrieveInfo();
+            Dispatcher.publish(topic, result.message);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            Dispatcher.publish(error_topic, errorThrown);
+        }
+    });
+
+
+};
+
 HostStore.saveServices = function(services) {
     var topic = HostStore.saveServicesTopic;
     var error_topic = HostStore.saveServicesErrorTopic;
@@ -136,15 +159,12 @@ HostStore.saveServices = function(services) {
         data: services,
         dataType: 'json',
         contentType: 'application/x-www-form-urlencoded',
-        // TODO: handle success/failure better
         success: function(result) {
             HostStore._retrieveServices();
             Dispatcher.publish(topic, result.message);
-            // TODO: add event for successful save
 
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            console.log("error: object: ", jqXHR, "textStatus", textStatus, "errorThrown", errorThrown);
             Dispatcher.publish(error_topic, errorThrown);
         }
     });

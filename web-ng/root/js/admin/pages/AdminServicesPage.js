@@ -105,10 +105,8 @@ AdminServicesPage._saveError = function( topic, message ) {
 };
 
 AdminServicesPage._cancel = function() {
-    console.log('cancel clicked - load configuration');
     Dispatcher.publish(AdminServicesPage.formCancelTopic);
     Dispatcher.publish(AdminServicesPage.adminServicesTopic);
-
 };
 
 AdminServicesPage._checkService = function(serviceID, checked) {
