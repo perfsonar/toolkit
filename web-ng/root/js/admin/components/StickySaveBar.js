@@ -20,6 +20,11 @@ StickySaveBar.initialize = function() {
 StickySaveBar._formChange = function( topic ) {
     $("#sticky-unsaved-message").fadeIn("fast");
     StickySaveBar._enableButtons();
+    window.onbeforeunload = function() {
+            // TODO: create enhanced captive dialog box with unsaved changes
+            // $("#unsavedModal").foundation('reveal', 'open');
+            return "You have unsaved changes.";
+    };
 };
 
 StickySaveBar._enableButtons = function() {
@@ -60,6 +65,7 @@ StickySaveBar._init = function() {
     $(".sticky-bar--saved").fadeOut("fast");
     $(".sticky-bar--failure").fadeOut("fast");
     $("#sticky-unsaved-message").fadeOut("fast");
+    window.onbeforeunload = null;
 };
 
 StickySaveBar.initialize();

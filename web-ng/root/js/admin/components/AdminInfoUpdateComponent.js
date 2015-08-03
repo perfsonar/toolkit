@@ -31,6 +31,7 @@ AdminInfoUpdateComponent.initialize = function() {
     $('#admin_info_cancel_button').click( AdminInfoUpdateComponent._cancel);
     Dispatcher.subscribe(AdminInfoUpdateComponent.saveAdminInfoTopic, AdminInfoUpdateComponent._saveSuccess);
     Dispatcher.subscribe(AdminInfoUpdateComponent.saveAdminInfoErrorTopic, AdminInfoUpdateComponent._saveError);
+    $('#loading-modal').foundation('reveal', 'open');
 };
 
 AdminInfoUpdateComponent._save = function() {
@@ -132,6 +133,8 @@ AdminInfoUpdateComponent._setInfo = function( topic ) {
     AdminInfoUpdateComponent._setCountry(data.location.country);
     AdminInfoUpdateComponent._setState(data.location.country, data.location.state);
 
+    $('#loading-modal').foundation('reveal', 'close');
+
 };
 
 AdminInfoUpdateComponent._setState = function(country, state) {
@@ -154,10 +157,8 @@ AdminInfoUpdateComponent._showStateSelector = function(abbr) {
 AdminInfoUpdateComponent._showStateTextInput = function(abbr) {
     var state_sel = AdminInfoUpdateComponent.state_sel;
     var state_text = AdminInfoUpdateComponent.state_text;
-    //$("#previous_selected_state_val").val( state_sel.val() );
     state_sel.hide();
     state_text.show();
-    //state_text.text();
 };
 
 AdminInfoUpdateComponent._saveSuccess = function( topic, message ) {
