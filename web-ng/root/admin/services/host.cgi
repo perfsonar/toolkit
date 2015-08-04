@@ -18,12 +18,19 @@ use lib "$RealBin/../../../../lib";
 use perfSONAR_PS::NPToolkit::DataService::Host;
 use perfSONAR_PS::NPToolkit::WebService::Method;
 use perfSONAR_PS::NPToolkit::WebService::Router;
+use perfSONAR_PS::NPToolkit::WebService::Auth qw( is_authenticated unauthorized_output );
 
 use Config::General;
 use Time::HiRes qw(gettimeofday tv_interval);
 
-# TODO: add check for auth
-# TODO: add request method
+my $cgi = CGI->new();
+my $authenticated = is_authenticated($cgi);
+
+if ( !$authenticated ) {
+    print unauthorized_output($cgi);
+    exit;
+}
+
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -50,7 +57,6 @@ if ( $conf{debug} ) {
 my $data;
 my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( { 'config_file' => $config_file  } );
 
-#my $cgi = CGI->new();
 
 my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
 

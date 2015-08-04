@@ -11,11 +11,12 @@ use Data::Dumper;
 my $include_prefix = '../';
 my $sidebar = 0;
 
-#use FindBin qw($RealBin);
+use FindBin qw($RealBin);
+my $basedir = "$RealBin/../../..";
+use lib "$RealBin/../../../lib";
 
-#my $basedir = "$RealBin/../../..";
+use perfSONAR_PS::NPToolkit::WebService::Auth qw( is_authenticated unauthorized_output );
 
-#use lib "$RealBin/../../../../lib";
 
 my $cgi = CGI->new();
 
@@ -26,8 +27,12 @@ my $auth_type = '';
 if($cgi->auth_type()){
     $auth_type = $cgi->auth_type();
 }
-my $authenticated = 0;
-$authenticated = 1 if ($auth_type ne '');
+my $authenticated = is_authenticated($cgi);
+
+if ( !$authenticated ) {
+    print unauthorized_output($cgi);
+    exit;
+}
 
 my $full_url = url( -path=>1, -query=>1);
 my $https_url = $full_url;
