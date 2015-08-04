@@ -1,0 +1,3 @@
+# Installed by perfSONAR Toolkit. Allows anyone in pssudo group to have sudo on this machine
+%pssudo        ALL=(ALL)       ALL
+
