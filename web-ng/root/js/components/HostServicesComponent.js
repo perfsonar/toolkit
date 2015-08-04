@@ -23,8 +23,6 @@ HostServicesComponent._setServices = function( topic ) {
     }
     var data = HostStore.getHostServices();
     for(var h=0; h<data.services.length; h++) {
-        console.log(data.services[h]);
-        console.log(data.services[h].is_installed);
         var ports_formatted = '';        
         if (data.services[h].is_installed === 0) {
             data.services[h].show_service = false;

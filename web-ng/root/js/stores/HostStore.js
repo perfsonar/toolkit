@@ -8,6 +8,11 @@ var HostStore = {
     hostServices: null,
     hostCommunities: null,
     hostSummary: {},
+    adminInfoTopic: 'store.change.host_info',
+    statusTopic: 'store.change.host_status',
+    servicesTopic: 'store.change.host_services',
+    healthTopic: 'store.change.health_status',
+    summaryTopic: 'store.change.host_summary',
     saveAdminInfoTopic: 'store.host_admin_info.save',
     saveAdminInfoErrorTopic: 'store.host_admin_info.save_error',
     saveServicesTopic: 'store.host_services.save',
@@ -20,6 +25,7 @@ HostStore.initialize = function() {
     HostStore._retrieveServices();
     HostStore._retrieveHealth();
     HostStore._createSummaryTopic();
+    
     HostStore.hostSummary.data = {};
     HostStore.hostSummary.healthSet = false;
     HostStore.hostSummary.infoSet = false;
@@ -36,7 +42,7 @@ HostStore._retrieveInfo = function() {
             dataType: "json",
             success: function (data) {
                 HostStore.hostInfo = data;
-                Dispatcher.publish('store.change.host_info');
+                Dispatcher.publish(HostStore.adminInfoTopic);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
@@ -52,7 +58,7 @@ HostStore._retrieveStatus = function() {
             dataType: "json",
             success: function (data) {
                 HostStore.hostStatus = data;
-                Dispatcher.publish('store.change.host_status');
+                Dispatcher.publish(HostStore.statusTopic);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
@@ -95,26 +101,26 @@ HostStore._retrieveHealth = function() {
 };
 
 HostStore._createSummaryTopic = function() {
-    Dispatcher.subscribe('store.change.host_status', HostStore._setSummaryData);
-    Dispatcher.subscribe('store.change.host_info', HostStore._setSummaryData);
-    Dispatcher.subscribe('store.change.host_services', HostStore._setSummaryData);
-    Dispatcher.subscribe('store.change.health_status', HostStore._setSummaryData);
+    Dispatcher.subscribe(HostStore.statusTopic, HostStore._setSummaryData);
+    Dispatcher.subscribe(HostStore.adminInfoTopic, HostStore._setSummaryData);
+    Dispatcher.subscribe(HostStore.servicesTopic, HostStore._setSummaryData);
+    Dispatcher.subscribe(HostStore.healthTopic, HostStore._setSummaryData);
 };
 
 HostStore._setSummaryData = function (topic, data) {
-    if (topic == 'store.change.host_status') {
+    if (topic == HostStore.statusTopic) {
         var data = HostStore.getHostStatus();
         jQuery.extend(HostStore.hostSummary.data, data);
         HostStore.hostSummary.statusSet = true;
-    } else if (topic == 'store.change.host_info') {
+    } else if (topic == HostStore.adminInfoTopic) {
         var data = HostStore.getHostInfo();
         jQuery.extend(HostStore.hostSummary.data, data);
         HostStore.hostSummary.infoSet = true;
-    } else if (topic == 'store.change.host_services') {
+    } else if (topic == HostStore.servicesTopic) {
         var data = HostStore.getHostServices();
         jQuery.extend(HostStore.hostSummary.data, data);
         HostStore.hostSummary.servicesSet = true;
-    } else if (topic == 'store.change.health_status') {
+    } else if (topic == HostStore.healthTopic) {
         var data = HostStore.getHealthStatus();
         jQuery.extend(HostStore.hostSummary.data, data);
         HostStore.hostSummary.healthSet = true;
@@ -124,7 +130,7 @@ HostStore._setSummaryData = function (topic, data) {
             && HostStore.hostSummary.servicesSet 
             && HostStore.hostSummary.healthSet) {
         HostStore.hostSummary.summarySet = true;
-        Dispatcher.publish('store.change.host_summary');
+        Dispatcher.publish(HostStore.summaryTopic);
         // TODO: see if this summary needs to be disconnected due to the health updates
     }    
 };
