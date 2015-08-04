@@ -45,6 +45,9 @@ HostInfoComponent._setStatus = function( topic ) {
 HostInfoComponent._setInfo = function( topic ) {
     var data = HostStore.getHostInfo();
 
+    if (("#host-overview-template").length == 0 || $("#host_overview").length == 0 ) {
+        return;
+    }
     var host_overview_template = $("#host-overview-template").html();
     var template = Handlebars.compile(host_overview_template);
     var address_formatted = data.location.city + ", " + data.location.state + " " + data.location.zipcode + " " + data.location.country;

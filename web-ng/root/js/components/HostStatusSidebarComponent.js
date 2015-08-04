@@ -10,6 +10,9 @@ var HostStatusSidebarComponent = {
 };
 
 HostStatusSidebarComponent.initialize = function() {
+    if ($("#sidebar_host_status").length == 0 ) { 
+            return;
+    }
     Dispatcher.subscribe(HostStatusSidebarComponent.status_topic, HostStatusSidebarComponent._setStatus);
     HostStatusSidebarComponent.health_token = Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._setHealthStatus);
 };

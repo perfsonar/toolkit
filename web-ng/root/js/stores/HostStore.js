@@ -7,7 +7,11 @@ var HostStore = {
     hostStatus: null,
     hostServices: null,
     hostCommunities: null,
-    hostSummary: {}
+    hostSummary: {},
+    saveAdminInfoTopic: 'store.host_admin_info.save',
+    saveAdminInfoErrorTopic: 'store.host_admin_info.save_error',
+    saveServicesTopic: 'store.host_services.save',
+    saveServicesErrorTopic: 'store.host_services.save_error',
 };
 
 HostStore.initialize = function() {
@@ -100,7 +104,6 @@ HostStore._createSummaryTopic = function() {
 HostStore._setSummaryData = function (topic, data) {
     if (topic == 'store.change.host_status') {
         var data = HostStore.getHostStatus();
-        //console.log('host_status', data);
         jQuery.extend(HostStore.hostSummary.data, data);
         HostStore.hostSummary.statusSet = true;
     } else if (topic == 'store.change.host_info') {
@@ -123,9 +126,50 @@ HostStore._setSummaryData = function (topic, data) {
         HostStore.hostSummary.summarySet = true;
         Dispatcher.publish('store.change.host_summary');
         // TODO: see if this summary needs to be disconnected due to the health updates
-        //console.log('summary data');
-        //console.log(data);
     }    
+};
+
+HostStore.saveAdminInfo = function(info) {
+    var topic = HostStore.saveAdminInfoTopic;
+    var error_topic = HostStore.saveAdminInfoErrorTopic;
+    $.ajax({
+        url: '/toolkit-ng/admin/services/host.cgi?method=update_info',
+        type: 'POST',
+        data: info,
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded',
+        success: function(result) {
+            HostStore._retrieveInfo();
+            Dispatcher.publish(topic, result.message);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            Dispatcher.publish(error_topic, errorThrown);
+        }
+    });
+
+
+};
+
+HostStore.saveServices = function(services) {
+    var topic = HostStore.saveServicesTopic;
+    var error_topic = HostStore.saveServicesErrorTopic;
+    $.ajax({
+        url: '/toolkit-ng/admin/services/host.cgi?method=update_enabled_services',
+        type: 'POST',
+        data: services,
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded',
+        success: function(result) {
+            HostStore._retrieveServices();
+            Dispatcher.publish(topic, result.message);
+
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            Dispatcher.publish(error_topic, errorThrown);
+        }
+    });
+
+
 };
 
 HostStore.getHostInfo = function() {

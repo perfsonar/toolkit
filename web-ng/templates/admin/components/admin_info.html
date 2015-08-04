@@ -1,0 +1,157 @@
+[% INCLUDE components/loader.html %]
+ <div class="config-panel-wrapper">
+            <section class="dashboard-internal">
+                <div class="row">
+                    <div class="small-12 columns">
+                        <header>
+                            <nav>
+                                <ul class="nav--breadcrumbs u-list-nav">
+                                    <li><a href="../authenticated"><i class="fa fa-home fa-fw"></i>Home</a></li>
+                                    <li class="active"><a href="./">Configuration</a></li>
+                                </ul>
+                            </nav>
+                        </header>
+                    </div>
+                </div>
+
+
+
+<form id="adminInfoForm">
+
+<div class="config">
+
+    [% INCLUDE admin/components/admin_header_nav.html %]
+    <div class="row">
+        <div class="medium-9 columns">
+            <div class="config__form">
+                    <fieldset>
+                        <div class="row">
+                            <div class="small-12 columns">
+                                <label class="config__label">Organization Name</label>
+                                <input class="config__input" type="text" id="admin_organization_name">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label class="config__label">City</label>
+                                <input class="config__input" type="text" id="admin_city">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-4 columns">
+                                <label class="config__label">Country</label>
+                                <select class="config__input" id="admin_country">
+                                </select>
+                            </div>
+                            <div class="large-4 columns">
+                                <label class="config__label">State/Province</label>
+                                    <input type="text" id="admin_state" style="display:none;" />
+                                    <input type="hidden" id="previous_selected_state_val" value="" />
+                                    <select class="config__input" id="admin_states" />
+                                </select>
+                            </div>
+                            <div class="large-4 columns">
+                                <label class="config__label">ZIP/Postal Code</label>
+                                <input class="config__input" type="text" id="admin_postal_code">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="medium-12 columns">
+                                <label class="config__label">Administrator Name</label>
+                                <input class="config__input" type="text" id="admin_name">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="medium-12 columns">
+                                <label class="config__label">Administrator Email</label>
+                                <input class="config__input" type="text" id="admin_email">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label class="config__label">Latitude</label>
+                                <input class="config__input" type="text" id="admin_latitude">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label class="config__label">Longitude</label>
+                                <input class="config__input" type="text" id="admin_longitude">
+                            </div>
+                        </div>
+                    </fieldset>
+<!-- ********************************************
+                                    Communities module
+                                ******************************************** -->
+                                <h2 class="module-header__title">Communities (not working yet)</h2>
+                                <div class="communities">
+                                    <ul class="communities__list u-list-nav">
+                                        <li class="communities__node">10G
+                                            <a href="#"> <i class="fa fa-close"></i></a>
+                                        </li>
+                                        <li class="communities__node">40G <a href="#"><i class="fa fa-close"></i></a></li>
+                                        <li class="communities__node">AARNet <a href="#"><i class="fa fa-close"></i></a></li>
+                                        <li class="communities__node">AARNet-Edge <a href="#"><i class="fa fa-close"></i></a></li>
+                                        <li class="communities__node">ACORN-NS <a href="#"><i class="fa fa-close"></i></a></li>
+                                        <li class="communities__node">ALICE <a href="#"><i class="fa fa-close"></i></a></li>
+                                        <li class="communities__node">AmLight <a href="#"><i class="fa fa-close"></i></a></li>
+                                        <li class="communities__node">APAN <a href="#"><i class="fa fa-close"></i></a></li>
+                                        <li class="communities__node">APAN-JP <a href="#"><i class="fa fa-close"></i></a></li>
+                                        <li class="communities__node">AREON <a href="#"><i class="fa fa-close"></i></a></li>
+                                    </ul>
+                                    <a href="#" class="communities__add"><i class="fa fa-plus"></i> Show more communities</a>
+                                    <div class="communities__popular">
+                                        <fieldset>
+                                            <div class="row">
+                                                <div class="medium-8 columns">
+                                                    <input type="text" placeholder="Enter a community">
+                                                </div>
+                                                <div class="medium-4 columns">
+                                                    <button class="button-secondary button-secondary--small" style="margin: 0; display: block; width: 100%;">Add</button>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                        <h3 class="module-header__title">Popular communities</h3>
+                                        <p class="color-light"><em>Click to add</em></p>
+                                        <ul class="communities__list u-list-nav">
+                                            <li class="communities__node communities__node--popular">10G <a href="#"><i class="fa fa-plus"></i></a></li>
+                                            <li class="communities__node communities__node--popular">40G <a href="#"><i class="fa fa-plus"></i></a></li>
+                                            <li class="communities__node communities__node--popular">AARNet <a href="#"><i class="fa fa-plus"></i></a></li>
+                                            <li class="communities__node communities__node--popular">AARNet-Edge <a href="#"><i class="fa fa-plus"></i></a></li>
+                                            <li class="communities__node communities__node--popular">ACORN-NS <a href="#"><i class="fa fa-plus"></i></a></li>
+                                            <li class="communities__node communities__node--popular">ALICE <a href="#"><i class="fa fa-plus"></i></a></li>
+                                            <li class="communities__node communities__node--popular">AmLight <a href="#"><i class="fa fa-plus"></i></a></li>
+                                            <li class="communities__node communities__node--popular">APAN <a href="#"><i class="fa fa-plus"></i></a></li>
+                                            <li class="communities__node communities__node--popular">APAN-JP <a href="#"><i class="fa fa-plus"></i></a></li>
+                                            <li class="communities__node communities__node--popular">AREON <a href="#"><i class="fa fa-plus"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- End Communities module -->
+            </div>
+            <!-- End config__form -->  
+
+
+                </div>
+                <!-- End config -->
+                    <div class="medium-3 columns">
+                            <aside class="aside aside--config">
+                                <h3 class="aside__heading">Resources</h3>
+                                <ul class="aside__list">
+                                    <li><a href="#">Editing Host Information</a></li>
+                                    <li><a href="#">Adding a Community</a></li>
+                                    <li><a href="#">Deleting a Community</a></li>
+                                </ul>
+                            </aside>
+                        </div>
+                    </div>
+                    <!-- End row -->
+            </section>
+            <!-- End dashboard-internal -->
+        </div>
+        <!-- End config-panel-wrapper -->
+
+        [% INCLUDE admin/components/sticky_bar.html %]
+
+
+</form>
