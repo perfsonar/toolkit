@@ -2,6 +2,7 @@
 %define install_base /opt/perfsonar_ps/toolkit
 
 %define apacheconf apache-toolkit_web_gui.conf
+%define sudoerconf perfsonar_sudo
 
 %define init_script_1 config_daemon
 %define init_script_2 generate_motd
@@ -314,6 +315,7 @@ install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 install -D -m 0600 scripts/%{cron_hourly_1} %{buildroot}/etc/cron.hourly/%{cron_hourly_1}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
+install -D -m 0644 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 
 install -D -m 0755 init_scripts/%{init_script_1} %{buildroot}/etc/init.d/%{init_script_1}
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
@@ -332,6 +334,7 @@ rm -rf %{buildroot}
 %post
 # Add a group of users who can login to the web ui
 /usr/sbin/groupadd psadmin 2> /dev/null || :
+/usr/sbin/groupadd pssudo 2> /dev/null || :
 
 mkdir -p /var/log/perfsonar/web_admin
 chown apache:perfsonar /var/log/perfsonar/web_admin
@@ -430,13 +433,17 @@ for script in %{install_base}/scripts/system_environment/*; do
 	fi
 done
 
-# Add a script to inspire them to create a 'psadmin' user if they don't already have one
-if [ $1 -eq 1 ] ; then
+# Add a script to inspire them to create a 'psadmin' and sudo user if they don't already have one
+# Clear out old references first to fix bug where these got repeated
+sed -i "/add_psadmin_user/d" /root/.bashrc
+sed -i "/add_pssudo_user/d" /root/.bashrc
 cat >> /root/.bashrc <<EOF
 # Run the add_psadmin_user script to ensure that a psadmin user has been created
 /opt/perfsonar_ps/toolkit/scripts/add_psadmin_user --auto
+# Run the add_pssudo_user script to encourage disabling root ssh
+/opt/perfsonar_ps/toolkit/scripts/add_pssudo_user --auto
 EOF
-fi
+
 
 #########################################################################
 # The system environment scripts monkey with the apache configuration, so
@@ -501,6 +508,7 @@ fi
 %{install_base}/templates/*
 %{install_base}/dependencies
 /etc/httpd/conf.d/*
+/etc/sudoers.d/*
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
 %attr(0755,root,root) /etc/cron.hourly/%{cron_hourly_1}
 # Make sure the cgi scripts are all executable
@@ -531,6 +539,7 @@ fi
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_cacti
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
