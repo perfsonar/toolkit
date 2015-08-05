@@ -776,7 +776,7 @@ sub update_owamp_test {
 }
 
 sub add_traceroute_test {
-    my ($description, $test_interval, $test_schedule, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
+    my ($description, $test_interval, $test_schedule, $packet_size, $first_ttl, $max_ttl, $local_interface, $tool) = @_;
 
     $first_ttl = undef if $first_ttl and $first_ttl eq "NaN";
     $max_ttl   = undef if $max_ttl and $max_ttl eq "NaN";
@@ -798,6 +798,7 @@ sub add_traceroute_test {
             first_ttl     => $first_ttl,
             max_ttl       => $max_ttl,
             local_interface => $local_interface,
+            tool => $tool
         }
     );
 
@@ -817,7 +818,7 @@ sub add_traceroute_test {
 }
 
 sub update_traceroute_test {
-    my ($id, $description, $test_interval, $test_schedule, $packet_size, $first_ttl, $max_ttl, $local_interface) = @_;
+    my ($id, $description, $test_interval, $test_schedule, $packet_size, $first_ttl, $max_ttl, $local_interface, $tool) = @_;
 
     $first_ttl = undef if $first_ttl and $first_ttl eq "NaN";
     $max_ttl   = undef if $max_ttl and $max_ttl eq "NaN";
@@ -838,7 +839,8 @@ sub update_traceroute_test {
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, first_ttl => $first_ttl } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, max_ttl => $max_ttl } );
     ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, local_interface => $local_interface } );
-
+    ( $status, $res ) = $testing_conf->update_test_traceroute( { test_id => $id, tool => $tool } );
+    
     if ( $status != 0 ) {
         $error_msg = "Test update failed: $res";
         return display_body();
