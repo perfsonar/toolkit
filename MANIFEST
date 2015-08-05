@@ -23,7 +23,6 @@ etc/perfsonar_firewall_settings.conf
 etc/perfsonar_sudo
 etc/service_watcher-logger.conf
 etc/service_watcher.conf
-etc/toolkit.version
 init_scripts/config_daemon
 init_scripts/configure_nic_parameters
 init_scripts/generate_motd
