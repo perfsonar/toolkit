@@ -92,6 +92,7 @@ lib/perfSONAR_PS/NPToolkit/Config/Version.pm
 lib/perfSONAR_PS/NPToolkit/ConfigManager/ConfigClient.pm
 lib/perfSONAR_PS/NPToolkit/ConfigManager/ConfigDaemon.pm
 lib/perfSONAR_PS/NPToolkit/ConfigManager/Utils.pm
+lib/perfSONAR_PS/NPToolkit/DataService/Communities.pm
 lib/perfSONAR_PS/NPToolkit/DataService/Host.pm
 lib/perfSONAR_PS/NPToolkit/Services/BWCTL.pm
 lib/perfSONAR_PS/NPToolkit/Services/Base.pm
@@ -114,6 +115,8 @@ lib/perfSONAR_PS/NPToolkit/Services/httpd.pm
 lib/perfSONAR_PS/NPToolkit/Services/iperf3.pm
 lib/perfSONAR_PS/NPToolkit/WebService/Method.pm
 lib/perfSONAR_PS/NPToolkit/WebService/Router.pm
+lib/perfSONAR_PS/NPToolkit/WebService/Auth.pm
+lib/perfSONAR_PS/NPToolkit/WebService/ParameterTypes.pm
 lib/perfSONAR_PS/RegularTesting/Config.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/Base.pm
 lib/perfSONAR_PS/RegularTesting/MeasurementArchives/EsmondBase.pm
