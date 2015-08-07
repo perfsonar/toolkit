@@ -379,10 +379,10 @@ grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrativ
 mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
 
 #Set bundle type and version
-grep -v "bundle" /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf > /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
-echo "bundle_type  perfsonar-toolkit" >> /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
-echo "bundle_version  %{version}" >> /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
-mv /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
+echo "perfsonar-toolkit" > /var/lib/perfsonar/bundles/bundle_type
+echo "%{version}" > /var/lib/perfsonar/bundles/bundle_version
+chmod 644 /var/lib/perfsonar/bundles/bundle_type
+chmod 644 /var/lib/perfsonar/bundles/bundle_version
 
 #Make sure that the administrator_info file gets reloaded
 /opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl 2> /dev/null
@@ -577,7 +577,6 @@ fi
 %{install_base}/lib/*
 %{install_base}/python_lib/*
 %doc %{install_base}/doc/*
-%attr(0644,perfsonar,perfsonar) %{install_base}/etc/toolkit.version
 
 %files service-watcher
 %config(noreplace) %{install_base}/etc/service_watcher.conf
