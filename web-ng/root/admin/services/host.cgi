@@ -235,6 +235,24 @@ $services_update_method->add_input_parameter(
 
 $router->add_method($services_update_method);
 
+my $auto_updates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            => "update_auto_updates",
+    description     => "Updates auto updates configuration",
+    auth_required   => 1,
+    callback        => sub { $host_info->update_auto_updates(@_); },
+    request_methods => ['POST'],
+    );
+
+$auto_updates_method->add_input_parameter(
+    name            => "enabled",
+    description     => "Whether to enable auto updates",
+    required        => 1,
+    allow_empty     => 0,
+    type            => 'boolean',
+    );
+
+$router->add_method($auto_updates_method);
+
 my $communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_communities",
     description     =>  "Retrieves host communities information",
