@@ -11,9 +11,12 @@ use XML::Simple;
 use Sys::MemInfo qw(totalmem);
 use FindBin qw($RealBin);
 
+
 my $basedir = "$RealBin/../../";
 
 use lib "$RealBin/../../../lib";
+
+use perfSONAR_PS::NPToolkit::WebService::ParameterTypes qw($parameter_types);
 
 use perfSONAR_PS::NPToolkit::DataService::Communities;
 use perfSONAR_PS::NPToolkit::WebService::Method;
@@ -63,6 +66,34 @@ my $host_communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     );
 
 $router->add_method($host_communities_method);
+
+my %input_parameters=();
+
+$input_parameters{'community'}{'required'}=1;
+$input_parameters{'community'}{'type'}=$parameter_types->{'text'};
+
+my $min_parameters = 1;
+my $add_host_community_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "add_host_communities",
+    description     =>  "Add a host community",
+    auth_required   => 1,
+    callback        =>  sub { $communities_info->add_host_communities(@_); },
+    input_params    => \%input_parameters,
+    min_params      => $min_parameters
+    );
+
+$router->add_method($add_host_community_method);
+
+my $remove_host_community_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "remove_host_communities",
+    description     =>  "Remove a host community",
+    auth_required   => 1,
+    callback        =>  sub { $communities_info->remove_host_communities(@_); },
+    input_params    => \%input_parameters,
+    min_params      => $min_parameters
+    );
+
+$router->add_method($remove_host_community_method);
 
 $router->handle_request();
 
