@@ -69,9 +69,9 @@ my $summary_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 $router->add_method($summary_method);
 
 my $info_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            =>  "get_info",
-    description     =>  "Retrieves host information",
-    callback        =>  sub { $host_info->get_information(@_); }
+    name            =>  "get_admin_info",
+    description     =>  "Retrieves host admin information",
+    callback        =>  sub { $host_info->get_admin_information(@_); }
     );
 
 $router->add_method($info_method);
@@ -172,9 +172,10 @@ $info_update_method->add_input_parameter(
 $router->add_method($info_update_method);
 
 my $status_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            =>  "get_status",
-    description     =>  "Retrieves host status information",
-    callback        =>  sub { $host_info->get_status(@_); }
+    name            => "get_details",
+    description     => "Retrieves host status information",
+    auth_required   => 1,
+    callback        => sub { $host_info->get_details(@_); }
     );
 
 $router->add_method($status_method);
@@ -187,6 +188,16 @@ my $health_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 );
 
 $router->add_method($health_method);
+
+my $ntp_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            => "get_ntp_info",
+    description     =>  " Retrieves ntp information",
+    auth_required   => 1,
+    callback        => sub {$host_info->get_ntp_information(@_);}
+);
+
+$router->add_method($ntp_method);
+
 
 my $services_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_services",
@@ -234,6 +245,15 @@ $services_update_method->add_input_parameter(
     );
 
 $router->add_method($services_update_method);
+
+my $get_auto_updates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            => "get_auto_updates",
+    description     => "Gets auto updates configuration",
+    auth_required   => 1,
+    callback        => sub { $host_info->get_auto_updates(@_); },
+    );
+
+$router->add_method($get_auto_updates_method);
 
 my $auto_updates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            => "update_auto_updates",

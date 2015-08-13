@@ -1,0 +1,95 @@
+[% INCLUDE components/loader.html %]
+
+<div class="config-panel-wrapper">
+    <section class="dashboard-internal">
+    <div class="row">
+        <div class="small-12 columns">
+            <header>
+            <nav>
+            <ul class="nav--breadcrumbs u-list-nav">
+                <li><a href="../authenticated"><i class="fa fa-home fa-fw"></i>Home</a></li>
+                <li><a href="index.cgi">Configuration</a></li>
+                <li class="active"><a href="services.cgi">Services</a></li>
+            </ul>
+            </nav>
+            </header>
+        </div>
+    </div>
+
+    <div class="config">
+        <form>
+
+        [% INCLUDE admin/components/admin_header_nav.html %]
+
+                    <div class="row">
+                        <div class="medium-9 columns">
+                            <div class="config__form">
+                                <div class="switch-wrapper">
+                                    <h2 class="module-header__title">Auto Updates</h2>
+                                    <p>Automatically updates all software on a nightly basis.</p>
+                                    <div class="switch round small">
+                                        <input id="exampleCheckboxSwitch" type="checkbox">
+                                        <label for="exampleCheckboxSwitch"></label>
+                                    </div>
+                                </div>
+                                <h2 class="module-header__title">NTP Servers (selected)</h2>
+                                <div class="servers">
+                                    <!-- New select box for adding servers -->
+                                    <div class="row">
+                                        <div class="medium-12 columns">
+                                            <select class="js-select-multiple" multiple="multiple">
+                                                <option>A server</option>
+                                                <option>B server</option>
+                                                <option>C server</option>
+                                                <option>D server</option>
+                                                <option>E server</option>
+                                                <option>F server</option>
+                                                <option>G server</option>
+                                                <option>H server</option>
+                                            </select>
+                                            <ul class="servers__options-list">
+                                                <li class="servers__options-item"><a href="#">Reset to closest servers</a></li>
+                                                <li><a href="#">Manage available NTP servers</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Servers module -->
+                            </div>
+                            <!-- End config__form -->
+                        </div>
+                        <div class="medium-3 columns">
+                            <aside class="aside aside--config">
+                                <h3 class="aside__heading">Resources</h3>
+                                <ul class="aside__list">
+                                    <li><a href="#">Automatic Updates</a></li>
+                                </ul>
+                                <h3 class="aside__heading">NTP</h3>
+                                <ul class="aside__list">
+                                    <li><a href="#">Selecting the Closest Servers</a></li>
+                                    <li><a href="#">Manually Selecting a Known Server</a></li>
+                                    <li><a href="#">Manually Adding a Server</a></li>
+                                    <li><a href="#">Deselecting a Server</a></li>
+                                    <li><a href="#">Deleting a Known Server</a></li>
+                                </ul>
+                            </aside>
+                        </div>
+                    </div>
+                    <!-- End row -->
+
+                    </form>
+                </div>
+                <!-- End config__form -->  
+
+
+            </div>
+            <!-- End config -->
+        </div>
+        <!-- End row -->
+        </section>
+        <!-- End dashboard-internal -->
+    </div>
+    <!-- End services-panel-wrapper -->
+
+    [% INCLUDE admin/components/sticky_bar.html %]
+

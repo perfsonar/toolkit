@@ -46,7 +46,7 @@ my $tt = Template->new({
         INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
     }) || die "$Template::ERROR\n";
 
-my $page = 'admin/components/admin_info.html';
+my $page = 'admin/pages/admin_info.html';
 my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
