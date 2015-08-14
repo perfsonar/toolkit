@@ -4,12 +4,12 @@
 var HostStore = {
     hostHealth: null,
     hostInfo: null,
-    hostStatus: null,
+    hostDetails: null,
     hostServices: null,
     hostCommunities: null,
     hostSummary: {},
     adminInfoTopic: 'store.change.host_info',
-    statusTopic: 'store.change.host_status',
+    detailsTopic: 'store.change.host_details',
     servicesTopic: 'store.change.host_services',
     healthTopic: 'store.change.health_status',
     summaryTopic: 'store.change.host_summary',
@@ -29,7 +29,7 @@ HostStore.initialize = function() {
     HostStore.hostSummary.data = {};
     HostStore.hostSummary.healthSet = false;
     HostStore.hostSummary.infoSet = false;
-    HostStore.hostSummary.statusSet = false;
+    HostStore.hostSummary.detailsSet = false;
     HostStore.hostSummary.summarySet = false;
     HostStore.hostSummary.servicesSet = false;
 };
@@ -57,8 +57,8 @@ HostStore._retrieveStatus = function() {
             contentType: "application/json",
             dataType: "json",
             success: function (data) {
-                HostStore.hostStatus = data;
-                Dispatcher.publish(HostStore.statusTopic);
+                HostStore.hostDetails = data;
+                Dispatcher.publish(HostStore.detailsTopic);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
@@ -101,17 +101,17 @@ HostStore._retrieveHealth = function() {
 };
 
 HostStore._createSummaryTopic = function() {
-    Dispatcher.subscribe(HostStore.statusTopic, HostStore._setSummaryData);
+    Dispatcher.subscribe(HostStore.detailsTopic, HostStore._setSummaryData);
     Dispatcher.subscribe(HostStore.adminInfoTopic, HostStore._setSummaryData);
     Dispatcher.subscribe(HostStore.servicesTopic, HostStore._setSummaryData);
     Dispatcher.subscribe(HostStore.healthTopic, HostStore._setSummaryData);
 };
 
 HostStore._setSummaryData = function (topic, data) {
-    if (topic == HostStore.statusTopic) {
-        var data = HostStore.getHostStatus();
+    if (topic == HostStore.detailsTopic) {
+        var data = HostStore.getHostDetails();
         jQuery.extend(HostStore.hostSummary.data, data);
-        HostStore.hostSummary.statusSet = true;
+        HostStore.hostSummary.detailsSet = true;
     } else if (topic == HostStore.adminInfoTopic) {
         var data = HostStore.getHostInfo();
         jQuery.extend(HostStore.hostSummary.data, data);
@@ -126,7 +126,7 @@ HostStore._setSummaryData = function (topic, data) {
         HostStore.hostSummary.healthSet = true;
     }
     if (HostStore.hostSummary.infoSet 
-            && HostStore.hostSummary.statusSet 
+            && HostStore.hostSummary.detailsSet 
             && HostStore.hostSummary.servicesSet 
             && HostStore.hostSummary.healthSet) {
         HostStore.hostSummary.summarySet = true;
@@ -181,8 +181,8 @@ HostStore.saveServices = function(services) {
 HostStore.getHostInfo = function() {
     return HostStore.hostInfo;
 };
-HostStore.getHostStatus = function() {
-    return HostStore.hostStatus;
+HostStore.getHostDetails = function() {
+    return HostStore.hostDetails;
 };
 HostStore.getHealthStatus = function() {
     return HostStore.hostHealth;

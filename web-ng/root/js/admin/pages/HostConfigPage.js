@@ -1,7 +1,8 @@
-// make sure jquery, Dispatcher, TestStore, TestResultsComponent, 
-// HostStore, HostServicesComponent and HostInfoComponent all load before this.
+// make sure jquery, Dispatcher, 
+// HostDetailStore all load before this.
 
-var AdminServicesPage = { 
+var HostConfigPage = { 
+    detailsTopic: 'store.change.host_details',
     adminServicesTopic: 'store.change.host_services',
     formChangeTopic: 'ui.form.change',
     formSuccessTopic: 'ui.form.success',
@@ -13,80 +14,21 @@ var AdminServicesPage = {
     latencyServices: ['owamp'],
 };
 
-AdminServicesPage.initialize = function() {
+HostConfigPage.initialize = function() {
     $('#loading-modal').foundation('reveal', 'open');
-    Dispatcher.subscribe(AdminServicesPage.adminServicesTopic, AdminServicesPage._setEnabledServices);
-    Dispatcher.subscribe(AdminServicesPage.saveServicesTopic, AdminServicesPage._saveSuccess);
-    Dispatcher.subscribe(AdminServicesPage.saveServicesErrorTopic, AdminServicesPage._saveError);
-    $('#select_bandwidth_services').click('bandwidth', AdminServicesPage.selectServices);
-    $('#select_latency_services').click('latency', AdminServicesPage.selectServices);
-
-    $('input:checkbox').filter(function() {
-            return this.id.match(/services_.+_cb$/);    
-        }).change(AdminServicesPage._showSaveBar);
-    $('#admin_info_save_button').click( AdminServicesPage._save );
-    $('#admin_info_cancel_button').click( AdminServicesPage._cancel);
-
+    Dispatcher.subscribe(HostConfigPage.detailsTopic, HostConfigPage._setDetails);
 };
 
-
-AdminServicesPage._setEnabledServices = function(topic) {
-    var data = HostStore.getHostServices();
+HostConfigPage._setDetails = function(topic) {
     $('#loading-modal').foundation('reveal', 'close');
-    
-    var serviceList = AdminServicesPage.serviceList;
-    for(var i in data.services) {
-        var service = data.services[i];
-        if (jQuery.inArray(service.name, serviceList) > -1) {
-            var service_id = 'services_' + service.name + '_cb';
-            var service_el = $('#' + service_id);
-            var service_cont_el = $('#enabled_services_fields .services_' + service.name);
-            var checked = service.enabled;
-            service_el.prop( "checked", checked );
-            if (typeof service.is_installed != "undefined" && service.is_installed == '0') {
-                service_el.addClass("uninstalled");
-                service_cont_el.addClass("uninstalled");
-                service_el.prop("disabled", true);
-            } else {
-                service_el.removeClass("uninstalled");                
-                service_cont_el.removeClass("uninstalled");
-                service_el.prop("disabled", false);
-            }
-        } 
-
-    }
+    var details = HostDetailsStore.getHostDetails();
 
 };
 
-AdminServicesPage.selectServices = function(arg) {
-    var type = arg.data;
-    arg.preventDefault();
-    var serviceList = AdminServicesPage.serviceList;
-    var latencyServices = AdminServicesPage.latencyServices;
-    for (var i in serviceList) {
-        var service = serviceList[i];
-        var serviceID = 'services_' + service + '_cb';
-        if (type == 'latency') {
-            if ( jQuery.inArray(service, latencyServices) > -1 ) {
-                AdminServicesPage._checkService(serviceID, true);
-            } else {
-                AdminServicesPage._checkService(serviceID, false);
-            }            
-        } else {
-            if ( jQuery.inArray(service, latencyServices) > -1 ) {
-                AdminServicesPage._checkService(serviceID, false);
-            } else {
-                AdminServicesPage._checkService(serviceID, true);
-            }            
-        }
-    }
-    AdminServicesPage._showSaveBar();
-    
-};
 
-AdminServicesPage._save = function() {
+HostConfigPage._save = function() {
     var data = {};
-    var services = AdminServicesPage.serviceList;
+    var services = HostConfigPage.serviceList;
     for (var i in services) {
         var service = services[i];
         var el = $('#services_' + service + '_cb');
@@ -96,37 +38,21 @@ AdminServicesPage._save = function() {
     HostStore.saveServices(data);
 };
 
-AdminServicesPage._saveSuccess = function( topic, message ) {
-    Dispatcher.publish(AdminServicesPage.formSuccessTopic, message);
+HostConfigPage._saveSuccess = function( topic, message ) {
+    Dispatcher.publish(HostConfigPage.formSuccessTopic, message);
 };
 
-AdminServicesPage._saveError = function( topic, message ) {
-    Dispatcher.publish(AdminServicesPage.formErrorTopic, message);
+HostConfigPage._saveError = function( topic, message ) {
+    Dispatcher.publish(HostConfigPage.formErrorTopic, message);
 };
 
-AdminServicesPage._cancel = function() {
-    Dispatcher.publish(AdminServicesPage.formCancelTopic);
-    Dispatcher.publish(AdminServicesPage.adminServicesTopic);
+HostConfigPage._cancel = function() {
+    Dispatcher.publish(HostConfigPage.formCancelTopic);
+    Dispatcher.publish(HostConfigPage.adminServicesTopic);
 };
 
-AdminServicesPage._checkService = function(serviceID, checked) {
-    var el =  $('#' + serviceID);
-    if (! el.prop("disabled") ) {
-        el.prop("checked", checked);
-    } else {
-        el.prop("checked", false);
-    }
+HostConfigPage._showSaveBar = function() {
+    Dispatcher.publish(HostConfigPage.formChangeTopic);
 };
 
-AdminServicesPage.clearServices = function() {
-    $('input:checkbox').filter(function() {
-         return this.id.match(/services_.+_cb$/);    
-    })
-    .prop("checked", false);
-};
-
-AdminServicesPage._showSaveBar = function() {
-    Dispatcher.publish(AdminServicesPage.formChangeTopic);
-};
-
-AdminServicesPage.initialize();
+HostConfigPage.initialize();

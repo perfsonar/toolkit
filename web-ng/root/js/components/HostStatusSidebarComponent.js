@@ -1,8 +1,5 @@
 var HostStatusSidebarComponent = {
-    host_info: null,
-    host_status: null,
-    health_status: null,
-    status_topic: 'store.change.host_status',
+    details_topic: 'store.change.host_details',
     health_topic: 'store.change.health_status',
     health_token: null,
     health_refresh_interval: 10000, // in milliseconds
@@ -13,7 +10,7 @@ HostStatusSidebarComponent.initialize = function() {
     if ($("#sidebar_host_status").length == 0 ) { 
             return;
     }
-    Dispatcher.subscribe(HostStatusSidebarComponent.status_topic, HostStatusSidebarComponent._setStatus);
+    Dispatcher.subscribe(HostStatusSidebarComponent.details_topic, HostStatusSidebarComponent._setStatus);
     HostStatusSidebarComponent.health_token = Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._setHealthStatus);
 };
 

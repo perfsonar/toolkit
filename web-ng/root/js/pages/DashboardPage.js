@@ -11,10 +11,12 @@ DashboardPage.initialize = function() {
         $('#loading-modal').foundation('reveal', 'open');
     //}
     DashboardPage.dashboardTopics = [
-        'store.change.host_status',
+        'store.change.host_details',
         'store.change.host_info',
         'store.change.host_services',
-        'store.change.tests'
+        // for now, let's allow the loader to clear even if the tests
+        // have not yet loaded
+        //'store.change.tests'
     ];
     DashboardPage._setTopics();
 };

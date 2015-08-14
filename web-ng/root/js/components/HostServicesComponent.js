@@ -1,9 +1,5 @@
 var HostServicesComponent = {
-    host_info: null,
-    host_status: null,
-    status_topic: 'store.change.host_status',
     services_topic: 'store.change.host_services',
-    info_topic: 'store.change.host_info'
 };
 
 

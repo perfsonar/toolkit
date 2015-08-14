@@ -7,32 +7,31 @@ use Log::Log4perl qw(get_logger :easy :levels);
 use Template;
 use Data::Dumper;
 
+# Set some variable to control the page layout
+my $include_prefix = '../';
+my $sidebar = 0;
+
 use FindBin qw($RealBin);
 my $basedir = "$RealBin/../../..";
 use lib "$RealBin/../../../lib";
 
 use perfSONAR_PS::NPToolkit::WebService::Auth qw( is_authenticated unauthorized_output );
 
-# Set some variable to control the page layout
-my $include_prefix = '../';
-my $sidebar = 0;
 
 my $cgi = CGI->new();
 
-my $section = 'services';
+my $section = 'tests';
+my $remote_user = $cgi->remote_user();
+my $auth_type = '';
 
+if($cgi->auth_type()){
+    $auth_type = $cgi->auth_type();
+}
 my $authenticated = is_authenticated($cgi);
 
 if ( !$authenticated ) {
     print unauthorized_output($cgi);
     exit;
-}
-
-my $remote_user = $cgi->remote_user();
-my $auth_type = '';
-
-if($cgi->auth_type()) {
-        $auth_type = $cgi->auth_type();
 }
 
 my $full_url = url( -path=>1, -query=>1);
@@ -47,7 +46,7 @@ my $tt = Template->new({
         INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
     }) || die "$Template::ERROR\n";
 
-my $page = 'admin/pages/services.html';
+my $page = 'admin/pages/host.html';
 my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
@@ -55,11 +54,11 @@ my $js_files = [
     $include_prefix . 'js/stores/HostStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
-    #$include_prefix . 'js/admin/components/ServicesUpdateComponent.js', 
-    $include_prefix . 'js/stores/HostDetailsStore.js', 
+    '/serviceTest/JS/TestResultUtils.js', # TODO: fix to better relative URL
     $include_prefix . 'js/components/PageHeader.js', 
     $include_prefix . 'js/admin/components/StickySaveBar.js', 
-    $include_prefix . 'js/admin/pages/AdminServicesPage.js'
+    $include_prefix . 'js/admin/components/OldTestConfig.js', 
+    $include_prefix . 'js/admin/pages/TestConfigPage.js'
     ];
 
 my $vars = {};
