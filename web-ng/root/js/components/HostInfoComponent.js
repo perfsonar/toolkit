@@ -10,8 +10,8 @@ HostInfoComponent.initialize = function() {
 };
 
 HostInfoComponent._setDetails = function( topic ) {
-    var data = HostStore.getHostDetails();
-    var hostInfo = HostStore.getHostInfo();
+    var data = HostDetailsStore.getHostDetails();
+    var hostInfo = HostAdminInfoStore.getHostAdminInfo();
     var hostNameOrIP = data.external_address.dns_name || data.external_address.ipv4_address || data.external_address.ipv6_address || data.toolkit_name;
     var primaryHostName="";
     if(data.external_address.dns_name){
@@ -40,7 +40,7 @@ HostInfoComponent._setDetails = function( topic ) {
 };
 
 HostInfoComponent._setInfo = function( topic ) {
-    var data = HostStore.getHostInfo();
+    var data = HostAdminInfoStore.getHostAdminInfo();
 
     if (("#host-overview-template").length == 0 || $("#host_overview").length == 0 ) {
         return;

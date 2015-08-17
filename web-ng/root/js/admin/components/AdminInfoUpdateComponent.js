@@ -50,7 +50,7 @@ AdminInfoUpdateComponent._save = function() {
     data.latitude = $("#admin_latitude").val();
     data.longitude = $("#admin_longitude").val();
 
-    HostStore.saveAdminInfo(data);
+    HostAdminStore.saveAdminInfo(data);
 
 };
 
@@ -117,7 +117,7 @@ AdminInfoUpdateComponent._getStates = function( countryCode, state ) {
 
 
 AdminInfoUpdateComponent._setInfo = function( topic ) {
-    var data = HostStore.getHostInfo();
+    var data = HostAdminInfoStore.getHostAdminInfo();
 
     $("#admin_organization_name").val(data.administrator.organization);
     $("#admin_name").val(data.administrator.name);

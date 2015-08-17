@@ -140,7 +140,7 @@ HostStatusSidebarComponent._getHealthVariables = function(data) {
 };
 
 HostStatusSidebarComponent._setHealthStatus = function( topic ) {
-    var data = HostStore.getHealthStatus();
+    var data = HostHealthStore.getHealthStatus();
     var health_values = HostStatusSidebarComponent._getHealthVariables(data);
 
     if ( $("#sidebar-health-template").length == 0 ) {
@@ -199,14 +199,14 @@ HostStatusSidebarComponent._formatMemory = function(memory) {
 };
 
 HostStatusSidebarComponent._getUpdatedHealth = function() {
-    HostStore._retrieveHealth();
+    HostHealthStore._retrieveHealth();
     setTimeout( HostStatusSidebarComponent._getUpdatedHealth, HostStatusSidebarComponent.health_refresh_interval );
 };
 
 HostStatusSidebarComponent._updateHealth = function() {
     //Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._updateHealth);
     //HostStore._retrieveHealth();
-    var data = HostStore.getHealthStatus();
+    var data = HostHealthStore.getHealthStatus();
     var health_values = HostStatusSidebarComponent._getHealthVariables(data);
     for(var i=0; i<health_values.length; i++) {
         var val = health_values[i];
