@@ -22,10 +22,6 @@ AdminInfoUpdateComponent.initialize = function() {
     AdminInfoUpdateComponent._getCountries();
     AdminInfoUpdateComponent.state_data_urls['US'] = '/toolkit-ng/data/us_states_hash.json';
     Dispatcher.subscribe(AdminInfoUpdateComponent.info_topic, AdminInfoUpdateComponent._setInfo);
-    $("#adminInfoForm").submit(function(e){
-            AdminInfoUpdateComponent._save();
-            e.preventDefault();
-    });
     $('form#adminInfoForm input').change(AdminInfoUpdateComponent._showSaveBar);
     $('form#adminInfoForm select').change(AdminInfoUpdateComponent._showSaveBar);
     $('#admin_info_cancel_button').click( AdminInfoUpdateComponent._cancel);
@@ -34,7 +30,7 @@ AdminInfoUpdateComponent.initialize = function() {
     $('#loading-modal').foundation('reveal', 'open');
 };
 
-AdminInfoUpdateComponent._save = function() {
+AdminInfoUpdateComponent.save = function() {
     var data = {};
     data.organization_name = $("#admin_organization_name").val();
     data.admin_name = $("#admin_name").val();

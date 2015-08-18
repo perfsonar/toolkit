@@ -60,6 +60,7 @@ $(document).ready(function() {
 
 
     // Select2 plugin - https://select2.github.io/
+    /*
     $(".js-select-multiple").select2({
         placeholder: "Add a new server"
     });
@@ -68,5 +69,6 @@ $(document).ready(function() {
     $(".select2-search__field").keypress(function() {
         $(".sticky-bar--unsaved").fadeIn("fast");    
     });
+    */
 
 });

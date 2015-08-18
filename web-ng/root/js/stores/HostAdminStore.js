@@ -13,6 +13,8 @@ var HostAdminStore = {
     saveAdminInfoErrorTopic: 'store.host_admin_info.save_error',
     saveServicesTopic: 'store.host_services.save',
     saveServicesErrorTopic: 'store.host_services.save_error',
+    saveCommunitiesTopic: 'store.communities_host.save',
+    saveCommunitiesErrorTopic: 'store.communities_host.save_error',
 };
 
 HostAdminStore.saveAdminInfo = function(info) {
@@ -47,6 +49,31 @@ HostAdminStore.saveServices = function(services) {
         contentType: 'application/x-www-form-urlencoded',
         success: function(result) {
             HostServicesStore._retrieveServices();
+            Dispatcher.publish(topic, result.message);
+
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            Dispatcher.publish(error_topic, errorThrown);
+        }
+    });
+
+
+};
+
+HostAdminStore.saveCommunities = function( communities_arr ) {
+    var topic = HostAdminStore.saveCommunitiesTopic;
+    var error_topic = HostAdminStore.saveCommunitiesErrorTopic;
+    var communities_str = communities_arr.join(',');
+    var communities = { community: communities_str };
+    $.ajax({
+        url: '/toolkit-ng/services/communities.cgi?method=add_host_communities',
+        type: 'POST',
+        data: communities,
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded',
+        success: function(result) {
+            CommunityHostStore._retrieveCommunities();
+            CommunityAllStore._retrieveCommunities();
             Dispatcher.publish(topic, result.message);
 
         },
