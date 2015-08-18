@@ -19,20 +19,17 @@ CommunityUpdateComponent.initialize = function() {
     var sel = $('#update_communities');
     addButton.click(function (e) {
         var newCommunity = addName.val(); 
-        console.log("New community ", newCommunity);
         e.preventDefault();
         var host = CommunityUpdateComponent.communities.host;
-        console.log('host', host);
         host[newCommunity] = 1;
-        CommunityUpdateComponent._selectCommunities();
         addName.val("");
-        /*
+        
         sel.append( $("<option></option>")
                         .attr("value", newCommunity)
                         .prop("selected", true)
                         .text(newCommunity) );
-        */
-        //sel.select2();
+        
+        sel.select2( { placeholder: CommunityUpdateComponent.placeholder });
     });
 
 };
@@ -74,7 +71,6 @@ CommunityUpdateComponent._setAllCommunities = function( topic ) {
         commObj[ data[i] ] = 0;
         h++;
     }
-    //CommunityUpdateComponent.communities.all = communities;
     CommunityUpdateComponent.communities.all = commObj;
 
     CommunityUpdateComponent.allSet = true;
@@ -90,12 +86,6 @@ CommunityUpdateComponent._selectCommunities = function() {
     var host = CommunityUpdateComponent.communities.host;
    
     sel.empty();
-    if (CommunityUpdateComponent.select2Set) {
-        sel.select2("data", null); 
-        sel.select2("destroy");        
-    }
-    //sel.first().select2('data', null)
-    //sel.select2("destroy");
 
     CommunityUpdateComponent._combineCommunities();
 
@@ -105,38 +95,16 @@ CommunityUpdateComponent._selectCommunities = function() {
                         .attr("value", val.text)
                         .prop("selected", val.selected)
                         .text(val.text) );
-        
     });
-
-    console.log('#update_communities before creating select2', $('#update_communities'));
 
     sel.select2( { 
         placeholder: CommunityUpdateComponent.placeholder,
-        //data: CommunityUpdateComponent.communities.all,            
     });
-    console.log('#update_communities after creating select2', $('#update_communities'));
     CommunityUpdateComponent.select2Set = true;
-    /*
-    sel.on("change", function (e) { 
-            //console.log('sel2 changed, e=', e);
-            var selections = sel.val();
-            console.log("select2 value = ", selections);
-            
-    });
-      */  
 
     if (! CommunityUpdateComponent.closeEventSet ) {
         sel.on('select2:unselect', function(e) {
-                console.log('close clicked', e);
-                console.log('host', host);
                 var unselectedName = e.params.data.text;
-                console.log(unselectedName + ' closed');
-                //sel.val(null).trigger("change");
-                //host[unselectedName] = 0;
-                delete host[unselectedName];
-                console.log('hosts after deletion', host);
-                //CommunityUpdateComponent._selectCommunities();
-                console.log('#update_communities', $('#update_communities'));
         });
         CommunityUpdateComponent.closeEventSet = true;
     }
@@ -147,8 +115,6 @@ CommunityUpdateComponent.save = function() {
     var sel = $('#update_communities');
     var communities_arr = sel.val();
     console.log('community values', communities_arr);
-
-    //var communities = { communities_arr.join(',');
 
     HostAdminStore.saveCommunities( communities_arr );
     
@@ -175,8 +141,6 @@ CommunityUpdateComponent._combineCommunities = function() {
     }
 
     CommunityUpdateComponent.communities.combined = sorted;
-
-    console.log('combined communities', sorted);
 
 };
 
