@@ -523,8 +523,15 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/bwctl.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/ndt.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/owamp.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/administrative_info/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/regular_testing/index.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/host.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/host.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/ntp.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/tests.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/psTracerouteViewer/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/services/index.cgi
