@@ -58,6 +58,28 @@ $(document).ready(function() {
     });
     */
 
+    // Sidebar popover menu used to exand on larger sets of sidebar info
+    // For example, "Interfaces"
+    $(".js-sidebar-popover-toggle").click(function(e) {
+        e.preventDefault();
+        $(this).next(".sidebar-popover").fadeToggle("fast");
+    });
+
+    $(".js-sidebar-popover-close").click(function(e) {
+        e.preventDefault();
+        $(this).parent(".sidebar-popover").fadeOut("fast");
+    });
+
+    // Hide the popover when the user clicks outside of it
+    $(document).click(function(e) {
+        $(".sidebar-popover").fadeOut("fast");
+    });
+
+    // Stop clicking inside the popover from hiding it
+    $(".js-sidebar-popover-toggle, .sidebar-popover").click(function(e) {
+        e.stopPropagation();
+    });
+
 
     // Select2 plugin - https://select2.github.io/
     /*
