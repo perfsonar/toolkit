@@ -1,0 +1,58 @@
+[% INCLUDE components/loader.html %]
+
+<div class="config-panel-wrapper">
+    <section class="dashboard-internal">
+    <div class="row">
+        <div class="small-12 columns">
+            <header>
+            <nav>
+            <ul class="nav--breadcrumbs u-list-nav">
+                <li><a href="/toolkit-ng/"><i class="fa fa-home fa-fw"></i>Home</a></li>
+                <li><a href="index.cgi">Configuration</a></li>
+                <li class="active"><a href="services.cgi">Services</a></li>
+            </ul>
+            </nav>
+            </header>
+        </div>
+    </div>
+
+    <div class="config">
+        <form>
+
+        [% INCLUDE admin/components/admin_header_nav.html %]
+
+                    <div class="row">
+                        <div class="medium-9 columns">
+                            <div class="config__form">
+                                    <h2 class="module-header__title">Test Configuration</h2>
+                                    <p>Configure tests between this host and other hosts..</p>
+                            </div>
+                            <!-- End config__form -->
+                        </div>
+                        <div class="medium-3 columns">
+                            <aside class="aside aside--config">
+                                <h3 class="aside__heading">Resources</h3>
+                                <ul class="aside__list">
+                                    <li><a href="#">Test configuration help</a></li>
+                                </ul>
+                            </aside>
+                        </div>
+                    </div>
+                    <!-- End row -->
+
+                    </form>
+                </div>
+                <!-- End config__form -->  
+
+
+            </div>
+            <!-- End config -->
+        </div>
+        <!-- End row -->
+        </section>
+        <!-- End dashboard-internal -->
+    </div>
+    <!-- End services-panel-wrapper -->
+
+    [% INCLUDE admin/components/sticky_bar.html %]
+
