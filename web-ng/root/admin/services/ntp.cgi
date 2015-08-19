@@ -202,6 +202,25 @@ $delete_server_method->add_input_parameter(
 
 $router->add_method($delete_server_method);
 
+#update_ntp_conf method
+my $update_ntp_conf_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "update_ntp_configuration",
+    description     =>  "Updates NTP configuration file",
+    auth_required   =>  1,
+    request_methods => ['POST'],
+    callback        =>  sub { $ntp_info->update_ntp_configuration(@_); }
+    );
+
+$update_ntp_conf_method->add_input_parameter(
+    name            => "POSTDATA",
+    description     => "JSON blob containing list of enabled servers, disabled servers and deleted servers",
+    required        => 1,
+    allow_empty     => 0,
+    type            => 'text',
+    );
+
+$router->add_method($update_ntp_conf_method);
+
 $router->handle_request();
 
 # vim: expandtab shiftwidth=4 tabstop=4
