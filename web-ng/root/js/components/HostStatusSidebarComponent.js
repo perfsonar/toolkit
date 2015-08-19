@@ -1,8 +1,5 @@
 var HostStatusSidebarComponent = {
-    host_info: null,
-    host_status: null,
-    health_status: null,
-    status_topic: 'store.change.host_status',
+    details_topic: 'store.change.host_details',
     health_topic: 'store.change.health_status',
     health_token: null,
     health_refresh_interval: 10000, // in milliseconds
@@ -13,7 +10,7 @@ HostStatusSidebarComponent.initialize = function() {
     if ($("#sidebar_host_status").length == 0 ) { 
             return;
     }
-    Dispatcher.subscribe(HostStatusSidebarComponent.status_topic, HostStatusSidebarComponent._setStatus);
+    Dispatcher.subscribe(HostStatusSidebarComponent.details_topic, HostStatusSidebarComponent._setStatus);
     HostStatusSidebarComponent.health_token = Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._setHealthStatus);
 };
 
@@ -143,7 +140,7 @@ HostStatusSidebarComponent._getHealthVariables = function(data) {
 };
 
 HostStatusSidebarComponent._setHealthStatus = function( topic ) {
-    var data = HostStore.getHealthStatus();
+    var data = HostHealthStore.getHealthStatus();
     var health_values = HostStatusSidebarComponent._getHealthVariables(data);
 
     if ( $("#sidebar-health-template").length == 0 ) {
@@ -202,14 +199,14 @@ HostStatusSidebarComponent._formatMemory = function(memory) {
 };
 
 HostStatusSidebarComponent._getUpdatedHealth = function() {
-    HostStore._retrieveHealth();
+    HostHealthStore._retrieveHealth();
     setTimeout( HostStatusSidebarComponent._getUpdatedHealth, HostStatusSidebarComponent.health_refresh_interval );
 };
 
 HostStatusSidebarComponent._updateHealth = function() {
     //Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._updateHealth);
     //HostStore._retrieveHealth();
-    var data = HostStore.getHealthStatus();
+    var data = HostHealthStore.getHealthStatus();
     var health_values = HostStatusSidebarComponent._getHealthVariables(data);
     for(var i=0; i<health_values.length; i++) {
         var val = health_values[i];

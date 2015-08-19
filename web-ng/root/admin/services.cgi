@@ -52,10 +52,13 @@ my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
     $include_prefix . 'js/actions/Dispatcher.js', 
-    $include_prefix . 'js/stores/HostStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
     #$include_prefix . 'js/admin/components/ServicesUpdateComponent.js', 
+    $include_prefix . 'js/stores/HostDetailsStore.js', 
+    $include_prefix . 'js/stores/HostServicesStore.js', 
+    $include_prefix . 'js/stores/HostAdminStore.js', 
+    $include_prefix . 'js/components/PageHeader.js', 
     $include_prefix . 'js/admin/components/StickySaveBar.js', 
     $include_prefix . 'js/admin/pages/AdminServicesPage.js'
     ];

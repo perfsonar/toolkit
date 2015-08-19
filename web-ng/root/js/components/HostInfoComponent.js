@@ -1,20 +1,17 @@
 var HostInfoComponent = {
-    host_info: null,
-    host_status: null,
-    status_topic: 'store.change.host_status',
+    details_topic: 'store.change.host_details',
     info_topic: 'store.change.host_info'
 };
 
 
 HostInfoComponent.initialize = function() {
-    Dispatcher.subscribe(HostInfoComponent.status_topic, HostInfoComponent._setStatus);
+    Dispatcher.subscribe(HostInfoComponent.details_topic, HostInfoComponent._setDetails);
     Dispatcher.subscribe(HostInfoComponent.info_topic, HostInfoComponent._setInfo);
 };
 
-HostInfoComponent._setStatus = function( topic ) {
-    var data = HostStore.getHostSummary();
-    var hostInfo = HostStore.getHostInfo();
-    //$("#primary_hostname").text(data.external_address.address);
+HostInfoComponent._setDetails = function( topic ) {
+    var data = HostDetailsStore.getHostDetails();
+    var hostInfo = HostAdminInfoStore.getHostAdminInfo();
     var hostNameOrIP = data.external_address.dns_name || data.external_address.ipv4_address || data.external_address.ipv6_address || data.toolkit_name;
     var primaryHostName="";
     if(data.external_address.dns_name){
@@ -43,7 +40,7 @@ HostInfoComponent._setStatus = function( topic ) {
 };
 
 HostInfoComponent._setInfo = function( topic ) {
-    var data = HostStore.getHostInfo();
+    var data = HostAdminInfoStore.getHostAdminInfo();
 
     if (("#host-overview-template").length == 0 || $("#host_overview").length == 0 ) {
         return;
