@@ -32,27 +32,69 @@
                                         <label for="exampleCheckboxSwitch"></label>
                                     </div>
                                 </div>
-                                <h2 class="module-header__title">NTP Servers (selected)</h2>
+
+                                <h2 class="module-header__title">NTP Servers</h2>
                                 <div class="servers">
                                     <!-- New select box for adding servers -->
                                     <div class="row">
                                         <div class="medium-12 columns">
-                                            <select class="js-select-multiple" multiple="multiple">
-                                                <option>A server</option>
-                                                <option>B server</option>
-                                                <option>C server</option>
-                                                <option>D server</option>
-                                                <option>E server</option>
-                                                <option>F server</option>
-                                                <option>G server</option>
-                                                <option>H server</option>
-                                            </select>
+                                            <select class="js-select-multiple" multiple="multiple" id="select_ntp_servers"></select>
                                             <ul class="servers__options-list">
-                                                <li class="servers__options-item"><a href="#">Reset to closest servers</a></li>
-                                                <li><a href="#">Manage available NTP servers</a></li>
+                                                <li class="servers__options-item"><a href="#">Select the closest servers</a></li>
+                                                <li><a href="#" data-reveal-id="ntpModal" id="manage-available-servers-link">Manage available NTP servers</a></li>
                                             </ul>
                                         </div>
                                     </div>
+
+                                    <!-- Manage NTP modal -->
+                                    <div id="ntpModal" class="reveal-modal xlarge" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+                                        <div class="row">
+                                            <div class="medium-12 columns">
+                                                <div class="ntp-servers">
+                                                    <h3 class="reveal-modal__heading" id="modalTitle">Manage available NTP servers</h3>
+                                                    <div id="ntp-modal-server-list"></div>
+                                                    <script id="ntp-modal-server-list-template" type="text/x-handlebars-template">
+                                                        <ul class="ntp-list" id="ntp_list" style="overflow:scroll;min-height:100px;">
+                                                            {{#each servers}} 
+                                                            <li class="ntp-list__item">                                                            
+                                                            <span class="ntp-list__title">{{id}}</span>
+                                                            <span class="ntp-list__description">{{#if description}}
+                                                                ({{description}})
+                                                                {{/if}}
+                                                            </span>
+                                                                <a class="ntp-list__delete" href="#">Delete <i class="fa fa-close"></i></a>
+                                                                </li>
+                                                            {{/each}}
+                                                        </ul>
+                                                    </script> <!-- end #ntp-modal-server-list -->
+
+                                                    <h4 class="reveal-modal__heading">Add a new server</h4>
+                                                    <div class="row">
+                                                        <div class="medium-4 columns">
+                                                            <label class="visuallyhidden">Hostname</label>
+                                                            <input type="text" placeholder="Enter a new NTP server hostname" id="ntp_server_add_hostname">
+                                                        </div>    
+                                                        <div class="medium-4 columns">
+                                                            <label class="visuallyhidden">Description</label>
+                                                            <input type="text" placeholder="Enter a description" id="ntp_server_add_description">
+                                                        </div>
+                                                        <div class="medium-4 columns">
+                                                            <button type="submit" class="button-quiet" id="ntp_server_add_button">Add server</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="medium-12 columns">
+                                                            <button class="button-primary" style="margin: 2em 1em 0 0;">Save</button>
+                                                            <a href="#">Cancel</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Close button for modal -->
+                                        <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a>
+                                    </div>
+
                                 </div>
                                 <!-- End Servers module -->
                             </div>
