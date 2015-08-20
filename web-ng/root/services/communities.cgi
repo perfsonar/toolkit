@@ -67,33 +67,65 @@ my $host_communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 
 $router->add_method($host_communities_method);
 
-my %input_parameters=();
-
-$input_parameters{'community'}{'required'}=1;
-$input_parameters{'community'}{'type'}=$parameter_types->{'text'};
-
-my $min_parameters = 1;
+#add host community method
 my $add_host_community_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "add_host_communities",
     description     =>  "Add a host community",
     auth_required   => 1,
     callback        =>  sub { $communities_info->add_host_communities(@_); },
-    input_params    => \%input_parameters,
-    min_params      => $min_parameters
+    min_params      => 1,
+    request_methods => ['POST']
+    );
+
+$add_host_community_method->add_input_parameter(
+    name            => "community",
+    description     => "The community to be added",
+    required        => 1,
+    allow_empty     => 0,
+    type            => 'text',
     );
 
 $router->add_method($add_host_community_method);
 
+#remove host community method
 my $remove_host_community_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "remove_host_communities",
     description     =>  "Remove a host community",
     auth_required   => 1,
     callback        =>  sub { $communities_info->remove_host_communities(@_); },
-    input_params    => \%input_parameters,
-    min_params      => $min_parameters
+    min_params      => 1,
+    request_methods => ['POST']
+    );
+
+$remove_host_community_method->add_input_parameter(
+    name            => "community",
+    description     => "The community to be added",
+    required        => 1,
+    allow_empty     => 0,
+    type            => 'text',
     );
 
 $router->add_method($remove_host_community_method);
+
+#update host community method
+
+#update_ntp_conf method
+my $update_host_community_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "update_host_communities",
+    description     =>  "Updates host communities",
+    auth_required   =>  1,
+    request_methods => ['POST'],
+    callback        =>  sub { $communities_info->update_host_communities(@_); }
+    );
+
+$update_host_community_method->add_input_parameter(
+    name            => "POSTDATA",
+    description     => "JSON blob containing list of enabled servers, disabled servers and deleted servers",
+    required        => 1,
+    allow_empty     => 0,
+    type            => 'text',
+    );
+$router->add_method($update_host_community_method);
 
 $router->handle_request();
 
