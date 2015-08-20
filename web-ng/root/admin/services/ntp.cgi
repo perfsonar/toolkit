@@ -216,6 +216,7 @@ $update_ntp_conf_method->add_input_parameter(
     description     => "JSON blob containing list of enabled servers, disabled servers and deleted servers",
     required        => 1,
     allow_empty     => 0,
+    max_length      => 1024 * 1024, # 1M
     type            => 'text',
     );
 
