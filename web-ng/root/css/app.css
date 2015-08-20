@@ -2212,12 +2212,18 @@ to put the stuff inside. */
   margin: 0;
   border: 1px solid #ddd;
   border-radius: 4px;
+  max-height: 500px;
+  overflow: scroll;
 }
 
 .ntp-list__item {
   border-bottom: 1px solid #ddd;
-  padding: 1em;
+  padding: .5em 1em;
   position: relative;
+}
+
+.ntp-list__item:nth-of-type(2n +1) {
+  background-color: #f7f7f7;
 }
 
 .ntp-list__item:last-child {
@@ -2237,7 +2243,7 @@ to put the stuff inside. */
 .ntp-list__delete {
   color: #ef402f;
   position: absolute;
-  top: 1em;
+  top: .7em;
   right: 1em;
   text-decoration: none;
 }
@@ -2264,6 +2270,10 @@ to put the stuff inside. */
 }
 .reveal-modal {
   text-align: center;
+}
+
+.reveal-modal.xlarge {
+  width: 95%;
 }
 
 .reveal-modal__heading {
