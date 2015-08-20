@@ -17,7 +17,7 @@
     </div>
 
     <div class="config">
-        <form>
+        <form id="hostConfigForm">
 
         [% INCLUDE admin/components/admin_header_nav.html %]
 
@@ -62,7 +62,7 @@
                                                                 ({{description}})
                                                                 {{/if}}
                                                             </span>
-                                                                <a class="ntp-list__delete" href="#">Delete <i class="fa fa-close"></i></a>
+                                                            <a class="ntp-list__delete" href="#" server="{{id}}">Delete <i class="fa fa-close"></i></a>
                                                                 </li>
                                                             {{/each}}
                                                         </ul>
@@ -84,8 +84,8 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="medium-12 columns">
-                                                            <button class="button-primary" style="margin: 2em 1em 0 0;">Save</button>
-                                                            <a href="#">Cancel</a>
+                                                            <button class="button-primary" style="margin: 2em 1em 0 0;" id="ntp_modal_ok_button">OK</button>
+                                                            <a href="#" id="ntp_modal_cancel_button">Cancel</a>
                                                         </div>
                                                     </div>
                                                 </div>

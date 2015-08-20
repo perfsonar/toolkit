@@ -17,6 +17,12 @@ var HostConfigPage = {
 HostConfigPage.initialize = function() {
     $('#loading-modal').foundation('reveal', 'open');
     Dispatcher.subscribe(HostConfigPage.detailsTopic, HostConfigPage._setDetails);
+
+    $('form#hostConfigForm input').change(HostConfigPage._showSaveBar);
+    $('form#hostConfigForm select').change(HostConfigPage._showSaveBar);
+    
+    $('#admin_info_save_button').click(HostConfigPage._save);
+
 };
 
 HostConfigPage._setDetails = function(topic) {
@@ -27,15 +33,7 @@ HostConfigPage._setDetails = function(topic) {
 
 
 HostConfigPage._save = function() {
-    var data = {};
-    var services = HostConfigPage.serviceList;
-    for (var i in services) {
-        var service = services[i];
-        var el = $('#services_' + service + '_cb');
-        var value = (el.prop("checked") ? 1 : 0);
-        data[service] = value;
-    }
-    HostStore.saveServices(data);
+    NTPConfigComponent.save();
 };
 
 HostConfigPage._saveSuccess = function( topic, message ) {
