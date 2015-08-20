@@ -15,6 +15,9 @@ var HostAdminStore = {
     saveServicesErrorTopic: 'store.host_services.save_error',
     saveCommunitiesTopic: 'store.communities_host.save',
     saveCommunitiesErrorTopic: 'store.communities_host.save_error',
+    ntpInfoTopic: 'store.change.ntp_config',
+    saveNTPConfigTopic: 'store.ntp_config.save',
+    saveNTPConfigTopicError: 'store.ntp_config.save_error',
 };
 
 HostAdminStore.saveAdminInfo = function(info) {
@@ -74,6 +77,31 @@ HostAdminStore.saveCommunities = function( communities_arr ) {
         success: function(result) {
             CommunityHostStore._retrieveCommunities();
             CommunityAllStore._retrieveCommunities();
+            Dispatcher.publish(topic, result.message);
+
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            Dispatcher.publish(error_topic, errorThrown);
+        }
+    });
+
+
+};
+
+HostAdminStore.saveNTP = function( ntp_conf ) {
+    ntp_conf = JSON.stringify(ntp_conf);
+    var topic = HostAdminStore.saveNTPConfigTopic;
+    var error_topic = HostAdminStore.saveNTPConfigErrorTopic;
+    $.ajax({
+        url: '/toolkit-ng/admin/services/ntp.cgi?method=update_ntp_configuration',
+        type: 'POST',
+        data: ntp_conf,
+        dataType: 'json',
+        //contentType: 'application/x-www-form-urlencoded',
+        contentType: "application/json",
+        success: function(result) {
+            console.log('success', result);
+            NTPConfigStore._retrieveNTPConfig();
             Dispatcher.publish(topic, result.message);
 
         },
