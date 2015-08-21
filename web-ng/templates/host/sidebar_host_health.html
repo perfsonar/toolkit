@@ -3,12 +3,12 @@
 <script id="sidebar-health-template" type="text/x-handlebars-template">
 <ul class="sidebar-list">
     {{#each health_values}}
-    <li>
+    <li class="sidebar-list__item">
         <div class="sidebar-list__parameter">{{label}}</div>
         <div class="sidebar-list__value" id="{{id}}">{{value}}</div>
         </li>
     {{else}}
-        <li>
+        <li class="sidebar-list__item">
             <div class="sidebar-list__parameter">Not available</div>
             <div class="sidbar-list__value"></div>
         </li>
