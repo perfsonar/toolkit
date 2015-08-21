@@ -26,7 +26,7 @@
                             <div class="config__form">
                                 <div class="switch-wrapper">
                                     <h2 class="module-header__title">Auto Updates</h2>
-                                    <p>Automatically updates all software on a nightly basis.</p>
+                                    <p>Automatically updates all software on a nightly basis. <a href="#" data-reveal-id="updatesModal">Click here</a> for important information regarding automatic updates.</p>
                                     <div class="switch round small">
                                         <input id="autoUpdatesSwitch" type="checkbox">
                                         <label for="autoUpdatesSwitch"></label>
@@ -106,15 +106,11 @@
                             <aside class="aside aside--config">
                                 <h3 class="aside__heading">Resources</h3>
                                 <ul class="aside__list">
-                                    <li><a href="#">Automatic Updates</a></li>
+                                    <li><a href="http://docs.perfsonar.net/manage_update.html#manage-update-auto" target="_blank">Automatic Updates</a></li>
                                 </ul>
                                 <h3 class="aside__heading">NTP</h3>
                                 <ul class="aside__list">
-                                    <li><a href="#">Selecting the Closest Servers</a></li>
-                                    <li><a href="#">Manually Selecting a Known Server</a></li>
-                                    <li><a href="#">Manually Adding a Server</a></li>
-                                    <li><a href="#">Deselecting a Server</a></li>
-                                    <li><a href="#">Deleting a Known Server</a></li>
+                                    <li><a href="http://docs.perfsonar.net/manage_ntp.html" target="_blank">Configuring NTP</a></li>
                                 </ul>
                             </aside>
                         </div>
@@ -125,6 +121,11 @@
                 </div>
                 <!-- End config__form -->  
 
+<div id="updatesModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog" style="text-align:left;">
+<h3>Important information about Automatic Updates</h3>
+Automatic updates include all perfSONAR, operating system and third-party packages. Enabling this feature will help keep the latest security fixes on the system, but keep in mind it is possible some updates may break your host unexpectedly. Specifically kernel updates may break NDT and NPAD if a non-web100 version is applied. See this <a href="http://www.perfsonar.net/about/faq/#Q25" target="_blank">FAQ</a> for more information. The following rule of thumb may be useful when considering whether to enable this feature: <blockquote><i>If the machine is a critical server, for which unplanned downtime of a service on the machine can not be tolerated, then you should not use automatic updates. Otherwise, you <b>may</b> choose to use them.</i></blockquote> It is also important to note that automatic updates do not perform all required system reboots or service restarts. Enabling this feature still requires close monitoring of the host to make sure all updates are applied completely and properly.
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
 
             </div>
             <!-- End config -->
