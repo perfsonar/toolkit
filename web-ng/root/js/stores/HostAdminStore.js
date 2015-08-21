@@ -88,14 +88,16 @@ HostAdminStore.saveAutoUpdates = function( data ) {
 HostAdminStore.saveCommunities = function( communities_arr ) {
     var topic = HostAdminStore.saveCommunitiesTopic;
     var error_topic = HostAdminStore.saveCommunitiesErrorTopic;
-    var communities_str = communities_arr.join(',');
-    var communities = { community: communities_str };
+    //var communities_str = communities_arr.join(',');
+    var communities = { communities: communities_arr };
+    communities = JSON.stringify(communities);
     $.ajax({
-        url: '/toolkit-ng/services/communities.cgi?method=add_host_communities',
+        url: '/toolkit-ng/services/communities.cgi?method=update_host_communities',
         type: 'POST',
         data: communities,
         dataType: 'json',
-        contentType: 'application/x-www-form-urlencoded',
+        contentType: "application/json",
+        //contentType: 'application/x-www-form-urlencoded',
         success: function(result) {
             CommunityHostStore._retrieveCommunities();
             CommunityAllStore._retrieveCommunities();

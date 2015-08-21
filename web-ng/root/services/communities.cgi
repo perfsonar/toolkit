@@ -120,8 +120,9 @@ my $update_host_community_method = perfSONAR_PS::NPToolkit::WebService::Method->
 
 $update_host_community_method->add_input_parameter(
     name            => "POSTDATA",
-    description     => "JSON blob containing list of enabled servers, disabled servers and deleted servers",
+    description     => "JSON blob containing list of enabled communities, disabled communities and deleted communities",
     required        => 1,
+    max_length      => 1024 * 512, # 512K
     allow_empty     => 0,
     type            => 'text',
     );

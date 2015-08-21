@@ -113,7 +113,7 @@ CommunityUpdateComponent._selectCommunities = function() {
 
 CommunityUpdateComponent.save = function() {
     var sel = $('#update_communities');
-    var communities_arr = sel.val();
+    var communities_arr = sel.val() || [];
     console.log('community values', communities_arr);
 
     HostAdminStore.saveCommunities( communities_arr );
