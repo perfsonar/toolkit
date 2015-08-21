@@ -34,6 +34,7 @@ HostConfigPage._setDetails = function(topic) {
 
 HostConfigPage._save = function() {
     NTPConfigComponent.save();
+    AutoUpdatesComponent.save();
 };
 
 HostConfigPage._saveSuccess = function( topic, message ) {

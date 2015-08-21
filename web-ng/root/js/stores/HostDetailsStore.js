@@ -31,4 +31,8 @@ HostDetailsStore.getHostDetails = function() {
     return HostDetailsStore.hostDetails;
 };
 
+HostDetailsStore.getAutoUpdates = function() {
+    return HostDetailsStore.hostDetails.auto_updates;
+};
+
 HostDetailsStore.initialize();

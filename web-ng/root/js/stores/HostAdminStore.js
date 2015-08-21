@@ -59,6 +59,26 @@ HostAdminStore.saveServices = function(services) {
             Dispatcher.publish(error_topic, errorThrown);
         }
     });
+};
+
+HostAdminStore.saveAutoUpdates = function( data ) {
+    var topic = HostAdminStore.saveAutoUpdatesTopic;
+    var error_topic = HostAdminStore.saveAutoUpdatesErrorTopic;
+    $.ajax({
+        url: '/toolkit-ng/admin/services/host.cgi?method=update_auto_updates',
+        type: 'POST',
+        data: data,
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded',
+        success: function(result) {
+            HostDetailsStore._retrieveDetails();
+            Dispatcher.publish(topic, result.message);
+
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            Dispatcher.publish(error_topic, errorThrown);
+        }
+    });
 
 
 };
