@@ -11,7 +11,6 @@ HostInfoComponent.initialize = function() {
 
 HostInfoComponent._setDetails = function( topic ) {
     var data = HostDetailsStore.getHostDetails();
-    var hostInfo = HostAdminInfoStore.getHostAdminInfo();
     var hostNameOrIP = data.external_address.dns_name || data.external_address.ipv4_address || data.external_address.ipv6_address || data.toolkit_name;
     var primaryHostName="";
     if(data.external_address.dns_name){
@@ -49,7 +48,6 @@ HostInfoComponent._setInfo = function( topic ) {
     var template = Handlebars.compile(host_overview_template);
     var address_formatted = data.location.city + ", " + data.location.state + " " + data.location.zipcode + " " + data.location.country;
     data.address_formatted = address_formatted;
-    // TODO: add host address (numeric) back in
     var latlon = data.location.latitude + "," + data.location.longitude;    
     // the url below will have a map pin
     var map_url = 'http://www.google.com/maps/place/' + latlon + '/@' + latlon + ',12z';

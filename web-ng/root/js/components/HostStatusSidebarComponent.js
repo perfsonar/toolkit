@@ -15,7 +15,8 @@ HostStatusSidebarComponent.initialize = function() {
 };
 
 HostStatusSidebarComponent._setStatus = function( topic ) {
-    var data = HostStore.getHostSummary();
+    //var data = HostStore.getHostSummary();
+    var data = HostDetailsStore.getHostDetails();
     var status_values = [];
    
     var host_memory = data.host_memory;

@@ -12,7 +12,7 @@ DashboardPage.initialize = function() {
     $('#loading-modal').foundation('reveal', 'open');
     DashboardPage.dashboardTopics = [
         'store.change.host_details',
-        'store.change.host_info',
+        //'store.change.host_info',
         'store.change.host_services',
         // for now, let's allow the loader to clear even if the tests
         // have not yet loaded
@@ -31,6 +31,7 @@ DashboardPage._setTopics = function() {
 
 DashboardPage._dataStoreReturned = function(topic, data) {
     DashboardPage.numTopics--;
+    //console.log('topic returned', topic);
     if (DashboardPage.numTopics == 0) {
         $('#loading-modal').foundation('reveal', 'close');
     }

@@ -2,6 +2,7 @@ var NTPConfigComponent = {
     data: {},
     modalData: {},
     configTopic: 'store.change.ntp_config',
+    ntpClosestTopic: 'store.change.ntp_closest',
     formChangeTopic: 'ui.form.change',
     formSuccessTopic: 'ui.form.success',
     formErrorTopic: 'ui.form.error',
@@ -22,6 +23,7 @@ NTPConfigComponent.initialize = function() {
     NTPConfigComponent._initGlobalData();
     NTPConfigComponent._initModalData();
     Dispatcher.subscribe(NTPConfigComponent.configTopic, NTPConfigComponent._retrieveServers);
+    Dispatcher.subscribe(NTPConfigComponent.ntpClosestTopic, NTPConfigComponent._getClosest);
     Dispatcher.subscribe(NTPConfigComponent.saveNTPConfigTopic, NTPConfigComponent._saveSuccess);
     Dispatcher.subscribe(NTPConfigComponent.saveNTPConfigErrorTopic, NTPConfigComponent._saveError);
     NTPConfigComponent._setEventHandlers();
@@ -187,8 +189,17 @@ NTPConfigComponent._setEventHandlers = function() {
 
     // Manage Available Servers Link
     manage_link.click( function(e) {
-            NTPConfigComponent._getContainerHeight();
-            NTPConfigComponent._displayModalServerList();
+        NTPConfigComponent._getContainerHeight();
+        NTPConfigComponent._displayModalServerList();
+    });
+
+    var closest_link = $('#get-closest-servers-link');
+    closest_link.click( function(e) {
+        NTPClosestStore.retrieveNTPClosest();
+        $('#loading-modal h3 span.loading_text').text(' Selecting Closest Servers -- this may take up to 1 minute ...');
+        $('#loading-modal').foundation('reveal', 'open');
+        e.preventDefault();
+
     });
 
     /*
@@ -349,7 +360,39 @@ NTPConfigComponent._removeServer = function ( hostname ) {
     data.splice(index, 1);
 };
 
+NTPConfigComponent._getClosest = function( topic ) {
+    $('#loading-modal').foundation('reveal', 'close');
+    var data = NTPClosestStore.getNTPClosest();
+    var selected = [];
+    $.each(data.selected, function(i, val) {
+        selected.push(val.address);
+    });
+    var sel = $('#select_ntp_servers');
+    NTPConfigComponent._selectServers(selected);
 
+};
+
+/* 
+ * Takes an array of hostnames; changes the selected servers to match only those hosts
+*/
+
+NTPConfigComponent._selectServers = function ( selection ) {    
+    var data = NTPConfigComponent.data.servers;
+    var sel = $('#select_ntp_servers');
+
+    $.each(data, function(i, val) {
+        //var result = $.grep( servers, function(e) {
+        //var index = NTPConfigComponent.objectFindByKey(selection, 'id', hostname);
+        var index = selection.indexOf(val.id);
+        if (index > -1) {
+            val.selected = true;
+        } else {
+            val.selected = false;
+        }
+    });
+    NTPConfigComponent._setServers();
+    NTPConfigComponent._showSaveBar();
+};
 
 NTPConfigComponent._saveSuccess = function( topic, message ) {
     Dispatcher.publish(NTPConfigComponent.formNTPSuccessTopic, message);
