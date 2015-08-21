@@ -1195,8 +1195,10 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
 .sidebar-popover__param,
 .sidebar-popover__value {
   display: block;
-  width: 50%;
+  width: 55%;
 }
+
+.sidebar-popover__param { width: 45%; }
 
 .sidebar-popover__param {
   float: left;

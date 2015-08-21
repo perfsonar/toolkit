@@ -20,11 +20,7 @@ StickySaveBar.initialize = function() {
 StickySaveBar._formChange = function( topic ) {
     $("#sticky-unsaved-message").fadeIn("fast");
     StickySaveBar._enableButtons();
-    window.onbeforeunload = function() {
-            // TODO: create enhanced captive dialog box with unsaved changes
-            // $("#unsavedModal").foundation('reveal', 'open');
-            return "You have unsaved changes.";
-    };
+    StickySaveBar._enableUnsavedWarning();
 };
 
 StickySaveBar._enableButtons = function() {
@@ -33,6 +29,25 @@ StickySaveBar._enableButtons = function() {
 
 StickySaveBar._disableButtons = function() {
     $("#sticky-bar input.admin-action-button").prop("disabled", true);
+};
+
+StickySaveBar._enableUnsavedWarning = function() {
+    window.onbeforeunload = function() {
+        // TODO: create enhanced captive dialog box with unsaved changes
+        return "You have unsaved changes.";
+    };
+
+};
+
+StickySaveBar._disableUnsavedWarning = function() {
+    window.onbeforeunload = null;
+    /* 
+     //if the above doesn't work, try this
+    function() {
+        return null;
+    };
+    */
+
 };
 
 StickySaveBar._formSuccess = function( topic, message ) {
@@ -44,6 +59,7 @@ StickySaveBar._formSuccess = function( topic, message ) {
     } else {
         $("#sticky-saved-message").text("Your changes have been saved.");
     }
+    StickySaveBar._disableUnsavedWarning();
 };
 
 StickySaveBar._formError = function( topic, message ) {
@@ -65,7 +81,7 @@ StickySaveBar._init = function() {
     $(".sticky-bar--saved").fadeOut("fast");
     $(".sticky-bar--failure").fadeOut("fast");
     $("#sticky-unsaved-message").fadeOut("fast");
-    window.onbeforeunload = null;
+    StickySaveBar._disableUnsavedWarning();
 };
 
 StickySaveBar.initialize();

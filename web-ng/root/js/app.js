@@ -60,12 +60,13 @@ $(document).ready(function() {
 
     // Sidebar popover menu used to exand on larger sets of sidebar info
     // For example, "Interfaces"
-    $(".js-sidebar-popover-toggle").click(function(e) {
+    //$(document).on('click', '.btn_test', function() { alert('test'); });
+    $(document).on("click", ".js-sidebar-popover-toggle", function(e) {
         e.preventDefault();
         $(this).next(".sidebar-popover").fadeToggle("fast");
     });
 
-    $(".js-sidebar-popover-close").click(function(e) {
+    $(document).on("click", ".js-sidebar-popover-close", function(e) {
         e.preventDefault();
         $(this).parent(".sidebar-popover").fadeOut("fast");
     });
@@ -76,7 +77,7 @@ $(document).ready(function() {
     });
 
     // Stop clicking inside the popover from hiding it
-    $(".js-sidebar-popover-toggle, .sidebar-popover").click(function(e) {
+    $(document).on("click", ".js-sidebar-popover-toggle, .sidebar-popover", function(e) {
         e.stopPropagation();
     });
 

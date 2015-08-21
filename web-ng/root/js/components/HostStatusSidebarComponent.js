@@ -10,6 +10,7 @@ HostStatusSidebarComponent.initialize = function() {
     if ($("#sidebar_host_status").length == 0 ) { 
             return;
     }
+    HostStatusSidebarComponent._registerHelpers();
     Dispatcher.subscribe(HostStatusSidebarComponent.details_topic, HostStatusSidebarComponent._setStatus);
     HostStatusSidebarComponent.health_token = Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._setHealthStatus);
 };
@@ -46,25 +47,11 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
         status_values.push( {label: "Primary Interface", value: primary_interface} );
     }
 
-    var primary_mtu = data.external_address.mtu;
-    if (typeof primary_mtu != "undefined") {  
-        status_values.push( {label: "MTU", value: primary_mtu} );
-    }
-
-    var interfaces = data.interfaces; 
-    if (typeof interfaces != "undefined") {
-        for (i in interfaces){
-            if(typeof interfaces[i] != "undefined"){
-                status_values.push( {label: interfaces[i].iface, value: interfaces[i].mtu+" MTU"} );    
-            }
-        }
-    }
-
     var ntp_synchronized = (data.ntp.synchronized == 1 ? "Yes" : "No");
     status_values.push( {label: "NTP Synced", value: ntp_synchronized} );
 
     var toolkit_version = data.toolkit_version;
-    if (typeof toolkit_version != "undefined") {  
+    if (toolkit_version !== null) {  
         status_values.push( {label: "Toolkit version", value: toolkit_version} );
     }
 
@@ -93,6 +80,16 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
 
     $("#sidebar_host_status").html(status_output);
 
+};
+
+HostStatusSidebarComponent._registerHelpers = function() {
+    Handlebars.registerHelper('formatSpeed', function(speed) {
+        var ret = null;
+        if ( speed > 0 ) {
+            ret = speed /  ( 1000000 ) + 'M';
+        }
+        return ret;
+    });
 };
 
 HostStatusSidebarComponent._getHealthVariables = function(data) {
