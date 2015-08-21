@@ -211,4 +211,6 @@ dojo.addOnLoad(init_check_need_save_function);
 <input type="hidden" id="session_id" name="session_id" value="[% session_id %]" />
 [% END %]
 
+[% IF !hide_nav %]
 [% INCLUDE sidebar.html %]
+[% END %]

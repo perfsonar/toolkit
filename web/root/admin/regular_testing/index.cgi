@@ -66,6 +66,11 @@ $logger->info( "templates dir: $conf{template_directory}" );
 my $cgi = CGI->new();
 our $session;
 
+my $hide_nav = 0;
+if (defined $cgi->param( 'hide_nav' ) && $cgi->param( 'hide_nav' ) == 1) {
+    $hide_nav = 1;
+}
+
 if ( $cgi->param( "session_id" ) ) {
     $session = CGI::Session->new( "driver:File;serializer:Storable", $cgi->param( "session_id" ), { Directory => $conf{sessions_directory} } );
 }
@@ -256,6 +261,7 @@ sub fill_variables {
     $vars->{status_message} = $status_msg;
     $vars->{self_url}       = $cgi->self_url();
     $vars->{session_id}     = $session->id();
+    $vars->{hide_nav}     = $hide_nav;
     set_sidebar_vars( { vars => $vars } );
 
 
