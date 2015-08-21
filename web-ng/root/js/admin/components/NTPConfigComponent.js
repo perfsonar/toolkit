@@ -6,6 +6,12 @@ var NTPConfigComponent = {
     formSuccessTopic: 'ui.form.success',
     formErrorTopic: 'ui.form.error',
     formCancelTopic: 'ui.form.cancel',
+    formNTPChangeTopic: 'ui.form.ntp.change',
+    formNTPSuccessTopic: 'ui.form.ntp.success',
+    formNTPErrorTopic: 'ui.form.ntp.error',
+    formNTPCancelTopic: 'ui.form.ntp.cancel',
+    saveNTPConfigTopic: 'store.ntp_config.save',
+    saveNTPConfigErrorTopic: 'store.ntp_config.save_error',
     placeholder: 'Select NTP servers',
     closeEventSet: false,
     listHeight: null,
@@ -13,12 +19,19 @@ var NTPConfigComponent = {
 };
 
 NTPConfigComponent.initialize = function() {
+    NTPConfigComponent._initGlobalData();
+    NTPConfigComponent._initModalData();
+    Dispatcher.subscribe(NTPConfigComponent.configTopic, NTPConfigComponent._retrieveServers);
+    Dispatcher.subscribe(NTPConfigComponent.saveNTPConfigTopic, NTPConfigComponent._saveSuccess);
+    Dispatcher.subscribe(NTPConfigComponent.saveNTPConfigErrorTopic, NTPConfigComponent._saveError);
+    NTPConfigComponent._setEventHandlers();
+};
+
+NTPConfigComponent._initGlobalData = function () {
     NTPConfigComponent.data.servers = {};
     NTPConfigComponent.data.serversToAdd = [];
     NTPConfigComponent.data.serversToRemove = [];
-    NTPConfigComponent._initModalData();
-    Dispatcher.subscribe(NTPConfigComponent.configTopic, NTPConfigComponent._retrieveServers);
-    NTPConfigComponent._setEventHandlers();
+
 };
 
 NTPConfigComponent._initModalData = function () {
@@ -76,7 +89,6 @@ NTPConfigComponent.save = function() {
     var sel = $('#select_ntp_servers');
     var options = $('#select_ntp_servers option');
     var selected = sel.val(); 
-    console.log('selected servers', selected);
     var data = {};
     data.enabled_servers = {};
     data.disabled_servers = {};
@@ -95,7 +107,6 @@ NTPConfigComponent.save = function() {
             var description = servers[i].description;
         }
         row[hostname] = description;
-        console.log('selected', selected, 'hostname', hostname, 'description', description, 'index', index);
         if (selected) {
             enabled[hostname] = description;
             //enabled.push(hostname);
@@ -107,9 +118,9 @@ NTPConfigComponent.save = function() {
 
     data.enabled_servers = enabled;
     data.disabled_servers = disabled;
-    console.log('post data', data);
 
     HostAdminStore.saveNTP( {data: data} );
+    NTPConfigComponent._initGlobalData();
     
 };
 
@@ -211,10 +222,6 @@ NTPConfigComponent._setEventHandlers = function() {
         NTPConfigComponent._initModalData();
         NTPConfigComponent.modalData.servers = $.extend([], NTPConfigComponent.data.servers);
         NTPConfigComponent._displayModalServerList();
-        console.log('servers to add (modal)', NTPConfigComponent.modalData.serversToAdd,
-                    'servers to remove', NTPConfigComponent.modalData.serversToRemove );
-        console.log('servers to add (global)', NTPConfigComponent.data.serversToAdd,
-                    'servers to remove', NTPConfigComponent.data.serversToRemove );
         $('#ntpModal').foundation('reveal', 'close');
         e.preventDefault();
     });
@@ -244,10 +251,6 @@ NTPConfigComponent._setEventHandlers = function() {
 
         NTPConfigComponent._initModalData();
         NTPConfigComponent._setServers();
-        console.log('servers to add (modal)', NTPConfigComponent.modalData.serversToAdd,
-                    'servers to remove', NTPConfigComponent.modalData.serversToRemove );
-        console.log('servers to add (global)', NTPConfigComponent.data.serversToAdd,
-                    'servers to remove', NTPConfigComponent.data.serversToRemove );
         $('#ntpModal').foundation('reveal', 'close');
 
     });
@@ -270,6 +273,7 @@ NTPConfigComponent._displayModalServerList = function() {
     delete_buttons_el.click( function (e) {
         var hostname = e.target.getAttribute("server");
         NTPConfigComponent._removeServerModal(hostname);
+        NTPConfigComponent._showSaveBar();
         e.preventDefault();
     });
 };
@@ -284,7 +288,6 @@ NTPConfigComponent._addServerModal = function( hostname, description ) {
     row.selected = true;
     data.unshift(row);
     NTPConfigComponent.modalData.serversToAdd.push(row);
-    console.log('new servers', NTPConfigComponent.modalData.serversToAdd);
     NTPConfigComponent._displayModalServerList();
 };
 
@@ -306,7 +309,6 @@ NTPConfigComponent._removeServerModal = function( hostname ) {
     // Only do this if the hostname was found in the list
     if ( index !== null ) {
         NTPConfigComponent.modalData.serversToRemove.push( hostname );
-        console.log('servers to remove', NTPConfigComponent.modalData.serversToRemove);
     }
     NTPConfigComponent._showSaveBar();
     NTPConfigComponent._displayModalServerList();
@@ -347,8 +349,26 @@ NTPConfigComponent._removeServer = function ( hostname ) {
     data.splice(index, 1);
 };
 
+
+
+NTPConfigComponent._saveSuccess = function( topic, message ) {
+    Dispatcher.publish(NTPConfigComponent.formNTPSuccessTopic, message);
+};
+
+NTPConfigComponent._saveError = function( topic, message ) {
+    Dispatcher.publish(NTPConfigComponent.formNTPErrorTopic, message);
+};
+
+NTPConfigComponent._cancel = function() {
+    Dispatcher.publish(NTPConfigComponent.formNTPCancelTopic);
+    Dispatcher.publish(NTPConfigComponent.info_topic);
+
+};
+
 NTPConfigComponent._showSaveBar = function() {
     Dispatcher.publish(NTPConfigComponent.formChangeTopic);
 };
+
+
 
 NTPConfigComponent.initialize();

@@ -17,7 +17,9 @@ var HostAdminStore = {
     saveCommunitiesErrorTopic: 'store.communities_host.save_error',
     ntpInfoTopic: 'store.change.ntp_config',
     saveNTPConfigTopic: 'store.ntp_config.save',
-    saveNTPConfigTopicError: 'store.ntp_config.save_error',
+    saveNTPConfigErrorTopic: 'store.ntp_config.save_error',
+    saveAutoUpdatesTopic: 'store.auto_updates.save',
+    saveAutoUpdatesErrorTopic: 'store.auto_updates.save_error',
 };
 
 HostAdminStore.saveAdminInfo = function(info) {
@@ -120,7 +122,6 @@ HostAdminStore.saveNTP = function( ntp_conf ) {
         //contentType: 'application/x-www-form-urlencoded',
         contentType: "application/json",
         success: function(result) {
-            console.log('success', result);
             NTPConfigStore._retrieveNTPConfig();
             Dispatcher.publish(topic, result.message);
 

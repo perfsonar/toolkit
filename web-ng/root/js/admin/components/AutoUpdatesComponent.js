@@ -1,47 +1,40 @@
 var AutoUpdatesComponent = {
-    auto_updates: null,
-    details_topic: 'store.change.host_details',
+    autoUpdates: null,
+    detailsTopic: 'store.change.host_details',
     saveAutoUpdatesTopic: 'store.auto_updates.save',
     saveAutoUpdatesErrorTopic: 'store.auto_updates.save_error',
-    formChangeTopic: 'ui.form.change',
-    formSuccessTopic: 'ui.form.success',
-    formErrorTopic: 'ui.form.error',
-    formCancelTopic: 'ui.form.cancel',
+    formAutoUpdatesChangeTopic: 'ui.form.auto_updates.change',
+    formAutoUpdatesSuccessTopic: 'ui.form.auto_updates.success',
+    formAutoUpdatesErrorTopic: 'ui.form.auto_updates.error',
+    formAutoUpdatesCancelTopic: 'ui.form.auto_updates.cancel',
 };
 
 
 AutoUpdatesComponent.initialize = function() {    
-    //AutoUpdatesComponent._getAutoUpdates();
-    Dispatcher.subscribe(AutoUpdatesComponent.details_topic, AutoUpdatesComponent._setAutoUpdates);
-    /*
-    $('form#adminInfoForm input').change(AutoUpdatesComponent._showSaveBar);
-    $('form#adminInfoForm select').change(AutoUpdatesComponent._showSaveBar);
-    $('#admin_info_cancel_button').click( AutoUpdatesComponent._cancel);
+    Dispatcher.subscribe(AutoUpdatesComponent.detailsTopic, AutoUpdatesComponent._setAutoUpdates);
     Dispatcher.subscribe(AutoUpdatesComponent.saveAutoUpdatesTopic, AutoUpdatesComponent._saveSuccess);
     Dispatcher.subscribe(AutoUpdatesComponent.saveAutoUpdatesErrorTopic, AutoUpdatesComponent._saveError);
-    $('#loading-modal').foundation('reveal', 'open');
-    */
     $('#autoUpdatesSwitch').change( function() {
-        AutoUpdatesComponent.auto_updates = ! AutoUpdatesComponent.auto_updates;
+        AutoUpdatesComponent.autoUpdates = ! AutoUpdatesComponent.autoUpdates;
         AutoUpdatesComponent._setSwitch();            
     });
 };
 
 AutoUpdatesComponent._setAutoUpdates = function() {
-    var auto_updates = HostDetailsStore.getAutoUpdates();
-    AutoUpdatesComponent.auto_updates = auto_updates;
+    var autoUpdates = HostDetailsStore.getAutoUpdates();
+    AutoUpdatesComponent.autoUpdates = autoUpdates;
     AutoUpdatesComponent._setSwitch();
 
 };
 
-AutoUpdatesComponent._setSwitch = function() {
-    var auto_updates = AutoUpdatesComponent.auto_updates
-    console.log('auto updates', auto_updates);
+AutoUpdatesComponent._setSwitch = function(e) {
+    var autoUpdates = AutoUpdatesComponent.autoUpdates
     var checkbox_el = $('#autoUpdatesSwitch');
-    checkbox_el.prop('checked', auto_updates);
-    var label = AutoUpdatesComponent._getLabelText(auto_updates);
+    checkbox_el.prop('checked', autoUpdates);
+    var label = AutoUpdatesComponent._getLabelText(autoUpdates);
     var label_el = $('#autoUpdatesLabel');
     label_el.text(label);
+    //e.preventDefault();
 
 };
 
@@ -53,27 +46,27 @@ AutoUpdatesComponent._getLabelText = function ( state ) {
 
 AutoUpdatesComponent.save = function() {
     var data = {};
-    data.enabled = AutoUpdatesComponent.auto_updates ? 1 : 0;
+    data.enabled = AutoUpdatesComponent.autoUpdates ? 1 : 0;
 
     HostAdminStore.saveAutoUpdates(data);
 
 };
 AutoUpdatesComponent._saveSuccess = function( topic, message ) {
-    Dispatcher.publish(AutoUpdatesComponent.formSuccessTopic, message);
+    Dispatcher.publish(AutoUpdatesComponent.formAutoUpdatesSuccessTopic, message);
 };
 
 AutoUpdatesComponent._saveError = function( topic, message ) {
-    Dispatcher.publish(AutoUpdatesComponent.formErrorTopic, message);
+    Dispatcher.publish(AutoUpdatesComponent.formAutoUpdatesErrorTopic, message);
 };
 
 AutoUpdatesComponent._cancel = function() {
-    Dispatcher.publish(AutoUpdatesComponent.formCancelTopic);
+    Dispatcher.publish(AutoUpdatesComponent.formAutoUpdatesCancelTopic);
     Dispatcher.publish(AutoUpdatesComponent.info_topic);
 
 };
 
 AutoUpdatesComponent._showSaveBar = function() {
-    Dispatcher.publish(AutoUpdatesComponent.formChangeTopic);
+    Dispatcher.publish(AutoUpdatesComponent.formAutoUpdatesChangeTopic);
 };
 
 AutoUpdatesComponent.initialize();
