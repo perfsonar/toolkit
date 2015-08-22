@@ -92,7 +92,7 @@ HostAdminStore.saveCommunities = function( communities_arr ) {
     var communities = { communities: communities_arr };
     communities = JSON.stringify(communities);
     $.ajax({
-        url: '/toolkit-ng/services/communities.cgi?method=update_host_communities',
+        url: '/toolkit-ng/admin/services/communities.cgi?method=update_host_communities',
         type: 'POST',
         data: communities,
         dataType: 'json',
