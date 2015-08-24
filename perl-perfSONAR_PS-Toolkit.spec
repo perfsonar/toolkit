@@ -369,6 +369,7 @@ ln -sf /opt/perfsonar_ps/toolkit/web/templates/footer.tmpl /opt/perfsonar_ps/ser
 
 # Install a link to the logs into the web location
 ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web/root/admin/logs
+ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web-ng/root/admin/logs
 
 # Overwrite the existing configuration files for the services with new
 # configuration files containing the default settings.
