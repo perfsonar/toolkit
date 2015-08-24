@@ -255,6 +255,7 @@ web-ng/root/admin/index.cgi
 web-ng/root/admin/services.cgi
 web-ng/root/admin/services/host.cgi
 web-ng/root/admin/services/ntp.cgi
+web-ng/root/admin/services/communities.cgi
 web-ng/root/admin/tests.cgi
 web-ng/root/css/app.css
 web-ng/root/css/foundation.css
@@ -370,9 +371,14 @@ web-ng/root/index.cgi
 web-ng/root/js/actions/Dispatcher.js
 web-ng/root/js/admin/components/AdminInfoUpdateComponent.js
 web-ng/root/js/admin/components/StickySaveBar.js
+web-ng/root/js/admin/components/AutoUpdatesComponent.js
+web-ng/root/js/admin/components/CommunityUpdateComponent.js
+web-ng/root/js/admin/components/NTPConfigComponent.js
+web-ng/root/js/admin/components/OldTestConfigComponent.js
 web-ng/root/js/admin/pages/AdminInfoPage.js
 web-ng/root/js/admin/pages/AdminServicesPage.js
 web-ng/root/js/admin/pages/HostConfigPage.js
+web-ng/root/js/admin/pages/TestConfigPage.js
 web-ng/root/js/app.js
 web-ng/root/js/components/HostInfoComponent.js
 web-ng/root/js/components/HostServicesComponent.js
@@ -493,8 +499,13 @@ web-ng/root/js/stores/HostAdminStore.js
 web-ng/root/js/stores/HostDetailsStore.js
 web-ng/root/js/stores/HostHealthStore.js
 web-ng/root/js/stores/HostServicesStore.js
+web-ng/root/js/stores/CommunityAllStore.js
+web-ng/root/js/stores/CommunityHostStore.js
+web-ng/root/js/stores/NTPClosestStore.js
+web-ng/root/js/stores/NTPConfigStore.js
 web-ng/root/services/communities.cgi
 web-ng/root/services/host.cgi
+web-ng/templates/admin/pages/tests.html
 web-ng/templates/components/bottom.html
 web-ng/templates/components/dashboard.html
 web-ng/templates/components/explanation.html
