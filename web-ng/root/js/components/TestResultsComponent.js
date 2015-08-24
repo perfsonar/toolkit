@@ -36,7 +36,7 @@ TestResultsComponent._setTestResults = function( topic ) {
         data.test_results[i].rowID = i;
     }
     data.ma_url = encodeURIComponent(TestResultsComponent.ma_url);
-    data.num_test_results = data.test_results.length || 'None';
+    data.num_test_results = data.test_results.length || 'No';
     $('#num_test_results').html(data.num_test_results);
     $('#num_test_results_holder').show();
     var test_results_template = $("#test-results-template").html();
