@@ -1,7 +1,7 @@
 PACKAGE=perfSONAR_PS-Toolkit
 ROOTPATH=/opt/perfsonar_ps/toolkit
 VERSION=3.5
-RELEASE=0.11.rc1
+RELEASE=0.12.rc2
 
 default:
 	@echo No need to build the package. Just run \"make install\"
