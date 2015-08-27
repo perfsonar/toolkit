@@ -80,6 +80,7 @@ AdminInfoUpdateComponent._getStates = function( countryCode, state ) {
     state_sel.empty(); // remove old options
     state_sel.append($("<option></option>")
             .attr("value", "").text("-- Select State/Province --"));
+    countryCode = countryCode || '';
     countryCode = countryCode.toUpperCase();
     //var states = [];
     if ( AdminInfoUpdateComponent.state_data_urls.hasOwnProperty(countryCode) ) {
