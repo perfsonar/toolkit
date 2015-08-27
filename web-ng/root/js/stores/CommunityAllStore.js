@@ -13,7 +13,7 @@ CommunityAllStore.initialize = function() {
 
 CommunityAllStore._retrieveCommunities = function() {
     $.ajax({
-            url: "/toolkit-ng/services/communities.cgi?method=get_all_communities",
+            url: "/toolkit/services/communities.cgi?method=get_all_communities",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",

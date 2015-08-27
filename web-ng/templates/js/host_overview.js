@@ -48,7 +48,7 @@ HostInfoComponent.initialize = function() {
 
        var host_info_subscriber = function ( topic, data ) { 
             $.ajax({
-                url: "/toolkit-ng/services/host.cgi?method=get_admin_info",
+                url: "/toolkit/services/host.cgi?method=get_admin_info",
                 type: 'GET',
                 contentType: "application/json",
                 dataType: "json",
@@ -70,7 +70,7 @@ HostInfoComponent.initialize = function() {
     };
 /*
 $.ajax({
-    url: "/toolkit-ng/services/host.cgi?method=get_details",
+    url: "/toolkit/services/host.cgi?method=get_details",
     type: 'GET',
     contentType: "application/json",
     dataType: "json",

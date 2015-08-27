@@ -7,8 +7,8 @@ var AdminInfoUpdateComponent = {
     formSuccessTopic: 'ui.form.success',
     formErrorTopic: 'ui.form.error',
     formCancelTopic: 'ui.form.cancel',
-    country_data_url: '/toolkit-ng/data/country_data.json',
-    update_url: '/toolkit-ng/admin/services/host.cgi?method=update_info',
+    country_data_url: '/toolkit/data/country_data.json',
+    update_url: '/toolkit/admin/services/host.cgi?method=update_info',
     countries: {},
     state_data_urls: {},
     state_sel: $("#admin_states"),
@@ -20,7 +20,7 @@ var AdminInfoUpdateComponent = {
 
 AdminInfoUpdateComponent.initialize = function() {
     AdminInfoUpdateComponent._getCountries();
-    AdminInfoUpdateComponent.state_data_urls['US'] = '/toolkit-ng/data/us_states_hash.json';
+    AdminInfoUpdateComponent.state_data_urls['US'] = '/toolkit/data/us_states_hash.json';
     Dispatcher.subscribe(AdminInfoUpdateComponent.info_topic, AdminInfoUpdateComponent._setInfo);
     $('form#adminInfoForm input').change(AdminInfoUpdateComponent._showSaveBar);
     $('form#adminInfoForm select').change(AdminInfoUpdateComponent._showSaveBar);

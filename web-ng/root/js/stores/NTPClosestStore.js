@@ -12,7 +12,7 @@ NTPClosestStore.initialize = function() {
 
 NTPClosestStore.retrieveNTPClosest = function() {
     $.ajax({
-            url: "/toolkit-ng/admin/services/ntp.cgi?method=get_closest_servers",
+            url: "/toolkit/admin/services/ntp.cgi?method=get_closest_servers",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",

@@ -5,13 +5,13 @@
 <head>
 
 <style type="text/css">
-@import "/toolkit/content/dojo/dijit/themes/tundra/tundra.css";
+@import "/toolkit-old/content/dojo/dijit/themes/tundra/tundra.css";
 </style>
 
-<link rel="stylesheet" href="/toolkit/content/style.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="/toolkit-old/content/style.css" type="text/css" media="screen" />
 
-<script type="text/javascript" src="/toolkit/content/dojo/dojo/dojo.js" djConfig="parseOnLoad:true"></script>
-<script type="text/javascript" src="/toolkit/content/dojo/dojo/dojo-ps-toolkit.js"></script>
+<script type="text/javascript" src="/toolkit-old/content/dojo/dojo/dojo.js" djConfig="parseOnLoad:true"></script>
+<script type="text/javascript" src="/toolkit-old/content/dojo/dojo/dojo-ps-toolkit-old.js"></script>
 
 <script>
 dojo.require("dijit.ProgressBar");
@@ -163,7 +163,7 @@ function display_jowping_warning_dialog() {
 	dojo.connect(dijit.byId('jowping_warning_cancel'), 'onClick', function() { dijit.byId('jowping_warning_dialog').hide(); });
 	dojo.connect(dijit.byId('jowping_warning_run_jowping'), 'onClick', dojo.hitch(null,
 										function() {
-											location.href = "http://"+location.host+"/toolkit/gui/jowping";
+											location.href = "http://"+location.host+"/toolkit-old/gui/jowping";
 											dijit.byId('jowping_warning_dialog').hide();
 										}
 										)

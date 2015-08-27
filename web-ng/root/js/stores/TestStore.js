@@ -69,7 +69,7 @@ TestStore._retrieveTests = function() {
 
 TestStore._retrieveServices = function() {
     $.ajax({
-            url: "/toolkit-ng/services/host.cgi?method=get_services",
+            url: "/toolkit/services/host.cgi?method=get_services",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",

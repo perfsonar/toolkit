@@ -13,7 +13,7 @@ HostAdminInfoStore.initialize = function() {
 
 HostAdminInfoStore._retrieveInfo = function() {
     $.ajax({
-            url: "/toolkit-ng/services/host.cgi?method=get_admin_info",
+            url: "/toolkit/services/host.cgi?method=get_admin_info",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",            

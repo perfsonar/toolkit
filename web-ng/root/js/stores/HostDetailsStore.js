@@ -13,7 +13,7 @@ HostDetailsStore.initialize = function() {
 
 HostDetailsStore._retrieveDetails = function() {
     $.ajax({
-            url: "/toolkit-ng/services/host.cgi?method=get_details",
+            url: "/toolkit/services/host.cgi?method=get_details",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
