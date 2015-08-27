@@ -48,11 +48,14 @@ HostInfoComponent._setInfo = function( topic ) {
     var template = Handlebars.compile(host_overview_template);
     var address_formatted = data.location.city + ", " + data.location.state + " " + data.location.zipcode + " " + data.location.country;
     data.address_formatted = address_formatted;
-    var latlon = data.location.latitude + "," + data.location.longitude;    
-    // the url below will have a map pin
-    var map_url = 'http://www.google.com/maps/place/' + latlon + '/@' + latlon + ',12z';
-    // this link will show the location, with no map pin
-    //var map_url = 'http://www.google.com/maps/place/@' + latlon + ',12z';
+    var map_url = '';
+    if (data.location.latitude !== null && data.location.longitude !== null && data.location.latitude != '' && data.location.longitude != '' ) {
+        var latlon = data.location.latitude + "," + data.location.longitude;    
+        // the url below will have a map pin
+        var map_url = 'http://www.google.com/maps/place/' + latlon + '/@' + latlon + ',12z';
+        // this link will show the location, with no map pin
+        //var map_url = 'http://www.google.com/maps/place/@' + latlon + ',12z';
+    }
     data.map_url = map_url;
     var admin = template(data);
     $("#host_overview").html(admin);
