@@ -14,7 +14,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.13.rc2 
+%define relnum  0.14.rc2 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -315,7 +315,7 @@ install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 install -D -m 0600 scripts/%{cron_hourly_1} %{buildroot}/etc/cron.hourly/%{cron_hourly_1}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
-install -D -m 0644 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
+install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 
 install -D -m 0755 init_scripts/%{init_script_1} %{buildroot}/etc/init.d/%{init_script_1}
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
@@ -509,7 +509,7 @@ fi
 %{install_base}/templates/*
 %{install_base}/dependencies
 /etc/httpd/conf.d/*
-/etc/sudoers.d/*
+%attr(0640,root,root) /etc/sudoers.d/*
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
 %attr(0755,root,root) /etc/cron.hourly/%{cron_hourly_1}
 # Make sure the cgi scripts are all executable
