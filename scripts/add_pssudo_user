@@ -48,7 +48,7 @@ if options.auto:
     print Internet2Consts.MAGENTA + "There isn't a perfSONAR sudo user defined. It is recommended that you create a sudo user and disable SSH root login. " + Internet2Consts.NORMAL
     print Internet2Consts.YELLOW + "WARNING: Be sure you remember the username and password you create with this script as root will no longer be able to login via SSH once this command completes. If you are using SSH as root now, your session should continue until you logout." + Internet2Consts.NORMAL    
     
-    ans = raw_input("Would you like to create a sudo user and disable root SSH? [yes] ").strip()
+    ans = raw_input("Would you like to create a sudo user and disable root SSH? [yes] ").strip().upper()
     if not ans:
         ans = "Y"
     if ans[0] != "Y":
