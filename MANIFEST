@@ -444,6 +444,7 @@ web-ng/root/js/pubsub/pubsub.js
 web-ng/root/js/stores/HostStore.js
 web-ng/root/js/stores/TestStore.js
 web-ng/root/js/stores/HostGuessLatLonStore.js
+web-ng/root/js/stores/HostNTPInfoStore.js
 web-ng/root/js/vendor/jquery.js
 web-ng/root/js/vendor/modernizr.js
 web-ng/root/js/admin/pages/AdminInfoPage.js

@@ -1,7 +1,10 @@
 var HostStatusSidebarComponent = {
     details_topic: 'store.change.host_details',
     health_topic: 'store.change.health_status',
-    health_token: null,
+    ntp_topic: 'store.change.host_ntp_info',
+    ntp_info: null,
+    status: null,
+    health_token: null,        
     health_refresh_interval: 10000, // in milliseconds
     id_prefix: "health-value-"
 };
@@ -12,12 +15,15 @@ HostStatusSidebarComponent.initialize = function() {
     }
     HostStatusSidebarComponent._registerHelpers();
     Dispatcher.subscribe(HostStatusSidebarComponent.details_topic, HostStatusSidebarComponent._setStatus);
+    Dispatcher.subscribe(HostStatusSidebarComponent.ntp_topic, HostStatusSidebarComponent._setNTPInfo);
     HostStatusSidebarComponent.health_token = Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._setHealthStatus);
 };
 
 HostStatusSidebarComponent._setStatus = function( topic ) {
     //var data = HostStore.getHostSummary();
     var data = HostDetailsStore.getHostDetails();
+    HostStatusSidebarComponent.status = data;
+
     var status_values = [];
    
     var host_memory = data.host_memory;
@@ -47,8 +53,9 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
         status_values.push( {label: "Primary Interface", value: primary_interface} );
     }
 
-    var ntp_synchronized = (data.ntp.synchronized == 1 ? "Yes" : "No");
-    status_values.push( {label: "NTP Synced", value: ntp_synchronized} );
+    //var ntp_synchronized = (data.ntp.synchronized == 1 ? "Yes" : "No");
+    //status_values.push( {label: "NTP Synced", value: ntp_synchronized} );
+    data.ntp_synced = (data.ntp.synchronized == 1 ? "Yes" : "No");
 
     var toolkit_version = data.toolkit_version;
     if (toolkit_version !== null) {  
@@ -80,6 +87,37 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
 
     $("#sidebar_host_status").html(status_output);
 
+    HostStatusSidebarComponent._handleNTPInfo();
+};
+
+HostStatusSidebarComponent._setNTPInfo = function( topic ) {
+    var data = HostNTPInfoStore.getHostNTPInfo();
+    HostStatusSidebarComponent.ntp_info = data;
+
+    if ( $("#sidebar_ntp_details_link").length == 0 ) {
+        return;
+    }
+
+
+    HostStatusSidebarComponent._handleNTPInfo();
+
+};
+
+HostStatusSidebarComponent._handleNTPInfo = function() {
+    if ( HostStatusSidebarComponent.status !== null && HostStatusSidebarComponent.ntp_info !== null) {
+        var data = HostStatusSidebarComponent.ntp_info;
+        $('#sidebar_ntp_details_link').show();
+        var container = $('#sidebar-ntp-popover-container');
+        var ntp_template = $("#sidebar-status-ntp-popover-template").html();
+        var template = Handlebars.compile(ntp_template);
+
+        var ntp_output = template(data);
+
+        container.html(ntp_output);
+            
+        } else {
+            return;
+        }
 };
 
 HostStatusSidebarComponent._registerHelpers = function() {
