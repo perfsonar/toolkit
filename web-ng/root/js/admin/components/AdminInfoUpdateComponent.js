@@ -1,6 +1,7 @@
 var AdminInfoUpdateComponent = {
     admin_info: null,
     info_topic: 'store.change.host_info',
+    latLonTopic: 'store.change.guess_lat_lon',
     saveAdminInfoTopic: 'store.host_admin_info.save',
     saveAdminInfoErrorTopic: 'store.host_admin_info.save_error',
     formChangeTopic: 'ui.form.change',
@@ -22,12 +23,17 @@ AdminInfoUpdateComponent.initialize = function() {
     AdminInfoUpdateComponent._getCountries();
     AdminInfoUpdateComponent.state_data_urls['US'] = '/toolkit/data/us_states_hash.json';
     Dispatcher.subscribe(AdminInfoUpdateComponent.info_topic, AdminInfoUpdateComponent._setInfo);
+    Dispatcher.subscribe(AdminInfoUpdateComponent.latLonTopic, AdminInfoUpdateComponent._setLatLon);
     $('form#adminInfoForm input').change(AdminInfoUpdateComponent._showSaveBar);
     $('form#adminInfoForm select').change(AdminInfoUpdateComponent._showSaveBar);
     $('#admin_info_cancel_button').click( AdminInfoUpdateComponent._cancel);
     Dispatcher.subscribe(AdminInfoUpdateComponent.saveAdminInfoTopic, AdminInfoUpdateComponent._saveSuccess);
     Dispatcher.subscribe(AdminInfoUpdateComponent.saveAdminInfoErrorTopic, AdminInfoUpdateComponent._saveError);
-    $('#loading-modal').foundation('reveal', 'open');
+
+    if($('#loading-modal').length > 0) {
+        $('#loading-modal').foundation('reveal', 'open');
+    }
+    $('#guess_lat_lon_button').click(AdminInfoUpdateComponent._fillLatLon);
 };
 
 AdminInfoUpdateComponent.save = function() {
@@ -132,6 +138,25 @@ AdminInfoUpdateComponent._setInfo = function( topic ) {
 
     $('#loading-modal').foundation('reveal', 'close');
 
+};
+
+AdminInfoUpdateComponent._setLatLon = function( topic ) {
+    var coordinates = HostGuessLatLonStore.getLatLon();
+    var latitude = coordinates.latitude || '';
+    var longitude = coordinates.longitude || '';
+    if (latitude != '' && longitude != '') {
+        $('#guessed_latitude').val(latitude);
+        $('#guessed_longitude').val(longitude);
+        $('#guess_lat_lon_button').show();
+    }
+};
+AdminInfoUpdateComponent._fillLatLon = function(e) {
+    var latitude = $('#guessed_latitude').val() || '';
+    var longitude = $('#guessed_longitude').val() || '';
+    $("#admin_latitude").val(latitude);
+    $("#admin_longitude").val(longitude);
+    AdminInfoUpdateComponent._showSaveBar();
+    e.preventDefault();
 };
 
 AdminInfoUpdateComponent._setState = function(country, state) {

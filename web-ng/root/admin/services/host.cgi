@@ -198,6 +198,14 @@ my $ntp_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 
 $router->add_method($ntp_method);
 
+my $geoip_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            => "get_calculated_lat_lon",
+    description     =>  "Estimates lat/lon based on node IP address",
+    auth_required   => 1,
+    callback        => sub {$host_info->get_calculated_lat_lon(@_);}
+);
+
+$router->add_method($geoip_method);
 
 my $services_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_services",

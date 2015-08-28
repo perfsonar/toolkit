@@ -55,6 +55,7 @@ my $js_files = [
     $include_prefix . 'js/stores/HostAdminInfoStore.js', 
     $include_prefix . 'js/stores/HostDetailsStore.js', 
     $include_prefix . 'js/stores/HostAdminStore.js', 
+    $include_prefix . 'js/stores/HostGuessLatLonStore.js', 
     $include_prefix . 'js/stores/CommunityHostStore.js', 
     $include_prefix . 'js/stores/CommunityAllStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
