@@ -1,12 +1,11 @@
-perfsonar-toolkit (3.5-3~11.1.rc1-1) UNRELEASED; urgency=low
+perfsonar-toolkit (3.5-3~18.rc2-1) UNRELEASED; urgency=low
 
-  * Release Candidate 1
   * Contains: the iptable rules and fail2ban configuration (toolkit-security)
   * Contains: the sysctl settings (toolkit-sysctl)
   * Contains: the service watcher (toolkit-service-watcher)
   * Contains: the ntp configuration (toolkit-ntp)
 
- -- Antoine Delvaux <adelvaux@man.poznan.pl>  Wed, 08 Jul 2015 14:52:40 +0000
+ -- Antoine Delvaux <adelvaux@man.poznan.pl>  Tue, 01 Sep 2015 20:39:55 +0000
 
 perfsonar-toolkit (3.5-2) UNRELEASED; urgency=low
 
