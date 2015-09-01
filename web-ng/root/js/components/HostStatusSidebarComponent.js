@@ -1,10 +1,10 @@
 var HostStatusSidebarComponent = {
-    host_info: null,
-    host_status: null,
-    health_status: null,
-    status_topic: 'store.change.host_status',
+    details_topic: 'store.change.host_details',
     health_topic: 'store.change.health_status',
-    health_token: null,
+    ntp_topic: 'store.change.host_ntp_info',
+    ntp_info: null,
+    status: null,
+    health_token: null,        
     health_refresh_interval: 10000, // in milliseconds
     id_prefix: "health-value-"
 };
@@ -13,12 +13,17 @@ HostStatusSidebarComponent.initialize = function() {
     if ($("#sidebar_host_status").length == 0 ) { 
             return;
     }
-    Dispatcher.subscribe(HostStatusSidebarComponent.status_topic, HostStatusSidebarComponent._setStatus);
+    HostStatusSidebarComponent._registerHelpers();
+    Dispatcher.subscribe(HostStatusSidebarComponent.details_topic, HostStatusSidebarComponent._setStatus);
+    Dispatcher.subscribe(HostStatusSidebarComponent.ntp_topic, HostStatusSidebarComponent._setNTPInfo);
     HostStatusSidebarComponent.health_token = Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._setHealthStatus);
 };
 
 HostStatusSidebarComponent._setStatus = function( topic ) {
-    var data = HostStore.getHostSummary();
+    //var data = HostStore.getHostSummary();
+    var data = HostDetailsStore.getHostDetails();
+    HostStatusSidebarComponent.status = data;
+
     var status_values = [];
    
     var host_memory = data.host_memory;
@@ -48,25 +53,12 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
         status_values.push( {label: "Primary Interface", value: primary_interface} );
     }
 
-    var primary_mtu = data.external_address.mtu;
-    if (typeof primary_mtu != "undefined") {  
-        status_values.push( {label: "MTU", value: primary_mtu} );
-    }
-
-    var interfaces = data.interfaces; 
-    if (typeof interfaces != "undefined") {
-        for (i in interfaces){
-            if(typeof interfaces[i] != "undefined"){
-                status_values.push( {label: interfaces[i].iface, value: interfaces[i].mtu+" MTU"} );    
-            }
-        }
-    }
-
-    var ntp_synchronized = (data.ntp.synchronized == 1 ? "Yes" : "No");
-    status_values.push( {label: "NTP Synced", value: ntp_synchronized} );
+    //var ntp_synchronized = (data.ntp.synchronized == 1 ? "Yes" : "No");
+    //status_values.push( {label: "NTP Synced", value: ntp_synchronized} );
+    data.ntp_synced = (data.ntp.synchronized == 1 ? "Yes" : "No");
 
     var toolkit_version = data.toolkit_version;
-    if (typeof toolkit_version != "undefined") {  
+    if (toolkit_version !== null) {  
         status_values.push( {label: "Toolkit version", value: toolkit_version} );
     }
 
@@ -95,6 +87,51 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
 
     $("#sidebar_host_status").html(status_output);
 
+    HostStatusSidebarComponent._handleNTPInfo();
+};
+
+HostStatusSidebarComponent._setNTPInfo = function( topic ) {
+    var data = HostNTPInfoStore.getHostNTPInfo();
+    HostStatusSidebarComponent.ntp_info = data;
+
+    if ( $("#sidebar_ntp_details_link").length == 0 ) {
+        return;
+    }
+
+
+    HostStatusSidebarComponent._handleNTPInfo();
+
+};
+
+HostStatusSidebarComponent._handleNTPInfo = function() {
+    if ( HostStatusSidebarComponent.status !== null && HostStatusSidebarComponent.ntp_info !== null) {
+        var data = HostStatusSidebarComponent.ntp_info;
+        // Check for # of keys > 1 because we expect to have
+        // synchronized: 0 even if not synced so more than 1 means we have
+        // more info to show
+        if (Object.keys(data).length > 1) {
+            $('#sidebar_ntp_details_link').show();
+            var container = $('#sidebar-ntp-popover-container');
+            var ntp_template = $("#sidebar-status-ntp-popover-template").html();
+            var template = Handlebars.compile(ntp_template);
+
+            var ntp_output = template(data);
+
+            container.html(ntp_output);
+            }            
+    } else {
+        return;
+    }
+};
+
+HostStatusSidebarComponent._registerHelpers = function() {
+    Handlebars.registerHelper('formatSpeed', function(speed) {
+        var ret = null;
+        if ( speed > 0 ) {
+            ret = speed /  ( 1000000 ) + 'M';
+        }
+        return ret;
+    });
 };
 
 HostStatusSidebarComponent._getHealthVariables = function(data) {
@@ -143,7 +180,7 @@ HostStatusSidebarComponent._getHealthVariables = function(data) {
 };
 
 HostStatusSidebarComponent._setHealthStatus = function( topic ) {
-    var data = HostStore.getHealthStatus();
+    var data = HostHealthStore.getHealthStatus();
     var health_values = HostStatusSidebarComponent._getHealthVariables(data);
 
     if ( $("#sidebar-health-template").length == 0 ) {
@@ -202,14 +239,14 @@ HostStatusSidebarComponent._formatMemory = function(memory) {
 };
 
 HostStatusSidebarComponent._getUpdatedHealth = function() {
-    HostStore._retrieveHealth();
+    HostHealthStore._retrieveHealth();
     setTimeout( HostStatusSidebarComponent._getUpdatedHealth, HostStatusSidebarComponent.health_refresh_interval );
 };
 
 HostStatusSidebarComponent._updateHealth = function() {
     //Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._updateHealth);
     //HostStore._retrieveHealth();
-    var data = HostStore.getHealthStatus();
+    var data = HostHealthStore.getHealthStatus();
     var health_values = HostStatusSidebarComponent._getHealthVariables(data);
     for(var i=0; i<health_values.length; i++) {
         var val = health_values[i];

@@ -95,11 +95,11 @@ function modify_pinger_test(test_id, description, packet_size, packet_count, pac
 	}
 }
 
-function modify_traceroute_test(test_id, description, test_interval, test_schedule, packet_size, first_ttl, max_ttl, local_interface) {
+function modify_traceroute_test(test_id, description, test_interval, test_schedule, packet_size, first_ttl, max_ttl, local_interface, tool) {
 	if (test_id) {
-		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_traceroute_test', [ test_id, description, test_interval, test_schedule, packet_size, first_ttl, max_ttl, local_interface ]);
+		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_traceroute_test', [ test_id, description, test_interval, test_schedule, packet_size, first_ttl, max_ttl, local_interface, tool ]);
 	} else {
-		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_traceroute_test', [ description, test_interval, test_schedule, packet_size, first_ttl, max_ttl, local_interface ]);
+		handle_cgi_ajax_call(null, 'Problem adding test', true, 'add_traceroute_test', [ description, test_interval, test_schedule, packet_size, first_ttl, max_ttl, local_interface, tool ]);
 	}
 }
 
@@ -646,7 +646,7 @@ function __display_owamp_test_dialog(test_id, description_id, packet_interval, p
 	dialog.show();
 }
 
-function display_traceroute_test_dialog(test_id, description_id, test_interval, packet_size, first_ttl, max_ttl, local_interface, test_schedule) {
+function display_traceroute_test_dialog(test_id, description_id, test_interval, packet_size, first_ttl, max_ttl, local_interface, test_schedule, tool) {
 	var title;
 	var action;
     var description = __get_description(description_id);
@@ -679,6 +679,20 @@ function display_traceroute_test_dialog(test_id, description_id, test_interval, 
 	dialog_content += "</select>";
 	dialog_content += "</td>";
 	dialog_content += "</tr>";
+	
+	dialog_content += "<tr>";
+	dialog_content += "<td>Tool</td>";
+	dialog_content += "<td>";
+	dialog_content += "<select id='configure_test_tool' dojoType='dijit.form.FilteringSelect' autocomplete='false' >";
+	dialog_content += "	<option value='' "; if (tool == "" || tool == null) { dialog_content += "selected" }; dialog_content += ">Default</option>";
+	dialog_content += "	<option value='tracepath' "; if (tool == "tracepath") { dialog_content += "selected" }; dialog_content += ">tracepath</option>";
+	dialog_content += "	<option value='traceroute' "; if (tool == "traceroute") { dialog_content += "selected" }; dialog_content += ">traceroute</option>";
+	dialog_content += "	<option value='paris-traceroute' "; if (tool == "paris-traceroute") { dialog_content += "selected" }; dialog_content += ">paris-traceroute</option>";
+	
+	dialog_content += "</select>";
+	dialog_content += "</td>";
+	dialog_content += "</tr>";
+	
 	dialog_content += "<tr>";
 	if (test_schedule != "") {
 	dialog_content += "<tr>";
@@ -735,7 +749,8 @@ function display_traceroute_test_dialog(test_id, description_id, test_interval, 
 											var first_ttl = dijit.byId('configure_test_first_ttl').attr('value');
 											var max_ttl = dijit.byId('configure_test_max_ttl').attr('value');
 											var local_interface = dijit.byId('configure_test_local_interface').attr('value');
-											modify_traceroute_test(test_id, description, test_interval, test_schedule, packet_size, first_ttl, max_ttl, local_interface);
+											var tool = dijit.byId('configure_test_tool').attr('value');
+											modify_traceroute_test(test_id, description, test_interval, test_schedule, packet_size, first_ttl, max_ttl, local_interface, tool);
 											dijit.byId('add_test_dialog').hide();
 										},
 										test_id, test_schedule)

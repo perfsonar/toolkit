@@ -11,14 +11,16 @@
                     {{location.zipcode}} 
                     {{location.country}}
                 </span> 
+                {{#if map_url}}
                 <span id="map_link">
                     (<a href="{{map_url}}" target="_blank">map</a>)
                 </span>
+                {{/if}}
                 </dd>
             <dt>Administrator:</dt>
-            <dd><span id="host_administrator">{{administrator.name}}{{#if administrator.email}} (<a href="mailto:{{administrator.email}}">{{administrator.email}}{{/if}}</a>)</span></dd>
+            <dd><span id="host_administrator">{{administrator.name}}{{#if administrator.email}} (<a href="mailto:{{administrator.email}}">{{administrator.email}}</a>){{/if}}</span></dd>
         </dl>
-        <a class="overview--edit" href="/toolkit/admin/administrative_info/" target="_blank"><i class="fa fa-pencil"></i> Edit</a>
+        <a class="overview--edit" href="/toolkit/admin/"><i class="fa fa-pencil"></i> Edit</a>
 
         <div class="key" style="display:none;">
             <ul class="key__items">

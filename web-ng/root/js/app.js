@@ -32,9 +32,11 @@ $(document).ready(function() {
         $(".communities__popular, .servers__popular").toggle(); 
     });
 
+    /*
     $(".config__input").change(function(e) {
         $(".js-unsaved-message").fadeIn("fast");
     });
+    */
 
     /*
     $(".js-save-button").click(function(e) {
@@ -56,8 +58,32 @@ $(document).ready(function() {
     });
     */
 
+    // Sidebar popover menu used to exand on larger sets of sidebar info
+    // For example, "Interfaces"
+    //$(document).on('click', '.btn_test', function() { alert('test'); });
+    $(document).on("click", ".js-sidebar-popover-toggle", function(e) {
+        e.preventDefault();
+        $(this).next(".sidebar-popover").fadeToggle("fast");
+    });
+
+    $(document).on("click", ".js-sidebar-popover-close", function(e) {
+        e.preventDefault();
+        $(this).parent(".sidebar-popover").fadeOut("fast");
+    });
+
+    // Hide the popover when the user clicks outside of it
+    $(document).click(function(e) {
+        $(".sidebar-popover").fadeOut("fast");
+    });
+
+    // Stop clicking inside the popover from hiding it
+    $(document).on("click", ".js-sidebar-popover-toggle, .sidebar-popover", function(e) {
+        e.stopPropagation();
+    });
+
 
     // Select2 plugin - https://select2.github.io/
+    /*
     $(".js-select-multiple").select2({
         placeholder: "Add a new server"
     });
@@ -66,5 +92,6 @@ $(document).ready(function() {
     $(".select2-search__field").keypress(function() {
         $(".sticky-bar--unsaved").fadeIn("fast");    
     });
+    */
 
 });

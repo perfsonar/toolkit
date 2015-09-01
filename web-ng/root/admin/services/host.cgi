@@ -18,12 +18,19 @@ use lib "$RealBin/../../../../lib";
 use perfSONAR_PS::NPToolkit::DataService::Host;
 use perfSONAR_PS::NPToolkit::WebService::Method;
 use perfSONAR_PS::NPToolkit::WebService::Router;
+use perfSONAR_PS::NPToolkit::WebService::Auth qw( is_authenticated unauthorized_output );
 
 use Config::General;
 use Time::HiRes qw(gettimeofday tv_interval);
 
-# TODO: add check for auth
-# TODO: add request method
+my $cgi = CGI->new();
+my $authenticated = is_authenticated($cgi);
+
+if ( !$authenticated ) {
+    print unauthorized_output($cgi);
+    exit;
+}
+
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
@@ -50,7 +57,6 @@ if ( $conf{debug} ) {
 my $data;
 my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( { 'config_file' => $config_file  } );
 
-#my $cgi = CGI->new();
 
 my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
 
@@ -63,9 +69,9 @@ my $summary_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 $router->add_method($summary_method);
 
 my $info_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            =>  "get_info",
-    description     =>  "Retrieves host information",
-    callback        =>  sub { $host_info->get_information(@_); }
+    name            =>  "get_admin_info",
+    description     =>  "Retrieves host admin information",
+    callback        =>  sub { $host_info->get_admin_information(@_); }
     );
 
 $router->add_method($info_method);
@@ -166,9 +172,10 @@ $info_update_method->add_input_parameter(
 $router->add_method($info_update_method);
 
 my $status_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            =>  "get_status",
-    description     =>  "Retrieves host status information",
-    callback        =>  sub { $host_info->get_status(@_); }
+    name            => "get_details",
+    description     => "Retrieves host status information",
+    auth_required   => 1,
+    callback        => sub { $host_info->get_details(@_); }
     );
 
 $router->add_method($status_method);
@@ -181,6 +188,24 @@ my $health_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 );
 
 $router->add_method($health_method);
+
+my $ntp_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            => "get_ntp_info",
+    description     =>  " Retrieves ntp information",
+    auth_required   => 1,
+    callback        => sub {$host_info->get_ntp_information(@_);}
+);
+
+$router->add_method($ntp_method);
+
+my $geoip_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            => "get_calculated_lat_lon",
+    description     =>  "Estimates lat/lon based on node IP address",
+    auth_required   => 1,
+    callback        => sub {$host_info->get_calculated_lat_lon(@_);}
+);
+
+$router->add_method($geoip_method);
 
 my $services_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_services",
@@ -228,6 +253,33 @@ $services_update_method->add_input_parameter(
     );
 
 $router->add_method($services_update_method);
+
+my $get_auto_updates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            => "get_auto_updates",
+    description     => "Gets auto updates configuration",
+    auth_required   => 1,
+    callback        => sub { $host_info->get_auto_updates(@_); },
+    );
+
+$router->add_method($get_auto_updates_method);
+
+my $auto_updates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            => "update_auto_updates",
+    description     => "Updates auto updates configuration",
+    auth_required   => 1,
+    callback        => sub { $host_info->update_auto_updates(@_); },
+    request_methods => ['POST'],
+    );
+
+$auto_updates_method->add_input_parameter(
+    name            => "enabled",
+    description     => "Whether to enable auto updates",
+    required        => 1,
+    allow_empty     => 0,
+    type            => 'boolean',
+    );
+
+$router->add_method($auto_updates_method);
 
 my $communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_communities",

@@ -2,11 +2,122 @@
 <div id="sidebar_host_status"></div>
 <script id="sidebar-status-template" type="text/x-handlebars-template">
 <ul class="sidebar-list">
+    <li class="sidebar-list__item">
+        <div class="sidebar-list__parameter">Interfaces</div>
+        <div class="sidebar-list__value"><a href="#" class="sidebar-popover-toggle js-sidebar-popover-toggle" id="sidebar_interface_details_link">Details <i class="fa fa-angle-down"></i></a>
+       <div class="sidebar-popover" style="display: none;">
+                                <a class="sidebar-popover__close js-sidebar-popover-close">Close &nbsp;<i class="fa fa-close"></i></a>
+                                {{#each interfaces}}
+                                    <h4 class="sidebar-popover__heading">{{iface}}</h4>
+                                    <ul class="sidebar-popover__list">
+                                        {{#if speed}}
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param">Speed:</span>
+                                            <span class="sidebar-popover__value">{{formatSpeed speed}}</span>
+                                        </li>
+                                        {{/if}}
+                                        {{#if ipv4_address}}
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param">ipv4 addresses:</span>
+                                            {{#each ipv4_address}}
+                                            <span class="sidebar-popover__value">{{this}}</span>
+                                            {{/each}}
+                                        </li>
+                                        {{/if}}
+                                        {{#if ipv6_address}}
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param">ipv6 address:</span>
+                                            {{#each ipv6_address}}
+                                            <span class="sidebar-popover__value">{{this}}</span>
+                                            {{/each}}
+                                        </li>
+                                        {{/if}}
+                                        {{#if mac}}
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param">MAC address:</span>
+                                            <span class="sidebar-popover__value">{{mac}}</span>
+                                        </li>
+                                        {{/if}}
+                                        {{#if mtu}}
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param">mtu:</span>
+                                            <span class="sidebar-popover__value">{{mtu}}</span>
+                                        </li>
+                                        {{/if}}
+                                    </ul>
+                                {{/each}}
+                            </div> 
+        </div>
+    </li>
+    <li class="sidebar-list__item">        
+        <div class="sidebar-list__parameter">NTP Synced</div>
+        <div class="sidebar-list__value"><span id="sidebar_ntp_synced_value">{{ntp_synced}}</span> &nbsp; &nbsp; 
+        <div id="sidebar-ntp-popover-container"></div>
+    </li>
     {{#each status_values}}
-    <li>
+    <li class="sidebar-list__item">        
         <div class="sidebar-list__parameter">{{label}}</div>
         <div class="sidebar-list__value">{{value}}</div>
     </li>
     {{/each}}  
 </ul>
+</script>
+
+<script id="sidebar-status-ntp-popover-template" type="text/x-handlebars-template">
+    <a href="#" class="sidebar-popover-toggle js-sidebar-popover-toggle" id="sidebar_ntp_details_link">Details <i class="fa fa-angle-down"></i></a> 
+    <div class="sidebar-popover" style="display:none;">
+        <a class="sidebar-popover__close js-sidebar-popover-close">Close &nbsp;<i class="fa fa-close"></i></a>
+        <h4 class="sidebar-popover__heading">NTP Clock Source Details</h4>
+        <ul class="sidebar-popover__list">
+            {{#if host}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">Hostname:</span>
+                <span class="sidebar-popover__value">{{host}}</span>
+            </li>
+            {{/if}}
+            {{#if address}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">Address:</span>
+                <span class="sidebar-popover__value">{{address}}</span>
+            </li>
+            {{/if}}
+            {{#if stratum}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">Stratum:</span>
+                <span class="sidebar-popover__value">{{stratum}}</span>
+            </li>
+            {{/if}}
+            {{#if reach}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">Reach:</span>
+                <span class="sidebar-popover__value">{{reach}}</span>
+            </li>
+            {{/if}}
+            {{#if delay}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">Delay:</span>
+                <span class="sidebar-popover__value">{{delay}}</span>
+            </li>
+            {{/if}}
+            {{#if polling_interval }}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">Polling interval:</span>
+                <span class="sidebar-popover__value">{{polling_interval}}</span>
+            </li>
+            {{/if}}
+            {{#if offset}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">Clock offset:</span>
+                <span class="sidebar-popover__value">{{offset}}</span>
+            </li>
+            {{/if}}
+            {{#if dispersion}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">Dispersion:</span>
+                <span class="sidebar-popover__value">{{dispersion}}</span>
+            </li>
+            {{/if}}
+            
+        </ul>
+    </div>
 </script>

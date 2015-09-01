@@ -36,7 +36,7 @@ TestResultsComponent._setTestResults = function( topic ) {
         data.test_results[i].rowID = i;
     }
     data.ma_url = encodeURIComponent(TestResultsComponent.ma_url);
-    data.num_test_results = data.test_results.length || 'None';
+    data.num_test_results = data.test_results.length || 'No';
     $('#num_test_results').html(data.num_test_results);
     $('#num_test_results_holder').show();
     var test_results_template = $("#test-results-template").html();
@@ -108,7 +108,7 @@ TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_
         success: function(trace_data) {
             if (typeof trace_data !== "undefined") {
                 if (typeof trace_data.has_traceroute !== "undefined" && trace_data.has_traceroute == 1) {
-                    var trace_url = '/toolkit/gui/psTracerouteViewer/index.cgi?';
+                    var trace_url = '/toolkit-old/gui/psTracerouteViewer/index.cgi?';
                     trace_url += '&mahost=' + trace_data.ma_url;
                     trace_url += '&stime=yesterday';
                     trace_url += '&etime=now';

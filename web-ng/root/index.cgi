@@ -46,7 +46,12 @@ my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
     $include_prefix . 'js/actions/Dispatcher.js', 
-    $include_prefix . 'js/stores/HostStore.js', 
+    $include_prefix . 'js/stores/HostDetailsStore.js', 
+    $include_prefix . 'js/stores/HostServicesStore.js', 
+    $include_prefix . 'js/stores/HostAdminInfoStore.js', 
+    $include_prefix . 'js/stores/HostNTPInfoStore.js', 
+    $include_prefix . 'js/stores/HostHealthStore.js', 
+    #$include_prefix . 'js/stores/HostStore.js', 
     $include_prefix . 'js/stores/TestStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL

@@ -1,9 +1,5 @@
 var HostServicesComponent = {
-    host_info: null,
-    host_status: null,
-    status_topic: 'store.change.host_status',
     services_topic: 'store.change.host_services',
-    info_topic: 'store.change.host_info'
 };
 
 
@@ -11,20 +7,12 @@ HostServicesComponent.initialize = function() {
     Dispatcher.subscribe(HostServicesComponent.services_topic, HostServicesComponent._setServices);
 };
 
-HostServicesComponent._setStatus = function( topic ) {
-    var data = HostStore.getHostSummary();
-    $("#primary_hostname").text(data.external_address.address);
-
-};
-
 HostServicesComponent._setServices = function( topic ) {
     if ($("#host-services-template").length == 0 || $("#host_services").length == 0) {
         return;
     }
-    var data = HostStore.getHostServices();
+    var data = HostServicesStore.getHostServices();
     for(var h=0; h<data.services.length; h++) {
-        console.log(data.services[h]);
-        console.log(data.services[h].is_installed);
         var ports_formatted = '';        
         if (data.services[h].is_installed === 0) {
             data.services[h].show_service = false;

@@ -1,0 +1,140 @@
+[% INCLUDE components/loader.html %]
+
+<div class="config-panel-wrapper">
+    <section class="dashboard-internal">
+    <div class="row">
+        <div class="small-12 columns">
+            <header>
+            <nav>
+            <ul class="nav--breadcrumbs u-list-nav">
+                <li><a href="/toolkit/"><i class="fa fa-home fa-fw"></i>Home</a></li>
+                <li><a href="index.cgi">Configuration</a></li>
+                <li class="active"><a href="host.cgi">Host</a></li>
+            </ul>
+            </nav>
+            </header>
+        </div>
+    </div>
+
+    <div class="config">
+        <form id="hostConfigForm">
+
+        [% INCLUDE admin/components/admin_header_nav.html %]
+
+                    <div class="row">
+                        <div class="medium-9 columns">
+                            <div class="config__form">
+                                <div class="switch-wrapper">
+                                    <h2 class="module-header__title">Auto Updates</h2>
+                                    <p>Automatically updates all software on a nightly basis. <a href="#" data-reveal-id="updatesModal">Click here</a> for important information regarding automatic updates.</p>
+                                    <div class="switch round small">
+                                        <input id="autoUpdatesSwitch" type="checkbox">
+                                        <label for="autoUpdatesSwitch"></label>
+                                        <span id="autoUpdatesLabel" style="vertical-align:top; font-size:120%; margin-left:1em;"></span>
+                                    </div>
+                                </div>
+
+                                <h2 class="module-header__title">NTP Servers</h2>
+                                <p>Click or type below to configure your NTP servers.</p>
+                                <div class="servers">
+                                    <!-- New select box for adding servers -->
+                                    <div class="row">
+                                        <div class="medium-12 columns">
+                                            <select class="js-select-multiple" multiple="multiple" id="select_ntp_servers"></select>
+                                            <ul class="servers__options-list">
+                                                <li class="servers__options-item"><a href="#" id="get-closest-servers-link">Select the closest servers</a></li>
+                                                <li><a href="#" data-reveal-id="ntpModal" id="manage-available-servers-link">Manage available NTP servers</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- Manage NTP modal -->
+                                    <div id="ntpModal" class="reveal-modal xlarge" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+                                        <div class="row">
+                                            <div class="medium-12 columns">
+                                                <div class="ntp-servers">
+                                                    <h3 class="reveal-modal__heading" id="modalTitle">Manage available NTP servers</h3>
+                                                    <div id="ntp-modal-server-list"></div>
+                                                    <script id="ntp-modal-server-list-template" type="text/x-handlebars-template">
+                                                        <ul class="ntp-list" id="ntp_list" style="overflow:scroll;min-height:100px;">
+                                                            {{#each servers}} 
+                                                            <li class="ntp-list__item">                                                            
+                                                            <span class="ntp-list__title">{{id}}</span>
+                                                            <span class="ntp-list__description">{{#if description}}
+                                                                ({{description}})
+                                                                {{/if}}
+                                                            </span>
+                                                            <a class="ntp-list__delete" href="#" server="{{id}}">Delete <i class="fa fa-close"></i></a>
+                                                                </li>
+                                                            {{/each}}
+                                                        </ul>
+                                                    </script> <!-- end #ntp-modal-server-list -->
+
+                                                    <h4 class="reveal-modal__heading">Add a new server</h4>
+                                                    <div class="row">
+                                                        <div class="medium-4 columns">
+                                                            <label class="visuallyhidden">Hostname</label>
+                                                            <input type="text" placeholder="Enter a new NTP server hostname" id="ntp_server_add_hostname">
+                                                        </div>    
+                                                        <div class="medium-4 columns">
+                                                            <label class="visuallyhidden">Description</label>
+                                                            <input type="text" placeholder="Enter a description" id="ntp_server_add_description">
+                                                        </div>
+                                                        <div class="medium-4 columns">
+                                                            <button type="submit" class="button-quiet" id="ntp_server_add_button">Add server</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="medium-12 columns">
+                                                            <button class="button-primary" style="margin: 2em 1em 0 0;" id="ntp_modal_ok_button">OK</button>
+                                                            <a href="#" id="ntp_modal_cancel_button">Cancel</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Close button for modal -->
+                                        <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a>
+                                    </div>
+
+                                </div>
+                                <!-- End Servers module -->
+                            </div>
+                            <!-- End config__form -->
+                        </div>
+                        <div class="medium-3 columns">
+                            <aside class="aside aside--config">
+                                <h3 class="aside__heading">Resources</h3>
+                                <ul class="aside__list">
+                                    <li><a href="http://docs.perfsonar.net/manage_update.html#manage-update-auto" target="_blank">Automatic Updates</a></li>
+                                </ul>
+                                <h3 class="aside__heading">NTP</h3>
+                                <ul class="aside__list">
+                                    <li><a href="http://docs.perfsonar.net/manage_ntp.html" target="_blank">Configuring NTP</a></li>
+                                </ul>
+                            </aside>
+                        </div>
+                    </div>
+                    <!-- End row -->
+
+                    </form>
+                </div>
+                <!-- End config__form -->  
+
+<div id="updatesModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog" style="text-align:left;">
+<h3>Important information about Automatic Updates</h3>
+Automatic updates include all perfSONAR, operating system and third-party packages. Enabling this feature will help keep the latest security fixes on the system, but keep in mind it is possible some updates may break your host unexpectedly. Specifically kernel updates may break NDT and NPAD if a non-web100 version is applied. See this <a href="http://www.perfsonar.net/about/faq/#Q25" target="_blank">FAQ</a> for more information. The following rule of thumb may be useful when considering whether to enable this feature: <blockquote><i>If the machine is a critical server, for which unplanned downtime of a service on the machine can not be tolerated, then you should not use automatic updates. Otherwise, you <b>may</b> choose to use them.</i></blockquote> It is also important to note that automatic updates do not perform all required system reboots or service restarts. Enabling this feature still requires close monitoring of the host to make sure all updates are applied completely and properly.
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+            </div>
+            <!-- End config -->
+        </div>
+        <!-- End row -->
+        </section>
+        <!-- End dashboard-internal -->
+    </div>
+    <!-- End services-panel-wrapper -->
+
+    [% INCLUDE admin/components/sticky_bar.html %]
+

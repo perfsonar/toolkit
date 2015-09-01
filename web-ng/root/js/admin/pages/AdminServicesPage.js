@@ -1,5 +1,5 @@
 // make sure jquery, Dispatcher, TestStore, TestResultsComponent, 
-// HostStore, HostServicesComponent and HostInfoComponent all load before this.
+// HostServicesStore, HostStore, HostAdminStore, HostServicesComponent and HostInfoComponent all load before this.
 
 var AdminServicesPage = { 
     adminServicesTopic: 'store.change.host_services',
@@ -31,7 +31,7 @@ AdminServicesPage.initialize = function() {
 
 
 AdminServicesPage._setEnabledServices = function(topic) {
-    var data = HostStore.getHostServices();
+    var data = HostServicesStore.getHostServices();
     $('#loading-modal').foundation('reveal', 'close');
     
     var serviceList = AdminServicesPage.serviceList;
@@ -93,7 +93,7 @@ AdminServicesPage._save = function() {
         var value = (el.prop("checked") ? 1 : 0);
         data[service] = value;
     }
-    HostStore.saveServices(data);
+    HostAdminStore.saveServices(data);
 };
 
 AdminServicesPage._saveSuccess = function( topic, message ) {
@@ -105,10 +105,8 @@ AdminServicesPage._saveError = function( topic, message ) {
 };
 
 AdminServicesPage._cancel = function() {
-    console.log('cancel clicked - load configuration');
     Dispatcher.publish(AdminServicesPage.formCancelTopic);
     Dispatcher.publish(AdminServicesPage.adminServicesTopic);
-
 };
 
 AdminServicesPage._checkService = function(serviceID, checked) {

@@ -1118,20 +1118,21 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
   margin: 0;
 }
 
-.sidebar-list li {
+.sidebar-list__item {
   padding: .5em 1em .5em 1.5em;
   border-bottom: 1px solid #ddd;
+  position: relative;
 }
-.sidebar-list li:after {
+.sidebar-list__item:after {
   content: "";
   clear: both;
   display: block;
 }
-.sidebar-list li:last-child {
+.sidebar-list__item:last-child {
   border-bottom: none;
 }
 
-.sidebar-list li a {
+.sidebar-list__item a {
   text-decoration: none;
 }
 
@@ -1148,7 +1149,89 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
   overflow-wrap: break-word;
 }
 
-    /*------------------------------------------------------------------------------
+/*
+  Sidebar popover 
+*/
+
+.sidebar-popover {
+  display: none;
+  position: absolute;
+  top: 2.65em;
+  right: 2.5%;
+  background-color: rgba(56, 63, 68, .95);
+  color: #fff;
+  z-index: 5;
+  padding: .75em;
+  border-radius: 4px;
+  min-width: 95%;
+}
+
+.sidebar-popover :after {
+  content: "";
+  clear: both;
+  display: block;
+}
+
+.sidebar-popover__heading {
+  border-bottom: 1px solid rgba(255, 255, 255, .2);
+  font-size: 1.2em;
+  color: #fff;
+  padding: 1em 0 .5em 0;
+}
+
+.sidebar-popover__heading:first-of-type {
+  /*padding-top: 0;*/
+}
+
+.sidebar-popover__list {
+  list-style: none;
+  margin: 0;
+}
+
+.sidebar-popover__item {
+  padding: .2em 0;
+}
+
+.sidebar-popover__param,
+.sidebar-popover__value {
+  display: block;
+  width: 55%;
+}
+
+.sidebar-popover__param { width: 45%; }
+
+.sidebar-popover__param {
+  float: left;
+  color: #ccc;
+}
+
+.sidebar-popover__value {
+  float: right;
+  text-align: right;
+  line-height: 1.2;
+}
+
+.sidebar-popover-toggle:focus {
+  color: #0089ff;
+}
+
+.sidebar-popover__close {
+  color: #ccc;
+  display: block;
+  position: absolute;
+  top: .9em;
+  right: .7em;
+}
+
+.sidebar-popover__close:hover i {
+  color: #a5d5ff;
+}
+
+.sidebar-popover__close i {
+  color: #fff;
+}
+
+/*------------------------------------------------------------------------------
 
     Breadcrumbs
 
@@ -2117,6 +2200,63 @@ to put the stuff inside. */
 
 /*------------------------------------------------------------------------------
 
+    Manage NTP servers modal
+
+------------------------------------------------------------------------------*/
+
+.ntp-servers {
+  text-align: left;
+}
+
+.ntp-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-height: 500px;
+  overflow: scroll;
+}
+
+.ntp-list__item {
+  border-bottom: 1px solid #ddd;
+  padding: .5em 1em;
+  position: relative;
+}
+
+.ntp-list__item:nth-of-type(2n +1) {
+  background-color: #f7f7f7;
+}
+
+.ntp-list__item:last-child {
+  border-bottom: none;
+}
+
+.ntp-list__title {
+  margin-right: 1em;
+  font-weight: 700;
+}
+
+.ntp-list__description {
+  font-style: italic;
+  color: #a9b1b5;
+}
+
+.ntp-list__delete {
+  color: #ef402f;
+  position: absolute;
+  top: .7em;
+  right: 1em;
+  text-decoration: none;
+}
+
+.ntp-list__delete:hover {
+  color: #ef402f;
+  text-decoration: underline;
+}
+
+/*------------------------------------------------------------------------------
+
     Austin's shame
 
 ------------------------------------------------------------------------------*/
@@ -2134,9 +2274,19 @@ to put the stuff inside. */
   text-align: center;
 }
 
+.reveal-modal.xlarge {
+  width: 95%;
+}
+
 .reveal-modal__heading {
   font-weight: 700;
   font-size: 1.15em;
+  margin-top: 1.5em;
+}
+
+.reveal-modal__heading:first-child {
+  margin-top: 0;
+  margin-bottom: 1em;
 }
 
 .reveal-modal .close-reveal-modal {

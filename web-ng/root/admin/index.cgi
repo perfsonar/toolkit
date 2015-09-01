@@ -11,11 +11,12 @@ use Data::Dumper;
 my $include_prefix = '../';
 my $sidebar = 0;
 
-#use FindBin qw($RealBin);
+use FindBin qw($RealBin);
+my $basedir = "$RealBin/../../..";
+use lib "$RealBin/../../../lib";
 
-#my $basedir = "$RealBin/../../..";
+use perfSONAR_PS::NPToolkit::WebService::Auth qw( is_authenticated unauthorized_output );
 
-#use lib "$RealBin/../../../../lib";
 
 my $cgi = CGI->new();
 
@@ -26,8 +27,12 @@ my $auth_type = '';
 if($cgi->auth_type()){
     $auth_type = $cgi->auth_type();
 }
-my $authenticated = 0;
-$authenticated = 1 if ($auth_type ne '');
+my $authenticated = is_authenticated($cgi);
+
+if ( !$authenticated ) {
+    print unauthorized_output($cgi);
+    exit;
+}
 
 my $full_url = url( -path=>1, -query=>1);
 my $https_url = $full_url;
@@ -41,17 +46,25 @@ my $tt = Template->new({
         INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
     }) || die "$Template::ERROR\n";
 
-my $page = 'admin/components/admin_info.html';
+my $page = 'admin/pages/admin_info.html';
 my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
     $include_prefix . 'js/actions/Dispatcher.js', 
     $include_prefix . 'js/stores/HostStore.js', 
+    $include_prefix . 'js/stores/HostAdminInfoStore.js', 
+    $include_prefix . 'js/stores/HostDetailsStore.js', 
+    $include_prefix . 'js/stores/HostAdminStore.js', 
+    $include_prefix . 'js/stores/HostGuessLatLonStore.js', 
+    $include_prefix . 'js/stores/CommunityHostStore.js', 
+    $include_prefix . 'js/stores/CommunityAllStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
     '/serviceTest/JS/TestResultUtils.js', # TODO: fix to better relative URL
-
+    $include_prefix . 'js/components/PageHeader.js', 
+    $include_prefix . 'js/admin/components/StickySaveBar.js', 
     $include_prefix . 'js/admin/components/AdminInfoUpdateComponent.js', 
+    $include_prefix . 'js/admin/components/CommunityUpdateComponent.js', 
     $include_prefix . 'js/admin/pages/AdminInfoPage.js'
     ];
 

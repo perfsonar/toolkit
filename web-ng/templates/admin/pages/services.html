@@ -1,9 +1,5 @@
-<div id="loading-modal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-    <h3>
-        <i class="fa fa-spinner fa-pulse"></i>    Loading ...
-    </h3>
+[% INCLUDE components/loader.html %]
 
-</div>
 <div class="config-panel-wrapper">
     <section class="dashboard-internal">
     <div class="row">
@@ -11,7 +7,7 @@
             <header>
             <nav>
             <ul class="nav--breadcrumbs u-list-nav">
-                <li><a href="../authenticated"><i class="fa fa-home fa-fw"></i>Home</a></li>
+                <li><a href="/toolkit/"><i class="fa fa-home fa-fw"></i>Home</a></li>
                 <li><a href="index.cgi">Configuration</a></li>
                 <li class="active"><a href="services.cgi">Services</a></li>
             </ul>
@@ -79,7 +75,7 @@
                 <aside class="aside aside--config">
                 <h3 class="aside__heading">Resources</h3>
                 <ul class="aside__list">
-                    <li><a href="#">Configuring Services</a></li>
+                    <li><a href="http://docs.perfsonar.net/manage_services.html" target="_blank">Configuring Services</a></li>
                 </ul>
                 </aside>
             </div>

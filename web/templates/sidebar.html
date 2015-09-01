@@ -1,37 +1,37 @@
 <div id="leftSideNavigation" class="leftSideNavigation">
 <center>
-<a href="/toolkit/"><img align="center" height="100" style="border-style: none" src="/toolkit/content/images/pstk-logo.png"></a><br>
+<a href="/toolkit-old/"><img align="center" height="100" style="border-style: none" src="/toolkit-old/content/images/pstk-logo.png"></a><br>
 </center>
 <ul>
 <li class="title">perfSONAR Services</li>
-<li><a href="/toolkit/gui/services">Local Services</a></li>
+<li><a href="/toolkit-old/gui/services">Local Services</a></li>
 <li><a rel="external" target="_blank" href="http://stats.es.net/ServicesDirectory/">Global Services</a></li>
 </ul>
 <ul>
 <li class="title">View Test Results</li>
 <li><a href="/serviceTest/psGraph.cgi">Throughput / Latency Graphs</a></li>
-<li><a rel="external" href="/toolkit/gui/psTracerouteViewer/index.cgi" target="_blank">Traceroute Graphs</a></li>
+<li><a rel="external" href="/toolkit-old/gui/psTracerouteViewer/index.cgi" target="_blank">Traceroute Graphs</a></li>
 </ul>
 <ul>
 <li class="title">External Tools</li>
-<li><a rel="external" target="_blank" href="/toolkit/gui/reverse_traceroute.cgi?function=ping">Reverse Ping</a></li>
-<li><a rel="external" target="_blank" href="/toolkit/gui/reverse_traceroute.cgi">Reverse Traceroute</a></li>
-<li><a rel="external" target="_blank" href="/toolkit/gui/reverse_traceroute.cgi?function=tracepath">Reverse Tracepath</a> </li>
+<li><a rel="external" target="_blank" href="/toolkit-old/gui/reverse_traceroute.cgi?function=ping">Reverse Ping</a></li>
+<li><a rel="external" target="_blank" href="/toolkit-old/gui/reverse_traceroute.cgi">Reverse Traceroute</a></li>
+<li><a rel="external" target="_blank" href="/toolkit-old/gui/reverse_traceroute.cgi?function=tracepath">Reverse Tracepath</a> </li>
 <li><a rel="external" target="_blank" href="http://www-wanmon.slac.stanford.edu/cgi-wrap/reflector.cgi?function=vtrace">Traceroute Visualization</a></li>
 </ul>
 <ul>
 <li class="title">Toolkit Administration</li>
-    <li><a href="/toolkit/admin/regular_testing">Configure Tests</a></li>
+    <li><a href="/toolkit-old/admin/regular_testing">Configure Tests</a></li>
     [% IF remote_login == "root" %]
     <li class="error" title="Insecure User Login"><a href="#" onClick="display_insecure_user_warning_dialog()">Insecure Administrative User</a></li>
     [% END %]
-    <li [% IF admin_info_nav_class %]class="[% admin_info_nav_class %]" title="Incomplete configuration"[% END %]><a href="/toolkit/admin/administrative_info">Administrative Information</a></li>
-    <li><a href="/toolkit/admin/enabled_services">Enabled Services</a></li>
-    <li [% IF ntp_nav_class %]class="[% ntp_nav_class  %]" title="NTP not properly configured" [% END %]><a href="/toolkit/admin/ntp">NTP</a></li>
-    <li><a rel="external" target="_blank" href="/toolkit/admin/logs">perfSONAR Logs</a></li>
-    <li><a rel="external" target="_blank" href="/toolkit/admin/log_view/bwctl.cgi">BWCTL Log Analysis</a></li>
-    <li><a rel="external" target="_blank" href="/toolkit/admin/log_view/owamp.cgi">OWAMP Log Analysis</a></li>
-    <li><a rel="external" target="_blank" href="/toolkit/admin/log_view/ndt.cgi">NDT Log Analysis</a></li>
+    <li [% IF admin_info_nav_class %]class="[% admin_info_nav_class %]" title="Incomplete configuration"[% END %]><a href="/toolkit-old/admin/administrative_info">Administrative Information</a></li>
+    <li><a href="/toolkit-old/admin/enabled_services">Enabled Services</a></li>
+    <li [% IF ntp_nav_class %]class="[% ntp_nav_class  %]" title="NTP not properly configured" [% END %]><a href="/toolkit-old/admin/ntp">NTP</a></li>
+    <li><a rel="external" target="_blank" href="/toolkit-old/admin/logs">perfSONAR Logs</a></li>
+    <li><a rel="external" target="_blank" href="/toolkit-old/admin/log_view/bwctl.cgi">BWCTL Log Analysis</a></li>
+    <li><a rel="external" target="_blank" href="/toolkit-old/admin/log_view/owamp.cgi">OWAMP Log Analysis</a></li>
+    <li><a rel="external" target="_blank" href="/toolkit-old/admin/log_view/ndt.cgi">NDT Log Analysis</a></li>
     [% IF cacti_available %]
     <li><a rel="external" target="_blank" href="/cacti">Cacti SNMP Monitoring</a></li>
     [% END %]
@@ -45,7 +45,7 @@
 </ul>
 <center>
 <p>
-<a href="http://perfsonar.net/"><img align="center" style="border-style: none" height="50" src="/toolkit/content/images/PerfSONAR-powered-CMYK.png"></a>
+<a href="http://perfsonar.net/"><img align="center" style="border-style: none" height="50" src="/toolkit-old/content/images/PerfSONAR-powered-CMYK.png"></a>
 </p>
 </center>
 </div>

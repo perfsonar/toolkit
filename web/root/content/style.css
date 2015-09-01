@@ -338,14 +338,14 @@ color: rgb(255, 255, 255);
 }
 
 .leftSideNavigation li.error a {
-    background-image: url('/toolkit/content/images/icon_error_16x16.png');
+    background-image: url('/toolkit-old/content/images/icon_error_16x16.png');
     background-repeat: no-repeat;
     padding-left:18px;
     border-left: solid 7px #FFBABA;
 }
 
 .leftSideNavigation li.warning a {
-    background-image: url('/toolkit/content/images/icon_warning_16x16.png');
+    background-image: url('/toolkit-old/content/images/icon_warning_16x16.png');
     background-repeat: no-repeat;
     padding-left:18px;
     border-left: solid 7px #FEEFB3;
@@ -528,7 +528,7 @@ color: rgb(255, 255, 255);
 a[rel="external"], a.external {
 	white-space: nowrap;
 	padding-right: 15px;
-	background: url(/toolkit/content/images/external.png) no-repeat 100% 50%;
+	background: url(/toolkit-old/content/images/external.png) no-repeat 100% 50%;
 	zoom: 1;
 }
 
@@ -541,7 +541,7 @@ a[rel="external"], a.external {
 .info {
     color: #00529B;
     background-color: #BDE5F8;
-    background-image: url('/toolkit/content/images/info.png');
+    background-image: url('/toolkit-old/content/images/info.png');
 }
 
 .success {
@@ -549,7 +549,7 @@ a[rel="external"], a.external {
     background-color: #DFF2BF;
 }
 .success.status {
-    background-image: url('/toolkit/content/images/icon_success.png');
+    background-image: url('/toolkit-old/content/images/icon_success.png');
 }
 
 .warning {
@@ -557,7 +557,7 @@ a[rel="external"], a.external {
     background-color: #FEEFB3;
 }
 .warning.status {
-    background-image: url('/toolkit/content/images/icon_warning.png');
+    background-image: url('/toolkit-old/content/images/icon_warning.png');
 }
 
 .error {
@@ -566,7 +566,7 @@ a[rel="external"], a.external {
 }
 
 .error.status {
-    background-image: url('/toolkit/content/images/icon_error.png');
+    background-image: url('/toolkit-old/content/images/icon_error.png');
 }
 
 .status {

@@ -1,8 +1,15 @@
 var AdminInfoUpdateComponent = {
     admin_info: null,
     info_topic: 'store.change.host_info',
-    country_data_url: '/toolkit-ng/data/country_data.json',
-    update_url: '/toolkit-ng/admin/services/host.cgi?method=update_info',
+    latLonTopic: 'store.change.guess_lat_lon',
+    saveAdminInfoTopic: 'store.host_admin_info.save',
+    saveAdminInfoErrorTopic: 'store.host_admin_info.save_error',
+    formChangeTopic: 'ui.form.change',
+    formSuccessTopic: 'ui.form.success',
+    formErrorTopic: 'ui.form.error',
+    formCancelTopic: 'ui.form.cancel',
+    country_data_url: '/toolkit/data/country_data.json',
+    update_url: '/toolkit/admin/services/host.cgi?method=update_info',
     countries: {},
     state_data_urls: {},
     state_sel: $("#admin_states"),
@@ -14,12 +21,22 @@ var AdminInfoUpdateComponent = {
 
 AdminInfoUpdateComponent.initialize = function() {
     AdminInfoUpdateComponent._getCountries();
-    AdminInfoUpdateComponent.state_data_urls['US'] = '/toolkit-ng/data/us_states_hash.json';
+    AdminInfoUpdateComponent.state_data_urls['US'] = '/toolkit/data/us_states_hash.json';
     Dispatcher.subscribe(AdminInfoUpdateComponent.info_topic, AdminInfoUpdateComponent._setInfo);
-    $('#admin_info_save_button').click( AdminInfoUpdateComponent._save );
+    Dispatcher.subscribe(AdminInfoUpdateComponent.latLonTopic, AdminInfoUpdateComponent._setLatLon);
+    $('form#adminInfoForm input').change(AdminInfoUpdateComponent._showSaveBar);
+    $('form#adminInfoForm select').change(AdminInfoUpdateComponent._showSaveBar);
+    $('#admin_info_cancel_button').click( AdminInfoUpdateComponent._cancel);
+    Dispatcher.subscribe(AdminInfoUpdateComponent.saveAdminInfoTopic, AdminInfoUpdateComponent._saveSuccess);
+    Dispatcher.subscribe(AdminInfoUpdateComponent.saveAdminInfoErrorTopic, AdminInfoUpdateComponent._saveError);
+
+    if($('#loading-modal').length > 0) {
+        $('#loading-modal').foundation('reveal', 'open');
+    }
+    $('#guess_lat_lon_button').click(AdminInfoUpdateComponent._fillLatLon);
 };
 
-AdminInfoUpdateComponent._save = function() {
+AdminInfoUpdateComponent.save = function() {
     var data = {};
     data.organization_name = $("#admin_organization_name").val();
     data.admin_name = $("#admin_name").val();
@@ -35,20 +52,7 @@ AdminInfoUpdateComponent._save = function() {
     data.latitude = $("#admin_latitude").val();
     data.longitude = $("#admin_longitude").val();
 
-    $.ajax({
-            url: AdminInfoUpdateComponent.update_url,
-            type: 'POST',
-            data: data,
-            dataType: 'json',
-            contentType: 'application/x-www-form-urlencoded',
-            // TODO: handle success/failure better
-            success: function(result) {
-                console.log("success");
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log("error: object: ", jqXHR, "textStatus", textStatus, "errorThrown", errorThrown);
-            }
-        });
+    HostAdminStore.saveAdminInfo(data);
 
 };
 
@@ -82,6 +86,7 @@ AdminInfoUpdateComponent._getStates = function( countryCode, state ) {
     state_sel.empty(); // remove old options
     state_sel.append($("<option></option>")
             .attr("value", "").text("-- Select State/Province --"));
+    countryCode = countryCode || '';
     countryCode = countryCode.toUpperCase();
     //var states = [];
     if ( AdminInfoUpdateComponent.state_data_urls.hasOwnProperty(countryCode) ) {
@@ -115,7 +120,7 @@ AdminInfoUpdateComponent._getStates = function( countryCode, state ) {
 
 
 AdminInfoUpdateComponent._setInfo = function( topic ) {
-    var data = HostStore.getHostInfo();
+    var data = HostAdminInfoStore.getHostAdminInfo();
 
     $("#admin_organization_name").val(data.administrator.organization);
     $("#admin_name").val(data.administrator.name);
@@ -131,6 +136,27 @@ AdminInfoUpdateComponent._setInfo = function( topic ) {
     AdminInfoUpdateComponent._setCountry(data.location.country);
     AdminInfoUpdateComponent._setState(data.location.country, data.location.state);
 
+    $('#loading-modal').foundation('reveal', 'close');
+
+};
+
+AdminInfoUpdateComponent._setLatLon = function( topic ) {
+    var coordinates = HostGuessLatLonStore.getLatLon();
+    var latitude = coordinates.latitude || '';
+    var longitude = coordinates.longitude || '';
+    if (latitude != '' && longitude != '') {
+        $('#guessed_latitude').val(latitude);
+        $('#guessed_longitude').val(longitude);
+        $('#guess_lat_lon_button').show();
+    }
+};
+AdminInfoUpdateComponent._fillLatLon = function(e) {
+    var latitude = $('#guessed_latitude').val() || '';
+    var longitude = $('#guessed_longitude').val() || '';
+    $("#admin_latitude").val(latitude);
+    $("#admin_longitude").val(longitude);
+    AdminInfoUpdateComponent._showSaveBar();
+    e.preventDefault();
 };
 
 AdminInfoUpdateComponent._setState = function(country, state) {
@@ -153,10 +179,26 @@ AdminInfoUpdateComponent._showStateSelector = function(abbr) {
 AdminInfoUpdateComponent._showStateTextInput = function(abbr) {
     var state_sel = AdminInfoUpdateComponent.state_sel;
     var state_text = AdminInfoUpdateComponent.state_text;
-    //$("#previous_selected_state_val").val( state_sel.val() );
     state_sel.hide();
     state_text.show();
-    //state_text.text();
+};
+
+AdminInfoUpdateComponent._saveSuccess = function( topic, message ) {
+    Dispatcher.publish(AdminInfoUpdateComponent.formSuccessTopic, message);
+};
+
+AdminInfoUpdateComponent._saveError = function( topic, message ) {
+    Dispatcher.publish(AdminInfoUpdateComponent.formErrorTopic, message);
+};
+
+AdminInfoUpdateComponent._cancel = function() {
+    Dispatcher.publish(AdminInfoUpdateComponent.formCancelTopic);
+    Dispatcher.publish(AdminInfoUpdateComponent.info_topic);
+
+};
+
+AdminInfoUpdateComponent._showSaveBar = function() {
+    Dispatcher.publish(AdminInfoUpdateComponent.formChangeTopic);
 };
 
 AdminInfoUpdateComponent.initialize();

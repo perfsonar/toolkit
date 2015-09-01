@@ -80,6 +80,9 @@
 </td>
 	</tr>
 [% ELSIF current_test.type == "traceroute" %]
+    <tr>
+	<td style="width: 200px">Tool</td><td>[% current_test.parameters.tool %]</td>
+	</tr>
 	<tr>
 	<td style="width: 200px">Packet Size (bytes)</td><td>[% current_test.parameters.packet_size %]</td>
 	</tr>
@@ -90,7 +93,7 @@
 	<td style="width: 200px">Maximum Number of Hops</td><td>[% current_test.parameters.max_ttl %]</td>
 	</tr>
 	<tr>
-	<td colspan="2"><a href="#" onClick='display_traceroute_test_dialog("[% current_test.id %]", "[% current_test.id_num %]", "[% current_test.parameters.test_interval %]", "[% current_test.parameters.packet_size %]", "[% current_test.parameters.first_ttl %]", "[% current_test.parameters.max_ttl %]", "[% current_test.parameters.local_interface %]", "[% current_test.parameters.test_schedule.join(", ") %]")'>Edit Test Parameters</a>
+	<td colspan="2"><a href="#" onClick='display_traceroute_test_dialog("[% current_test.id %]", "[% current_test.id_num %]", "[% current_test.parameters.test_interval %]", "[% current_test.parameters.packet_size %]", "[% current_test.parameters.first_ttl %]", "[% current_test.parameters.max_ttl %]", "[% current_test.parameters.local_interface %]", "[% current_test.parameters.test_schedule.join(", ") %]", "[% current_test.parameters.tool %]")'>Edit Test Parameters</a>
 <input type="hidden" id="test_[% current_test.id_num %]_description" value="[% current_test.description | html_entity %]" />
 </td>
 	</tr>

@@ -2,6 +2,7 @@
 %define install_base /opt/perfsonar_ps/toolkit
 
 %define apacheconf apache-toolkit_web_gui.conf
+%define sudoerconf perfsonar_sudo
 
 %define init_script_1 config_daemon
 %define init_script_2 generate_motd
@@ -13,7 +14,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.11.rc1 
+%define relnum  0.18.rc2 
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
@@ -314,6 +315,7 @@ install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 install -D -m 0600 scripts/%{cron_hourly_1} %{buildroot}/etc/cron.hourly/%{cron_hourly_1}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
+install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 
 install -D -m 0755 init_scripts/%{init_script_1} %{buildroot}/etc/init.d/%{init_script_1}
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
@@ -332,6 +334,7 @@ rm -rf %{buildroot}
 %post
 # Add a group of users who can login to the web ui
 /usr/sbin/groupadd psadmin 2> /dev/null || :
+/usr/sbin/groupadd pssudo 2> /dev/null || :
 
 mkdir -p /var/log/perfsonar/web_admin
 chown apache:perfsonar /var/log/perfsonar/web_admin
@@ -366,6 +369,7 @@ ln -sf /opt/perfsonar_ps/toolkit/web/templates/footer.tmpl /opt/perfsonar_ps/ser
 
 # Install a link to the logs into the web location
 ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web/root/admin/logs
+ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web-ng/root/admin/logs
 
 # Overwrite the existing configuration files for the services with new
 # configuration files containing the default settings.
@@ -376,10 +380,10 @@ grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrativ
 mv /opt/perfsonar_ps/toolkit/etc/administrative_info.tmp /opt/perfsonar_ps/toolkit/etc/administrative_info
 
 #Set bundle type and version
-grep -v "bundle" /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf > /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
-echo "bundle_type  perfsonar-toolkit" >> /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
-echo "bundle_version  %{version}" >> /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp
-mv /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf.tmp /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
+echo "perfsonar-toolkit" > /var/lib/perfsonar/bundles/bundle_type
+echo "%{version}" > /var/lib/perfsonar/bundles/bundle_version
+chmod 644 /var/lib/perfsonar/bundles/bundle_type
+chmod 644 /var/lib/perfsonar/bundles/bundle_version
 
 #Make sure that the administrator_info file gets reloaded
 /opt/perfsonar_ps/toolkit/scripts/update_administrative_info.pl 2> /dev/null
@@ -430,13 +434,17 @@ for script in %{install_base}/scripts/system_environment/*; do
 	fi
 done
 
-# Add a script to inspire them to create a 'psadmin' user if they don't already have one
-if [ $1 -eq 1 ] ; then
+# Add a script to inspire them to create a 'psadmin' and sudo user if they don't already have one
+# Clear out old references first to fix bug where these got repeated
+sed -i "/add_psadmin_user/d" /root/.bashrc
+sed -i "/add_pssudo_user/d" /root/.bashrc
 cat >> /root/.bashrc <<EOF
 # Run the add_psadmin_user script to ensure that a psadmin user has been created
 /opt/perfsonar_ps/toolkit/scripts/add_psadmin_user --auto
+# Run the add_pssudo_user script to encourage disabling root ssh
+/opt/perfsonar_ps/toolkit/scripts/add_pssudo_user --auto
 EOF
-fi
+
 
 #########################################################################
 # The system environment scripts monkey with the apache configuration, so
@@ -501,6 +509,7 @@ fi
 %{install_base}/templates/*
 %{install_base}/dependencies
 /etc/httpd/conf.d/*
+%attr(0640,root,root) /etc/sudoers.d/*
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
 %attr(0755,root,root) /etc/cron.hourly/%{cron_hourly_1}
 # Make sure the cgi scripts are all executable
@@ -515,13 +524,22 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/bwctl.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/ndt.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/owamp.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/administrative_info/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/regular_testing/index.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/host.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/host.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/ntp.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/communities.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/tests.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/psTracerouteViewer/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_3}
@@ -531,6 +549,7 @@ fi
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_cacti
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
@@ -568,7 +587,6 @@ fi
 %{install_base}/lib/*
 %{install_base}/python_lib/*
 %doc %{install_base}/doc/*
-%attr(0644,perfsonar,perfsonar) %{install_base}/etc/toolkit.version
 
 %files service-watcher
 %config(noreplace) %{install_base}/etc/service_watcher.conf
