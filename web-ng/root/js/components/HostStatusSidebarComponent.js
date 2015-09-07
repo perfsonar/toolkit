@@ -106,22 +106,18 @@ HostStatusSidebarComponent._setNTPInfo = function( topic ) {
 HostStatusSidebarComponent._handleNTPInfo = function() {
     if ( HostStatusSidebarComponent.status !== null && HostStatusSidebarComponent.ntp_info !== null) {
         var data = HostStatusSidebarComponent.ntp_info;
-        // Check for # of keys > 1 because we expect to have
-        // synchronized: 0 even if not synced so more than 1 means we have
-        // more info to show
-        if (Object.keys(data).length > 1) {
-            $('#sidebar_ntp_details_link').show();
-            var container = $('#sidebar-ntp-popover-container');
-            var ntp_template = $("#sidebar-status-ntp-popover-template").html();
-            var template = Handlebars.compile(ntp_template);
+        $('#sidebar_ntp_details_link').show();
+        var container = $('#sidebar-ntp-popover-container');
+        var ntp_template = $("#sidebar-status-ntp-popover-template").html();
+        var template = Handlebars.compile(ntp_template);
 
-            var ntp_output = template(data);
+        var ntp_output = template(data);
 
-            container.html(ntp_output);
-            }            
-    } else {
-        return;
-    }
+        container.html(ntp_output);
+            
+        } else {
+            return;
+        }
 };
 
 HostStatusSidebarComponent._registerHelpers = function() {
