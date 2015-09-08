@@ -1,4 +1,4 @@
-#i Ignore mac hidden file
+#Ignore mac hidden file
 .DS_Store
-# Ignore quilt patches
-.pc
+# Ignore quilt cache directory
+.pc/
