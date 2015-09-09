@@ -1664,7 +1664,7 @@ input.button-alternate--small {
   line-height: 1.65;
 }
 
-.button-primary--hollow, input[type='button'].cancel {
+.button-primary.hollow, input[type='button'].cancel {
   display: inline-block;
   background-color: transparent;
   border: 1px solid #fff;
@@ -1674,10 +1674,47 @@ input.button-alternate--small {
   border-radius: 4px;
   margin: 0;
 }
-.button-primary--hollow:hover, input[type='button']:enabled.cancel:hover {
+.button-primary.hollow:hover, input[type='button']:enabled.cancel:hover {
   background-color: #f7f7f7;
   border-color: #f7f7f7;
   color: #383f44;
+}
+
+.button-secondary--form-align,
+.button-primary--form-align,
+.button-quiet--form-align {
+  margin-top: 1.5em;
+  width: 100%;
+}
+
+/*
+** Disabled states for Config buttons
+*/
+
+input[type='button']:disabled.button-primary, input[type='submit']:disabled.button-primary {
+  background-color: #999;
+  color: #666;
+  border: none;
+}
+
+input[type='button']:disabled.button-primary:hover, input[type='submit']:disabled.button-primary:hover {
+  background-color: #999;
+  border-color: #999;
+  color: #666;
+  cursor: default;
+}
+
+input[type='button']:disabled.button-primary--hollow {
+  border: 1px solid #999;
+  color: #888;
+  background-color:transparent;
+}
+
+input[type='button']:disabled.button-primary--hollow:hover {
+  background-color: transparent;
+  border-color: #999;
+  color: #888;
+  cursor: default;  
 }
 
 .overview {

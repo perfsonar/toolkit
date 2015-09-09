@@ -6,6 +6,7 @@ var HostConfigPage = {
     adminServicesTopic: 'store.change.host_services',
     ntpConfigTopic: 'store.change.ntp_config',
     formChangeTopic: 'ui.form.change',
+    formSubmitTopic:    'ui.form.submit',
     formSuccessTopic: 'ui.form.success',
     formErrorTopic: 'ui.form.error',
     formCancelTopic: 'ui.form.cancel',
@@ -92,6 +93,7 @@ HostConfigPage._handleSubForm = function(topic, result) {
 
 
 HostConfigPage._save = function() {
+    Dispatcher.publish(HostConfigPage.formSubmitTopic);
     NTPConfigComponent.save();
     AutoUpdatesComponent.save();
 };

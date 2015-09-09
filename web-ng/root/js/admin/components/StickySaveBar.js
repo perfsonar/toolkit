@@ -1,5 +1,6 @@
 var StickySaveBar = {
     formChangeTopic:    'ui.form.change',
+    formSubmitTopic:    'ui.form.submit',
     formSuccessTopic:   'ui.form.success',
     formErrorTopic:     'ui.form.error',
     formCancelTopic:    'ui.form.cancel',
@@ -8,6 +9,7 @@ var StickySaveBar = {
 
 StickySaveBar.initialize = function() {
     Dispatcher.subscribe(StickySaveBar.formChangeTopic,  StickySaveBar._formChange  );
+    Dispatcher.subscribe(StickySaveBar.formSubmitTopic,  StickySaveBar._formSubmit  );
     Dispatcher.subscribe(StickySaveBar.formSuccessTopic, StickySaveBar._formSuccess );
     Dispatcher.subscribe(StickySaveBar.formErrorTopic,   StickySaveBar._formError   );
     Dispatcher.subscribe(StickySaveBar.formCancelTopic,  StickySaveBar._formCancel  );
@@ -50,10 +52,16 @@ StickySaveBar._disableUnsavedWarning = function() {
 
 };
 
+StickySaveBar._formSubmit = function( topic, message ) {
+    $("#sticky-unsaved-message").fadeOut("fast");
+    $("#admin_info_save_button").prop("value", "Saving ...");
+    StickySaveBar._disableButtons();    
+};
+
 StickySaveBar._formSuccess = function( topic, message ) {
     $("#sticky-unsaved-message").fadeOut("fast");
     $(".sticky-bar--saved").fadeIn("fast").delay(1500).fadeOut("slow");
-    StickySaveBar._disableButtons();    
+    $("#admin_info_save_button").prop("value", "Save");
     if (typeof message != "undefined") {
         $("#sticky-saved-message").text(message);
     } else {
@@ -65,6 +73,7 @@ StickySaveBar._formSuccess = function( topic, message ) {
 StickySaveBar._formError = function( topic, message ) {
     StickySaveBar._enableButtons();    
     $(".sticky-bar--failure").fadeIn("fast");
+    $("#admin_info_save_button").prop("value", "Save");
     if (typeof message != "undefined" && message != "") {
         $("#sticky-failure-message").text(message);
     } else {
