@@ -38,9 +38,9 @@ Depends: ntp, perfsonar-toolkit-library, ${misc:Depends}
 Description: pS-Performance Toolkit ntp configuration
  Configures ntp servers for perfSONAR Toolkit.
 
-Package: perfsonar-toolkit-config-daemon
-Architecture: all
-Depends: perfsonar-toolkit-library, libnet-server-perl,
- ${misc:Depends}
-Description: pS-Performance Toolkit configuration daemon
- Manages configuration file and services for perfSONAR Toolkit.
+#Package: perfsonar-toolkit-config-daemon
+#Architecture: all
+#Depends: perfsonar-toolkit-library, libnet-server-perl,
+# ${misc:Depends}
+#Description: pS-Performance Toolkit configuration daemon
+# Manages configuration file and services for perfSONAR Toolkit.
