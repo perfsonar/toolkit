@@ -248,6 +248,7 @@ templates/config/ntp_conf.tmpl
 templates/config/tcpbw100_html.tmpl
 web-ng/etc/logger.conf
 web-ng/etc/web_admin.conf
+web-ng/root/favicon.ico
 web-ng/root/admin/administrative_info/index.cgi
 web-ng/root/admin/regular_testing/index.cgi
 web-ng/root/admin/host.cgi

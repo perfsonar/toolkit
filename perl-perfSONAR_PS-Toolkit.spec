@@ -312,8 +312,6 @@ make ROOTPATH=%{buildroot}/%{install_base} rpminstall
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 
-install -D -m 0600 scripts/%{cron_hourly_1} %{buildroot}/etc/cron.hourly/%{cron_hourly_1}
-
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 
@@ -325,7 +323,6 @@ install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
-rm -rf %{buildroot}/%{install_base}/scripts/%{cron_hourly_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 
 %clean
@@ -511,7 +508,6 @@ fi
 /etc/httpd/conf.d/*
 %attr(0640,root,root) /etc/sudoers.d/*
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
-%attr(0755,root,root) /etc/cron.hourly/%{cron_hourly_1}
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/reverse_traceroute.cgi
@@ -552,6 +548,7 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_cacti
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/%{cron_hourly_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-backup.sh

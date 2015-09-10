@@ -4,6 +4,7 @@
 var AdminServicesPage = { 
     adminServicesTopic: 'store.change.host_services',
     formChangeTopic: 'ui.form.change',
+    formSubmitTopic:    'ui.form.submit',
     formSuccessTopic: 'ui.form.success',
     formErrorTopic: 'ui.form.error',
     formCancelTopic: 'ui.form.cancel',
@@ -85,6 +86,7 @@ AdminServicesPage.selectServices = function(arg) {
 };
 
 AdminServicesPage._save = function() {
+    Dispatcher.publish(AdminServicesPage.formSubmitTopic);
     var data = {};
     var services = AdminServicesPage.serviceList;
     for (var i in services) {
