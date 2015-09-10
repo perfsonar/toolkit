@@ -1,0 +1,78 @@
+--- a/bin/config_daemon.pl
++++ b/bin/config_daemon.pl
+@@ -29,7 +29,7 @@
+ use Log::Log4perl qw/:easy/;
+ 
+ # set the process name
+-$0 = "toolkit_config_daemon.pl";
++$0 = "configdaemon.pl";
+ 
+ my @child_pids = ();
+ 
+@@ -70,7 +70,7 @@
+ }
+ 
+ if ( not $PIDFILE ) {
+-    $PIDFILE = "/var/run/toolkit_config_daemon.pid";
++    $PIDFILE = "/var/run/configdaemon.pid";
+ }
+ 
+ ( $status, $res ) = lockPIDFile( $PIDFILE );
+--- a/etc/config_daemon-logger.conf
++++ b/etc/config_daemon-logger.conf
+@@ -9,7 +9,7 @@
+ 
+ # Uncomment the following lines to log messages to the specified file.
+ log4perl.appender.A1=Log::Dispatch::FileRotate
+-log4perl.appender.A1.filename=/var/log/perfsonar/config_daemon.log
++log4perl.appender.A1.filename=/var/log/perfsonar/configdaemon.log
+ log4perl.appender.A1.max=5
+ log4perl.appender.A1.permissions=sub{ 0644; }
+ log4perl.appender.A1.size=16777216
+--- a/etc/config_daemon.conf
++++ b/etc/config_daemon.conf
+@@ -1,6 +1,6 @@
+ address		localhost
+ port		9000
+-firewall_script /opt/perfsonar_ps/toolkit/scripts/system_environment/configure_firewall
++firewall_script /usr/lib/perfsonar/scripts/configure_firewall
+ 
+ <access>
+ 	<service yum_cron> 
+@@ -97,7 +97,7 @@
+ 		read	1
+ 		write	1
+ 	</file>
+-	<file "/opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf">
++	<file "/etc/perfsonar/lsregistrationdaemon.conf">
+ 		read	1
+ 		write	1
+ 	</file>
+@@ -145,15 +145,15 @@
+ 		read	1
+ 		write	1
+ 	</file>
+-	<file "/etc/bwctld/bwctld.conf">
++	<file "/etc/bwctl/bwctld.conf">
+ 		read	1
+ 		write	1
+ 	</file>
+-	<file "/etc/bwctld/bwctld.limits">
++	<file "/etc/bwctl/bwctld.limits">
+ 		read	1
+ 		write	1
+ 	</file>
+-	<file "/etc/bwctld/bwctld.keys">
++	<file "/etc/bwctl/bwctld.keys">
+ 		read	1
+ 		write	1
+ 	</file>
+@@ -185,7 +185,7 @@
+     		read    1
+     		write   1
+ 	</file>
+-        <file "/opt/perfsonar_ps/regular_testing/etc/regular_testing.conf">
++        <file "/etc/perfsonar/regulartesting.conf">
+     		read    1
+     		write   1
+ 	</file>

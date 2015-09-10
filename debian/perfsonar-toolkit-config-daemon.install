@@ -1,0 +1,4 @@
+#!/usr/bin/dh-exec
+etc/config_daemon.conf => etc/perfsonar/toolkit/configdaemon.conf
+etc/config_daemon-logger.conf => etc/perfsonar/toolkit/configdaemon-logger.conf
+bin/config_daemon.pl => /usr/lib/perfsonar/bin/configdaemon.pl
