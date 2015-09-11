@@ -4,9 +4,12 @@ var HostStatusSidebarComponent = {
     ntp_topic: 'store.change.host_ntp_info',
     ntp_info: null,
     status: null,
+    details_set: false,
     health_token: null,        
     health_refresh_interval: 10000, // in milliseconds
-    id_prefix: "health-value-"
+    id_prefix: "health-value-",
+    recommended_ram: 4, // in gigabytes
+    show_ram_in_details: true,
 };
 
 HostStatusSidebarComponent.initialize = function() {
@@ -20,7 +23,6 @@ HostStatusSidebarComponent.initialize = function() {
 };
 
 HostStatusSidebarComponent._setStatus = function( topic ) {
-    //var data = HostStore.getHostSummary();
     var data = HostDetailsStore.getHostDetails();
     HostStatusSidebarComponent.status = data;
 
@@ -28,8 +30,15 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
    
     var host_memory = data.host_memory;
     if (typeof host_memory != "undefined") {   
+        var memVal = {};
+        if (host_memory < HostStatusSidebarComponent.recommended_ram) {
+            memVal.classes = "color-red";
+        }
         host_memory += " GB";
-        status_values.push( {label: "RAM", value: host_memory} );
+        memVal.id    = "ram_details";
+        memVal.label = "RAM";
+        memVal.value = host_memory;
+        status_values.push( memVal );
     }
 
     var cpu_cores = data.cpu_cores;
@@ -53,9 +62,12 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
         status_values.push( {label: "Primary Interface", value: primary_interface} );
     }
 
-    //var ntp_synchronized = (data.ntp.synchronized == 1 ? "Yes" : "No");
-    //status_values.push( {label: "NTP Synced", value: ntp_synchronized} );
     data.ntp_synced = (data.ntp.synchronized == 1 ? "Yes" : "No");
+    if (data.ntp.synchronized == 1 ) {
+        data.classes = 'color-green';
+    } else {
+        data.classes = 'color-red';
+    }
 
     var toolkit_version = data.toolkit_version;
     if (toolkit_version !== null) {  
@@ -75,7 +87,8 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
     var auto_updates = data.auto_updates;
     if(typeof auto_updates != "undefined"){
         var auto_updates_value = (auto_updates == 1 ? "ON" : "OFF");
-        status_values.push({label:"Auto Updates", value: auto_updates_value});       
+        var auto_updates_class = (auto_updates == 1 ? "color-green" : "color-red");
+        status_values.push({label:"Auto Updates", value: auto_updates_value, classes: auto_updates_class });
     }
 
     var host_status_template = $("#sidebar-status-template").html();
@@ -86,6 +99,9 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
     var status_output = template(data);
 
     $("#sidebar_host_status").html(status_output);
+
+    HostStatusSidebarComponent.details_set = true;
+    HostStatusSidebarComponent._hideRAMInDetails();
 
     HostStatusSidebarComponent._handleNTPInfo();
 };
@@ -101,6 +117,14 @@ HostStatusSidebarComponent._setNTPInfo = function( topic ) {
 
     HostStatusSidebarComponent._handleNTPInfo();
 
+};
+
+HostStatusSidebarComponent._hideRAMInDetails = function() {
+    if (HostStatusSidebarComponent.details_set && !HostStatusSidebarComponent.show_ram_in_details) {
+        if ($("#ram_details").length > 0) {
+            $("#ram_details").hide();
+        }
+    }
 };
 
 HostStatusSidebarComponent._handleNTPInfo = function() {
@@ -159,7 +183,13 @@ HostStatusSidebarComponent._getHealthVariables = function(data) {
     id = id_prefix + id;
     var memory = HostStatusSidebarComponent._formatMemoryUsage(data.mem_used, data.mem_total);
     if (typeof memory != "undefined") {
-        health_values.push( { label: "Memory usage", value: memory, id: id } );
+        var memVal = {};
+        if (data.mem_total < HostStatusSidebarComponent.recommended_ram * 1000000000) {
+            memVal.classes = "color-red";
+        }
+        memVal.label = "RAM";
+        memVal.value = memory;
+        health_values.push( memVal );
     }
 
     id = "swap_usage";
@@ -183,6 +213,9 @@ HostStatusSidebarComponent._setHealthStatus = function( topic ) {
     var data = HostHealthStore.getHealthStatus();
     var health_values = HostStatusSidebarComponent._getHealthVariables(data);
 
+    HostStatusSidebarComponent.show_ram_in_details = false; 
+    HostStatusSidebarComponent._hideRAMInDetails();
+
     if ( $("#sidebar-health-template").length == 0 ) {
         return;
     }
@@ -198,8 +231,7 @@ HostStatusSidebarComponent._setHealthStatus = function( topic ) {
 
     Dispatcher.unsubscribe( HostStatusSidebarComponent.health_token );
     Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._updateHealth);
-    
-    //setTimeout( HostStore._retrieveHealth, HostStatusSidebarComponent.health_refresh_interval );
+ 
     setTimeout( HostStatusSidebarComponent._getUpdatedHealth, HostStatusSidebarComponent.health_refresh_interval );
 };
 
@@ -244,19 +276,14 @@ HostStatusSidebarComponent._getUpdatedHealth = function() {
 };
 
 HostStatusSidebarComponent._updateHealth = function() {
-    //Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._updateHealth);
-    //HostStore._retrieveHealth();
     var data = HostHealthStore.getHealthStatus();
     var health_values = HostStatusSidebarComponent._getHealthVariables(data);
     for(var i=0; i<health_values.length; i++) {
         var val = health_values[i];
         $("#" + val.id).html(val.value);
     }
-
-    //$('#health-value-cpu_util').html(data.cpu_util);
-    //var load = HostStatusSidebarComponent._formatLoad(data.load_avg);
-    //$('#health-value-cpu_load').html(load);
-    //setTimeout( HostStatusSidebarComponent._updateHealth, HostStatusSidebarComponent.health_refresh_interval );
+    health_values = null;
+    data = null;
 };
 
 HostStatusSidebarComponent.initialize();
