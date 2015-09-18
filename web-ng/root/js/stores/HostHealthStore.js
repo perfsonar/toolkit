@@ -13,7 +13,7 @@ HostHealthStore.initialize = function() {
 
 HostHealthStore._retrieveHealth = function() {
     $.ajax({
-            url: "/toolkit/services/host.cgi?method=get_health",
+            url: "services/host.cgi?method=get_health",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",

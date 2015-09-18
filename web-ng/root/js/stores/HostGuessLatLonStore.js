@@ -12,7 +12,7 @@ HostGuessLatLonStore.initialize = function() {
 
 HostGuessLatLonStore._retrieveLatLon = function() {
     $.ajax({
-            url: "/toolkit/admin/services/host.cgi?method=get_calculated_lat_lon",
+            url: "services/host.cgi?method=get_calculated_lat_lon",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",

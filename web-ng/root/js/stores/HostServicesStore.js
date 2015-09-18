@@ -13,7 +13,7 @@ HostServicesStore.initialize = function() {
 
 HostServicesStore._retrieveServices = function() {
     $.ajax({
-            url: "/toolkit/services/host.cgi?method=get_services",
+            url: "services/host.cgi?method=get_services",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",

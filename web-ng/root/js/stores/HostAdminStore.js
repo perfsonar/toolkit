@@ -26,7 +26,7 @@ HostAdminStore.saveAdminInfo = function(info) {
     var topic = HostAdminStore.saveAdminInfoTopic;
     var error_topic = HostAdminStore.saveAdminInfoErrorTopic;
     $.ajax({
-        url: '/toolkit/admin/services/host.cgi?method=update_info',
+        url: 'services/host.cgi?method=update_info',
         type: 'POST',
         data: info,
         dataType: 'json',
@@ -47,7 +47,7 @@ HostAdminStore.saveServices = function(services) {
     var topic = HostAdminStore.saveServicesTopic;
     var error_topic = HostAdminStore.saveServicesErrorTopic;
     $.ajax({
-        url: '/toolkit/admin/services/host.cgi?method=update_enabled_services',
+        url: 'services/host.cgi?method=update_enabled_services',
         type: 'POST',
         data: services,
         dataType: 'json',
@@ -67,7 +67,7 @@ HostAdminStore.saveAutoUpdates = function( data ) {
     var topic = HostAdminStore.saveAutoUpdatesTopic;
     var error_topic = HostAdminStore.saveAutoUpdatesErrorTopic;
     $.ajax({
-        url: '/toolkit/admin/services/host.cgi?method=update_auto_updates',
+        url: 'services/host.cgi?method=update_auto_updates',
         type: 'POST',
         data: data,
         dataType: 'json',
@@ -92,7 +92,7 @@ HostAdminStore.saveCommunities = function( communities_arr ) {
     var communities = { communities: communities_arr };
     communities = JSON.stringify(communities);
     $.ajax({
-        url: '/toolkit/admin/services/communities.cgi?method=update_host_communities',
+        url: 'services/communities.cgi?method=update_host_communities',
         type: 'POST',
         data: communities,
         dataType: 'json',
@@ -117,7 +117,7 @@ HostAdminStore.saveNTP = function( ntp_conf ) {
     var topic = HostAdminStore.saveNTPConfigTopic;
     var error_topic = HostAdminStore.saveNTPConfigErrorTopic;
     $.ajax({
-        url: '/toolkit/admin/services/ntp.cgi?method=update_ntp_configuration',
+        url: 'services/ntp.cgi?method=update_ntp_configuration',
         type: 'POST',
         data: ntp_conf,
         dataType: 'json',
