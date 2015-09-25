@@ -32,7 +32,7 @@ TestResultsComponent._setTestResults = function( topic ) {
     }
     var data = {};
     data.test_results = TestStore.getTests();
-    for(var i=0; i<data.test_results; i++) {
+    for(var i=0; i<data.test_results.length; i++) {
         data.test_results[i].rowID = i;
     }
     data.ma_url = encodeURIComponent(TestResultsComponent.ma_url);
@@ -58,6 +58,13 @@ TestResultsComponent._registerHelpers = function() {
     Handlebars.registerHelper ("ipToID", function (ip) {
         return TestResultsComponent.ipToID(ip);
     });
+    $(document).on('close.fndtn.reveal', '[data-reveal]', function () {
+          var modal = $(this);
+          var id = modal.attr("ID");
+          if ( /^dialogGraph\d+/.test(id)) {
+              TestResultsComponent.clearContainer('#' + id);
+          }
+    });
 };
 
 TestResultsComponent.ipToID = function(ip) {
@@ -73,6 +80,7 @@ TestResultsComponent.ipToID = function(ip) {
 TestResultsComponent.showResultsGraph = function(container, src, dst, ma_url, rowID) {
     // first, clear the URL of the existing iframe
 //$("#test-results-graph-iframe").attr('src', '');
+    TestResultsComponent.clearContainer(container);
     var url = "/serviceTest/graphWidget.cgi?source=" + src;
     url += "&dest=" + dst + "&url=" + ma_url;
     
@@ -84,10 +92,24 @@ TestResultsComponent.showResultsGraph = function(container, src, dst, ma_url, ro
         height: '692px'
         //height: '80%'
     }).appendTo(container);
+
+     var close_link = '<a class="close-reveal-modal" aria-label="Close" onclick="TestResultsComponent.closeFrame(\'#test-results-graph-iframe-' + rowID + '\')">&#215;</a>';
+     $(close_link).appendTo(container);
     
-    return false; };
+    return false; 
+};
 
 TestResultsComponent.closeFrame = function(iframe) {
+    TestResultsComponent.clearFrame(iframe);
+};
+
+TestResultsComponent.clearContainer = function(container) {
+    if ( $(container).length > 0) {
+        $(container).empty();
+    } 
+};
+
+TestResultsComponent.clearFrame = function(iframe) {
     if (iframe === undefined) {
         iframe = '#test-results-graph-iframe-dynamic';
     }
