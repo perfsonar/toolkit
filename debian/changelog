@@ -1,11 +1,11 @@
-perfsonar-toolkit (3.5-3~22.rc2-1) UNRELEASED; urgency=low
+perfsonar-toolkit (3.5-3~23.rc2-1) UNRELEASED; urgency=low
 
   * Contains: the iptable rules and fail2ban configuration (toolkit-security)
   * Contains: the sysctl settings (toolkit-sysctl)
   * Contains: the service watcher (toolkit-service-watcher)
   * Contains: the ntp configuration (toolkit-ntp)
 
- -- Antoine Delvaux <adelvaux@man.poznan.pl>  Fri, 25 Sep 2015 13:57:23 +0000
+ -- Antoine Delvaux <adelvaux@man.poznan.pl>  Fri, 25 Sep 2015 14:05:36 +0000
 
 perfsonar-toolkit (3.5-2) UNRELEASED; urgency=low
 
