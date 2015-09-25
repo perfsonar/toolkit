@@ -1,6 +1,6 @@
 <h3 class="sidebar__heading"><i class="fa fa-bar-chart"></i> &nbsp; Host Details &nbsp;
-    [% IF !authenticated && https_url %]
-    <span style="font-weight:normal;">(<a href="[% https_url %]">Log in</a> for more info)</span>
+    [% IF !authenticated %]
+    <span style="font-weight:normal;">(<a href="/toolkit/auth/">Log in</a> for more info)</span>
     [% END %]
 </h3>
 <div id="sidebar_host_status"></div>

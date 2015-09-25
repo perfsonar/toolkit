@@ -13,7 +13,7 @@ HostNTPInfoStore.initialize = function() {
 
 HostNTPInfoStore._retrieveInfo = function() {
     $.ajax({
-            url: "/toolkit/services/host.cgi?method=get_ntp_info",
+            url: "services/host.cgi?method=get_ntp_info",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",            

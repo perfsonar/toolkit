@@ -13,7 +13,7 @@ CommunityHostStore.initialize = function() {
 
 CommunityHostStore._retrieveCommunities = function() {
     $.ajax({
-            url: "/toolkit/services/communities.cgi?method=get_host_communities",
+            url: "services/communities.cgi?method=get_host_communities",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",

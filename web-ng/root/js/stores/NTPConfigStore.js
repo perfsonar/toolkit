@@ -12,7 +12,7 @@ NTPConfigStore.initialize = function() {
 
 NTPConfigStore._retrieveNTPConfig = function() {
     $.ajax({
-            url: "/toolkit/admin/services/ntp.cgi?method=get_ntp_config",
+            url: "services/ntp.cgi?method=get_ntp_config",
             type: 'GET',
             contentType: "application/json",
             dataType: "json",

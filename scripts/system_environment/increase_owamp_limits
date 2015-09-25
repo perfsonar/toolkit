@@ -6,7 +6,7 @@
 if [ "$1" == "new" ]; then
 cat >/etc/owampd/owampd.limits <<EOF
 limit root with delete_on_fetch=on, bandwidth=0, disk=0, allow_open_mode=on
-limit regular with delete_on_fetch=on, parent=root, bandwidth=10M, disk=1G, allow_open_mode=on
+limit regular with delete_on_fetch=on, parent=root, bandwidth=20M, disk=10G, allow_open_mode=on
 limit jail with parent=root, bandwidth=1, disk=1, allow_open_mode=off
 assign default regular
 EOF
@@ -14,8 +14,10 @@ fi
 
 if [ "$1" == "upgrade" ]; then
 # Up the owampd limits from 1M to 10M if they were using the default limits
-sed -r -i 's/(.*limit regular.*)bandwidth=1000000,/\1bandwidth=10M,/g' /etc/owampd/owampd.limits
+sed -r -i 's/(.*limit regular.*)bandwidth=1000000,/\1bandwidth=20M,/g' /etc/owampd/owampd.limits
+sed -r -i 's/(.*limit regular.*)bandwidth=10M,/\1bandwidth=20M,/g' /etc/owampd/owampd.limits
+sed -r -i 's/(.*limit regular.*)disk=1G,/\1disk=10G,/g' /etc/owampd/owampd.limits
 
-# Increase readability of the 1G limit in the previous default
-sed -i 's/1073741824,/1G,/g' /etc/owampd/owampd.limits
+# Increase and improve readability of the disk limit in the previous default
+sed -i 's/1073741824,/10G,/g' /etc/owampd/owampd.limits
 fi
