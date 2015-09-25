@@ -28,11 +28,7 @@
                         <div class="host_ip">{{source_ip}}</div>
                         <div class="host_actions">
                             <div id="dialogGraph{{rowID}}" class="reveal-modal xlarge" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-                                <!--
-                                <iframe src="" frameborder="0" id="test-results-graph-iframe-{{rowID}}"></iframe>
-                                -->
-                                <a class="close-reveal-modal" aria-label="Close" onclick="TestResultsComponent.closeFrame('#test-results-graph-iframe-{{rowID}}')">&#215;</a>
-</div> 
+                            </div> 
     <a href="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url={{../ma_url}}" data-reveal-id="dialogGraph{{rowID}}" onclick="TestResultsComponent.showResultsGraph('#dialogGraph{{rowID}}', '{{source_host}}', '{{destination_host}}', '{{../ma_url}}', '{{rowID}}')">
                                 Details
                             </a>
