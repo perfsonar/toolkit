@@ -29,7 +29,7 @@
                         <div class="host_actions">
                             <div id="dialogGraph{{rowID}}" class="reveal-modal xlarge" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
                             </div> 
-    <a href="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url={{../ma_url}}" data-reveal-id="dialogGraph{{rowID}}" onclick="TestResultsComponent.showResultsGraph('#dialogGraph{{rowID}}', '{{source_host}}', '{{destination_host}}', '{{../ma_url}}', '{{rowID}}')">
+    <a href="/serviceTest/graphWidget.cgi?source={{source_ip}}&dest={{destination_ip}}&url={{../ma_url}}" data-reveal-id="dialogGraph{{rowID}}" onclick="TestResultsComponent.showResultsGraph('#dialogGraph{{rowID}}', '{{source_ip}}', '{{destination_ip}}', '{{../ma_url}}', '{{rowID}}')">
                                 Details
                             </a>
                             <span id="trace_{{ipToID source_ip}}_{{ipToID destination_ip}}" class="traceroute_link_container">
