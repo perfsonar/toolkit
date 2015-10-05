@@ -75,6 +75,7 @@ https://github.com/mroderick/PubSubJS
 	}
 
 	function deliverMessage( originalMessage, matchedMessage, data, immediateExceptions ){
+        console.log('receiving message', originalMessage);
 		var subscribers = messages[matchedMessage],
 			callSubscriber = immediateExceptions ? callSubscriberWithImmediateExceptions : callSubscriberWithDelayedExceptions,
 			s;
@@ -122,6 +123,7 @@ https://github.com/mroderick/PubSubJS
 	}
 
 	function publish( message, data, sync, immediateExceptions ){
+        console.log('publishing message', message);
 		var deliver = createDeliveryFunction( message, data, immediateExceptions ),
 			hasSubscribers = messageHasSubscribers( message );
 

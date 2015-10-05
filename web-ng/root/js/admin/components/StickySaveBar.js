@@ -23,6 +23,7 @@ StickySaveBar._formChange = function( topic ) {
     $("#sticky-unsaved-message").fadeIn("fast");
     StickySaveBar._enableButtons();
     StickySaveBar._enableUnsavedWarning();
+    console.log('StickySaveBar received topic: ' + topic);
 };
 
 StickySaveBar._enableButtons = function() {
@@ -53,12 +54,14 @@ StickySaveBar._disableUnsavedWarning = function() {
 };
 
 StickySaveBar._formSubmit = function( topic, message ) {
+    console.log('StickySaveBar received topic: ' + topic);
     $("#sticky-unsaved-message").fadeOut("fast");
     $("#admin_info_save_button").prop("value", "Saving ...");
     StickySaveBar._disableButtons();    
 };
 
 StickySaveBar._formSuccess = function( topic, message ) {
+    console.log('StickySaveBar received topic: ' + topic);
     $("#sticky-unsaved-message").fadeOut("fast");
     $(".sticky-bar--saved").fadeIn("fast").delay(1500).fadeOut("slow");
     $("#admin_info_save_button").prop("value", "Save");
@@ -71,6 +74,7 @@ StickySaveBar._formSuccess = function( topic, message ) {
 };
 
 StickySaveBar._formError = function( topic, message ) {
+    console.log('StickySaveBar received topic: ' + topic);
     StickySaveBar._enableButtons();    
     $(".sticky-bar--failure").fadeIn("fast");
     $("#admin_info_save_button").prop("value", "Save");
@@ -82,6 +86,7 @@ StickySaveBar._formError = function( topic, message ) {
 };
 
 StickySaveBar._formCancel = function( topic ) {
+    console.log('StickySaveBar received topic: ' + topic);
     StickySaveBar._init();
 };
 
