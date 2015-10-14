@@ -1,6 +1,6 @@
 PACKAGE=perfSONAR_PS-Toolkit
 ROOTPATH=/opt/perfsonar_ps/toolkit
-VERSION=3.5.0.4
+VERSION=3.5.0.5
 RELEASE=1
 
 default:
