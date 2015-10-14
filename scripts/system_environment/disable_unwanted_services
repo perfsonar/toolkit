@@ -32,6 +32,7 @@ if [ "$1" == "new" ]; then
 	/sbin/chkconfig psacct off 2> /dev/null || :
 	/sbin/chkconfig readahead_early off 2> /dev/null || :
 	/sbin/chkconfig readahead_later off 2> /dev/null || :
+        /sbin/chkconfig rpcbind off 2> /dev/null || :
 	/sbin/chkconfig rpcgssd off 2> /dev/null || :
 	/sbin/chkconfig rpcidmapd off 2> /dev/null || :
 	/sbin/chkconfig rpcsvcgssd off 2> /dev/null || :

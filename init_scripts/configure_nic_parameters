@@ -20,22 +20,23 @@ LATENCY_ENABLED=
 BANDWIDTH_ENABLED=
 NDTNPAD_ENABLED=
 
-`/sbin/chkconfig --list ndt &> /dev/null`;
-NDT=$?
-`/sbin/chkconfig --list npad &> /dev/null`;
-NPAD=$?
-`/sbin/chkconfig --list owampd &> /dev/null`;
-OWAMP=$?
-`/sbin/chkconfig --list bwctld &> /dev/null`;
-BWCTL=$?
+NDT=`/sbin/chkconfig --list ndt | grep on`
+NPAD=`/sbin/chkconfig --list npad | grep -w on`
+OWAMP=`/sbin/chkconfig --list owampd | grep -w on`
+BWCTL=`/sbin/chkconfig --list bwctld | grep -w on`
 
-if [ $NDT == 0 -o $NPAD == 0 ]; then
+if [ "x$NDT" != "x" -o "x$NPAD" != "x" ]; then
         NDTNPAD_ENABLED=1
-elif [ $OWAMP == 0 ]; then
+fi
+
+if [ "x$OWAMP" != "x" ]; then
         LATENCY_ENABLED=1
-elif [ $BWCTL == 0 ]; then
+fi
+
+if [ "x$BWCTL" != "x" ]; then
         BANDWIDTH_ENABLED=1
 fi
+
 
 # XXX: should make these configurable via configuration file
 
