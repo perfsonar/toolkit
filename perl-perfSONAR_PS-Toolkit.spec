@@ -416,8 +416,8 @@ chkconfig cassandra on
 chkconfig postgresql on
 
 #Restart config_daemon and fix nic parameters
-/etc/init.d/%{init_script_1} restart &>/dev/null
-/etc/init.d/%{init_script_3} start &>/dev/null
+/etc/init.d/%{init_script_1} restart &>/dev/null || :
+/etc/init.d/%{init_script_3} start &>/dev/null || :
 
 %post SystemEnvironment
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
