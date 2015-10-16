@@ -68,6 +68,13 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
     } else {
         data.classes = 'color-red';
     }
+    
+    data.registered = (data.globally_registered == 1 ? "Yes" : "No");
+    if (data.globally_registered == 1 ) {
+        data.classes = 'color-green';
+    } else {
+        data.classes = 'color-red';
+    }
 
     var toolkit_version = data.toolkit_version;
     if (toolkit_version !== null) {  
