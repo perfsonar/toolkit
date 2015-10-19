@@ -53,6 +53,12 @@
                             </div> 
         </div>
     </li>
+    {{#if registered}}
+    <li class="sidebar-list__item">        
+        <div class="sidebar-list__parameter">Globally Registered</div>
+        <div class="sidebar-list__value {{classes}}">{{registered}}</li>
+    </li>
+    {{/if}}
     <li class="sidebar-list__item">        
         <div class="sidebar-list__parameter">NTP Synced</div>
         <div class="sidebar-list__value {{classes}}"><span id="sidebar_ntp_synced_value">{{ntp_synced}}</span> &nbsp; &nbsp; 
