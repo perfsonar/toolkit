@@ -55,7 +55,10 @@ if ( $conf{debug} ) {
 }
 
 my $data;
-my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( { 'config_file' => $config_file  } );
+my $params = {};
+$params->{'config_file'} = $config_file;
+$params->{'load_ls_registration'} = 1;
+my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
 
 
 my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
@@ -171,6 +174,42 @@ $info_update_method->add_input_parameter(
 
 $router->add_method($info_update_method);
 
+my $metadata_update_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            => "update_metadata",
+    description     => "Updates host metadata",
+    auth_required   => 1,
+    callback        => sub { $host_info->update_metadata(@_); },
+    min_params      => 1,
+    #request_methods => ['POST'],
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "role",
+    description     => "The name(s) of the node role(s), comma-separated",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    multiple        => 1,
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "access_policy",
+    description     => "The access policy of the node",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "access_policy_notes",
+    description     => "Freeform text field describing the access policy of the node",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$router->add_method($metadata_update_method);
+
 my $status_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            => "get_details",
     description     => "Retrieves host status information",
@@ -280,6 +319,14 @@ $auto_updates_method->add_input_parameter(
     );
 
 $router->add_method($auto_updates_method);
+
+my $metadata_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "get_metadata",
+    description     =>  "Retrieves host metadata",
+    callback        =>  sub { $host_info->get_metadata(@_); }
+    );
+
+$router->add_method($metadata_method);
 
 my $communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_communities",
