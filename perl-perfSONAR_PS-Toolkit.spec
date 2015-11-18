@@ -18,7 +18,7 @@
 %define disttag pSPS
 
 Name:			perl-perfSONAR_PS-Toolkit
-Version:		3.5.0.1
+Version:		3.5.0.6
 Release:		%{relnum}.%{disttag}
 Summary:		perfSONAR_PS Toolkit
 License:		Distributable, see LICENSE
@@ -414,6 +414,10 @@ chkconfig --level 2345 httpd on
 chkconfig --add cassandra
 chkconfig cassandra on
 chkconfig postgresql on
+
+#Restart config_daemon and fix nic parameters
+/etc/init.d/%{init_script_1} restart &>/dev/null || :
+/etc/init.d/%{init_script_3} start &>/dev/null || :
 
 %post SystemEnvironment
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then

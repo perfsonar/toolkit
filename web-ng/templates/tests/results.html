@@ -29,7 +29,7 @@
                         <div class="host_actions">
                             <div id="dialogGraph{{rowID}}" class="reveal-modal xlarge" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
                             </div> 
-    <a href="/serviceTest/graphWidget.cgi?source={{source_host}}&dest={{destination_host}}&url={{../ma_url}}" data-reveal-id="dialogGraph{{rowID}}" onclick="TestResultsComponent.showResultsGraph('#dialogGraph{{rowID}}', '{{source_host}}', '{{destination_host}}', '{{../ma_url}}', '{{rowID}}')">
+    <a href="/serviceTest/graphWidget.cgi?source={{source_ip}}&dest={{destination_ip}}&url={{../ma_url}}" data-reveal-id="dialogGraph{{rowID}}" onclick="TestResultsComponent.showResultsGraph('#dialogGraph{{rowID}}', '{{source_ip}}', '{{destination_ip}}', '{{../ma_url}}', '{{rowID}}')">
                                 Details
                             </a>
                             <span id="trace_{{ipToID source_ip}}_{{ipToID destination_ip}}" class="traceroute_link_container">
@@ -46,8 +46,16 @@
                         <i class="fa fa-arrow-left"></i> {{formatValue this.throughput_dst_average "throughput_dst"}}
                     </td>
                     <td class="test-values">
+                        {{#if this.owdelay_src_average}}
                         <i class="fa fa-arrow-right"></i> {{formatValue this.owdelay_src_average "owdelay_src"}}<br />
+                        {{else}}
+                        <i class="fa fa-arrow-right"></i> {{formatValue this.rtt_src_average "rtt_src"}}<br />
+                        {{/if}}
+                        {{#if this.owdelay_dst_average}}
                         <i class="fa fa-arrow-left"></i> {{formatValue this.owdelay_dst_average "owdelay_dst"}}
+                        {{else}}
+                        <i class="fa fa-arrow-left"></i> {{formatValue this.rtt_dst_average "rtt_dst"}}
+                        {{/if}}
                     </td>
                     <td class="test-values">
                         <i class="fa fa-arrow-right"></i>  {{formatValue this.loss_src_average "loss_src"}}<br />
