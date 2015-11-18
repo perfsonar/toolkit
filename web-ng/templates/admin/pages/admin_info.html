@@ -84,6 +84,39 @@
                         </div>
                     </fieldset>
 <!-- ********************************************
+    Metadata module
+******************************************** -->
+                                <h2 class="module-header__title">Metadata</h2>
+                                <div class="metadata">
+                                    <fieldset>
+                                        <div class="row">
+                                                <div class="medium-6 columns">
+                                                    <label class="config__label">Node Role</label> 
+                                                    <input class="config__input" type="text" id="node_role">
+                                                    <select name="node_role_select" class="js-select-multiple" multiple="multiple" id="node_role_select">
+                                                        <option value="exchange_point">Exchange point</option>
+                                                        <option value="nren">NREN</option>
+                                                        <option value="science_dmz">Science DMZ</option>
+                                                        <option value="site_border">Site border</option>
+                                                        <option value="site_internal">Site internal</option>
+                                                        <option value="regional">Regional</option>
+                                                        <option value="test_host">Test host</option>
+                                                    </select>
+                                                </div>
+                                                <div class="medium-6 columns">
+                                                    <label class="config__label">Node Access Policy</label> 
+                                                    <input class="config__input" type="text" id="node_access_policy">
+                                                </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="medium-12 columns">
+                                                    <label class="config__label">Access Policy Notes</label> 
+                                                    <input class="config__input" type="text" id="node_access_policy_notes">
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+<!-- ********************************************
                                     Communities module
                                 ******************************************** -->
                                 <h2 class="module-header__title">Communities</h2>
@@ -110,22 +143,6 @@
                                                 </div>
                                             </div>
                                         </fieldset>
-                                        <!--
-                                        <h3 class="module-header__title">Popular communities</h3>
-                                        <p class="color-light"><em>Click to add</em></p>
-                                        <ul class="communities__list u-list-nav">
-                                            <li class="communities__node communities__node--popular">10G <a href="#"><i class="fa fa-plus"></i></a></li>
-                                            <li class="communities__node communities__node--popular">40G <a href="#"><i class="fa fa-plus"></i></a></li>
-                                            <li class="communities__node communities__node--popular">AARNet <a href="#"><i class="fa fa-plus"></i></a></li>
-                                            <li class="communities__node communities__node--popular">AARNet-Edge <a href="#"><i class="fa fa-plus"></i></a></li>
-                                            <li class="communities__node communities__node--popular">ACORN-NS <a href="#"><i class="fa fa-plus"></i></a></li>
-                                            <li class="communities__node communities__node--popular">ALICE <a href="#"><i class="fa fa-plus"></i></a></li>
-                                            <li class="communities__node communities__node--popular">AmLight <a href="#"><i class="fa fa-plus"></i></a></li>
-                                            <li class="communities__node communities__node--popular">APAN <a href="#"><i class="fa fa-plus"></i></a></li>
-                                            <li class="communities__node communities__node--popular">APAN-JP <a href="#"><i class="fa fa-plus"></i></a></li>
-                                            <li class="communities__node communities__node--popular">AREON <a href="#"><i class="fa fa-plus"></i></a></li>
-                                        </ul>
-                                        -->
                                     </div>
                                 </div>
                                 <!-- End Communities module -->

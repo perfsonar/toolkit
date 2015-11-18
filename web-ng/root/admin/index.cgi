@@ -58,6 +58,7 @@ my $js_files = [
     $include_prefix . 'js/stores/HostGuessLatLonStore.js', 
     $include_prefix . 'js/stores/CommunityHostStore.js', 
     $include_prefix . 'js/stores/CommunityAllStore.js', 
+    $include_prefix . 'js/stores/HostMetadataStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
     '/serviceTest/JS/TestResultUtils.js', # TODO: fix to better relative URL
@@ -65,6 +66,7 @@ my $js_files = [
     $include_prefix . 'js/admin/components/StickySaveBar.js', 
     $include_prefix . 'js/admin/components/AdminInfoUpdateComponent.js', 
     $include_prefix . 'js/admin/components/CommunityUpdateComponent.js', 
+    $include_prefix . 'js/admin/components/HostMetadataComponent.js', 
     $include_prefix . 'js/admin/pages/AdminInfoPage.js'
     ];
 
