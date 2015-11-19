@@ -60,12 +60,6 @@ HostMetadataComponent._setMetadata = function( topic ) {
     var policyNotes = data.config.access_policy_notes;
     policyNotesText.val(policyNotes);
 
-    /*
-    if (("#host-overview-template").length == 0 || $("#host_overview").length == 0 ) {
-        return;
-    }
-    */
-
 };
 
 HostMetadataComponent.initialize();
