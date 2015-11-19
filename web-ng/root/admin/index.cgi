@@ -63,6 +63,7 @@ my $js_files = [
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
     '/serviceTest/JS/TestResultUtils.js', # TODO: fix to better relative URL
     $include_prefix . 'js/components/PageHeader.js', 
+    $include_prefix . 'js/shared/SharedUIFunctions.js', 
     $include_prefix . 'js/admin/components/StickySaveBar.js', 
     $include_prefix . 'js/admin/components/AdminInfoUpdateComponent.js', 
     $include_prefix . 'js/admin/components/CommunityUpdateComponent.js', 

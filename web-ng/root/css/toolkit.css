@@ -2,3 +2,8 @@
     font-weight: normal;
     font-size:0.7em;
 }
+
+.select2-container .select2-selection--single {
+    height:37px;
+    padding:5px 0;
+}
