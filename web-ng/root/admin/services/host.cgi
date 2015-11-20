@@ -180,7 +180,7 @@ my $metadata_update_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     auth_required   => 1,
     callback        => sub { $host_info->update_metadata(@_); },
     min_params      => 1,
-    #request_methods => ['POST'],
+    request_methods => ['POST'],
     );
 
 $metadata_update_method->add_input_parameter(
