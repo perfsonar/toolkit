@@ -185,7 +185,7 @@ my $metadata_update_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 
 $metadata_update_method->add_input_parameter(
     name            => "role",
-    description     => "The name(s) of the node role(s), comma-separated",
+    description     => "The name(s) of the node role(s)",
     required        => 0,
     allow_empty     => 1,
     type            => 'text',

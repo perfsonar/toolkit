@@ -1,7 +1,12 @@
 /* This library contains shared functions to be used in the GUI
  *
  * */
-var SharedUIFunctions = {};
+var SharedUIFunctions = {
+    formChangeTopic: 'ui.form.change',
+    formSuccessTopic: 'ui.form.success',
+    formErrorTopic: 'ui.form.error',
+    formCancelTopic: 'ui.form.cancel',
+};
 
 /*
  * SharedUIFunctions.setSelect2Values( allValues, selectedValues )
@@ -37,3 +42,23 @@ SharedUIFunctions.getSelectedValues = function( allValues, selectedValues ) {
     } 
     return allValues;
 }; 
+
+
+SharedUIFunctions._saveSuccess = function( topic, message ) {
+    Dispatcher.publish(SharedUIFunctions.formSuccessTopic, message);
+};
+
+SharedUIFunctions._saveError = function( topic, message ) {
+    Dispatcher.publish(SharedUIFunctions.formErrorTopic, message);
+};
+
+SharedUIFunctions._cancel = function() {
+    Dispatcher.publish(SharedUIFunctions.formCancelTopic);
+    Dispatcher.publish(SharedUIFunctions.info_topic);
+
+};
+
+SharedUIFunctions._showSaveBar = function() {
+    Dispatcher.publish(SharedUIFunctions.formChangeTopic);
+};
+

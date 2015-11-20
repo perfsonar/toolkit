@@ -7,11 +7,11 @@ var HostMetadataStore = {
 };
 
 HostMetadataStore.initialize = function() {
-    HostMetadataStore._retrieveInfo();
+    HostMetadataStore._retrieveMetadata();
     
 };
 
-HostMetadataStore._retrieveInfo = function() {
+HostMetadataStore._retrieveMetadata = function() {
     $.ajax({
             url: "services/host.cgi?method=get_metadata",
             type: 'GET',

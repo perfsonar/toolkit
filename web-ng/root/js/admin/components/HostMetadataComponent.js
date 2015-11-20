@@ -1,5 +1,8 @@
 var HostMetadataComponent = {
     metadata_topic: 'store.change.host_metadata',
+    formSubmitTopic:    'ui.form.submit',
+    saveMetadataTopic: 'store.host_metadata.save',
+    saveMetadataErrorTopic: 'store.host_metadata.save_error',
     rolePlaceholder: 'Select a node role',
     policyPlaceholder: 'Select an access policy',
     allRoles: [ 
@@ -25,6 +28,9 @@ var HostMetadataComponent = {
 
 HostMetadataComponent.initialize = function() {
     Dispatcher.subscribe(HostMetadataComponent.metadata_topic, HostMetadataComponent._setMetadata);
+    Dispatcher.subscribe(HostMetadataComponent.formSubmitTopic, HostMetadataComponent.save);
+    Dispatcher.subscribe(HostMetadataComponent.saveAdminInfoTopic, SharedUIFunctions._saveSuccess);
+    Dispatcher.subscribe(HostMetadataComponent.saveAdminInfoErrorTopic, SharedUIFunctions._saveError);
 };
 
 HostMetadataComponent._setMetadata = function( topic ) {
@@ -59,6 +65,21 @@ HostMetadataComponent._setMetadata = function( topic ) {
     var policyNotesText = $('#node_access_policy_notes');
     var policyNotes = data.config.access_policy_notes;
     policyNotesText.val(policyNotes);
+
+};
+
+HostMetadataComponent.save = function() {
+    var roleSel = $('#node_role_select');
+    var accessPolicySel = $('#access_policy');
+    var policyNotesText = $('#node_access_policy_notes');
+
+    var data = {};
+    data.access_policy = accessPolicySel.val();
+    data.access_policy_notes = policyNotesText.val();
+    data.role = roleSel.val();
+
+    console.log('data to save', data);
+    HostAdminStore.saveMetadata( data );
 
 };
 
