@@ -6,7 +6,6 @@ var HostMetadataComponent = {
     rolePlaceholder: 'Select a node role',
     policyPlaceholder: 'Select an access policy',
     allRoles: [ 
-        {id: 'exchange-point', text: 'Exchange Point'}, 
         {id: 'nren', text: 'NREN'}, 
         {id: 'regional', text: 'Regional'},
         {id: 'site-border', text: 'Site Border'},
@@ -35,13 +34,9 @@ HostMetadataComponent.initialize = function() {
 
 HostMetadataComponent._setMetadata = function( topic ) {
     var data = HostMetadataStore.getHostMetadata();
-    console.log('metadata component data', data);
     var allRoles = HostMetadataComponent.allRoles;
-    console.log('allRoles', allRoles);
-    console.log('allAccessPolicies', HostMetadataComponent.allAccessPolicies);
     var selectedRoles = data.config.role;   
     var roleValues = SharedUIFunctions.getSelectedValues( allRoles, selectedRoles );  
-    console.log('roleValues returned from function', roleValues);
     
     var roleSel = $('#node_role_select');
     roleSel.select2( { 
@@ -52,7 +47,6 @@ HostMetadataComponent._setMetadata = function( topic ) {
     var allAccessPolicies = HostMetadataComponent.allAccessPolicies;
     var selectedAccessPolicies = data.config.access_policy;
     var accessPolicyValues = SharedUIFunctions.getSelectedValues( allAccessPolicies, selectedAccessPolicies );
-    console.log('accessPolicyValues', accessPolicyValues);
 
     var accessPolicySel = $('#access_policy');
     accessPolicySel.select2( { 
@@ -78,7 +72,6 @@ HostMetadataComponent.save = function() {
     data.access_policy_notes = policyNotesText.val();
     data.role = roleSel.val();
 
-    console.log('data to save', data);
     HostAdminStore.saveMetadata( data );
 
 };
