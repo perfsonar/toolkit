@@ -1,6 +1,7 @@
 var AdminInfoUpdateComponent = {
     admin_info: null,
     info_topic: 'store.change.host_info',
+    metadataTopic: 'store.change.host_metadata',
     latLonTopic: 'store.change.guess_lat_lon',
     saveAdminInfoTopic: 'store.host_admin_info.save',
     saveAdminInfoErrorTopic: 'store.host_admin_info.save_error',
@@ -22,7 +23,8 @@ var AdminInfoUpdateComponent = {
 AdminInfoUpdateComponent.initialize = function() {
     AdminInfoUpdateComponent._getCountries();
     AdminInfoUpdateComponent.state_data_urls['US'] = '/toolkit/data/us_states_hash.json';
-    Dispatcher.subscribe(AdminInfoUpdateComponent.info_topic, AdminInfoUpdateComponent._setInfo);
+    //Dispatcher.subscribe(AdminInfoUpdateComponent.info_topic, AdminInfoUpdateComponent._setInfo);
+    Dispatcher.subscribe(AdminInfoUpdateComponent.metadataTopic, AdminInfoUpdateComponent._setInfo);
     Dispatcher.subscribe(AdminInfoUpdateComponent.latLonTopic, AdminInfoUpdateComponent._setLatLon);
     $('form#adminInfoForm input').change(AdminInfoUpdateComponent._showSaveBar);
     $('form#adminInfoForm select').change(AdminInfoUpdateComponent._showSaveBar);
@@ -120,7 +122,7 @@ AdminInfoUpdateComponent._getStates = function( countryCode, state ) {
 
 
 AdminInfoUpdateComponent._setInfo = function( topic ) {
-    var data = HostAdminInfoStore.getHostAdminInfo();
+    var data = HostMetadataStore.getHostAdminInfo();
 
     $("#admin_organization_name").val(data.administrator.organization);
     $("#admin_name").val(data.administrator.name);

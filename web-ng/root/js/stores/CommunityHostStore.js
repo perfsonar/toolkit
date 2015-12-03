@@ -1,5 +1,6 @@
 // Make sure jquery loads first
 // assumes Dispatcher has already been declared (so load that first as well)
+// TODO: DELETE THIS ENTIRELY. FUNCTIONALITY HAS MOVED TO HostMetadataStore.
 
 var CommunityHostStore = {
     communityDetails: null,

@@ -18,6 +18,7 @@ HostAdminInfoStore._retrieveInfo = function() {
             contentType: "application/json",
             dataType: "json",            
             success: function (data) {
+                console.log('hostadmininfostore data', data);
                 HostAdminInfoStore.hostAdminInfo = data;
                 Dispatcher.publish(HostAdminInfoStore.adminInfoTopic);
             },

@@ -10,8 +10,8 @@ AdminInfoPage.initialize = function() {
     $('#loading-modal').foundation('reveal', 'open');
     $("#adminInfoForm").submit(function(e) {
         Dispatcher.publish(AdminInfoPage.formSubmitTopic);
-        AdminInfoUpdateComponent.save();
-        CommunityUpdateComponent.save();
+        //AdminInfoUpdateComponent.save();        
+        //CommunityUpdateComponent.save();
         e.preventDefault();
     });
 };

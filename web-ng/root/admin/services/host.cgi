@@ -208,6 +208,99 @@ $metadata_update_method->add_input_parameter(
     type            => 'text',
     );
 
+$metadata_update_method->add_input_parameter(
+    name            => "communities",
+    description     => "A list of enabled communities, disabled communities and deleted communities",
+    required        => 0,
+    multiple        => 1,
+    max_length      => 1024 * 512, # 512K
+    allow_empty     => 0,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "organization_name",
+    description     => "The name of the organization",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "admin_name",
+    description     => "The name of the administrator",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "admin_email",
+    description     => "The e-mail address of the administrator",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "city",
+    description     => "The city of the administrator or organization",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "state",
+    description     => "The state/province of the administrator or organization",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    #min_length      => 2,
+    #max_length      => 6,
+
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "postal_code",
+    description     => "The postal code of the administrator or organization",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'postal_code',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "country",
+    description     => "The country of the administrator or organization",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "latitude",
+    description     => "The latitude of the node",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'float',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "longitude",
+    description     => "The longitude of the node",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'float',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "subscribe",
+    description     => "Whether to subscribe the administrator to the perfsonar user list",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'boolean',
+    );
+
 $router->add_method($metadata_update_method);
 
 my $status_method = perfSONAR_PS::NPToolkit::WebService::Method->new(

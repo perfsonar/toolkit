@@ -28,6 +28,8 @@ var HostMetadataComponent = {
 HostMetadataComponent.initialize = function() {
     Dispatcher.subscribe(HostMetadataComponent.metadata_topic, HostMetadataComponent._setMetadata);
     Dispatcher.subscribe(HostMetadataComponent.formSubmitTopic, HostMetadataComponent.save);
+    Dispatcher.subscribe(HostMetadataComponent.saveMetadataTopic, SharedUIFunctions._saveSuccess);
+    Dispatcher.subscribe(HostMetadataComponent.saveMetadataErrorTopic, SharedUIFunctions._saveError);
     Dispatcher.subscribe(HostMetadataComponent.saveAdminInfoTopic, SharedUIFunctions._saveSuccess);
     Dispatcher.subscribe(HostMetadataComponent.saveAdminInfoErrorTopic, SharedUIFunctions._saveError);
 };
@@ -71,9 +73,32 @@ HostMetadataComponent.save = function() {
     data.access_policy = accessPolicySel.val();
     data.access_policy_notes = policyNotesText.val();
     data.role = roleSel.val();
+    data.communities = CommunityUpdateComponent.getSelectedCommunities();
+
+    var adminInfoData = HostMetadataComponent.getAdminInfoData();
+    $.extend(data, adminInfoData);
 
     HostAdminStore.saveMetadata( data );
 
+};
+
+HostMetadataComponent.getAdminInfoData = function() {
+    var data= {};
+    data.organization_name = $("#admin_organization_name").val();
+    data.admin_name = $("#admin_name").val();
+    data.admin_email = $("#admin_email").val();
+    data.city = $("#admin_city").val();
+    data.country = $("#admin_country").val();
+    if ( $("#admin_states").is(":visible") ) {
+        data.state = $("#admin_states").val();
+    } else {
+        data.state = $("#admin_state").val();
+    }
+    data.postal_code = $("#admin_postal_code").val();
+    data.latitude = $("#admin_latitude").val();
+    data.longitude = $("#admin_longitude").val();
+
+    return data;
 };
 
 HostMetadataComponent.initialize();

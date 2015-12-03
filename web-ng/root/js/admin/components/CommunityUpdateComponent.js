@@ -4,6 +4,7 @@ var CommunityUpdateComponent = {
     communitiesToRemove: [],
     allTopic: 'store.change.communities_all',
     hostTopic: 'store.change.communities_host',
+    metadataTopic: 'store.change.host_metadata', 
     allSet: false,
     hostSet: false,
     placeholder: 'Select communities',
@@ -12,7 +13,7 @@ var CommunityUpdateComponent = {
 };
 
 CommunityUpdateComponent.initialize = function() {
-    Dispatcher.subscribe(CommunityUpdateComponent.hostTopic, CommunityUpdateComponent._setHostCommunities);
+    Dispatcher.subscribe(CommunityUpdateComponent.metadataTopic, CommunityUpdateComponent._setHostCommunities);
     Dispatcher.subscribe(CommunityUpdateComponent.allTopic, CommunityUpdateComponent._setAllCommunities);
     var addButton = $('#community_add_button');
     var addName = $('#community_add_name');
@@ -37,15 +38,17 @@ CommunityUpdateComponent.initialize = function() {
 CommunityUpdateComponent._setHostCommunities = function( topic ) {
     /* Sets the host communities in the format {name: selected} */
     CommunityUpdateComponent.communities.host = {};
-    var data = CommunityHostStore.getHostCommunities();
+    var data = HostMetadataStore.getHostCommunities();
+
+    console.log('communities', data);
 
     var commObj = {};
     var h = 0;
-    for(var i in data.communities) {
+    for(var i in data) {
         var row = {};
         row.id = h;
-        row.text = data.communities[i];
-        commObj[data.communities[i]] = 1;
+        row.text = data[i];
+        commObj[data[i]] = 1;
         h++;
     }
     CommunityUpdateComponent.communities.host = commObj;
@@ -117,6 +120,12 @@ CommunityUpdateComponent.save = function() {
 
     HostAdminStore.saveCommunities( communities_arr );
     
+};
+
+CommunityUpdateComponent.getSelectedCommunities = function() {
+    var sel = $('#update_communities');
+    var communities_arr = sel.val() || [];
+    return communities_arr;
 };
 
 CommunityUpdateComponent._combineCommunities = function() {
