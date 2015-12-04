@@ -40,8 +40,6 @@ CommunityUpdateComponent._setHostCommunities = function( topic ) {
     CommunityUpdateComponent.communities.host = {};
     var data = HostMetadataStore.getHostCommunities();
 
-    console.log('communities', data);
-
     var commObj = {};
     var h = 0;
     for(var i in data) {

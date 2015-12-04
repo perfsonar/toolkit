@@ -46,9 +46,11 @@ my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
     $include_prefix . 'js/actions/Dispatcher.js', 
+    $include_prefix . 'js/shared/SharedUIFunctions.js', 
     $include_prefix . 'js/stores/HostDetailsStore.js', 
     $include_prefix . 'js/stores/HostServicesStore.js', 
-    $include_prefix . 'js/stores/HostAdminInfoStore.js', 
+    #$include_prefix . 'js/stores/HostAdminInfoStore.js',  # TODO: Remove entirely
+    $include_prefix . 'js/stores/HostMetadataStore.js', 
     $include_prefix . 'js/stores/HostNTPInfoStore.js', 
     $include_prefix . 'js/stores/HostHealthStore.js', 
     #$include_prefix . 'js/stores/HostStore.js', 

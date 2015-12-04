@@ -5,23 +5,6 @@ var HostMetadataComponent = {
     saveMetadataErrorTopic: 'store.host_metadata.save_error',
     rolePlaceholder: 'Select a node role',
     policyPlaceholder: 'Select an access policy',
-    allRoles: [ 
-        {id: 'nren', text: 'NREN'}, 
-        {id: 'regional', text: 'Regional'},
-        {id: 'site-border', text: 'Site Border'},
-        {id: 'site-internal', text: 'Site Internal'},
-        {id: 'science-dmz', text: 'Science DMZ'},
-        {id: 'exchange-point', text: 'Exchange Point'},
-        {id: 'test-host', text: 'Test Host'},
-        {id: 'default-path', text: 'Default Path'},
-        {id: 'backup-path', text: 'Backup Path'},
-    ],
-    allAccessPolicies: [
-        {id: 'public', text: 'Public'},
-        {id: 'research-education', text: 'R&E Only'},
-        {id: 'private', text: 'Private'},
-        {id: 'limited', text: 'Limited'},
-    ],
 };
 
 
@@ -36,17 +19,18 @@ HostMetadataComponent.initialize = function() {
 
 HostMetadataComponent._setMetadata = function( topic ) {
     var data = HostMetadataStore.getHostMetadata();
-    var allRoles = HostMetadataComponent.allRoles;
-    var selectedRoles = data.config.role;   
+    var allRoles = HostMetadataStore.allRoles;
+    var selectedRoles = data.config.role;
     var roleValues = SharedUIFunctions.getSelectedValues( allRoles, selectedRoles );  
     
     var roleSel = $('#node_role_select');
     roleSel.select2( { 
         placeholder: HostMetadataComponent.rolePlaceholder,
         data: roleValues,
+        allowClear: true, // allow an empty selection
     });
 
-    var allAccessPolicies = HostMetadataComponent.allAccessPolicies;
+    var allAccessPolicies = HostMetadataStore.allAccessPolicies;
     var selectedAccessPolicies = data.config.access_policy;
     var accessPolicyValues = SharedUIFunctions.getSelectedValues( allAccessPolicies, selectedAccessPolicies );
 
@@ -100,6 +84,7 @@ HostMetadataComponent.getAdminInfoData = function() {
 
     return data;
 };
+
 
 HostMetadataComponent.initialize();
 

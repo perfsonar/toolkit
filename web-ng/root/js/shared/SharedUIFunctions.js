@@ -62,3 +62,15 @@ SharedUIFunctions._showSaveBar = function() {
     Dispatcher.publish(SharedUIFunctions.formChangeTopic);
 };
 
+// takes a variable as its argument, and returns it as an array
+// typically this is useful if you don't know whether a value will be a string 
+// or an array of strings, for example.
+// returns null if undefined
+SharedUIFunctions._getAsArray = function( value ) {
+    if (typeof value == 'string' || typeof value == 'number') {
+        return [ value ];
+    } else {
+        return value;
+    }
+
+};
