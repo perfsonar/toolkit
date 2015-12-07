@@ -50,8 +50,15 @@ my $js_files = [
     $include_prefix . 'js/stores/HostDetailsStore.js', 
     $include_prefix . 'js/stores/HostServicesStore.js', 
     $include_prefix . 'js/stores/HostMetadataStore.js', 
-    $include_prefix . 'js/stores/HostNTPInfoStore.js', 
-    $include_prefix . 'js/stores/HostHealthStore.js', 
+];
+
+if ($authenticated) {
+    push @$js_files, ('js/stores/HostNTPInfoStore.js',
+                      'js/stores/HostHealthStore.js',
+    );
+}
+
+push @$js_files, (
     $include_prefix . 'js/stores/TestStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
@@ -61,7 +68,7 @@ my $js_files = [
     $include_prefix . 'js/components/HostServicesComponent.js', 
     $include_prefix . 'js/components/TestResultsComponent.js',
     $include_prefix . 'js/pages/DashboardPage.js'
-    ];
+);
 
 my $vars = {};
 $vars->{'page'} = $page;
