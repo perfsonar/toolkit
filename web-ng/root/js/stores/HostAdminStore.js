@@ -1,7 +1,7 @@
 // Make sure jquery loads first
 // assumes Dispatcher has already been declared (so load that first as well)
 // load first:
-// HostAdminInfoStore.js, HostDetailsStore.js, HostHealthStore.js, HostServicesStore.js 
+// HostMetadataStore.js, HostDetailsStore.js, HostHealthStore.js, HostServicesStore.js 
 // HostStore.js
 
 var HostAdminStore = {
@@ -34,7 +34,7 @@ HostAdminStore.saveAdminInfo = function(info) {
         dataType: 'json',
         contentType: 'application/x-www-form-urlencoded',
         success: function(result) {
-            HostAdminInfoStore._retrieveInfo();
+            HostMetadataStore._retrieveInfo();
             Dispatcher.publish(topic, result.message);
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -122,7 +122,7 @@ HostAdminStore.saveCommunities = function( communities_arr ) {
         contentType: "application/json",
         //contentType: 'application/x-www-form-urlencoded',
         success: function(result) {
-            CommunityHostStore._retrieveCommunities();
+            HostMetadataStore._retrieveMetadata();
             CommunityAllStore._retrieveCommunities();
             Dispatcher.publish(topic, result.message);
 

@@ -51,12 +51,9 @@ my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
     $include_prefix . 'js/actions/Dispatcher.js', 
-    $include_prefix . 'js/stores/HostStore.js', 
-    #$include_prefix . 'js/stores/HostAdminInfoStore.js', 
     $include_prefix . 'js/stores/HostDetailsStore.js', 
     $include_prefix . 'js/stores/HostAdminStore.js', 
     $include_prefix . 'js/stores/HostGuessLatLonStore.js', 
-    #$include_prefix . 'js/stores/CommunityHostStore.js', 
     $include_prefix . 'js/stores/CommunityAllStore.js', 
     $include_prefix . 'js/stores/HostMetadataStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 

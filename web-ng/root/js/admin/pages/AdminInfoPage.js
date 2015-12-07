@@ -1,5 +1,5 @@
 // make sure jquery, Dispatcher, TestStore, TestResultsComponent, 
-// HostStore, HostServicesComponent and HostInfoComponent all load before this.
+// HostMetadataStore, HostMetadataComponent load before this.
 
 var AdminInfoPage = { 
     adminInfoTopic:     'store.change.host_info',
@@ -10,8 +10,6 @@ AdminInfoPage.initialize = function() {
     $('#loading-modal').foundation('reveal', 'open');
     $("#adminInfoForm").submit(function(e) {
         Dispatcher.publish(AdminInfoPage.formSubmitTopic);
-        //AdminInfoUpdateComponent.save();        
-        //CommunityUpdateComponent.save();
         e.preventDefault();
     });
 };
