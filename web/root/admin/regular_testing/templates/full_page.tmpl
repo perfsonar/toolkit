@@ -72,6 +72,7 @@ function close_dialog(dialog_name) {
 }
 
 function modify_psb_bwctl_test(test_id, description, test_duration, test_interval, test_schedule, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits, local_interface) {
+    var udp_bandwidth = udp_bandwidth * 1000000; // convert from megabytes to bytes
 	if (test_id) {
 		handle_cgi_ajax_call(null, 'Problem updating test', true, 'update_bwctl_throughput_test', [ test_id, description, test_duration, test_interval, test_schedule, bandwidth_tester, protocol, window_size, udp_bandwidth, tos_bits, local_interface ]);
 	} else {
@@ -461,7 +462,7 @@ function __display_bwctl_throughput_test_dialog(test_id, description_id, test_in
 	dialog_content += "</td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr id='configure_test_udp_questions' "; if (protocol != 'udp') { dialog_content += "style='display:none'" }; dialog_content += ">";
-	dialog_content += "<td>UDP Bandwidth</td><td><input type='text' dojoType='dijit.form.TextBox' id='configure_test_udp_bandwidth' size='10' value='"+udp_bandwidth+"' /></td><td>Mbps</td>";
+	dialog_content += "<td>UDP Bandwidth</td><td><input type='text' dojoType='dijit.form.TextBox' id='configure_test_udp_bandwidth' size='10' value='"+udp_bandwidth/1000000+"' /></td><td>Mbps</td>";
 	dialog_content += "</tr>";
 	dialog_content += "<tr>";
 	dialog_content += "<td>Use Autotuning</td><td colspan=2><input type='checkbox' dojoType='dijit.form.CheckBox' id='configure_test_autotuning' "; if (window_size == 0) { dialog_content += " checked='checked'"; }; dialog_content+="/></td>";

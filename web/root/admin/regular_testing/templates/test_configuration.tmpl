@@ -48,7 +48,7 @@
 	</tr>
 	[% IF current_test.parameters.protocol == "udp" %]
 	<tr>
-	<td style="width: 200px">UDP Bandwidth (Mbps)</td><td>[% current_test.parameters.udp_bandwidth %]</td>
+	<td style="width: 200px">UDP Bandwidth (Mbps)</td><td>[% current_test.parameters.udp_bandwidth / 1000000 %]</td>
 	</tr>
 	[% END %]
 	<tr>
