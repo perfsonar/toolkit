@@ -10,7 +10,6 @@ var AdminInfoUpdateComponent = {
     formErrorTopic: 'ui.form.error',
     formCancelTopic: 'ui.form.cancel',
     country_data_url: '/toolkit/data/country_data.json',
-    update_url: '/toolkit/admin/services/host.cgi?method=update_info',
     countries: {},
     state_data_urls: {},
     state_sel: $("#admin_states"),
