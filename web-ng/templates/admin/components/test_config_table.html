@@ -1,0 +1,69 @@
+<script id="testConfigByHostTableTemplate" type="text/x-handlebars-template">
+
+    <!-- Begin config by host table -->
+
+<div class="config-table">
+    
+    <!-- *** List test with dropdowns *** -->
+    <h3>Config Table</h3>
+    <div class="module module--config-table" id="host_services">
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Throughput</th>
+                    <th>One-Way Latency</th>
+                    <th>Ping</th>
+                    <th>Traceroute</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <a class="services--title-link js-row" data-group="g1" href="#">ps-test.ctc.grnoc.iu.edu <i class="fa fa-caret-down"></i></a>
+                    </td>
+                    <td>2 tests</td>
+                    <td></td>
+                    <td></td>
+                    <td>1 test</td>
+                </tr>
+                    <!-- *** Tests *** -->
+                    <!-- A unique data attribute for each set of subrows (tests for that host) needs to be generated in the markup -->
+                    <tr class="subrow subrow--heading js-subrow" data-group="g1">
+                        <td width="300">Test name</td>
+                        <td>Type</td>
+                        <td>Interval</td>
+                        <td>Enabled</td>
+                        <td>Actions</td>
+                    </tr>
+                    <!-- Add this "subrow-indent" class to indent the first <td> of the dropdown tables -->
+                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="g1">
+                        <td>iperf15</td>
+                        <td>Throughput - TCP</td>
+                        <td>36 mins</td>
+                        <td><input type="checkbox" checked></td>
+                        <td><a href="#" data-reveal-id="configure-test-modal"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                    </tr>
+                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="g1">
+                        <td>default</td>
+                        <td>Throughput - UDP (100M)</td>
+                        <td>40 mins</td>
+                        <td><input type="checkbox" checked></td>
+                        <td><a href="#"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                    </tr>
+                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="g1">
+                        <td>owamp1</td>
+                        <td>One-Way Latency</td>
+                        <td>45 mins</td>
+                        <td><input type="checkbox"></td>
+                        <td><a href="#"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                    </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- End config by host table -->
+</div>
+
+</script>
