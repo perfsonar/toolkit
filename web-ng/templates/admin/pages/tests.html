@@ -24,11 +24,307 @@
                     <div class="row">
                         <div class="medium-9 columns">
                             <div class="config__form">
-                                    <h2 class="module-header__title">Test Configuration</h2>
+                                    <h2 class="module-header__title">All scheduled tests</h2>
                                     <p>Configure tests between this host and other hosts.</p>
-                                    <p><b>New interface</b></p>
+
+
+                                    <!-- Begin table heading -->
+
+                                    <!-- *** Sort by host or test and set default test parameters *** -->
+                                    <div class="row">
+                                        <div class="medium-6 columns">
+                                            <span>View by: <a href="#" class="color-disabled">Host</a> | <a href="#">Test</a></span>
+                                        </div>
+                                        <div class="medium-6 columns text-right">
+                                            <a href="#" data-reveal-id="defaultParametersModal">Default test parameters</a>
+                                        </div>
+                                    </div>
+
+                                    <!-- End table heading -->
+
+                                    <div id="testConfigContainer"></div>
+
+
+                                    <!-- Begin example config table -->
+
+                                <div class="config-table">
+
+                                    <!-- *** List test with dropdowns *** -->
+                                    <h3>Example Config Table</h3>
+                                    <div class="module module--config-table" id="host_services">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Throughput</th>
+                                                    <th>One-Way Latency</th>
+                                                    <th>Ping</th>
+                                                    <th>Traceroute</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <a class="services--title-link js-row" data-group="g1" href="#">ps-test.ctc.grnoc.iu.edu <i class="fa fa-caret-down"></i></a>
+                                                    </td>
+                                                    <td>2 tests</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>1 test</td>
+                                                </tr>
+                                                    <!-- *** Tests *** -->
+                                                    <!-- A unique data attribute for each set of subrows (tests for that host) needs to be generated in the markup -->
+                                                    <tr class="subrow subrow--heading js-subrow" data-group="g1">
+                                                        <td width="300">Test name</td>
+                                                        <td>Type</td>
+                                                        <td>Interval</td>
+                                                        <td>Enabled</td>
+                                                        <td>Actions</td>
+                                                    </tr>
+                                                    <!-- Add this "subrow-indent" class to indent the first <td> of the dropdown tables -->
+                                                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="g1">
+                                                        <td>iperf15</td>
+                                                        <td>Throughput - TCP</td>
+                                                        <td>36 mins</td>
+                                                        <td><input type="checkbox" checked></td>
+                                                        <td><a href="#" data-reveal-id="configure-test-modal"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                                                    </tr>
+                                                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="g1">
+                                                        <td>default</td>
+                                                        <td>Throughput - UDP (100M)</td>
+                                                        <td>40 mins</td>
+                                                        <td><input type="checkbox" checked></td>
+                                                        <td><a href="#"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                                                    </tr>
+                                                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="g1">
+                                                        <td>owamp1</td>
+                                                        <td>One-Way Latency</td>
+                                                        <td>45 mins</td>
+                                                        <td><input type="checkbox"></td>
+                                                        <td><a href="#"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                                                    </tr>
+
+                                                <tr>
+                                                    <td>
+                                                        <a class="services--title-link js-row" data-group="g2" href="#">perfsonar-6.its.iastate.edu <i class="fa fa-caret-down"></i></a>
+                                                    </td>
+                                                    <td><span>1 Test</span></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>2 Tests</td>
+                                                </tr>
+                                                    <!-- *** Tests *** -->
+                                                    <!-- A unique data attribute for each set of subrows (tests for that host) needs to be generated in the markup -->
+                                                    <tr class="subrow subrow--heading js-subrow" data-group="g2">
+                                                        <td width="300">Test name</td>
+                                                        <td>Type</td>
+                                                        <td>Interval</td>
+                                                        <td>Enabled</td>
+                                                        <td>Actions</td>
+                                                    </tr>
+                                                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="g2">
+                                                        <td>iperf15</td>
+                                                        <td>Throughput - TCP</td>
+                                                        <td>36 mins</td>
+                                                        <td><input type="checkbox" checked></td>
+                                                        <td><a href="#"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                                                    </tr>
+                                                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="g2">
+                                                        <td>default</td>
+                                                        <td>Throughput - UDP (100M)</td>
+                                                        <td>40 mins</td>
+                                                        <td><input type="checkbox" checked></td>
+                                                        <td><a href="#"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                                                    </tr>
+                                                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="g2">
+                                                        <td>owamp1</td>
+                                                        <td>One-Way Latency</td>
+                                                        <td>45 mins</td>
+                                                        <td><input type="checkbox"></td>
+                                                        <td><a href="#"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                                                    </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a class="services--title-link js-row" href="#">ps-test.bldc.grnoc.iu.edu <i class="fa fa-caret-down"></i></a>
+                                                    </td>
+                                                    <td></td>
+                                                    <td>1 Test</td>
+                                                    <td>3 Tests</td>
+                                                    <td>1 Test</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a class="services--title-link js-row" href="#">psonar2.fnal.gov <i class="fa fa-caret-down"></i></a>
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>1 Test</td>
+                                                    <td>1 Test</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+                                    <!-- *** Configure test modal (gear icon) *** -->
+
+                                    <div id="configure-test-modal" class="reveal-modal large text-left" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+                                        <div class="row">
+                                            <div class="medium-12 columns">
+                                                <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">Configure tests</h3>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="medium-12 columns">
+                                                <h2 class="module-header__title font-bold">Test parameters</h2>
+                                                <form>
+                                                    <label for="test-name">Test name/description</label>
+                                                    <input type="text" id="test-name" placeholder="Test name" value="iperf15">
+
+                                                    <div class="row">
+                                                        <div class="medium-6 columns">
+                                                            <label for="time-between">Time between tests</label>
+                                                            <select id="time-between">
+                                                                <option>10 Minutes</option>
+                                                                <option>15 Minutes</option>
+                                                                <option selected>30 Minutes</option>
+                                                                <option>60 Minutes</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="medium-6 columns">
+                                                            <label for="test-duration">Test duration</label>
+                                                            <select id="test-duration">
+                                                                <option>5 Seconds</option>
+                                                                <option>10 Seconds</option>
+                                                                <option>15 Seconds</option>
+                                                                <option selected>30 Seconds</option>
+                                                                <option>45 Seconds</option>
+                                                                <option>60 Seconds</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="medium-6 columns">
+                                                            <div class="row">
+                                                                <div class="medium-6 columns">
+                                                                    <label>Use Autotuning</label>
+                                                                    <div class="switch round small">
+                                                                        <input id="exampleCheckboxSwitch" type="checkbox">
+                                                                        <label for="exampleCheckboxSwitch">Use Autotuning</label>
+                                                                    </div>
+
+                                                                </div>
+                                                                <div class="medium-6 columns">
+                                                                    <label for="tos-bits">TOS bits</label>
+                                                                    <input type="text" id="tos-bits" value="0">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </form>
+
+                                                <div class="module module--config-table">
+                                                    <h3 class="module-header__title font-bold">Test members</h3>
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Host</th>
+                                                                <th>Description</th>
+                                                                <th>IPv</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="test-members">
+                                                            <tr class="subrow subrow--content">
+                                                                <td>ps-test.ctc.grnoc.iu.edu</td>
+                                                                <td><input type="text" value="Indiana University, Bloomington, IN"></td>
+                                                                <td><label class="inline-label">IPv4</label> <input type="checkbox"></td>
+                                                                <td><label class="inline-label">IPv6</label> <input type="checkbox" checked></td>
+                                                                <td><a href="#"><i class="fa fa-trash" checked></i></a></td>
+                                                            </tr>
+                                                            <tr class="subrow subrow--content">
+                                                                <td>perfsonar-6.its.iastate.edu</td>
+                                                                <td><input type="text" value="Indiana University, Bloomington, IN"></td>
+                                                                <td><label class="inline-label">IPv4</label> <input type="checkbox" checked></td>
+                                                                <td><label class="inline-label">IPv6</label> <input type="checkbox"></td>
+                                                                <td><a href="#"><i class="fa fa-trash"></i></a></td>
+                                                            </tr>
+                                                            <tr class="subrow subrow--content">
+                                                                <td>another.host.to.test</td>
+                                                                <td><input type="text" value="Indiana University, Bloomington, IN"></td>
+                                                                <td><label class="inline-label">IPv4</label> <input type="checkbox"></td>
+                                                                <td><label class="inline-label">IPv6</label> <input type="checkbox" checked></td>
+                                                                <td><a href="#"><i class="fa fa-trash"></i></a></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <!-- *** Add new test members panel *** -->
+
+                                                    <div class="panel">
+                                                        <p>Enter a host name below or <a href="#">browse communities</a> to add more test members.</p>
+
+                                                        <form>
+                                                            <div class="row">
+                                                                <div class="medium-4 columns">
+                                                                    <label for="new-host-name">Host name</label>
+                                                                    <input type="text" id="new-host-name" placeholder="Host">
+                                                                </div>
+                                                                <div class="medium-5 columns">
+                                                                    <label for="new-host-description">Host description</label>
+                                                                    <input type="text" id="new-host-description" placeholder="Description">
+                                                                </div>
+                                                                <div class="medium-3 columns" style="padding-top: 1.75em;">
+                                                                    <div class="row">
+                                                                        <div class="medium-6 columns">
+                                                                            <label  class="inline-label" for="new-ipv4">IPv4</label>
+                                                                            <input type="checkbox" id="new-ipv4">
+                                                                        </div>
+                                                                        <div class="medium-6 columns">
+                                                                            <label  class="inline-label" for="new-ipv6">IPv6</label>
+                                                                            <input type="checkbox" id="new-ipv6">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="medium-12 columns">
+                                                                    <button class="button-quiet js-add-new-host">Add host</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="medium-12 columns text-right">
+                                                            <button class="button-primary" style="margin: 2em 1em 0 0;">Save</button>
+                                                            <a href="#">Cancel</a>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- <div class="js-add-new-wrapper">
+                                                        <a href="#" class="button-primary js-add-new-host" style="margin-right: 1em;">Add new</a> <a href="./">Cancel</a>
+                                                    </div>
+                                                    <div class="new-host-save">
+                                                        <a href="#" class="button-primary js-save-new-host" style="margin-right: 1em;">Save</a> <a href="./">Cancel</a>
+                                                    </div> -->
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Close button for modal -->
+                                        <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a>
+                                    </div>
+
+                                </div>
+
+
                             </div>
                             <!-- End config__form -->
+
+
                         </div>
                         <div class="medium-3 columns">
                             <aside class="aside aside--config">
@@ -57,3 +353,6 @@
 
     [% INCLUDE admin/components/sticky_bar.html %]
 
+    [% INCLUDE admin/components/test_config_table.html %]
+
+    [% INCLUDE admin/components/test_config_default_parameters.html %]

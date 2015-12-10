@@ -548,6 +548,8 @@ web-ng/templates/page.html
 web-ng/templates/tests/results.html
 web-ng/templates/admin/components/admin_header_nav.html
 web-ng/templates/admin/components/sticky_bar.html
+web-ng/templates/admin/components/test_config_default_parameters.html
+web-ng/templates/admin/components/test_config_table.html
 web-ng/templates/admin/pages/admin_info.html
 web-ng/templates/admin/pages/host.html
 web-ng/templates/admin/pages/services.html

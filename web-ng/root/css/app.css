@@ -53,7 +53,7 @@
 }
 
 #host_services .disabled {
-  color: #A9B1B5;  
+  color: #A9B1B5;
 }
 
 /* Typography classes */
@@ -621,7 +621,7 @@ select {
 
 /*------------------------------------------------------------------------------
 
-    Grid 
+    Grid
 
 ------------------------------------------------------------------------------*/
 .container {
@@ -928,7 +928,7 @@ ul.list-grid-thirds li {
   margin-top: 0;
 }
 
-.app-header img.logo { 
+.app-header img.logo {
   height: auto;
   max-width: 150px;
   margin-right: 1em;
@@ -1150,7 +1150,7 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
 }
 
 /*
-  Sidebar popover 
+  Sidebar popover
 */
 
 .sidebar-popover {
@@ -1295,6 +1295,14 @@ table thead tr th {
   padding: .75em .5em;
 }
 
+/*
+**  Override: make zebra stripes on tables a bit darker
+*/
+
+table tr.even, table tr.alt, table tr:nth-of-type(even) {
+    background-color: #eee;
+}
+
 .services {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -1392,6 +1400,10 @@ label {
   color: #4d565b;
 }
 
+.inline-label {
+  display: inline;
+}
+
 fieldset {
   border-color: #ddd;
   background-color: #f7f7f7;
@@ -1426,6 +1438,11 @@ select {
   -ms-border-radius: 4px;
   -o-border-radius: 4px;
   border-radius: 4px;
+}
+
+.inline-input {
+  display: inline !important;
+  width: auto;
 }
 
 /*------------------------------------------------------------------------------
@@ -1550,6 +1567,11 @@ select {
     Buttons
 
 ------------------------------------------------------------------------------*/
+
+button:hover, button:focus {
+  background-color: #8f9699;
+}
+
 button,
 input[type="submit"],
 input[type="button"],
@@ -1599,7 +1621,7 @@ input.button-primary--small:hover {
   background-color: #0074d8;
 }
 
-input[type='button']:disabled, input[type='button']:disabled.cancel, input[type='submit']:disabled { 
+input[type='button']:disabled, input[type='button']:disabled.cancel, input[type='submit']:disabled {
     color:#ddd;
     border-color:#ddd;
 }
@@ -1688,6 +1710,32 @@ input.button-alternate--small {
 }
 
 /*
+**  Overide Foundation dropdown buttons
+*/
+
+.dropdown.button::after, button.dropdown::after {
+  border-color: #444 transparent transparent transparent;
+}
+
+.f-dropdown {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: none;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: 0px 2px 2px #ccc;
+  -moz-box-shadow: 0px 2px 2px #ccc;
+  -o-box-shadow: 0px 2px 2px #ccc;
+  box-shadow: 0px 2px 2px #ccc;
+}
+
+.f-dropdown a {
+  text-decoration: none;
+}
+
+/*
 ** Disabled states for Config buttons
 */
 
@@ -1714,7 +1762,23 @@ input[type='button']:disabled.button-primary--hollow:hover {
   background-color: transparent;
   border-color: #999;
   color: #888;
-  cursor: default;  
+  cursor: default;
+}
+
+.button-dropdown {
+
+}
+
+/*
+**  Button group
+*/
+
+.button-group {
+  padding: 2em 0;
+}
+
+.button-group button {
+  margin-right: 1em;
 }
 
 .overview {
@@ -1977,6 +2041,10 @@ to put the stuff inside. */
   margin: 2em 0;
 }
 
+.module--config-table {
+  margin-top: 1em;
+}
+
 .dashboard-main {
   width: 75%;
   padding: 1em 3em 0 2em;
@@ -2121,6 +2189,16 @@ to put the stuff inside. */
   margin-bottom: 6em;
 }
 
+.config__breadcrumbs {
+    /*background-color: #f7f7f7;*/
+    padding: .85em;
+    text-align: right;
+}
+
+.config__breadcrumbs a {
+    text-decoration: none;
+}
+
 /*
   Select2 add servers - Adding a bunch of rules to override conflicts between
   Foundation and Select2 plugin
@@ -2128,7 +2206,7 @@ to put the stuff inside. */
 
 .select2-search__field {
   box-shadow: none !important;
-  transition: none !important;  
+  transition: none !important;
 }
 
 .servers input,
@@ -2326,8 +2404,64 @@ to put the stuff inside. */
   margin-bottom: 1em;
 }
 
+.reveal-modal__heading--large {
+    font-size: 2em;
+    border-bottom: 1px solid #ddd;
+}
+
 .reveal-modal .close-reveal-modal {
   font-size: 1.5em;
 }
 
-/*# sourceMappingURL=app.css.map */
+/*
+**  Test config table styling
+*/
+
+.subrow td {
+  /*padding-left: 3.5em;*/
+  /*background-color: #eee;*/
+  line-height: 1.25em;
+}
+
+.subrow input {
+  margin: 0;
+}
+
+.subrow--heading td {
+  background-color: #ddd;
+  border-top: 1px solid #ccc;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: .25em .5em;
+}
+
+.subrow--content {
+  border-top: 1px solid #ddd;
+}
+
+.subrow--indent td:first-child {
+  padding-left: 3em;
+}
+
+/*.subrow--content td:first-child {
+  padding-left: 3em;
+}*/
+
+.subrow--content td a {
+  display: inline-block;
+  margin-right: 1em;
+  color: #383f44;
+}
+
+.subrow--content td a:hover {
+  color: #999;
+}
+
+.subrow--content td:first-child {
+  font-weight: 700;
+}
+
+.new-host-save {
+  display: none;
+}
