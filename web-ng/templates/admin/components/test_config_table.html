@@ -18,6 +18,38 @@
                 </tr>
             </thead>
             <tbody>
+            {{#each testsByHost}}
+                <tr>
+                    <td>
+                        <a class="services--title-link js-row" data-group="g1" href="#">{{address}}<i class="fa fa-caret-down"></i></a>
+                    </td>
+                    <td>{{formatTestCount bwctl_throughput_count}}</td>
+                    <td>{{formatTestCount owamp_count}}</td>
+                    <td>{{formatTestCount pinger_count}}</td>
+                    <td>{{formatTestCount traceroute_count}}</td>
+                </tr>
+                    <!-- *** Tests *** -->
+                    <!-- A unique data attribute for each set of subrows (tests for that host) needs to be generated in the markup -->
+                    <tr class="subrow subrow--heading js-subrow" data-group="g1">
+                        <td width="300">Test name</td>
+                        <td>Type</td>
+                        <td>Interval</td>
+                        <td>Enabled</td>
+                        <td>Actions</td>
+                    </tr>
+                {{#each tests}}
+                    <!-- Add this "subrow-indent" class to indent the first <td> of the dropdown tables -->
+                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="g1">
+                        <td>{{description}}</td>
+                        <td>{{type}} (Format as: Throughput - TCP)</td>
+                        <td>{{parameters.test_interval}}s (format as mins?)</td>
+                        <td><input type="checkbox" {{#unless disabled}}checked{{/unless}}></td>
+                        <td><a href="#" data-reveal-id="configure-test-modal"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                    </tr>
+                    
+                {{/each}}
+
+            {{/each}}
                 <tr>
                     <td>
                         <a class="services--title-link js-row" data-group="g1" href="#">ps-test.ctc.grnoc.iu.edu <i class="fa fa-caret-down"></i></a>

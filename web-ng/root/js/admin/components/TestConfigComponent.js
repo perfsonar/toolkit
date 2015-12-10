@@ -8,6 +8,17 @@ TestConfigComponent.initialize = function() {
     //$('#loading-modal').foundation('reveal', 'open');
     Dispatcher.subscribe( TestConfigComponent.testConfigTopic, TestConfigComponent._showConfig );
 
+    Handlebars.registerHelper('formatTestCount', function(count) {
+        var ret;
+        if ( count == undefined ) {
+            ret = '';
+        } else {
+            ret = count + ' test';
+            ret += ( count != 1 ? 's' : '' );
+        }
+        return ret;
+    });
+
     // Hide subrows on load
     $(".js-subrow").hide();
 
@@ -43,10 +54,11 @@ TestConfigComponent._showConfig = function() {
     console.log('Test Config Topic received, showing config ...');
     console.log('testconfigcomponent TestConfigStore.getStatus()', TestConfigStore.getStatus() );
     console.log('testconfigcomponent TestConfigStore.getTestConfiguration()', TestConfigStore.getTestConfiguration() );
-    console.log('testconfigcomponent TestConfigStore.getData()', TestConfigStore.getData() );
-    console.log('testconfigcomponent TestConfigStore.getAllTestMembers()', TestConfigStore.getAllTestMembers() );
+    //console.log('testconfigcomponent TestConfigStore.getData()', TestConfigStore.getData() );
+    //console.log('testconfigcomponent TestConfigStore.getAllTestMembers()', TestConfigStore.getAllTestMembers() );
 
-    var data = TestConfigStore.getTestsByHost();
+    var data = {};
+    data.testsByHost = TestConfigStore.getTestsByHost();
     console.log('testconfigcomponent TestConfigStore.getTestsByHost()', data );
 
     // ** Test config tables **

@@ -58,6 +58,7 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
     var address = member.address;
     var type = test.type;
     var type_count_name = type + "_count";
+    type_count_name = type_count_name.replace('/', '_');
     if ( !(address in tests) ) {
         tests[address] = {};
         tests[address].tests = [];
