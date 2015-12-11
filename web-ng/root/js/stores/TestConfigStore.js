@@ -65,6 +65,7 @@ TestConfigStore.getTestsByHost = function() {
         for(var j in test.members) {
             var member = test.members[j];
             var address = member.address;
+            // This portion will need to happen in the get configuration section
             tests = TestConfigStore.addHostToTest(tests, test, member); 
         }
     }
@@ -77,6 +78,7 @@ TestConfigStore.getTestsByHost = function() {
     return tests_sorted;
 };
 
+// This portion will need to happen in the get configuration section
 TestConfigStore.addHostToTest = function (tests, test, member) {
     var address = member.address;
     var type = test.type;

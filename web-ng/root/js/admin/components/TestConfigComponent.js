@@ -39,6 +39,18 @@ TestConfigComponent.initialize = function() {
    
 };
 
+TestConfigComponent.showRows = function(e) {
+    //e.preventDefault();
+    $(".js-subrow").show();
+    return false;
+};
+
+TestConfigComponent.hideRows = function(e) {
+    //e.preventDefault();
+    $(".js-subrow").hide();
+    return false;
+};
+
 TestConfigComponent._showTable = function( data, tableView ) {
     if ( tableView == undefined ) {
         tableView = 'byHost';

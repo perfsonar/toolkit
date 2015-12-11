@@ -5,8 +5,17 @@
 <div class="config-table">
     
     <!-- *** List test with dropdowns *** -->
-    <h3>Config Table</h3>
     <div class="module module--config-table" id="test_configuration_table_div">
+    <div class="row">
+        <div class="medium-6 columns">
+            <span>
+                <a href="#" class="color-disabled" id="expandAllHostsLink" onclick="TestConfigComponent.showRows()">Expand All</a> 
+                | 
+                <a href="#" id="collapseAllHostsLink" onclick="TestConfigComponent.hideRows()">Collapse All</a></span>
+        </div>
+        <div class="medium-6 columns text-right">
+        </div>
+    </div>
         <table>
             <thead>
                 <tr>
