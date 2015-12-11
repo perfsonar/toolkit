@@ -87,6 +87,10 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
         formattedType += " - " + protocol.toUpperCase(); 
     }
     test.type_formatted = formattedType;
+    var interval = test.parameters.test_interval;
+    if ( interval != undefined ) {
+        test.parameters.test_interval_formatted = SharedUIFunctions.getTime( interval );
+    }
     type_count_name = type_count_name.replace('/', '_');
     if ( !(address in tests) ) {
         tests[address] = {};

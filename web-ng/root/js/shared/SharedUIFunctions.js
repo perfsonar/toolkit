@@ -81,3 +81,38 @@ Handlebars.registerHelper("everyOther", function (index, amount, scope) {
     else 
         return scope.fn(this);
 });
+
+SharedUIFunctions.getTime = function(seconds) {
+
+    //a day contains 60 * 60 * 24 = 86400 seconds
+    //an hour contains 60 * 60 = 3600 seconds
+    //a minute contains 60 seconds
+    //the amount of seconds we have left
+    var leftover = seconds;
+
+    //how many full days fits in the amount of leftover seconds
+    var days = Math.floor(leftover / 86400);
+
+    //how many seconds are left
+    leftover = leftover - (days * 86400);
+
+    //how many full hours fits in the amount of leftover seconds
+    var hours = Math.floor(leftover / 3600);
+
+    //how many seconds are left
+    leftover = leftover - (hours * 3600);
+
+    //how many minutes fits in the amount of leftover seconds
+    var minutes = leftover / 60;
+
+    //how many seconds are left
+    leftover = leftover - (minutes * 60);
+
+    var output = '';
+    output += (days ? days + ' d ' : '');
+    output += (hours ? hours + ' hr ' : '');
+    output += (minutes ? minutes + ' min ' : '');
+    output += (leftover ? leftover + ' s ' : '');
+    
+    return output;
+};
