@@ -82,11 +82,18 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
     var type = test.type;
     var protocol = test.parameters.protocol;
     var type_count_name = type + "_count";
-    var formattedType = TestConfigStore._formatTestType( test.type  );
+    var formattedType = TestConfigStore._formatTestType( test.type );
     if ( protocol != undefined ) {
         formattedType += " - " + protocol.toUpperCase(); 
     }
     test.type_formatted = formattedType;
+    var udp_bandwidth = parseInt( test.parameters.udp_bandwidth );
+    if ( !isNaN(udp_bandwidth) ) {
+        var formatted = udp_bandwidth / 1000000;
+        formatted += "M";
+        test.parameters.udp_bandwidth_formatted = formatted;
+        test.type_formatted += ' (' + formatted + ')';
+    }
     var interval = test.parameters.test_interval;
     if ( interval != undefined ) {
         test.parameters.test_interval_formatted = SharedUIFunctions.getTime( interval );
