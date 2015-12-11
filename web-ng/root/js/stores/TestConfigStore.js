@@ -5,11 +5,34 @@ var TestConfigStore = new DataStore("store.change.test_config", "services/regula
 //var TestConfigStore = new DataStore;
 //TestConfigStore.initialize("store.change.test_config", "services/regular_testing.cgi");
 
+// Raw/formatted test type names
+// Could probably have used a hash with raw values as keys, but they may
+// contain invalid keyname characters
+TestConfigStore.testTypes = [
+    { 
+        raw: "pinger",
+        formatted: "Ping (RTT)",
+    },
+    {
+        raw: "bwctl/throughput",
+        formatted: "Throughput",
+    },
+    {
+        raw: "owamp",
+        formatted: "One-way latency",
+    },
+    {
+        raw: "traceroute",
+        formatted: "Traceroute",
+    },
+];
+
 console.log('TestConfigStore', TestConfigStore);
 
 Dispatcher.subscribe('store.change.test_config', function() {
     console.log('data from dispatcher/testconfigstore', TestConfigStore.getData()); 
 });
+
 
 TestConfigStore.getTestConfiguration = function() {
     return this.data.test_configuration;
@@ -57,7 +80,13 @@ TestConfigStore.getTestsByHost = function() {
 TestConfigStore.addHostToTest = function (tests, test, member) {
     var address = member.address;
     var type = test.type;
+    var protocol = test.parameters.protocol;
     var type_count_name = type + "_count";
+    var formattedType = TestConfigStore._formatTestType( test.type  );
+    if ( protocol != undefined ) {
+        formattedType += " - " + protocol.toUpperCase(); 
+    }
+    test.type_formatted = formattedType;
     type_count_name = type_count_name.replace('/', '_');
     if ( !(address in tests) ) {
         tests[address] = {};
@@ -66,6 +95,10 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
 
     tests[address].tests.push(test);
     tests[address].address = address;
+    var memberID = member.id;
+    memberID = memberID.replace('.', '_');
+
+    tests[address].member_id = memberID;
     if ( test[type_count_name] ) {
         tests[address][type_count_name]++;
     } else {
@@ -75,3 +108,18 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
 
 };
 
+// Given the raw test type name as returned by esmond, return a formatted version
+TestConfigStore._formatTestType = function ( rawName ) {
+    var types = TestConfigStore.testTypes;
+    if ( rawName == undefined ) {
+        return;
+    }
+    for(var i in types) {
+        var type = types[i];
+        var raw = type.raw;
+        var formatted = type.formatted;
+        if ( raw == rawName) {
+            return formatted;
+        }
+    }
+};

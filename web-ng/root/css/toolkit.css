@@ -11,3 +11,8 @@
 .select2-container .select2-selection {
     margin-bottom:1em;
 }
+
+
+.js-subrow {
+    display:none;
+}

@@ -22,7 +22,9 @@ TestConfigComponent.initialize = function() {
     // Hide subrows on load
     $(".js-subrow").hide();
 
-    $(".js-row").click(function(){
+    // Click to collapse/expand rows
+    $("div#testConfigContainer").on("click", ".js-row", function(e) {
+        e.preventDefault();
         $(".js-subrow[data-group="+$(this).attr("data-group")+"]").toggle();
     });
 
