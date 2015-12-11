@@ -19,7 +19,7 @@
             </thead>
             <tbody>
             {{#each testsByHost}}
-                <tr class="js-row test" data-group="{{member_id}}">
+                <tr class="js-row test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}}" data-group="{{member_id}}">
                     <td>
                         <a class="services--title-link" data-group="{{member_id}}" href="#">{{address}}<i class="fa fa-caret-down"></i></a>
                     </td>

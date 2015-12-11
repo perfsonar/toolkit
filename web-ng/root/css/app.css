@@ -1303,6 +1303,10 @@ table tr.even, table tr.alt, table tr:nth-of-type(even) {
     background-color: #eee;
 }
 
+table tr.odd { 
+    background-color:#fff;
+}
+
 .services {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
