@@ -28,9 +28,9 @@
             </thead>
             <tbody>
             {{#each testsByHost}}
-                <tr class="js-row test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}}" data-group="{{member_id}}">
+                <tr class="js-row test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}}" data-group="{{host_id}}">
                     <td>
-                        <a class="services--title-link" data-group="{{member_id}}" href="#">{{address}}<i class="fa fa-caret-down"></i></a>
+                        <a class="services--title-link" data-group="{{host_id}}" href="#">{{address}}<i class="fa fa-caret-down"></i></a>
                     </td>
                     <td>{{formatTestCount bwctl_throughput_count}}</td>
                     <td>{{formatTestCount owamp_count}}</td>
@@ -39,7 +39,7 @@
                 </tr>
                     <!-- *** Tests *** -->
                     <!-- A unique data attribute for each set of subrows (tests for that host) needs to be generated in the markup -->
-                    <tr class="subrow subrow--heading js-subrow" data-group="{{member_id}}">
+                    <tr class="subrow subrow--heading js-subrow" data-group="{{host_id}}">
                         <td width="300">Test name</td>
                         <td>Type</td>
                         <td>Interval</td>
@@ -48,7 +48,7 @@
                     </tr>
                 {{#each tests}}
                     <!-- Add this "subrow-indent" class to indent the first <td> of the dropdown tables -->
-                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="{{../member_id}}">
+                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="{{../host_id}}">
                         <td>{{description}}</td>
                         <td>{{type_formatted}}</td>
                         <td>{{parameters.test_interval_formatted}}</td>

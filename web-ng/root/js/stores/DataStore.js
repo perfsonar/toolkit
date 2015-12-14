@@ -34,7 +34,6 @@ function DataStore(topic, url) {
             dataType: "json",
             success: function (data) {
                 self.data = data;
-                console.log('data', data);
                 console.log('publishing self.topic: ', self.topic);
                 Dispatcher.publish(self.topic);
             },

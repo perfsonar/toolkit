@@ -57,15 +57,21 @@ TestConfigComponent._showTable = function( data, tableView ) {
     }
     console.log('tableView', tableView);
 
-    var test_template = $("#testConfigByHostTableTemplate").html();
-    var template = Handlebars.compile(test_template);
+    var host_template = $("#testConfigByHostTableTemplate").html();
+    var template = Handlebars.compile(host_template);
+    var host_table = template(data);
+    $("#testConfigContainer").html(host_table);
+
+    var test_template = $("#testConfigByTestTableTemplate").html();
+    template = Handlebars.compile(test_template);
     var test_table = template(data);
-    $("#testConfigContainer").html(test_table);
+    $("#testConfigContainer").append(test_table);
 
 };
 
-TestConfigComponent._showConfig = function() {
+TestConfigComponent._showConfig = function( topic, b ) {
     console.log('Test Config Topic received, showing config ...');
+    console.log('topic,', topic, 'b', b);
     console.log('testconfigcomponent TestConfigStore.getStatus()', TestConfigStore.getStatus() );
     console.log('testconfigcomponent TestConfigStore.getTestConfiguration()', TestConfigStore.getTestConfiguration() );
     //console.log('testconfigcomponent TestConfigStore.getData()', TestConfigStore.getData() );
@@ -73,7 +79,8 @@ TestConfigComponent._showConfig = function() {
 
     var data = {};
     data.testsByHost = TestConfigStore.getTestsByHost();
-    console.log('testconfigcomponent TestConfigStore.getTestsByHost()', data );
+    data.testsByTest = TestConfigStore.getTestConfiguration();
+    console.log('all test data', data );
 
     // ** Test config tables **
     TestConfigComponent._showTable( data );

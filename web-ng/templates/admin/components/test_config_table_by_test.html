@@ -1,0 +1,73 @@
+<script id="testConfigByTestTableTemplate" type="text/x-handlebars-template">
+
+    <!-- Begin config by host table -->
+
+<div class="config-table">
+    
+    <!-- *** List test with dropdowns *** -->
+    <div class="module module--config-table" id="test_configuration_table_div">
+    <div class="row">
+        <div class="medium-6 columns">
+            <span>
+                <a href="#" class="color-disabled" id="expandAllHostsLink" onclick="TestConfigComponent.showRows()">Expand All</a> 
+                | 
+                <a href="#" id="collapseAllHostsLink" onclick="TestConfigComponent.hideRows()">Collapse All</a></span>
+        </div>
+        <div class="medium-6 columns text-right">
+        </div>
+    </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Test Name</th>
+                    <th>Type</th>
+                    <th>Interval</th>
+                    <th>Test Members</th>
+                    <th>Enabled</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {{#each testsByTest}}
+                <tr class="js-row test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}}" data-group="{{test_id}}">
+                    <td>
+                        <a class="services--title-link" data-group="{{test_id}}" href="#">{{description}}<i class="fa fa-caret-down"></i></a>
+                    </td>
+                    <td>{{type_formatted}}</td>
+                    <td>{{parameters.test_interval_formatted}}</td>
+                    <td>{{formatTestCount members.length}}</td>
+                    <td><input type="checkbox" {{#unless disabled}}checked{{/unless}}></td>
+                    <td><a href="#" data-reveal-id="configure-test-modal"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                </tr>
+                    <!-- *** Tests *** -->
+                    <!-- A unique data attribute for each set of subrows (tests for that host) needs to be generated in the markup -->
+                    <tr class="subrow subrow--heading js-subrow" data-group="{{test_id}}">
+                        <td width="400">Address</td>
+                        <td>Description</td>
+                        <td>v4</td>
+                        <td>v6</td>
+                    </tr>
+                {{#each members}}
+                    <!-- Add this "subrow-indent" class to indent the first <td> of the dropdown tables -->
+                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="{{../test_id}}">
+                        <td>{{address}}</td>
+                        <td>{{description}}</td>
+                        <td>{{test_ipv4}}</td>
+                        <td>{{test_ipv6}}</td>
+                        <!--
+                        <td><a href="#" data-reveal-id="configure-test-modal"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                    -->
+                    </tr>
+                    
+                {{/each}}
+
+            {{/each}}
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- End config by host table -->
+</div>
+
+</script>

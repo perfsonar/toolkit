@@ -27,10 +27,9 @@ TestConfigStore.testTypes = [
     },
 ];
 
-console.log('TestConfigStore', TestConfigStore);
-
 Dispatcher.subscribe('store.change.test_config', function() {
-    console.log('data from dispatcher/testconfigstore', TestConfigStore.getData()); 
+    TestConfigStore._setAdditionalVariables();
+    console.log('data from dispatcher/testconfigstore', TestConfigStore.getData());    
 });
 
 
@@ -39,7 +38,6 @@ TestConfigStore.getTestConfiguration = function() {
 };
 
 TestConfigStore.getStatus = function() {
-    console.log('getting status');
     return this.data.status;
 };
 
@@ -60,13 +58,17 @@ TestConfigStore.getAllTestMembers = function() {
 TestConfigStore.getTestsByHost = function() {
     var tests = {};
     var member_array = [];
+    var host_id = 0;
     for(var i in this.data.test_configuration) {
         var test = this.data.test_configuration[i];
         for(var j in test.members) {
             var member = test.members[j];
-            var address = member.address;
+            member.host_id = host_id;
+            
             // This portion will need to happen in the get configuration section
-            tests = TestConfigStore.addHostToTest(tests, test, member); 
+            // or at least some of it
+            tests = TestConfigStore.addHostToTest(tests, test, member);
+            host_id++;
         }
     }
     var tests_sorted = [];
@@ -78,28 +80,50 @@ TestConfigStore.getTestsByHost = function() {
     return tests_sorted;
 };
 
-// This portion will need to happen in the get configuration section
+// Set additional variables for each test/member
+TestConfigStore._setAdditionalVariables = function ( ) {
+    console.log('setting additional variables');
+    var tests = this.data.test_configuration;
+
+    for(var i in tests) {
+        var test = tests[i];
+        var type = test.type;
+        var protocol = test.parameters.protocol;
+
+        // set test.type_formatted
+        var formattedType = TestConfigStore._formatTestType( type );
+        if ( protocol != undefined ) {
+            formattedType += " - " + protocol.toUpperCase(); 
+        }
+        test.type_formatted = formattedType;
+        var udp_bandwidth = parseInt( test.parameters.udp_bandwidth );
+        if ( !isNaN(udp_bandwidth) ) {
+            var formatted = udp_bandwidth / 1000000;
+            formatted += "M";
+            test.parameters.udp_bandwidth_formatted = formatted;
+            test.type_formatted += ' (' + formatted + ')';
+        }
+
+        // Set test_interval_formatted
+        var interval = test.parameters.test_interval;
+        if ( interval != undefined ) {
+            test.parameters.test_interval_formatted = SharedUIFunctions.getTime( interval );
+        }
+
+    }
+
+
+};
+
+// TestConfigStore.addHostToTest
+// Adds a host to a test in the Host-centric view
 TestConfigStore.addHostToTest = function (tests, test, member) {
     var address = member.address;
-    var type = test.type;
+    var type = test.type;   
+    var host_id = member.host_id;
     var protocol = test.parameters.protocol;
     var type_count_name = type + "_count";
-    var formattedType = TestConfigStore._formatTestType( test.type );
-    if ( protocol != undefined ) {
-        formattedType += " - " + protocol.toUpperCase(); 
-    }
-    test.type_formatted = formattedType;
-    var udp_bandwidth = parseInt( test.parameters.udp_bandwidth );
-    if ( !isNaN(udp_bandwidth) ) {
-        var formatted = udp_bandwidth / 1000000;
-        formatted += "M";
-        test.parameters.udp_bandwidth_formatted = formatted;
-        test.type_formatted += ' (' + formatted + ')';
-    }
-    var interval = test.parameters.test_interval;
-    if ( interval != undefined ) {
-        test.parameters.test_interval_formatted = SharedUIFunctions.getTime( interval );
-    }
+
     type_count_name = type_count_name.replace('/', '_');
     if ( !(address in tests) ) {
         tests[address] = {};
@@ -108,10 +132,8 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
 
     tests[address].tests.push(test);
     tests[address].address = address;
-    var memberID = member.id;
-    memberID = memberID.replace('.', '_');
+    tests[address].host_id = host_id;
 
-    tests[address].member_id = memberID;
     if ( test[type_count_name] ) {
         tests[address][type_count_name]++;
     } else {
