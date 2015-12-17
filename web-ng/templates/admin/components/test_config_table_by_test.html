@@ -32,7 +32,7 @@
             </thead>
             <tbody>
             {{#each testsByTest}}
-                <tr class="js-row test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}}" data-group="{{test_id}}">
+                <tr class="test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}}" data-group="{{test_id}}">
                     <td>
                         <!-- <a class="services--title-link" data-group="{{test_id}}" href="#">{{description}}<i class="fa fa-caret-down"></i></a> -->
                         {{description}}
@@ -45,6 +45,7 @@
                 </tr>
                     <!-- *** Tests *** -->
                     <!-- A unique data attribute for each set of subrows (tests for that host) needs to be generated in the markup -->
+{{!--
                     <tr class="subrow subrow--heading js-subrow" data-group="{{test_id}}">
                         <td width="400">Address</td>
                         <td>Description</td>
@@ -62,8 +63,8 @@
                         <td><a href="#" data-reveal-id="configure-test-modal"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
                     -->
                     </tr>
-                    
                 {{/each}}
+--}}                    
 
             {{/each}}
 
