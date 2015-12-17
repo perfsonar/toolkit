@@ -16,3 +16,11 @@
 .js-subrow {
     display:none;
 }
+
+tr.subrow.last td {
+        padding-bottom: 1em;
+}
+
+tr.last {
+    float:none;
+}

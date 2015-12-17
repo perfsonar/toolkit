@@ -6,6 +6,8 @@
     
     <!-- *** List test with dropdowns *** -->
     <div class="module module--config-table" id="test_configuration_table_div">
+
+{{!-- 
     <div class="row">
         <div class="medium-6 columns">
             <span>
@@ -16,6 +18,7 @@
         <div class="medium-6 columns text-right">
         </div>
     </div>
+--}}
         <table>
             <thead>
                 <tr>
@@ -31,7 +34,8 @@
             {{#each testsByTest}}
                 <tr class="js-row test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}}" data-group="{{test_id}}">
                     <td>
-                        <a class="services--title-link" data-group="{{test_id}}" href="#">{{description}}<i class="fa fa-caret-down"></i></a>
+                        <!-- <a class="services--title-link" data-group="{{test_id}}" href="#">{{description}}<i class="fa fa-caret-down"></i></a> -->
+                        {{description}}
                     </td>
                     <td>{{type_formatted}}</td>
                     <td>{{parameters.test_interval_formatted}}</td>

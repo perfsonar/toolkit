@@ -48,7 +48,7 @@
                     </tr>
                 {{#each tests}}
                     <!-- Add this "subrow-indent" class to indent the first <td> of the dropdown tables -->
-                    <tr class="subrow subrow--content subrow--indent js-subrow" data-group="{{../host_id}}">
+                    <tr class="subrow subrow--content subrow--indent js-subrow {{#if @last}}last{{/if}}" data-group="{{../host_id}}">
                         <td>{{description}}</td>
                         <td>{{type_formatted}}</td>
                         <td>{{parameters.test_interval_formatted}}</td>

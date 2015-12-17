@@ -97,7 +97,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         }
         test.type_formatted = formattedType;
         var udp_bandwidth = parseInt( test.parameters.udp_bandwidth );
-        if ( !isNaN(udp_bandwidth) ) {
+        if ( test.parameters.protocol == "udp" && !isNaN(udp_bandwidth) ) {
             var formatted = udp_bandwidth / 1000000;
             formatted += "M";
             test.parameters.udp_bandwidth_formatted = formatted;
