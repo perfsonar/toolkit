@@ -2,6 +2,7 @@
 
 var TestConfigComponent = {
     testConfigTopic: 'store.change.test_config',
+    data: null,
 };
 
 TestConfigComponent.initialize = function() {
@@ -22,6 +23,14 @@ TestConfigComponent.initialize = function() {
     // Hide subrows on load
     $(".js-subrow").hide();
 
+    $("div.config__form").on("click", "a#viewByHost", function(e) {
+        e.preventDefault();
+        TestConfigComponent._showTable('byHost');
+    });
+    $("div.config__form").on("click", "a#viewByTest", function(e) {
+        e.preventDefault();
+        TestConfigComponent._showTable('byTest');
+    });
     // Click to collapse/expand rows
     $("div#testConfigContainer").on("click", ".js-row", function(e) {
         e.preventDefault();
@@ -51,7 +60,23 @@ TestConfigComponent.hideRows = function(e) {
     return false;
 };
 
-TestConfigComponent._showTable = function( data, tableView ) {
+TestConfigComponent._showTable = function( tableView ) {
+    if (tableView == 'byHost') {
+        $("#testConfigContainer .config-table-by-test").hide();
+        $("#testConfigContainer .config-table-by-host").show();
+
+    } else {
+        $("#testConfigContainer .config-table-by-test").show();
+        $("#testConfigContainer .config-table-by-host").hide();
+    }
+};
+    
+TestConfigComponent._buildTable = function( tableView ) {
+    var data = TestConfigComponent.data;
+    if (data === null) {
+        console.log('no data!');
+        return;
+    }
     if ( tableView == undefined ) {
         tableView = 'byHost';
     }
@@ -67,6 +92,7 @@ TestConfigComponent._showTable = function( data, tableView ) {
     var test_table = template(data);
     $("#testConfigContainer").append(test_table);
 
+    TestConfigComponent._showTable( tableView );
 };
 
 TestConfigComponent._showConfig = function( topic, b ) {
@@ -80,10 +106,11 @@ TestConfigComponent._showConfig = function( topic, b ) {
     var data = {};
     data.testsByHost = TestConfigStore.getTestsByHost();
     data.testsByTest = TestConfigStore.getTestConfiguration();
+    TestConfigComponent.data = data;
     console.log('all test data', data );
 
     // ** Test config tables **
-    TestConfigComponent._showTable( data );
+    TestConfigComponent._buildTable( );
 
 };
 
