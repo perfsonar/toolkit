@@ -86,7 +86,27 @@ $add_test_configuration_method->add_input_parameter(
     max_length      => 1024 * 1024, # 1M
     type            => 'text',
     );
+
 $router->add_method($add_test_configuration_method);
+
+my $update_test_configuration_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "update_test_configuration",
+    description     =>  "Update test configuration - first deletes all tests and then adds the test configuration",
+    auth_required   =>  1,
+    request_methods => ['POST'],
+    callback        =>  sub { $regular_testing_info->update_test_configuration(@_); }
+    );
+
+$update_test_configuration_method->add_input_parameter(
+    name            => "POSTDATA",
+    description     => "JSON blob containing tests",
+    required        => 1,
+    allow_empty     => 0,
+    max_length      => 1024 * 1024, # 1M
+    type            => 'text',
+    );
+
+$router->add_method($update_test_configuration_method);
 
 
 
