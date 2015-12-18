@@ -64,10 +64,14 @@ TestConfigComponent._showTable = function( tableView ) {
     if (tableView == 'byHost') {
         $("#testConfigContainer .config-table-by-test").hide();
         $("#testConfigContainer .config-table-by-host").show();
+        $("a#viewByHost").addClass('color-disabled');
+        $("a#viewByTest").removeClass('color-disabled');
 
     } else {
         $("#testConfigContainer .config-table-by-test").show();
         $("#testConfigContainer .config-table-by-host").hide();
+        $("a#viewByHost").removeClass('color-disabled');
+        $("a#viewByTest").addClass('color-disabled');
     }
 };
     
