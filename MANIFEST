@@ -96,6 +96,7 @@ lib/perfSONAR_PS/NPToolkit/DataService/BaseConfig.pm
 lib/perfSONAR_PS/NPToolkit/DataService/Communities.pm
 lib/perfSONAR_PS/NPToolkit/DataService/Host.pm
 lib/perfSONAR_PS/NPToolkit/DataService/NTP.pm
+lib/perfSONAR_PS/NPToolkit/DataService/RegularTesting.pm
 lib/perfSONAR_PS/NPToolkit/Services/BWCTL.pm
 lib/perfSONAR_PS/NPToolkit/Services/Base.pm
 lib/perfSONAR_PS/NPToolkit/Services/Cassandra.pm

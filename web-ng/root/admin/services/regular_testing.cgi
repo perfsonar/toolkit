@@ -68,8 +68,27 @@ my $test_configuration_method = perfSONAR_PS::NPToolkit::WebService::Method->new
     callback        =>  sub { $regular_testing_info->get_test_configuration(@_); },
     auth_required   =>  1,
     );
-
 $router->add_method($test_configuration_method);
+
+my $add_test_configuration_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "add_test_configuration",
+    description     =>  "Add test configuration",
+    auth_required   =>  1,
+    request_methods => ['POST'],
+    callback        =>  sub { $regular_testing_info->add_test_configuration(@_); }
+    );
+
+$add_test_configuration_method->add_input_parameter(
+    name            => "POSTDATA",
+    description     => "JSON blob containing tests",
+    required        => 1,
+    allow_empty     => 0,
+    max_length      => 1024 * 1024, # 1M
+    type            => 'text',
+    );
+$router->add_method($add_test_configuration_method);
+
+
 
 $router->handle_request();
 
