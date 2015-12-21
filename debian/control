@@ -8,6 +8,18 @@ Homepage: http://www.perfsonar.net/
 Vcs-Git: git://github.com/perfsonar/toolkit
 Vcs-Browser: https://github.com/perfsonar/toolkit
 
+Package: perfsonar-toolkit
+Architecture: all
+Depends: libperfsonar-perl, apache2-mpm-worker | httpd,
+ libapache2-mod-authnz-external, libapache2-mod-authz-unixgroup,
+ pwauth, perl, libxml-simple-perl, libsys-meminfo-perl,
+ libsys-statistics-linux-perl, libperfsonar-sls-perl,
+ perfsonar-toolkit-library, liblog-dispatch-filerotate-perl,
+ libcgi-ajax-perl, libcgi-session-perl,
+ perfsonar-common, chkconfig, cron-apt, ${misc:Depends}
+Description: pS-Performance Toolkit web
+ pS-Performance Toolkit web GUI and associated services.
+
 Package: perfsonar-toolkit-library
 Architecture: all
 Depends: libperfsonar-perl, ${misc:Depends}
@@ -38,9 +50,9 @@ Depends: ntp, perfsonar-toolkit-library, ${misc:Depends}
 Description: pS-Performance Toolkit ntp configuration
  Configures ntp servers for perfSONAR Toolkit.
 
-#Package: perfsonar-toolkit-config-daemon
-#Architecture: all
-#Depends: perfsonar-toolkit-library, libnet-server-perl,
-# ${misc:Depends}
-#Description: pS-Performance Toolkit configuration daemon
-# Manages configuration file and services for perfSONAR Toolkit.
+Package: perfsonar-toolkit-config-daemon
+Architecture: all
+Depends: perfsonar-toolkit-library, libnet-server-perl,
+ ${misc:Depends}
+Description: pS-Performance Toolkit configuration daemon
+ Manages configuration file and services for perfSONAR Toolkit.

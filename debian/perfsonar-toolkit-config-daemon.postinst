@@ -22,10 +22,6 @@ case "$1" in
     configure)
         # Set executable bit
         chmod +x /usr/lib/perfsonar/bin/configdaemon.pl
-
-        if [ -x "/etc/init.d/perfsonar-toolkit-config-daemon" ]; then
-            invoke-rc.d perfsonar-toolkit-config-daemon restart || true
-        fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

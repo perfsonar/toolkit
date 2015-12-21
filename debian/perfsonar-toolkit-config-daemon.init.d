@@ -15,16 +15,16 @@
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="perfSONAR Toolkit Configuration Daemon"
-NAME=configdaemon.pl
+NAME=perfsonar-toolkit-config-daemon
 DAEMON=/usr/lib/perfsonar/bin/configdaemon.pl
-PIDFILE=/var/run/$NAME.pid
+PIDFILE=/var/run/configdaemon.pid
 SCRIPTNAME=/etc/init.d/$NAME
 CONFDIR=/etc/perfsonar/toolkit
 CONFFILE=${CONFDIR}/configdaemon.conf
 LOGFILE=${CONFDIR}/configdaemon-logger.conf
 USER=perfsonar
 GROUP=perfsonar
-DAEMON_ARGS="--config=${CONFFILE} --logger=${LOGFILE} --user=${USER} --group=${GROUP} --daemonize"
+DAEMON_ARGS="--config=${CONFFILE} --logger=${LOGFILE} --user=${USER} --group=${GROUP}"
 
 # Exit if the package is not installed
 [ -x $DAEMON ] || exit 0

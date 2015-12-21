@@ -1,0 +1,208 @@
+--- a/scripts/apache-toolkit_web_gui.conf
++++ b/scripts/apache-toolkit_web_gui.conf
+@@ -4,9 +4,12 @@
+ RewriteRule ^/toolkit-old/admin/(cacti.*) https://%{SERVER_NAME}/$1 [R,L]
+ RewriteRule ^/toolkit-old/gui/(cacti.*) https://%{SERVER_NAME}/$1 [R,L]
+ 
++AddExternalAuth pwauth /usr/sbin/pwauth
++SetExternalAuthMethod pwauth pipe
++
+ #Old GUI
+-Alias /toolkit-old /opt/perfsonar_ps/toolkit/web/root
+-<Directory "/opt/perfsonar_ps/toolkit/web/root">
++Alias /toolkit-old /usr/lib/perfsonar/web/root
++<Directory "/usr/lib/perfsonar/web/root">
+     Options FollowSymLinks -MultiViews +ExecCGI
+     DirectoryIndex index.cgi index.php index.html
+     AddHandler cgi-script .cgi
+@@ -15,7 +18,7 @@
+     Allow from all
+ </Directory>
+ 
+-<Directory "/opt/perfsonar_ps/toolkit/web/root/admin">
++<Directory "/usr/lib/perfsonar/web/root/admin">
+     Options FollowSymLinks -MultiViews +ExecCGI
+     DirectoryIndex index.cgi index.php index.html
+     AddHandler cgi-script .cgi
+@@ -23,13 +26,15 @@
+     Order allow,deny
+     Allow from all
+ 
+-    AuthShadow on
+     AuthType Basic
+     AuthName "Password Required"
++    AuthBasicProvider external
++    AuthExternal pwauth
++    AuthzUnixgroup on
+     Require group psadmin
+ </Directory>
+ 
+-<Directory "/opt/perfsonar_ps/toolkit/web/root/admin/logs">
++<Directory "/usr/lib/perfsonar/web/root/admin/logs">
+     Options Indexes FollowSymLinks -MultiViews +ExecCGI
+     DirectoryIndex index.cgi index.php index.html
+     AddHandler cgi-script .cgi
+@@ -37,18 +42,20 @@
+     Order allow,deny
+     Allow from all
+ 
+-    AuthShadow on
+     AuthType Basic
+     AuthName "Password Required"
++    AuthBasicProvider external
++    AuthExternal pwauth
++    AuthzUnixgroup on
+     Require group psadmin
+ </Directory>
+ 
+ # Create /toolkit/auth 
+ # Which runs the same code as that under /toolkit/ but with auth required
+-Alias /toolkit/auth /opt/perfsonar_ps/toolkit/web-ng/root
++Alias /toolkit/auth /usr/lib/perfsonar/web-ng/root
+ 
+ # New GUI
+-Alias /toolkit /opt/perfsonar_ps/toolkit/web-ng/root
++Alias /toolkit /usr/lib/perfsonar/web-ng/root
+ 
+ # Redirect from /index.cgi?format=json to the new host summary page
+ RewriteCond %{QUERY_STRING} format=json
+@@ -61,7 +68,7 @@
+ RewriteRule ^/toolkit/admin/(.*) https://%{SERVER_NAME}/toolkit/auth/admin/$1 [R,L]
+ 
+ # Set the base directory to not require auth by default
+-<Directory "/opt/perfsonar_ps/toolkit/web-ng/root">
++<Directory "/usr/lib/perfsonar/web-ng/root">
+     Options FollowSymLinks -MultiViews +ExecCGI
+     DirectoryIndex index.cgi index.php index.html
+     AddHandler cgi-script .cgi
+@@ -73,9 +80,12 @@
+     Options FollowSymLinks -MultiViews +ExecCGI
+     DirectoryIndex index.cgi index.php index.html
+     AddHandler cgi-script .cgi
+-    AuthShadow on
++
+     AuthType Basic
+     AuthName "Password Required"
++    AuthBasicProvider external
++    AuthExternal pwauth
++    AuthzUnixgroup on
+     Require group psadmin
+ </Location>
+ 
+@@ -128,9 +138,12 @@
+     AddHandler cgi-script .cgi
+     Order allow,deny
+     Allow from all
+-    AuthShadow on
++
+     AuthType Basic
+     AuthName "Password Required"
++    AuthBasicProvider external
++    AuthExternal pwauth
++    AuthzUnixgroup on
+     Require group psadmin
+ </Location>
+ 
+@@ -140,7 +153,7 @@
+ </Location>
+ 
+ # Permissions on logs
+-<Directory "/opt/perfsonar_ps/toolkit/web-ng/root/admin/logs">
++<Directory "/usr/lib/perfsonar/web-ng/root/admin/logs">
+     Options Indexes FollowSymLinks -MultiViews +ExecCGI
+     DirectoryIndex index.cgi index.php index.html
+     AddHandler cgi-script .cgi
+@@ -148,9 +161,11 @@
+     Order allow,deny
+     Allow from all
+ 
+-    AuthShadow on
+     AuthType Basic
+     AuthName "Password Required"
++    AuthBasicProvider external
++    AuthExternal pwauth
++    AuthzUnixgroup on
+     Require group psadmin
+ </Directory>
+ 
+--- a/web-ng/root/admin/host.cgi
++++ b/web-ng/root/admin/host.cgi
+@@ -43,7 +43,7 @@
+ print $cgi->header('text/html');
+ 
+ my $tt = Template->new({
+-        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
++        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
+     }) || die "$Template::ERROR\n";
+ 
+ my $page = 'admin/pages/host.html';
+--- a/web-ng/root/admin/index.cgi
++++ b/web-ng/root/admin/index.cgi
+@@ -43,7 +43,7 @@
+ print $cgi->header('text/html');
+ 
+ my $tt = Template->new({
+-        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
++        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
+     }) || die "$Template::ERROR\n";
+ 
+ my $page = 'admin/pages/admin_info.html';
+--- a/web-ng/root/admin/services.cgi
++++ b/web-ng/root/admin/services.cgi
+@@ -44,7 +44,7 @@
+ print $cgi->header('text/html');
+ 
+ my $tt = Template->new({
+-        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
++        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
+     }) || die "$Template::ERROR\n";
+ 
+ my $page = 'admin/pages/services.html';
+--- a/web-ng/root/admin/tests.cgi
++++ b/web-ng/root/admin/tests.cgi
+@@ -43,7 +43,7 @@
+ print $cgi->header('text/html');
+ 
+ my $tt = Template->new({
+-        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
++        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
+     }) || die "$Template::ERROR\n";
+ 
+ my $page = 'admin/pages/tests.html';
+--- a/web-ng/root/index.cgi
++++ b/web-ng/root/index.cgi
+@@ -37,7 +37,7 @@
+ print $cgi->header('text/html');
+ 
+ my $tt = Template->new({
+-        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
++        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
+     }) || die "$Template::ERROR\n";
+ 
+ 
+--- a/etc/config_daemon.conf
++++ b/etc/config_daemon.conf
+@@ -129,19 +129,19 @@
+ 		read	1
+ 		write	1
+ 	</file>
+-	<file "/opt/perfsonar_ps/toolkit/etc/administrative_info">
++	<file "/etc/perfsonar/toolkit/administrative_info">
+ 		read	1
+ 		write	1
+ 	</file>
+-	<file "/opt/perfsonar_ps/toolkit/etc/enabled_services">
++	<file "/etc/perfsonar/toolkit/enabled_services">
+ 		read	1
+ 		write	1
+ 	</file>
+-	<file "/opt/perfsonar_ps/toolkit/etc/external_addresses">
++	<file "/etc/perfsonar/toolkit/external_addresses">
+ 		read	1
+ 		write	1
+ 	</file>
+-	<file "/opt/perfsonar_ps/toolkit/etc/ntp_known_servers">
++	<file "/etc/perfsonar/toolkit/ntp_known_servers">
+ 		read	1
+ 		write	1
+ 	</file>

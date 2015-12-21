@@ -1,0 +1,2 @@
+/var/log/perfsonar /usr/lib/perfsonar/web/root/admin/logs
+/var/log/perfsonar /usr/lib/perfsonar/web-ng/root/admin/logs
