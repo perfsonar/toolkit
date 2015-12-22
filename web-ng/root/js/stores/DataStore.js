@@ -20,9 +20,12 @@ var DataStore = {
 */
 
 
-function DataStore(topic, url) {
+function DataStore(topic, url, type) {
     this.topic = topic;
+    this.saveTopic = topic + ".save";
+    this.saveErrorTopic = topic + ".save_error";
     this.url = url;
+    this.type = type || 'GET';
     this.data = null;
 
     this._retrieveData = function() {

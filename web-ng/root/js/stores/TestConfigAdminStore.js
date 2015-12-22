@@ -1,54 +1,65 @@
 // assumes stores/DataStore has already been loaded
 
-//var TestConfigStore = new DataStore();
-var TestConfigStore = new DataStore("store.change.test_config", "services/regular_testing.cgi?method=get_test_configuration");
+var TestConfigAdminStore = new DataStore(TestConfigStore.topic, "services/regular_testing.cgi?method=update_test_configuration", "POST");
 
+TestConfigAdminStore.save = function( tests ) {
+    tests.data = tests.test_configuration_raw;
+    TestConfigAdminStore._sanitizeTestConfig( tests );
 
-//var TestConfigStore = new DataStore;
-//TestConfigStore.initialize("store.change.test_config", "services/regular_testing.cgi");
+    var topic = TestConfigStore.saveTopic;
+    var error_topic = TestConfigStore.saveErrorTopic; 
+   
+    var testsJSON = JSON.stringify(tests);
+    console.log('tests', tests);
 
-// Raw/formatted test type names
-// Could probably have used a hash with raw values as keys, but they may
-// contain invalid keyname characters
-TestConfigStore.testTypes = [
-    { 
-        raw: "pinger",
-        formatted: "Ping (RTT)",
-    },
-    {
-        raw: "bwctl/throughput",
-        formatted: "Throughput",
-    },
-    {
-        raw: "owamp",
-        formatted: "One-way latency",
-    },
-    {
-        raw: "traceroute",
-        formatted: "Traceroute",
-    },
-];
+    $.ajax({
+        url: TestConfigAdminStore.url,
+        type: 'POST',
+        data: testsJSON,
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function(result) {
+            TestConfigStore._retrieveData();
+            Dispatcher.publish(topic, result.message);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            Dispatcher.publish(error_topic, errorThrown);
+        }
+    });
 
-Dispatcher.subscribe(TestConfigStore.topic, function() {
-    TestConfigStore.data = TestConfigStore.getData();
-    TestConfigStore._setAdditionalVariables();
-    //console.log('data from dispatcher/testconfigstore', TestConfigStore.getData());    
+};
+
+TestConfigAdminStore._sanitizeTestConfig = function( tests ) {
+    for(var i in tests.data) {
+        var test = tests.data[i];
+        for(var j in test.members) {
+            var member = test.members[j];
+            delete member.member_id;
+
+        }
+    } 
+};
+
+Dispatcher.subscribe('store.change.test_config', function() {
+    TestConfigAdminStore._setAdditionalVariables();
+    console.log('data from dispatcher/testconfigstore', TestConfigAdminStore.getData());    
 });
 
 
-TestConfigStore.getTestConfiguration = function() {
-    return TestConfigStore.data.test_configuration;
+TestConfigAdminStore.getTestConfiguration = function() {
+    TestConfigAdminStore.data = TestConfigStore.data;
+    return TestConfigAdminStore.data.test_configuration;
 };
 
-TestConfigStore.getStatus = function() {
-    return TestConfigStore.data.status;
+TestConfigAdminStore.getStatus = function() {
+    return TestConfigAdminStore.data.status;
 };
 
 
-TestConfigStore.getAllTestMembers = function() {
+TestConfigAdminStore.getAllTestMembers = function() {
     var member_array = [];
-    for(var i in TestConfigStore.data.test_configuration) {
-        var test = TestConfigStore.data.test_configuration[i];
+    for(var i in this.data.test_configuration) {
+        var test = this.data.test_configuration[i];
         for(var j in test.members) {
             var member = test.members[j];
             member_array.push(member.address);
@@ -58,19 +69,19 @@ TestConfigStore.getAllTestMembers = function() {
 };
 
 
-TestConfigStore.getTestsByHost = function() {
+TestConfigAdminStore.getTestsByHost = function() {
     var tests = {};
     var member_array = [];
     var host_id = 0;
-    for(var i in TestConfigStore.data.test_configuration) {
-        var test = TestConfigStore.data.test_configuration[i];
+    for(var i in this.data.test_configuration) {
+        var test = this.data.test_configuration[i];
         for(var j in test.members) {
             var member = test.members[j];
             member.host_id = host_id;
             
             // This portion will need to happen in the get configuration section
             // or at least some of it
-            tests = TestConfigStore.addHostToTest(tests, test, member);
+            tests = TestConfigAdminStore.addHostToTest(tests, test, member);
             host_id++;
         }
     }
@@ -84,9 +95,8 @@ TestConfigStore.getTestsByHost = function() {
 };
 
 // Set additional variables for each test/member
-TestConfigStore._setAdditionalVariables = function ( ) {
+TestConfigAdminStore._setAdditionalVariables = function ( ) {
     console.log('setting additional variables');
-    TestConfigStore.data.test_configuration_raw = $.extend( true, [], TestConfigStore.data.test_configuration );
     var tests = TestConfigStore.data.test_configuration;
 
     for(var i in tests) {
@@ -95,7 +105,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         var protocol = test.parameters.protocol;
 
         // set test.type_formatted
-        var formattedType = TestConfigStore._formatTestType( type );
+        var formattedType = TestConfigAdminStore._formatTestType( type );
         if ( protocol != undefined ) {
             formattedType += " - " + protocol.toUpperCase(); 
         }
@@ -113,15 +123,15 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         if ( interval != undefined ) {
             test.parameters.test_interval_formatted = SharedUIFunctions.getTime( interval );
         }
+
     }
-    console.log('data after adding additional info', TestConfigStore.data);
 
 
 };
 
-// TestConfigStore.addHostToTest
+// TestConfigAdminStore.addHostToTest
 // Adds a host to a test in the Host-centric view
-TestConfigStore.addHostToTest = function (tests, test, member) {
+TestConfigAdminStore.addHostToTest = function (tests, test, member) {
     var address = member.address;
     var type = test.type;   
     var host_id = member.host_id;
@@ -148,8 +158,8 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
 };
 
 // Given the raw test type name as returned by esmond, return a formatted version
-TestConfigStore._formatTestType = function ( rawName ) {
-    var types = TestConfigStore.testTypes;
+TestConfigAdminStore._formatTestType = function ( rawName ) {
+    var types = TestConfigAdminStore.testTypes;
     if ( rawName == undefined ) {
         return;
     }

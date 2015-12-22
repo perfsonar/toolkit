@@ -7,7 +7,7 @@ var TestConfigPage = {
 TestConfigPage.initialize = function() {
     //$('#loading-modal').foundation('reveal', 'open');
     //Dispatcher.subscribe(TestConfigPage.detailsTopic, TestConfigPage._setDetails);
-    $('#sticky-bar').hide();
+    $('#admin_info_save_button').click(TestConfigComponent.save);
 };
 
 TestConfigPage._setDetails = function(topic) {

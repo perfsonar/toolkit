@@ -45,7 +45,14 @@ TestConfigComponent.initialize = function() {
         $(".new-host-save").show();
     });
 
+
+
    
+};
+
+TestConfigComponent.save = function(e) {
+    TestConfigAdminStore.save(TestConfigStore.data);
+    
 };
 
 TestConfigComponent.showRows = function(e) {
@@ -107,11 +114,13 @@ TestConfigComponent._showConfig = function( topic, b ) {
     //console.log('testconfigcomponent TestConfigStore.getData()', TestConfigStore.getData() );
     //console.log('testconfigcomponent TestConfigStore.getAllTestMembers()', TestConfigStore.getAllTestMembers() );
 
+    SharedUIFunctions._showSaveBar();    
+
     var data = {};
     data.testsByHost = TestConfigStore.getTestsByHost();
     data.testsByTest = TestConfigStore.getTestConfiguration();
     TestConfigComponent.data = data;
-    console.log('all test data', data );
+    //console.log('all test data', data );
 
     // ** Test config tables **
     TestConfigComponent._buildTable( );
