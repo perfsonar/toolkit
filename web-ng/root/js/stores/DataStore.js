@@ -20,11 +20,15 @@ var DataStore = {
 */
 
 
-function DataStore(topic, url, type) {
+function DataStore(topic, url, autoload, type) {
     this.topic = topic;
     this.saveTopic = topic + ".save";
     this.saveErrorTopic = topic + ".save_error";
     this.url = url;
+    this.autoload = true;
+    if ( autoload !== undefined ) {
+        this.autoload = autoload;
+    }
     this.type = type || 'GET';
     this.data = null;
 
@@ -47,7 +51,9 @@ function DataStore(topic, url, type) {
     }
 
     var __construct = function(self) {
-        self._retrieveData();
+        if ( self.autoload ) {
+            self._retrieveData();
+        }
     }(this); 
 
     this.getData = function() {

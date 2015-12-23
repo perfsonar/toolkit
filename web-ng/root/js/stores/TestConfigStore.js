@@ -1,6 +1,5 @@
 // assumes stores/DataStore has already been loaded
 
-//var TestConfigStore = new DataStore();
 var TestConfigStore = new DataStore("store.change.test_config", "services/regular_testing.cgi?method=get_test_configuration");
 
 

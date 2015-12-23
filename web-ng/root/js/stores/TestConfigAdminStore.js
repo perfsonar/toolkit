@@ -1,6 +1,6 @@
 // assumes stores/DataStore has already been loaded
 
-var TestConfigAdminStore = new DataStore(TestConfigStore.topic, "services/regular_testing.cgi?method=update_test_configuration", "POST");
+var TestConfigAdminStore = new DataStore(TestConfigStore.topic, "services/regular_testing.cgi?method=update_test_configuration", false, "POST");
 
 TestConfigAdminStore.save = function( tests ) {
     tests.data = $.extend( true, [], tests.test_configuration_raw );
