@@ -23,6 +23,11 @@ TestConfigComponent.initialize = function() {
     // Hide subrows on load
     $(".js-subrow").hide();
 
+    $("div.config__form").on("click", ".cb_test_enabled", function(e, f) {
+        //e.preventDefault();
+        // use $(this).data("test-id");
+        TestConfigComponent.toggleTestEnabled( this );
+    });
     $("div.config__form").on("click", "a#viewByHost", function(e) {
         e.preventDefault();
         TestConfigComponent._showTable('byHost');
@@ -124,6 +129,35 @@ TestConfigComponent._showConfig = function( topic, b ) {
 
     // ** Test config tables **
     TestConfigComponent._buildTable( );
+
+};
+
+TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
+    var testID = $(clickedThis).data("test-id");         
+    var test = $('#' + testID);
+    var tests = $(".cb_test_enabled[data-test-id='" + testID + "']");
+    this.clickedTest = clickedThis;
+    //$(':checkbox').each(function () { this.checked = !this.checked; });
+    var self = this;
+    $.each( tests,  function( i, j ) {
+        //console.log( "i", i, "j", j, "test", test);
+        //console.log('self', self);
+        //if ( $(j).data("test-id") == test ) {
+            var checked = $( self.clickedTest ).prop("checked");
+            //if (i == 0) {
+            //    checked = !$(j).prop("checked");
+            //}
+            //$(j).prop("checked", checked);
+            //if ($(self)
+            if ( !$( self.clickedTest ).is( $(j) ) ) {
+                $(j).prop("checked", checked );
+            } else {
+                //$(j).prop("checked", !checked );
+
+            }
+        //}
+    });
+
 
 };
 
