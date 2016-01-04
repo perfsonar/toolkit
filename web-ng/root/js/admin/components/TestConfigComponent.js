@@ -3,6 +3,7 @@
 var TestConfigComponent = {
     testConfigTopic: 'store.change.test_config',
     data: null,
+    expandedDataGroups: {},
 };
 
 TestConfigComponent.initialize = function() {
@@ -39,7 +40,19 @@ TestConfigComponent.initialize = function() {
     // Click to collapse/expand rows
     $("div#testConfigContainer").on("click", ".js-row", function(e) {
         e.preventDefault();
-        $(".js-subrow[data-group="+$(this).attr("data-group")+"]").toggle();
+        var dataGroup = $(this).attr("data-group");
+        var el = $(".js-subrow[data-group=" + dataGroup + "]");
+        el.toggle();
+        var display = el.css('display');
+        if ( display == "none" ) {
+            delete TestConfigComponent.expandedDataGroups[ dataGroup ];
+        } else {
+            TestConfigComponent.expandedDataGroups[ dataGroup ] = 1;
+        }
+
+        console.log('dataGroup ' + dataGroup);
+        console.log('expandedDataGroups', TestConfigComponent.expandedDataGroups );
+        //TestConfigComponent._showConfig();
     });
 
     // Add new host to test members
@@ -96,7 +109,14 @@ TestConfigComponent._buildTable = function( tableView ) {
     if ( tableView == undefined ) {
         tableView = 'byHost';
     }
+
     console.log('tableView', tableView);
+
+    for (var i in Object.keys(data.testsByHost) ) {
+        var host = data.testsByHost[i];
+        host.expanded = TestConfigComponent.expandedDataGroups[ host.host_id ] == 1;
+    }
+    console.log('buildTable data', data);
 
     var host_template = $("#testConfigByHostTableTemplate").html();
     var template = Handlebars.compile(host_template);
@@ -137,13 +157,19 @@ TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
     var test = $('#' + testID);
     var tests = $(".cb_test_enabled[data-test-id='" + testID + "']");
     this.clickedTest = clickedThis;
+    var checked = $( this.clickedTest ).prop("checked");
+    if ( checked ) {
+        TestConfigStore.setTestEnabled( testID, true );
+    } else {
+        TestConfigStore.setTestEnabled( testID, false );
+    }
+
     //$(':checkbox').each(function () { this.checked = !this.checked; });
     var self = this;
     $.each( tests,  function( i, j ) {
         //console.log( "i", i, "j", j, "test", test);
         //console.log('self', self);
         //if ( $(j).data("test-id") == test ) {
-            var checked = $( self.clickedTest ).prop("checked");
             //if (i == 0) {
             //    checked = !$(j).prop("checked");
             //}

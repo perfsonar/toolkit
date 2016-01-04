@@ -118,6 +118,16 @@ TestConfigStore._setAdditionalVariables = function ( ) {
 
 };
 
+TestConfigStore.setTestEnabled = function ( testID, testStatus ) {
+    var data = TestConfigStore.data.test_configuration_raw;
+    for(var i in data) {
+        var test = data[i];
+        if ( testID == test.test_id ) {
+            test.disabled = !testStatus;
+        }
+    }
+};
+
 // TestConfigStore.addHostToTest
 // Adds a host to a test in the Host-centric view
 TestConfigStore.addHostToTest = function (tests, test, member) {

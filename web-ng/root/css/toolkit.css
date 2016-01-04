@@ -24,3 +24,7 @@ tr.subrow.last td {
 tr.last {
     float:none;
 }
+
+tr.js-subrow.expanded {
+    display:table-row;
+}
