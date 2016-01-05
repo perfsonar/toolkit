@@ -14,11 +14,31 @@
         <div class="medium-12 columns">
             <h2 class="module-header__title font-bold">Test parameters</h2>
             <form>
+<!-- Begin common fields -->
                 <label for="test-name">Test name/description</label>
                 <input type="text" id="test-name" placeholder="Test name" value="{{description}}" />
 
+
                 <div class="row">
                     <div class="medium-6 columns">
+                        <label for="interface">Interface (TODO: make dropdown)</label>
+                        <input type="text" id="interface" value="{{parameters.local_interface}}" />
+                    </div>
+                    <div class="medium-6 columns">
+
+                    </div>
+                </div>
+
+
+<!-- End common fields -->
+
+<!-- Only show the duration/test length if not editing an owamp test -->
+
+{{#unless showOWAMPParameters}}
+                <div class="row">
+
+                    <div class="medium-6 columns">
+                        {{#if parameters.test_interval_formatted}}
                         <label for="time-between">Time between tests (TODO: make dropdown)</label>
                         <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted}}" />
 <!--
@@ -29,8 +49,10 @@
                             <option>60 Minutes</option>
                         </select>
 -->
+                        {{/if}}
                     </div>
                     <div class="medium-6 columns">
+                        {{#if parameters.duration}}
                         <label for="test-duration">Test duration (TODO: make dropdown)</label>
                         <input type="text" id="test-duration" value="{{parameters.duration}}" />
 <!--
@@ -43,8 +65,26 @@
                             <option>60 Seconds</option>
                         </select>
 -->
+                        {{/if}}
+                    </div>
+                </div> <!-- end div class="row" -->
+{{/unless}}
+
+{{#if showTracerouteParameters}}
+
+                <div class="row">
+                    <div class="medium-6 columns">
+                                <label for="tos-bits">Tool (make dropdown)</label>
+                                <input type="text" id="tool" value="{{parameters.tool}}">
+                    </div>
+                    <div class="medium-6 columns">
+                        <label for="qwerty">QWERTY</label>
+                        <input type="text" id="querty" value="0">
                     </div>
                 </div>
+{{/if}}
+
+{{#if showThroughputParameters}}
 
                 <div class="row">
                     <div class="medium-6 columns">
@@ -64,6 +104,7 @@
                         </div>
                     </div>
                 </div>
+{{/if}}
 
             </form>
 

@@ -106,6 +106,19 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             test.parameters.udp_bandwidth_formatted = formatted;
             test.type_formatted += ' (' + formatted + ')';
         }
+        if ( type == 'pinger' ) {
+            test.showPingParameters = true;
+        }
+        if ( type == 'bwctl/throughput' ) {
+            test.showThroughputParameters = true;
+        }
+        if ( type == 'owamp') {
+            test.showOWAMPParameters = true;
+        }
+        if ( type == 'traceroute') {
+            test.showTracerouteParameters = true;
+
+        }
 
         // Set test_interval_formatted
         var interval = test.parameters.test_interval;
