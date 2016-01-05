@@ -126,6 +126,8 @@ TestConfigStore.setTestEnabled = function ( testID, testStatus ) {
             test.disabled = !testStatus;
         }
     }
+    //TestConfigStore._setAdditionalVariables();
+    console.log('data after setTestEnabled', TestConfigStore.data);
 };
 
 // TestConfigStore.addHostToTest
@@ -154,6 +156,20 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
     }
     return tests;
 
+};
+
+// Gets the configuration for the one test that matches
+// the provided testID
+TestConfigStore.getTestConfig = function ( testID ) {
+    var ret;
+    var data = TestConfigStore.data.test_configuration;
+    for(var i in data) {
+        var test = data[i];
+        if ( test.test_id == testID ) {
+            return test;
+        }
+    }
+    return;
 };
 
 // Given the raw test type name as returned by esmond, return a formatted version

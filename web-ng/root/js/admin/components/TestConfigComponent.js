@@ -4,6 +4,7 @@ var TestConfigComponent = {
     testConfigTopic: 'store.change.test_config',
     data: null,
     expandedDataGroups: {},
+    tableView: 'byHost',
 };
 
 TestConfigComponent.initialize = function() {
@@ -86,6 +87,10 @@ TestConfigComponent.hideRows = function(e) {
 };
 
 TestConfigComponent._showTable = function( tableView ) {
+    if ( typeof (tableView) != 'undefined' ) {
+        TestConfigComponent.tableView = tableView;
+    }
+    tableView = TestConfigComponent.tableView;
     if (tableView == 'byHost') {
         $("#testConfigContainer .config-table-by-test").hide();
         $("#testConfigContainer .config-table-by-host").show();
@@ -100,7 +105,8 @@ TestConfigComponent._showTable = function( tableView ) {
     }
 };
     
-TestConfigComponent._buildTable = function( tableView ) {
+TestConfigComponent._buildTable = function() {
+    var tableView = TestConfigComponent.tableView;
     var data = TestConfigComponent.data;
     if (data === null) {
         console.log('no data!');
@@ -109,8 +115,6 @@ TestConfigComponent._buildTable = function( tableView ) {
     if ( tableView == undefined ) {
         tableView = 'byHost';
     }
-
-    console.log('tableView', tableView);
 
     for (var i in Object.keys(data.testsByHost) ) {
         var host = data.testsByHost[i];
@@ -131,13 +135,10 @@ TestConfigComponent._buildTable = function( tableView ) {
     TestConfigComponent._showTable( tableView );
 };
 
-TestConfigComponent._showConfig = function( topic, b ) {
+TestConfigComponent._showConfig = function( topic ) {
     console.log('Test Config Topic received, showing config ...');
-    console.log('topic,', topic, 'b', b);
-    console.log('testconfigcomponent TestConfigStore.getStatus()', TestConfigStore.getStatus() );
-    console.log('testconfigcomponent TestConfigStore.getTestConfiguration()', TestConfigStore.getTestConfiguration() );
-    //console.log('testconfigcomponent TestConfigStore.getData()', TestConfigStore.getData() );
-    //console.log('testconfigcomponent TestConfigStore.getAllTestMembers()', TestConfigStore.getAllTestMembers() );
+
+    TestConfigComponent._destroyTable();
 
     SharedUIFunctions._showSaveBar();    
 
@@ -150,6 +151,10 @@ TestConfigComponent._showConfig = function( topic, b ) {
     // ** Test config tables **
     TestConfigComponent._buildTable( );
 
+};
+
+TestConfigComponent._destroyTable = function() {
+    $("#testConfigContainer").empty();
 };
 
 TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
@@ -184,6 +189,21 @@ TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
         //}
     });
 
+
+};
+
+TestConfigComponent.showTestConfigModal = function( testID ) {
+    console.log('test config testID', testID);
+    var data = TestConfigStore.data;
+    console.log('test config data', data);
+    var testConfig = TestConfigStore.getTestConfig( testID );
+    console.log("test config", testConfig);
+    var config_template = $("#configureTestTemplate").html();
+    var template = Handlebars.compile( config_template );
+    var config_modal = template( testConfig );
+    $("#configureTestContainer").html(config_modal);
+    $('#configure-test-modal').foundation('reveal', 'open');
+    //$('#myModal').foundation('reveal', 'close');
 
 };
 
