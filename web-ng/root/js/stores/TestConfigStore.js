@@ -34,7 +34,6 @@ Dispatcher.subscribe(TestConfigStore.topic, function() {
     //console.log('data from dispatcher/testconfigstore', TestConfigStore.getData());    
 });
 
-
 TestConfigStore.getTestConfiguration = function() {
     return TestConfigStore.data.test_configuration;
 };

@@ -5,28 +5,49 @@
 <!-- *** Configure test modal (gear icon) *** -->
 
 <div id="configure-test-modal" class="reveal-modal large text-left" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+
+<form id="configureTestForm" action="" method="POST">
+
     <div class="row">
         <div class="medium-12 columns">
-            <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">Configure tests</h3>
+            <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">Configure Test</h3>
         </div>
     </div>
     <div class="row">
         <div class="medium-12 columns">
-            <h2 class="module-header__title font-bold">Test parameters</h2>
-            <form>
-<!-- Begin common fields -->
-                <label for="test-name">Test name/description</label>
-                <input type="text" id="test-name" placeholder="Test name" value="{{description}}" />
+                        <h2 class="module-header__title font-bold">Test parameters</h2>
+                <!-- Begin common fields -->
 
 
                 <div class="row">
                     <div class="medium-6 columns">
-                        <label for="interface">Interface (TODO: make dropdown)</label>
-                        <input type="text" id="interface" value="{{parameters.local_interface}}" />
-                    </div>
-                    <div class="medium-6 columns">
+                        <label for="test-name">Test name/description</label>
+                        <input type="text" id="test-name" placeholder="Test name" value="{{description}}" />
 
                     </div>
+                    <div class="medium-6 columns">
+                        <label for="test_enabled">Test Status</label>
+                        <div class="switch round small">
+                            <input id="testEnabledSwitch" type="checkbox" {{#unless parameters.disabled}}checked{{/unless}} />
+                            <label for="testEnabledSwitch"></label>
+                            <span id="testEnabledLabel" style="vertical-align:top; font-size:120%; margin-left:1em;">{{#if parameters.disabled}}Disabled{{else}}Enabled{{/if}}</span>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-6 columns">
+                        <label for="interface">Interface</label>
+                        <select id="interface">
+                            <option value="" {{#unless parameters.local_interface}}selected{{/unless}}>Default</option>
+                        {{#each interfaces}}
+                            <option value="{{iface}}" {{#compare iface ../parameters.local_interface}}selected{{/compare}}>{{iface}}</option> 
+                        {{/each}}
+                        </select>
+                    </div>
+                    <div class="medium-6 columns">
+                                    </div>
+
                 </div>
 
 
@@ -106,7 +127,6 @@
                 </div>
 {{/if}}
 
-            </form>
 
             <div class="module module--config-table">
                 <h3 class="module-header__title font-bold">Test members</h3>
@@ -136,7 +156,6 @@
                 <div class="panel">
                     <p>Enter a host name below or <a href="#">browse communities</a> to add more test members.</p>
 
-                    <form>
                         <div class="row">
                             <div class="medium-4 columns">
                                 <label for="new-host-name">Host name</label>
@@ -164,7 +183,6 @@
                                 <button class="button-quiet js-add-new-host">Add host</button>
                             </div>
                         </div>
-                    </form>
 
                 </div>
 
@@ -184,6 +202,9 @@
             </div>
         </div>
     </div>
+
+
+</form>
 
     <!-- Close button for modal -->
     <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a>

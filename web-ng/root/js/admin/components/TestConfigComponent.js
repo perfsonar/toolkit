@@ -3,13 +3,18 @@
 var TestConfigComponent = {
     testConfigTopic: 'store.change.test_config',
     data: null,
+    dataSet: false,
     expandedDataGroups: {},
     tableView: 'byHost',
+    interfaces: [],
+    interfacesSet: false,
 };
 
 TestConfigComponent.initialize = function() {
     //$('#loading-modal').foundation('reveal', 'open');
-    Dispatcher.subscribe( TestConfigComponent.testConfigTopic, TestConfigComponent._showConfig );
+    Dispatcher.subscribe( TestConfigComponent.testConfigTopic, TestConfigComponent._setTestData );
+    Dispatcher.subscribe( HostDetailsStore.detailsTopic, TestConfigComponent._setHostData );
+
 
     Handlebars.registerHelper('formatTestCount', function(count) {
         var ret;
@@ -50,10 +55,6 @@ TestConfigComponent.initialize = function() {
         } else {
             TestConfigComponent.expandedDataGroups[ dataGroup ] = 1;
         }
-
-        console.log('dataGroup ' + dataGroup);
-        console.log('expandedDataGroups', TestConfigComponent.expandedDataGroups );
-        //TestConfigComponent._showConfig();
     });
 
     // Add new host to test members
@@ -120,6 +121,7 @@ TestConfigComponent._buildTable = function() {
         var host = data.testsByHost[i];
         host.expanded = TestConfigComponent.expandedDataGroups[ host.host_id ] == 1;
     }
+    data.interfaces = TestConfigComponent.interfaces;
     console.log('buildTable data', data);
 
     var host_template = $("#testConfigByHostTableTemplate").html();
@@ -135,18 +137,32 @@ TestConfigComponent._buildTable = function() {
     TestConfigComponent._showTable( tableView );
 };
 
-TestConfigComponent._showConfig = function( topic ) {
-    console.log('Test Config Topic received, showing config ...');
 
-    TestConfigComponent._destroyTable();
+TestConfigComponent._loadInterfaceWhenReady = function() {
+    if ( TestConfigComponent.dataSet && TestConfigComponent.interfacesSet ) {
+        TestConfigComponent._showConfig();
+    }
+};
 
-    SharedUIFunctions._showSaveBar();    
-
+TestConfigComponent._setTestData = function() {
     var data = {};
     data.testsByHost = TestConfigStore.getTestsByHost();
     data.testsByTest = TestConfigStore.getTestConfiguration();
     TestConfigComponent.data = data;
-    //console.log('all test data', data );
+    TestConfigComponent.dataSet = true;
+    TestConfigComponent._loadInterfaceWhenReady();
+};
+
+TestConfigComponent._setHostData = function() {
+    TestConfigComponent.interfaces = HostDetailsStore.getHostInterfaces();
+    TestConfigComponent.interfacesSet = true;
+    TestConfigComponent._loadInterfaceWhenReady();
+};
+
+TestConfigComponent._showConfig = function( topic ) {
+    TestConfigComponent._destroyTable();
+
+    //SharedUIFunctions._showSaveBar();    
 
     // ** Test config tables **
     TestConfigComponent._buildTable( );
@@ -197,6 +213,7 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     var data = TestConfigStore.data;
     console.log('test config data', data);
     var testConfig = TestConfigStore.getTestConfig( testID );
+    testConfig.interfaces = TestConfigComponent.interfaces;
     console.log("test config", testConfig);
     var config_template = $("#configureTestTemplate").html();
     var template = Handlebars.compile( config_template );
@@ -204,7 +221,9 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     $("#configureTestContainer").html(config_modal);
     $('#configure-test-modal').foundation('reveal', 'open');
     //$('#myModal').foundation('reveal', 'close');
-
+    $('form#configureTestForm input').change(SharedUIFunctions._showSaveBar);
+    $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
+    return false;
 };
 
 TestConfigComponent.initialize();

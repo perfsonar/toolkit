@@ -40,12 +40,6 @@ TestConfigAdminStore._sanitizeTestConfig = function( tests ) {
     } 
 };
 
-Dispatcher.subscribe('store.change.test_config', function() {
-   // TestConfigAdminStore._setAdditionalVariables();
-    console.log('data from dispatcher/testconfigstore', TestConfigAdminStore.getData());    
-});
-
-
 TestConfigAdminStore.getTestConfiguration = function() {
     TestConfigAdminStore.data = TestConfigStore.data;
     return TestConfigAdminStore.data.test_configuration;
