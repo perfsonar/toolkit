@@ -21,16 +21,18 @@
 
                 <div class="row">
                     <div class="medium-6 columns">
-                        <label for="test-name">Test name/description</label>
+                        <label for="test-name" class="space">Test name/description</label>
                         <input type="text" id="test-name" placeholder="Test name" value="{{description}}" />
 
                     </div>
                     <div class="medium-6 columns">
-                        <label for="test_enabled">Test Status</label>
+                        <label for="test_enabled" class="space">Test Status</label>
                         <div class="switch round small">
-                            <input id="testEnabledSwitch" type="checkbox" {{#unless parameters.disabled}}checked{{/unless}} />
-                            <label for="testEnabledSwitch"></label>
-                            <span id="testEnabledLabel" style="vertical-align:top; font-size:120%; margin-left:1em;">{{#if parameters.disabled}}Disabled{{else}}Enabled{{/if}}</span>
+                            <input id="testEnabledSwitch" type="checkbox" {{#unless disabled}}checked{{/unless}} />
+                            <label for="testEnabledSwitch" class="space"></label>
+                            <span id="testEnabledLabel" style="vertical-align:top; font-size:120%; margin-left:1em;">
+                            {{#if disabled}}Disabled{{else}}Enabled{{/if}}
+                            </span>
 
                         </div>
                     </div>
@@ -46,19 +48,7 @@
                         </select>
                     </div>
                     <div class="medium-6 columns">
-                                    </div>
-
-                </div>
-
-
-<!-- End common fields -->
-
-<!-- Only show the duration/test length if not editing an owamp test -->
-
 {{#unless showOWAMPParameters}}
-                <div class="row">
-
-                    <div class="medium-6 columns">
                         {{#if parameters.test_interval_formatted}}
                         <label for="time-between">Time between tests (TODO: make dropdown)</label>
                         <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted}}" />
@@ -71,6 +61,33 @@
                         </select>
 -->
                         {{/if}}
+{{/unless}}
+                                    </div>
+
+                </div>
+
+
+<!-- End common fields -->
+
+<!-- Only show the duration/test length if not editing an owamp test -->
+
+{{#if showOWAMPParameters}}
+                <div class="row">
+
+                    <div class="medium-6 columns">
+                        <label for="packetRate">Packet Rate (packets per second) (MAKE DROPDOWN)</label>
+                        <input type="text" id="packetRate" value="{{parameters.packet_rate}}" />
+                        
+                    </div>
+                    <div class="medium-6 columns">
+                        <label for="packetSize">Packet Size (bytes)</label>
+                        <input type="text" id="packetSize" value="{{parameters.packet_size}}" />
+                    </div>
+                </div> <!-- end div class="row" -->
+{{else}}
+                <div class="row">
+
+                    <div class="medium-6 columns">
                     </div>
                     <div class="medium-6 columns">
                         {{#if parameters.duration}}
@@ -89,7 +106,7 @@
                         {{/if}}
                     </div>
                 </div> <!-- end div class="row" -->
-{{/unless}}
+{{/if}}
 
 {{#if showTracerouteParameters}}
 
@@ -153,7 +170,10 @@
 
                 <!-- *** Add new test members panel *** -->
 
-                <div class="panel">
+                <a href="#" class="add_panel_heading"><i class="fa fa-plus"></i> Add Test Member(s)</a>
+
+                <div id="addTestMemberPanel" class="add_panel">
+                <fieldset>
                     <p>Enter a host name below or <a href="#">browse communities</a> to add more test members.</p>
 
                         <div class="row">
@@ -180,15 +200,15 @@
                         </div>
                         <div class="row">
                             <div class="medium-12 columns">
-                                <button class="button-quiet js-add-new-host">Add host</button>
+                                <button id="member_add_button" class="button-secondary button-secondary--small js-add-new-host">Add host</button>
                             </div>
                         </div>
-
+                </fieldset>
                 </div>
 
                 <div class="row">
                     <div class="medium-12 columns text-right">
-                        <button class="button-primary" style="margin: 2em 1em 0 0;">Save</button>
+                        <button class="button-primary" style="margin: 1em 1em 0 0;">Save</button>
                         <a href="#">Cancel</a>
                     </div>
                 </div>

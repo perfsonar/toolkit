@@ -75,6 +75,13 @@ SharedUIFunctions._getAsArray = function( value ) {
 
 };
 
+// Returns text based on the state of the boolean
+// Returns "Enabled" if true or "Disabled" if false
+SharedUIFunctions.getLabelText = function ( state ) {
+    return state ? 'Enabled' : 'Disabled';
+};
+
+
 Handlebars.registerHelper("everyOther", function (index, amount, scope) {
     if ( ++index % amount ) 
         return scope.inverse(this);

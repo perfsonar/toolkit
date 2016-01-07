@@ -113,6 +113,8 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         }
         if ( type == 'owamp') {
             test.showOWAMPParameters = true;
+            test.parameters.packet_size = test.parameters.packet_padding + 20;
+            test.parameters.packet_rate = 1/test.parameters.packet_interval;
         }
         if ( type == 'traceroute') {
             test.showTracerouteParameters = true;

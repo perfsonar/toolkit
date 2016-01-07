@@ -221,9 +221,20 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     $("#configureTestContainer").html(config_modal);
     $('#configure-test-modal').foundation('reveal', 'open');
     //$('#myModal').foundation('reveal', 'close');
+    $('#testEnabledSwitch').change( function() {
+        TestConfigComponent._setSwitch();            
+    });
     $('form#configureTestForm input').change(SharedUIFunctions._showSaveBar);
     $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
     return false;
+};
+
+TestConfigComponent._setSwitch = function(e) {
+    var checkbox_el = $('#testEnabledSwitch');
+    var checked = checkbox_el.prop('checked');
+    var label = SharedUIFunctions.getLabelText(checked);
+    var label_el = $('#testEnabledLabel');
+    label_el.text(label);
 };
 
 TestConfigComponent.initialize();
