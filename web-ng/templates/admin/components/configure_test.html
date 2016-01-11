@@ -48,24 +48,17 @@
                         </select>
                     </div>
                     <div class="medium-6 columns">
-{{#unless showOWAMPParameters}}
-                        {{#if parameters.test_interval_formatted}}
-                        <label for="time-between">Time between tests (TODO: make dropdown)</label>
-                        <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted}}" />
-<!--
-                        <select id="time-between">
-                            <option>10 Minutes</option>
-                            <option>15 Minutes</option>
-                            <option selected>30 Minutes</option>
-                            <option>60 Minutes</option>
-                        </select>
--->
+                        {{#if showThroughputParameters}}
+                            <label for="protocolSelector">Protocol</label>
+                            <select id="protocolSelector">
+                                <option value="tcp" {{#compare parameters.protocol "tcp"}}selected{{/compare}}>TCP</option>
+                                <option value="udp" {{#compare parameters.protocol "udp"}}selected{{/compare}}>UDP</option>
+                            </select>
+                            
                         {{/if}}
-{{/unless}}
-                                    </div>
+                    </div>
 
                 </div>
-
 
 <!-- End common fields -->
 
@@ -88,9 +81,21 @@
                 <div class="row">
 
                     <div class="medium-6 columns">
+                        {{#if parameters.test_interval_formatted}}
+                        <label for="time-between">Time between tests (TODO: make dropdown)</label>
+                        <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted}}" />
+<!--
+                        <select id="time-between">
+                            <option>10 Minutes</option>
+                            <option>15 Minutes</option>
+                            <option selected>30 Minutes</option>
+                            <option>60 Minutes</option>
+                        </select>
+-->
+                        {{/if}}
                     </div>
                     <div class="medium-6 columns">
-                        {{#if parameters.duration}}
+                        {{#if showThroughputParameters}}
                         <label for="test-duration">Test duration (TODO: make dropdown)</label>
                         <input type="text" id="test-duration" value="{{parameters.duration}}" />
 <!--
@@ -104,8 +109,27 @@
                         </select>
 -->
                         {{/if}}
+                        {{#if showPingParameters}}
+                            <label for="packetsPerTest">Packets per test</label>
+                            <input type="text" id="packetsPerTest" value="{{parameters.packet_count}}" />
+                                
+                        {{/if}}
                     </div>
                 </div> <!-- end div class="row" -->
+{{/if}}
+
+{{#if showPingParameters}}
+
+                <div class="row">
+                    <div class="medium-6 columns">
+                                <label for="timeBetweenPackets"></label>
+                                <input type="text" id="timeBetweenPackets" value="{{parameters.packet_interval}}">
+                    </div>
+                    <div class="medium-6 columns">
+                        <label for="sizeOfTestPackets">Size of test packets</label>
+                        <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}">
+                    </div>
+                </div>
 {{/if}}
 
 {{#if showTracerouteParameters}}
@@ -126,8 +150,6 @@
 
                 <div class="row">
                     <div class="medium-6 columns">
-                        <div class="row">
-                            <div class="medium-6 columns">
                                 <label>Use Autotuning</label>
                                 <div class="switch round small">
                                     <input id="exampleCheckboxSwitch" type="checkbox">
@@ -139,7 +161,6 @@
                                 <label for="tos-bits">TOS bits</label>
                                 <input type="text" id="tos-bits" value="0">
                             </div>
-                        </div>
                     </div>
                 </div>
 {{/if}}
@@ -208,7 +229,7 @@
 
                 <div class="row">
                     <div class="medium-12 columns text-right">
-                        <button class="button-primary" style="margin: 1em 1em 0 0;">Save</button>
+                        <button class="button-primary" style="margin: 0 1em 0 0;">Save</button>
                         <a href="#">Cancel</a>
                     </div>
                 </div>
