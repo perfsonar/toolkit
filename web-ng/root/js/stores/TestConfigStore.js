@@ -110,6 +110,11 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         }
         if ( type == 'bwctl/throughput' ) {
             test.showThroughputParameters = true;
+            if ( test.parameters.window_size > 0 ) {
+                test.showWindowSize = true;
+            } else {
+                test.showWindowSize = false;
+            }
         }
         if ( type == 'owamp') {
             test.showOWAMPParameters = true;

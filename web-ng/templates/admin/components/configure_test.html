@@ -28,10 +28,11 @@
                     <div class="medium-6 columns">
                         <label for="test_enabled" class="space">Test Status</label>
                         <div class="switch round small">
-                            <input id="testEnabledSwitch" type="checkbox" {{#unless disabled}}checked{{/unless}} />
-                            <label for="testEnabledSwitch" class="space"></label>
-                            <span id="testEnabledLabel" style="vertical-align:top; font-size:120%; margin-left:1em;">
-                            {{#if disabled}}Disabled{{else}}Enabled{{/if}}
+                            <input  id="testEnabledSwitch" type="checkbox" {{#unless disabled}}checked{{/unless}} />
+                            <label for="testEnabledSwitch" class="space">
+                            </label>
+                            <span id="testEnabledLabel" for="testEnabledSwitch" style="vertical-align:top; font-size:120%; margin-left:1em;" class="switch_label">
+                                {{#if disabled}}Disabled{{else}}Enabled{{/if}}
                             </span>
 
                         </div>
@@ -122,7 +123,7 @@
 
                 <div class="row">
                     <div class="medium-6 columns">
-                                <label for="timeBetweenPackets"></label>
+                                <label for="timeBetweenPackets">Time between packets (seconds)</label>
                                 <input type="text" id="timeBetweenPackets" value="{{parameters.packet_interval}}">
                     </div>
                     <div class="medium-6 columns">
@@ -149,16 +150,21 @@
 {{#if showThroughputParameters}}
 
                 <div class="row">
-                    <div class="medium-6 columns">
-                                <label>Use Autotuning</label>
+                    <div class="medium-3 columns">
+                                <label for="useAutotuning" class="space">Use Autotuning</label>
                                 <div class="switch round small">
-                                    <input id="exampleCheckboxSwitch" type="checkbox">
-                                    <label for="exampleCheckboxSwitch">Use Autotuning</label>
+                                    <input id="useAutotuningSwitch" type="checkbox" {{#unless showWindowSize}} checked{{/unless}}>
+                                    <label for="useAutotuningSwitch"></label>
+                                    <span for="useAutotuningSwitch" class="switch_label">{{#if showWindowSize}}Disabled{{else}}Enabled{{/if}}</span>
                                 </div>
 
                             </div>
+                            <div class="medium-3 columns">
+                                    <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size</label>
+                                    <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}">
+                            </div>
                             <div class="medium-6 columns">
-                                <label for="tos-bits">TOS bits</label>
+                                <label for="tos-bits" class="space">TOS bits</label>
                                 <input type="text" id="tos-bits" value="0">
                             </div>
                     </div>

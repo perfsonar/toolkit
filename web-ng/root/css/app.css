@@ -2230,7 +2230,6 @@ to put the stuff inside. */
 .communities,
 .servers {
   padding: 1em 0;
-  margin-bottom: 1em;
 }
 .communities:after,
 .servers:after {
@@ -2240,9 +2239,9 @@ to put the stuff inside. */
 }
 
 .communities__popular,
-.servers__popular {
+.servers__popular, .add_panel {
   display: none;
-  padding: 1em 0;
+  padding: 1em 0 0 0;
 }
 
 .communities__popular a:hover,
@@ -2291,11 +2290,13 @@ to put the stuff inside. */
   color: white;
 }
 
+/*
 .communities__add,
 .servers__add {
   display: inline-block;
-  margin: 1em 0;
+  margin: 1em 0; 
 }
+*/
 
 .servers__options-list {
   list-style: none;
@@ -2388,8 +2389,16 @@ to put the stuff inside. */
 .reveal-modal {
   text-align: center;
 }
-.reveal-modal {
-  text-align: center;
+
+.reveal-modal.large {
+  position: fixed;
+  overflow: scroll;
+  top: 50px !important; 
+  /* top:50% !important; */ /* previous value */
+  left:50% !important;
+  bottom: 50px !important;
+  transform:translate(-50%, 0);
+
 }
 
 .reveal-modal.xlarge {

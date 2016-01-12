@@ -28,3 +28,26 @@ tr.last {
 tr.js-subrow.expanded {
     display:table-row;
 }
+
+label.space { 
+    margin-bottom: 3px; 
+}
+
+#configureTestForm .window_size { 
+    display: none; 
+}
+
+#configureTestForm .window_size.active { 
+    display: block; 
+}
+
+.switch_label { 
+    vertical-align:top;
+    margin-left:1em;
+}
+
+.switch_label_large {
+    vertical-align:top;
+    font-size:120%; 
+    margin-left:1em;
+}

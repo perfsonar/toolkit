@@ -222,19 +222,25 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     $('#configure-test-modal').foundation('reveal', 'open');
     //$('#myModal').foundation('reveal', 'close');
     $('#testEnabledSwitch').change( function() {
-        TestConfigComponent._setSwitch();            
+        TestConfigComponent._setSwitch( '#testEnabledSwitch' ); 
+    });
+    $('#useAutotuningSwitch').change( function() {
+        TestConfigComponent._setSwitch( '#useAutotuningSwitch' );
+        $('.window_size').toggle();
     });
     $('form#configureTestForm input').change(SharedUIFunctions._showSaveBar);
     $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
     return false;
 };
 
-TestConfigComponent._setSwitch = function(e) {
-    var checkbox_el = $('#testEnabledSwitch');
+TestConfigComponent._setSwitch = function( elID ) {
+    var checkbox_el = $( elID );
+    console.log('elID', elID);
     var checked = checkbox_el.prop('checked');
     var label = SharedUIFunctions.getLabelText(checked);
-    var label_el = $('#testEnabledLabel');
-    label_el.text(label);
+    $("span[for='" + checkbox_el.attr("id") + "']").text(label);
+    //var label_el = checkbox_el.next('.switch_label' )
+    //label_el.text(label);
 };
 
 TestConfigComponent.initialize();
