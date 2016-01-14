@@ -1,6 +1,6 @@
 // make sure jquery, Dispatcher, TestStore, TestResultsComponent, 
 // HostServicesComponent and HostInfoComponent 
-// HostAdminInfoStore.js, HostDetailsStore.js, HostHealthStore.js, HostServicesStore.js, HostStore.js
+// HostMetadataStore.js, HostDetailsStore.js, HostHealthStore.js, HostServicesStore.js
 // all load before this.
 
 var DashboardPage = { 

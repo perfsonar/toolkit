@@ -1,0 +1,64 @@
+<script id="testConfigDefaultParametersTemplate" type="text/x-handlebars-template">
+
+        <!-- Default test parameters modal -->
+        <div id="defaultParametersModal" class="reveal-modal small text-left" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+            <div class="row">
+                <div class="medium-12 columns">
+                    <h3 class="reveal-modal__heading" id="modalTitle">Edit the default parameters for tests.</h3>
+                    <form>
+                        <label>Test</label>
+                        <select>
+                            <option>Throughput</option>
+                            <option>One Way Latency</option>
+                            <option>Ping</option>
+                            <option>Traceroute</option>
+                        </select>
+
+                        <label for="default-description">Description</label>
+                        <input type="text" id="default-description" value="perfSONAR Toolkit Default Traceroute Test">
+
+                        <label>Interface</label>
+                        <select>
+                            <option>Defautlt</option>
+                        </select>
+
+                        <label for="time-between" style="margin-top: .35em;">Time between tests</label>
+                        <div class="row">
+                            <div class="medium-6 columns">
+                                <input type="text" id="time-between">
+                            </div>
+                            <div class="medium-6 columns">
+                                <select>
+                                    <option>days</option>
+                                    <option selected>minutes</option>
+                                    <option>seconds</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <label for="packet-size">Packet size (bytes)</label>
+                        <input type="text" id="packet-size" value="10">
+
+                        <label for="first-hop">First Hop to Report</label>
+                        <input type="text" id="first-hop">
+
+                        <label for="max-hops">Maximum # of Hops</label>
+                        <input type="text" id="max-hops">
+                    </form>
+
+                    <div class="row">
+                        <div class="medium-12 columns">
+                            <button class="button-primary" style="margin: 2em 1em 0 0;">Save</button>
+                            <a href="#">Cancel</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Close button for modal -->
+            <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a>
+        </div>
+
+
+</script>
+
