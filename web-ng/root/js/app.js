@@ -32,6 +32,11 @@ $(document).ready(function() {
         $(".communities__popular, .servers__popular").toggle(); 
     });
 
+    $("body").on("click", ".add_panel_heading", function(e) {
+        e.preventDefault();
+        $(".add_panel_heading").next(".add_panel").toggle(); 
+    });
+
     /*
     $(".config__input").change(function(e) {
         $(".js-unsaved-message").fadeIn("fast");

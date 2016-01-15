@@ -1,12 +1,13 @@
 var HostInfoComponent = {
     details_topic: 'store.change.host_details',
-    info_topic: 'store.change.host_info'
+    info_topic: 'store.change.host_info',
+    metadataTopic: 'store.change.host_metadata',
 };
 
 
 HostInfoComponent.initialize = function() {
     Dispatcher.subscribe(HostInfoComponent.details_topic, HostInfoComponent._setDetails);
-    Dispatcher.subscribe(HostInfoComponent.info_topic, HostInfoComponent._setInfo);
+    Dispatcher.subscribe(HostInfoComponent.metadataTopic, HostInfoComponent._setInfo);
 };
 
 HostInfoComponent._setDetails = function( topic ) {
@@ -39,7 +40,7 @@ HostInfoComponent._setDetails = function( topic ) {
 };
 
 HostInfoComponent._setInfo = function( topic ) {
-    var data = HostAdminInfoStore.getHostAdminInfo();
+    var data = HostMetadataStore.getHostAdminInfo();
 
     if (("#host-overview-template").length == 0 || $("#host_overview").length == 0 ) {
         return;

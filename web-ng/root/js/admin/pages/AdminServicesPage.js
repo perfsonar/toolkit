@@ -1,5 +1,5 @@
 // make sure jquery, Dispatcher, TestStore, TestResultsComponent, 
-// HostServicesStore, HostStore, HostAdminStore, HostServicesComponent and HostInfoComponent all load before this.
+// HostServicesStore, HostAdminStore, HostServicesComponent all load before this.
 
 var AdminServicesPage = { 
     adminServicesTopic: 'store.change.host_services',

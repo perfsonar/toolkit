@@ -56,7 +56,7 @@
     {{#if registered}}
     <li class="sidebar-list__item">        
         <div class="sidebar-list__parameter">Globally Registered</div>
-        <div class="sidebar-list__value {{registered_classes}}">{{registered}}</li>
+        <div class="sidebar-list__value {{registered_classes}}">{{registered}}</div>
     </li>
     {{/if}}
     <li class="sidebar-list__item">        
@@ -64,6 +64,36 @@
         <div class="sidebar-list__value {{ntp_classes}}"><span id="sidebar_ntp_synced_value">{{ntp_synced}}</span> &nbsp; &nbsp; 
         <div id="sidebar-ntp-popover-container"></div>
     </li>
+    {{#if role_text}}
+    <li class="sidebar-list__item">        
+        <div class="sidebar-list__parameter">Node Role</div>
+        <div class="sidebar-list__value">{{role_text}}</div>
+    </li>
+    {{/if}}
+    {{#if show_access_policy}}
+    <li class="sidebar-list__item">        
+        <div class="sidebar-list__parameter">Access Policy</div>
+        <div class="sidebar-list__value">{{access_policy}}
+            {{#if access_policy_notes}}
+                <div id="sidebar-access-policy-notes-popover-container">
+                    <a href="#" class="sidebar-popover-toggle js-sidebar-popover-toggle" id="sidebar_access_policy_details_link">
+                        Access Notes
+                        <i class="fa fa-angle-down"></i>
+                    </a>
+                    <div class="sidebar-popover" style="display: none;">
+                                <a class="sidebar-popover__close js-sidebar-popover-close">Close &nbsp;<i class="fa fa-close"></i></a>
+                                <h4 class="sidebar-popover__heading">Access Policy Notes</h4>
+                                <ul class="sidebar-popover__list">
+                                    <li class="sidebar-popover__item">
+                                        {{access_policy_notes}}
+                                    </li>
+                                </ul>
+                    </div>
+                </div>
+            {{/if}}
+        </div>
+    </li>
+    {{/if}}
     {{#each status_values}}
     <li class="sidebar-list__item"{{#if id}} id="{{id}}"{{/if}}>
         <div class="sidebar-list__parameter">{{label}}</div>
