@@ -21,8 +21,18 @@ use perfSONAR_PS::NPToolkit::WebService::ParameterTypes qw($parameter_types);
 use perfSONAR_PS::NPToolkit::DataService::Communities;
 use perfSONAR_PS::NPToolkit::WebService::Method;
 use perfSONAR_PS::NPToolkit::WebService::Router;
+use perfSONAR_PS::NPToolkit::WebService::Auth qw( is_authenticated unauthorized_output );
 
 use Config::General;
+
+my $cgi = CGI->new();
+my $authenticated = is_authenticated($cgi);
+
+if ( !$authenticated ) {
+    print unauthorized_output($cgi);
+    exit;
+}
+
 
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );

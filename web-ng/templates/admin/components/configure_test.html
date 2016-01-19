@@ -1,0 +1,262 @@
+<div id="configureTestContainer"></div>
+
+<script id="configureTestTemplate" type="text/x-handlebars-template">
+
+<!-- *** Configure test modal (gear icon) *** -->
+
+<div id="configure-test-modal" class="reveal-modal large text-left" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+
+<form id="configureTestForm" action="" method="POST">
+
+    <div class="row">
+        <div class="medium-12 columns">
+            <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">Configure Test</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="medium-12 columns">
+                        <h2 class="module-header__title font-bold">Test parameters</h2>
+                <!-- Begin common fields -->
+
+
+                <div class="row">
+                    <div class="medium-6 columns">
+                        <label for="test-name" class="space">Test name/description</label>
+                        <input type="text" id="test-name" placeholder="Test name" value="{{description}}" />
+
+                    </div>
+                    <div class="medium-6 columns">
+                        <label for="test_enabled" class="space">Test Status</label>
+                        <div class="switch round small">
+                            <input  id="testEnabledSwitch" type="checkbox" {{#unless disabled}}checked{{/unless}} />
+                            <label for="testEnabledSwitch" class="space">
+                            </label>
+                            <span id="testEnabledLabel" for="testEnabledSwitch" style="vertical-align:top; font-size:120%; margin-left:1em;" class="switch_label">
+                                {{#if disabled}}Disabled{{else}}Enabled{{/if}}
+                            </span>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-6 columns">
+                        <label for="interface">Interface</label>
+                        <select id="interface">
+                            <option value="" {{#unless parameters.local_interface}}selected{{/unless}}>Default</option>
+                        {{#each interfaces}}
+                            <option value="{{iface}}" {{#compare iface ../parameters.local_interface}}selected{{/compare}}>{{iface}}</option> 
+                        {{/each}}
+                        </select>
+                    </div>
+                    <div class="medium-6 columns">
+                        {{#if showThroughputParameters}}
+                            <label for="protocolSelector">Protocol</label>
+                            <select id="protocolSelector">
+                                <option value="tcp" {{#compare parameters.protocol "tcp"}}selected{{/compare}}>TCP</option>
+                                <option value="udp" {{#compare parameters.protocol "udp"}}selected{{/compare}}>UDP</option>
+                            </select>
+                            
+                        {{/if}}
+                    </div>
+
+                </div>
+
+<!-- End common fields -->
+
+<!-- Only show the duration/test length if not editing an owamp test -->
+
+{{#if showOWAMPParameters}}
+                <div class="row">
+
+                    <div class="medium-6 columns">
+                        <label for="packetRate">Packet Rate (packets per second) (MAKE DROPDOWN)</label>
+                        <input type="text" id="packetRate" value="{{parameters.packet_rate}}" />
+                        
+                    </div>
+                    <div class="medium-6 columns">
+                        <label for="packetSize">Packet Size (bytes)</label>
+                        <input type="text" id="packetSize" value="{{parameters.packet_size}}" />
+                    </div>
+                </div> <!-- end div class="row" -->
+{{else}}
+                <div class="row">
+
+                    <div class="medium-6 columns">
+                        {{#if parameters.test_interval_formatted}}
+                        <label for="time-between">Time between tests (TODO: make dropdown)</label>
+                        <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted}}" />
+<!--
+                        <select id="time-between">
+                            <option>10 Minutes</option>
+                            <option>15 Minutes</option>
+                            <option selected>30 Minutes</option>
+                            <option>60 Minutes</option>
+                        </select>
+-->
+                        {{/if}}
+                    </div>
+                    <div class="medium-6 columns">
+                        {{#if showThroughputParameters}}
+                        <label for="test-duration">Test duration (TODO: make dropdown)</label>
+                        <input type="text" id="test-duration" value="{{parameters.duration}}" />
+<!--
+                        <select id="test-duration">
+                            <option>5 Seconds</option>
+                            <option>10 Seconds</option>
+                            <option>15 Seconds</option>
+                            <option selected>30 Seconds</option>
+                            <option>45 Seconds</option>
+                            <option>60 Seconds</option>
+                        </select>
+-->
+                        {{/if}}
+                        {{#if showPingParameters}}
+                            <label for="packetsPerTest">Packets per test</label>
+                            <input type="text" id="packetsPerTest" value="{{parameters.packet_count}}" />
+                                
+                        {{/if}}
+                    </div>
+                </div> <!-- end div class="row" -->
+{{/if}}
+
+{{#if showPingParameters}}
+
+                <div class="row">
+                    <div class="medium-6 columns">
+                                <label for="timeBetweenPackets">Time between packets (seconds)</label>
+                                <input type="text" id="timeBetweenPackets" value="{{parameters.packet_interval}}">
+                    </div>
+                    <div class="medium-6 columns">
+                        <label for="sizeOfTestPackets">Size of test packets</label>
+                        <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}">
+                    </div>
+                </div>
+{{/if}}
+
+{{#if showTracerouteParameters}}
+
+                <div class="row">
+                    <div class="medium-6 columns">
+                                <label for="tos-bits">Tool (make dropdown)</label>
+                                <input type="text" id="tool" value="{{parameters.tool}}">
+                    </div>
+                    <div class="medium-6 columns">
+                        <label for="qwerty">QWERTY</label>
+                        <input type="text" id="querty" value="0">
+                    </div>
+                </div>
+{{/if}}
+
+{{#if showThroughputParameters}}
+
+                <div class="row">
+                    <div class="medium-3 columns">
+                                <label for="useAutotuning" class="space">Use Autotuning</label>
+                                <div class="switch round small">
+                                    <input id="useAutotuningSwitch" type="checkbox" {{#unless showWindowSize}} checked{{/unless}}>
+                                    <label for="useAutotuningSwitch"></label>
+                                    <span for="useAutotuningSwitch" class="switch_label">{{#if showWindowSize}}Disabled{{else}}Enabled{{/if}}</span>
+                                </div>
+
+                            </div>
+                            <div class="medium-3 columns">
+                                    <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size</label>
+                                    <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}">
+                            </div>
+                            <div class="medium-6 columns">
+                                <label for="tos-bits" class="space">TOS bits</label>
+                                <input type="text" id="tos-bits" value="0">
+                            </div>
+                    </div>
+                </div>
+{{/if}}
+
+
+            <div class="module module--config-table">
+                <h3 class="module-header__title font-bold">Test members</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Host</th>
+                            <th>Description</th>
+                            <th>IPv</th>
+                        </tr>
+                    </thead>
+                    <tbody class="test-members">
+{{#each members}}
+                    <tr class="subrow subrow--content">
+                        <td>{{address}}</td>
+                        <td><input type="text" value="{{description}}"></td>
+                        <td><label class="inline-label">IPv4</label> <input type="checkbox" {{#if test_ipv4}}checked{{/if}}></td>
+                        <td><label class="inline-label">IPv6</label> <input type="checkbox" {{#if test_ipv6}}checked{{/if}}></td>
+                        <td><a href="#"><i class="fa fa-trash" checked></i></a></td>
+                    </tr>
+{{/each}}
+                    </tbody>
+                </table>
+
+                <!-- *** Add new test members panel *** -->
+
+                <a href="#" class="add_panel_heading"><i class="fa fa-plus"></i> Add Test Member(s)</a>
+
+                <div id="addTestMemberPanel" class="add_panel">
+                <fieldset>
+                    <p>Enter a host name below or <a href="#">browse communities</a> to add more test members.</p>
+
+                        <div class="row">
+                            <div class="medium-4 columns">
+                                <label for="new-host-name">Host name</label>
+                                <input type="text" id="new-host-name" placeholder="Host">
+                            </div>
+                            <div class="medium-5 columns">
+                                <label for="new-host-description">Host description</label>
+                                <input type="text" id="new-host-description" placeholder="Description">
+                            </div>
+                            <div class="medium-3 columns" style="padding-top: 1.75em;">
+                                <div class="row">
+                                    <div class="medium-6 columns">
+                                        <label  class="inline-label" for="new-ipv4">IPv4</label>
+                                        <input type="checkbox" id="new-ipv4">
+                                    </div>
+                                    <div class="medium-6 columns">
+                                        <label  class="inline-label" for="new-ipv6">IPv6</label>
+                                        <input type="checkbox" id="new-ipv6">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="medium-12 columns">
+                                <button id="member_add_button" class="button-secondary button-secondary--small js-add-new-host">Add host</button>
+                            </div>
+                        </div>
+                </fieldset>
+                </div>
+
+                <div class="row">
+                    <div class="medium-12 columns text-right">
+                        <button class="button-primary" style="margin: 0 1em 0 0;">Save</button>
+                        <a href="#">Cancel</a>
+                    </div>
+                </div>
+
+                <!-- <div class="js-add-new-wrapper">
+                    <a href="#" class="button-primary js-add-new-host" style="margin-right: 1em;">Add new</a> <a href="./">Cancel</a>
+                </div>
+                <div class="new-host-save">
+                    <a href="#" class="button-primary js-save-new-host" style="margin-right: 1em;">Save</a> <a href="./">Cancel</a>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+
+</form>
+
+    <!-- Close button for modal -->
+    <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a>
+</div>
+
+
+</script>
+

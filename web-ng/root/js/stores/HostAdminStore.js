@@ -1,7 +1,7 @@
 // Make sure jquery loads first
 // assumes Dispatcher has already been declared (so load that first as well)
 // load first:
-// HostAdminInfoStore.js, HostDetailsStore.js, HostHealthStore.js, HostServicesStore.js 
+// HostMetadataStore.js, HostDetailsStore.js, HostHealthStore.js, HostServicesStore.js 
 // HostStore.js
 
 var HostAdminStore = {
@@ -11,6 +11,8 @@ var HostAdminStore = {
     summaryTopic: 'store.change.host_summary',
     saveAdminInfoTopic: 'store.host_admin_info.save',
     saveAdminInfoErrorTopic: 'store.host_admin_info.save_error',
+    saveMetadataTopic: 'store.host_metadata.save',
+    saveMetadataErrorTopic: 'store.host_metadata.save_error',
     saveServicesTopic: 'store.host_services.save',
     saveServicesErrorTopic: 'store.host_services.save_error',
     saveCommunitiesTopic: 'store.communities_host.save',
@@ -32,7 +34,7 @@ HostAdminStore.saveAdminInfo = function(info) {
         dataType: 'json',
         contentType: 'application/x-www-form-urlencoded',
         success: function(result) {
-            HostAdminInfoStore._retrieveInfo();
+            HostMetadataStore._retrieveInfo();
             Dispatcher.publish(topic, result.message);
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -41,6 +43,27 @@ HostAdminStore.saveAdminInfo = function(info) {
     });
 
 
+};
+
+HostAdminStore.saveMetadata = function( data ) {
+    var topic = HostAdminStore.saveMetadataTopic;
+    var error_topic = HostAdminStore.saveMetadataErrorTopic;
+    $.ajax({
+        url: 'services/host.cgi?method=update_metadata',
+        type: 'POST',
+        data: data,
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded',
+        success: function(result) {
+            HostMetadataStore._retrieveMetadata();
+            Dispatcher.publish(topic, result.message);
+
+        },
+        traditional: true, // so we pass role array as two role args, not role[]
+        error: function(jqXHR, textStatus, errorThrown) {
+            Dispatcher.publish(error_topic, errorThrown);
+        }
+    });
 };
 
 HostAdminStore.saveServices = function(services) {
@@ -99,7 +122,7 @@ HostAdminStore.saveCommunities = function( communities_arr ) {
         contentType: "application/json",
         //contentType: 'application/x-www-form-urlencoded',
         success: function(result) {
-            CommunityHostStore._retrieveCommunities();
+            HostMetadataStore._retrieveMetadata();
             CommunityAllStore._retrieveCommunities();
             Dispatcher.publish(topic, result.message);
 
