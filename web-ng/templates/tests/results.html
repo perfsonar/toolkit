@@ -1,16 +1,28 @@
  <div class="module test-results">
      <header class="module-header">
      <h2 class="module-header__title color-bg-accent">Test Results &nbsp; <span class="color-light" id="num_test_results_holder" style="display:none;">(<span id="num_test_results"></span> Results)</span></h2>
-         <a class="module-header__action" href="/toolkit/auth/admin/tests.cgi">Configure tests &nbsp; <i class="fa fa-cog"></i></a>
+         <a class="module-header__action" href="/toolkit/admin/tests.cgi">Configure tests &nbsp; <i class="fa fa-cog"></i></a>
      </header>
 </div>
+
+<!-- Test results loading indicator -->
+<!-- <div id="test-loading-modal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"> -->
+<div id="test-loading-modal" style="display:none;">
+    <h3>
+        <i class="fa fa-spinner fa-pulse"></i><span class="loading_text" id="loading_text">    Loading Tests ...</span>
+    </h3>
+
+</div>
+<!-- End test results loading indicator -->
+
 <div id="test_results"></div>
+
 <script id="test-results-template" type="text/x-handlebars-template">
     <b>Tests</b>
     <div id="dialogGraphContainer" class="reveal-modal xlarge" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
     <a class="close-reveal-modal" aria-label="Close" onclick="TestResultsComponent.closeFrame()">&#215;</a>
 </div>
-    <table class="test_results">
+    <table class="test_results" id="testResultsTable">
         <thead>
             <tr>
                 <th>Source</th>
@@ -22,7 +34,7 @@
         </thead>        
         <tbody>
             {{#each test_results}}
-                <tr>
+                <tr class="no_data" id="test_row_{{rowID}}">
                     <td>
                         <div class="hostname">{{source_host}}</div>
                         <div class="host_ip">{{source_ip}}</div>
@@ -41,25 +53,13 @@
                         <div class="hostname">{{destination_host}}</div>
                         <div class="host_ip">{{destination_ip}}</div>
                     </td>
-                    <td class="test-values">
-                        <i class="fa fa-arrow-right"></i> {{formatValue this.throughput_src_average "throughput_src"}}<br />
-                        <i class="fa fa-arrow-left"></i> {{formatValue this.throughput_dst_average "throughput_dst"}}
+                    <td class="test-values data throughput">
+                        <span class="loading">Loading values ...</span>
+                        <div class="test-values"></div>
                     </td>
-                    <td class="test-values">
-                        {{#if this.owdelay_src_average}}
-                        <i class="fa fa-arrow-right"></i> {{formatValue this.owdelay_src_average "owdelay_src"}}<br />
-                        {{else}}
-                        <i class="fa fa-arrow-right"></i> {{formatValue this.rtt_src_average "rtt_src"}}<br />
-                        {{/if}}
-                        {{#if this.owdelay_dst_average}}
-                        <i class="fa fa-arrow-left"></i> {{formatValue this.owdelay_dst_average "owdelay_dst"}}
-                        {{else}}
-                        <i class="fa fa-arrow-left"></i> {{formatValue this.rtt_dst_average "rtt_dst"}}
-                        {{/if}}
+                    <td class="test-values data latency">
                     </td>
-                    <td class="test-values">
-                        <i class="fa fa-arrow-right"></i>  {{formatValue this.loss_src_average "loss_src"}}<br />
-                        <i class="fa fa-arrow-left"></i> {{formatValue this.loss_dst_average "loss_dst"}}                    
+                    <td class="test-values data loss">
                     </td>
                 </tr>
             {{/each}}
@@ -67,4 +67,62 @@
         </tbody>
 
     </table>
+</script>
+
+
+
+<script id="test-data-template" type="text/x-handlebars-template">
+
+    <td class="test-values loading" colspan="3" >
+        <span>Loading values ...</span>
+    </td>
+    <td class="test-values data throughput">
+        <i class="fa fa-arrow-right"></i> {{formatValue throughput_src_average "throughput_src"}}<br />
+        <i class="fa fa-arrow-left"></i> {{formatValue throughput_dst_average "throughput_dst"}}
+    </td>
+    <td class="test-values data latency">
+        {{#if owdelay_src_average}}
+        <i class="fa fa-arrow-right"></i> {{formatValue owdelay_src_average "owdelay_src"}}<br />
+        {{else}}
+        <i class="fa fa-arrow-right"></i> {{formatValue rtt_src_average "rtt_src"}}<br />
+        {{/if}}
+        {{#if owdelay_dst_average}}
+        <i class="fa fa-arrow-left"></i> {{formatValue owdelay_dst_average "owdelay_dst"}}
+        {{else}}
+        <i class="fa fa-arrow-left"></i> {{formatValue rtt_dst_average "rtt_dst"}}
+        {{/if}}
+    </td>
+    <td class="test-values data loss">
+        <i class="fa fa-arrow-right"></i>  {{formatValue loss_src_average "loss_src"}}<br />
+        <i class="fa fa-arrow-left"></i> {{formatValue loss_dst_average "loss_dst"}}                    
+    </td>
+
+</script>
+
+<script id="test-data-value-template" type="text/x-handlebars-template">
+    {{#compare type "throughput"}}
+        <i class="fa fa-arrow-right"></i> {{formatValue throughput_src_average "throughput_src"}}<br />
+        <i class="fa fa-arrow-left"></i> {{formatValue throughput_dst_average "throughput_dst"}}
+    {{/compare}}
+
+    {{#compare type "latency"}}
+        {{#if owdelay_src_average}}
+        <i class="fa fa-arrow-right"></i> {{formatValue owdelay_src_average "owdelay_src"}}<br />
+        {{else}}
+        <i class="fa fa-arrow-right"></i> {{formatValue rtt_src_average "rtt_src"}}<br />
+        {{/if}}
+        {{#if owdelay_dst_average}}
+        <i class="fa fa-arrow-left"></i> {{formatValue owdelay_dst_average "owdelay_dst"}}
+        {{else}}
+        <i class="fa fa-arrow-left"></i> {{formatValue rtt_dst_average "rtt_dst"}}
+        {{/if}}
+
+    {{/compare}}
+
+    {{#compare type "loss"}}
+        <i class="fa fa-arrow-right"></i>  {{formatValue loss_src_average "loss_src"}}<br />
+        <i class="fa fa-arrow-left"></i> {{formatValue loss_dst_average "loss_dst"}}                    
+
+    {{/compare}}
+
 </script>
