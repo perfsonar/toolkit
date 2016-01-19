@@ -1,0 +1,74 @@
+<script id="testConfigByHostTableTemplate" type="text/x-handlebars-template">
+
+    <!-- Begin config by host table -->
+
+<div class="config-table config-table-by-host">
+    
+    <!-- *** List test with dropdowns *** -->
+    <div class="module module--config-table" id="test_configuration_table_div">
+    <div class="row">
+        <div class="medium-6 columns">
+            <span>
+                <a href="#" id="expandAllHostsLink" onclick="return TestConfigComponent.showRows()">Expand All</a> 
+                | 
+                <a href="#" id="collapseAllHostsLink" onclick="return TestConfigComponent.hideRows()">Collapse All</a></span>
+        </div>
+        <div class="medium-6 columns text-right">
+        </div>
+    </div>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Throughput</th>
+                    <th>One-Way Latency</th>
+                    <th>Ping</th>
+                    <th>Traceroute</th>
+                </tr>
+            </thead>
+            <tbody>
+            {{#each testsByHost}}
+                <tr class="js-row test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}}" data-group="{{host_id}}">
+                    <td>
+                        <a class="services--title-link" data-group="{{host_id}}" href="#">{{address}}<i class="fa fa-caret-down"></i></a>
+                    </td>
+                    <td>{{formatTestCount bwctl_throughput_count}}</td>
+                    <td>{{formatTestCount owamp_count}}</td>
+                    <td>{{formatTestCount pinger_count}}</td>
+                    <td>{{formatTestCount traceroute_count}}</td>
+                </tr>
+                    <!-- *** Tests *** -->
+                    <!-- A unique data attribute for each set of subrows (tests for that host) needs to be generated in the markup -->
+                    <tr class="subrow subrow--heading js-subrow{{#if expanded}} expanded{{/if}}" data-group="{{host_id}}">
+                        <td width="300">Test name</td>
+                        <td>Type</td>
+                        <td>Interval</td>
+                        <td>Enabled</td>
+                        <td>Actions</td>
+                    </tr>
+                {{#each tests}}
+                    <!-- Add this "subrow-indent" class to indent the first <td> of the dropdown tables -->
+                    <tr class="subrow subrow--content subrow--indent js-subrow {{#if @last}}last{{/if}}{{#if ../expanded}} expanded{{/if}}" data-group="{{../host_id}}">
+                        <td>{{description}}</td>
+                        <td>{{type_formatted}}</td>
+                        <td>{{parameters.test_interval_formatted}}</td>
+                        <td>
+                            <input type="checkbox" {{#unless disabled}}checked{{/unless}} class="cb_test_enabled" data-test-id="{{test_id}}" disabled="disabled">
+                        </td>
+                        <td>
+                            <a href="#" onclick="return TestConfigComponent.showTestConfigModal({{test_id}});"><i class="fa fa-gear"></i></a> 
+                            <a href="#"><i class="fa fa-remove"></i></a>
+                        </td>
+                    </tr>
+                    
+                {{/each}}
+            {{/each}}
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- End config by host table -->
+</div>
+
+</script>

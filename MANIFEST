@@ -96,6 +96,7 @@ lib/perfSONAR_PS/NPToolkit/DataService/BaseConfig.pm
 lib/perfSONAR_PS/NPToolkit/DataService/Communities.pm
 lib/perfSONAR_PS/NPToolkit/DataService/Host.pm
 lib/perfSONAR_PS/NPToolkit/DataService/NTP.pm
+lib/perfSONAR_PS/NPToolkit/DataService/RegularTesting.pm
 lib/perfSONAR_PS/NPToolkit/Services/BWCTL.pm
 lib/perfSONAR_PS/NPToolkit/Services/Base.pm
 lib/perfSONAR_PS/NPToolkit/Services/Cassandra.pm
@@ -400,6 +401,7 @@ web-ng/root/js/admin/components/AutoUpdatesComponent.js
 web-ng/root/js/admin/components/CommunityUpdateComponent.js
 web-ng/root/js/admin/components/NTPConfigComponent.js
 web-ng/root/js/admin/components/OldTestConfigComponent.js
+web-ng/root/js/admin/components/TestConfigComponent.js
 web-ng/root/js/admin/pages/AdminInfoPage.js
 web-ng/root/js/admin/pages/AdminServicesPage.js
 web-ng/root/js/admin/pages/HostConfigPage.js
@@ -466,10 +468,11 @@ web-ng/root/js/pubsub/node_modules/pubsub-js/version
 web-ng/root/js/pubsub/node_modules/pubsub-js/wrappers/jquery/pubsub.js.post.txt
 web-ng/root/js/pubsub/node_modules/pubsub-js/wrappers/jquery/pubsub.js.pre.txt
 web-ng/root/js/pubsub/pubsub.js
-web-ng/root/js/stores/HostStore.js
 web-ng/root/js/stores/TestStore.js
 web-ng/root/js/stores/HostGuessLatLonStore.js
 web-ng/root/js/stores/HostNTPInfoStore.js
+web-ng/root/js/stores/DataStore.js
+web-ng/root/js/stores/TestConfigStore.js
 web-ng/root/js/vendor/jquery.js
 web-ng/root/js/vendor/modernizr.js
 web-ng/root/js/admin/pages/AdminInfoPage.js
@@ -521,13 +524,11 @@ web-ng/root/js/select2/select2.full.js
 web-ng/root/js/select2/select2.full.min.js
 web-ng/root/js/select2/select2.js
 web-ng/root/js/select2/select2.min.js
-web-ng/root/js/stores/HostAdminInfoStore.js
 web-ng/root/js/stores/HostAdminStore.js
 web-ng/root/js/stores/HostDetailsStore.js
 web-ng/root/js/stores/HostHealthStore.js
 web-ng/root/js/stores/HostServicesStore.js
 web-ng/root/js/stores/CommunityAllStore.js
-web-ng/root/js/stores/CommunityHostStore.js
 web-ng/root/js/stores/NTPClosestStore.js
 web-ng/root/js/stores/NTPConfigStore.js
 web-ng/root/services/communities.cgi
@@ -544,11 +545,12 @@ web-ng/templates/host/host_overview.html
 web-ng/templates/host/services.html
 web-ng/templates/host/sidebar_host_health.html
 web-ng/templates/host/sidebar_host_status.html
-web-ng/templates/js/host_overview.js
 web-ng/templates/page.html
 web-ng/templates/tests/results.html
 web-ng/templates/admin/components/admin_header_nav.html
 web-ng/templates/admin/components/sticky_bar.html
+web-ng/templates/admin/components/test_config_default_parameters.html
+web-ng/templates/admin/components/test_config_table.html
 web-ng/templates/admin/pages/admin_info.html
 web-ng/templates/admin/pages/host.html
 web-ng/templates/admin/pages/services.html

@@ -2,9 +2,13 @@ var HostStatusSidebarComponent = {
     details_topic: 'store.change.host_details',
     health_topic: 'store.change.health_status',
     ntp_topic: 'store.change.host_ntp_info',
+    metadata_topic: 'store.change.host_metadata',
     ntp_info: null,
     status: null,
+    details: null,
+    metadata: null,
     details_set: false,
+    metadata_set: false,
     health_token: null,        
     health_refresh_interval: 10000, // in milliseconds
     id_prefix: "health-value-",
@@ -17,12 +21,13 @@ HostStatusSidebarComponent.initialize = function() {
             return;
     }
     HostStatusSidebarComponent._registerHelpers();
-    Dispatcher.subscribe(HostStatusSidebarComponent.details_topic, HostStatusSidebarComponent._setStatus);
+    Dispatcher.subscribe(HostStatusSidebarComponent.details_topic, HostStatusSidebarComponent._setDetails);
+    Dispatcher.subscribe(HostStatusSidebarComponent.metadata_topic, HostStatusSidebarComponent._setMetadata);
     Dispatcher.subscribe(HostStatusSidebarComponent.ntp_topic, HostStatusSidebarComponent._setNTPInfo);
     HostStatusSidebarComponent.health_token = Dispatcher.subscribe(HostStatusSidebarComponent.health_topic, HostStatusSidebarComponent._setHealthStatus);
 };
 
-HostStatusSidebarComponent._setStatus = function( topic ) {
+HostStatusSidebarComponent._setDetails = function( topic ) {
     var data = HostDetailsStore.getHostDetails();
     HostStatusSidebarComponent.status = data;
 
@@ -98,10 +103,37 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
         status_values.push({label:"Auto Updates", value: auto_updates_value, classes: auto_updates_class });
     }
 
+    data.status_values = status_values;
+    
+    HostStatusSidebarComponent.details = data;
+
+    HostStatusSidebarComponent.details_set = true;
+
+    HostStatusSidebarComponent._showDetails();
+
+};
+
+HostStatusSidebarComponent._setMetadata = function( topic ) {
+    var data = HostMetadataStore.getHostAdminInfo();
+    HostStatusSidebarComponent.metadata = data;
+    HostStatusSidebarComponent.metadata_set = true;
+    HostStatusSidebarComponent._showDetails();
+
+};
+
+HostStatusSidebarComponent._showDetails = function() {
+    if (!HostStatusSidebarComponent.details_set || !HostStatusSidebarComponent.metadata_set) {
+        return;
+    }
+
+    var details = HostStatusSidebarComponent.details;
+    var metadata = HostStatusSidebarComponent.metadata;
+
+    var data = {};
+    data = $.extend({}, details, metadata);
+
     var host_status_template = $("#sidebar-status-template").html();
     var template = Handlebars.compile(host_status_template);
-
-    data.status_values = status_values;
 
     var status_output = template(data);
 
@@ -111,7 +143,8 @@ HostStatusSidebarComponent._setStatus = function( topic ) {
     HostStatusSidebarComponent._hideRAMInDetails();
 
     HostStatusSidebarComponent._handleNTPInfo();
-};
+
+}
 
 HostStatusSidebarComponent._setNTPInfo = function( topic ) {
     var data = HostNTPInfoStore.getHostNTPInfo();
@@ -150,9 +183,8 @@ HostStatusSidebarComponent._handleNTPInfo = function() {
 
             container.html(ntp_output);
             }            
-    } else {
-        return;
-    }
+    } 
+
 };
 
 HostStatusSidebarComponent._registerHelpers = function() {
