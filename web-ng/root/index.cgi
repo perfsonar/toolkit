@@ -34,7 +34,7 @@ my $https_url = $full_url;
     $https_url =~ s/^http:/https:/i;
 #}
 
-print $cgi->header('text/html');
+print $cgi->header(-type=>'text/html', -charset=>'utf-8');
 
 my $tt = Template->new({
         INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
