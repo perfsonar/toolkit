@@ -128,7 +128,7 @@
 --- a/web-ng/root/admin/host.cgi
 +++ b/web-ng/root/admin/host.cgi
 @@ -43,7 +43,7 @@
- print $cgi->header('text/html');
+ print $cgi->header(-type=>'text/html', -charset=>'utf-8');
  
  my $tt = Template->new({
 -        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
@@ -139,7 +139,7 @@
 --- a/web-ng/root/admin/index.cgi
 +++ b/web-ng/root/admin/index.cgi
 @@ -43,7 +43,7 @@
- print $cgi->header('text/html');
+ print $cgi->header(-type=>'text/html', -charset=>'utf-8');
  
  my $tt = Template->new({
 -        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
@@ -150,7 +150,7 @@
 --- a/web-ng/root/admin/services.cgi
 +++ b/web-ng/root/admin/services.cgi
 @@ -44,7 +44,7 @@
- print $cgi->header('text/html');
+ print $cgi->header(-type=>'text/html', -charset=>'utf-8');
  
  my $tt = Template->new({
 -        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
@@ -161,7 +161,7 @@
 --- a/web-ng/root/admin/tests.cgi
 +++ b/web-ng/root/admin/tests.cgi
 @@ -43,7 +43,7 @@
- print $cgi->header('text/html');
+ print $cgi->header(-type=>'text/html', -charset=>'utf-8');
  
  my $tt = Template->new({
 -        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
@@ -172,7 +172,7 @@
 --- a/web-ng/root/index.cgi
 +++ b/web-ng/root/index.cgi
 @@ -37,7 +37,7 @@
- print $cgi->header('text/html');
+ print $cgi->header(-type=>'text/html', -charset=>'utf-8');
  
  my $tt = Template->new({
 -        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
