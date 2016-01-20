@@ -1,6 +1,6 @@
 etc/perfsonar_sudo etc/sudoers.d/
 etc/* etc/perfsonar/toolkit
 scripts/apache-toolkit_web_gui.conf etc/apache2/conf.d/
-web usr/lib/perfsonar
-web-ng usr/lib/perfsonar
-templates usr/lib/perfsonar
+web usr/lib/perfsonar/toolkit
+web-ng usr/lib/perfsonar/toolkit
+templates usr/lib/perfsonar/toolkit

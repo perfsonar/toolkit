@@ -21,7 +21,7 @@ set -e
 case "$1" in
     configure)
         # Set executable bit
-        chmod +x /usr/lib/perfsonar/bin/configdaemon.pl
+        chmod +x /usr/lib/perfsonar/toolkit/bin/configdaemon.pl
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

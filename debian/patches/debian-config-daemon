@@ -35,7 +35,7 @@
  address		localhost
  port		9000
 -firewall_script /opt/perfsonar_ps/toolkit/scripts/system_environment/configure_firewall
-+firewall_script /usr/lib/perfsonar/scripts/configure_firewall
++firewall_script /usr/lib/perfsonar/toolkit/scripts/configure_firewall
  
  <access>
  	<service yum_cron> 

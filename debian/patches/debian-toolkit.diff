@@ -10,8 +10,8 @@
  #Old GUI
 -Alias /toolkit-old /opt/perfsonar_ps/toolkit/web/root
 -<Directory "/opt/perfsonar_ps/toolkit/web/root">
-+Alias /toolkit-old /usr/lib/perfsonar/web/root
-+<Directory "/usr/lib/perfsonar/web/root">
++Alias /toolkit-old /usr/lib/perfsonar/toolkit/web/root
++<Directory "/usr/lib/perfsonar/toolkit/web/root">
      Options FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -20,7 +20,7 @@
  </Directory>
  
 -<Directory "/opt/perfsonar_ps/toolkit/web/root/admin">
-+<Directory "/usr/lib/perfsonar/web/root/admin">
++<Directory "/usr/lib/perfsonar/toolkit/web/root/admin">
      Options FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -38,7 +38,7 @@
  </Directory>
  
 -<Directory "/opt/perfsonar_ps/toolkit/web/root/admin/logs">
-+<Directory "/usr/lib/perfsonar/web/root/admin/logs">
++<Directory "/usr/lib/perfsonar/toolkit/web/root/admin/logs">
      Options Indexes FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -58,11 +58,11 @@
  # Create /toolkit/auth 
  # Which runs the same code as that under /toolkit/ but with auth required
 -Alias /toolkit/auth /opt/perfsonar_ps/toolkit/web-ng/root
-+Alias /toolkit/auth /usr/lib/perfsonar/web-ng/root
++Alias /toolkit/auth /usr/lib/perfsonar/toolkit/web-ng/root
  
  # New GUI
 -Alias /toolkit /opt/perfsonar_ps/toolkit/web-ng/root
-+Alias /toolkit /usr/lib/perfsonar/web-ng/root
++Alias /toolkit /usr/lib/perfsonar/toolkit/web-ng/root
  
  # Redirect from /index.cgi?format=json to the new host summary page
  RewriteCond %{QUERY_STRING} format=json
@@ -71,7 +71,7 @@
  
  # Set the base directory to not require auth by default
 -<Directory "/opt/perfsonar_ps/toolkit/web-ng/root">
-+<Directory "/usr/lib/perfsonar/web-ng/root">
++<Directory "/usr/lib/perfsonar/toolkit/web-ng/root">
      Options FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -108,7 +108,7 @@
  
  # Permissions on logs
 -<Directory "/opt/perfsonar_ps/toolkit/web-ng/root/admin/logs">
-+<Directory "/usr/lib/perfsonar/web-ng/root/admin/logs">
++<Directory "/usr/lib/perfsonar/toolkit/web-ng/root/admin/logs">
      Options Indexes FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -132,7 +132,7 @@
  
  my $tt = Template->new({
 -        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
-+        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
++        INCLUDE_PATH => '/usr/lib/perfsonar/toolkit/web-ng/templates/'
      }) || die "$Template::ERROR\n";
  
  my $page = 'admin/pages/host.html';
@@ -143,7 +143,7 @@
  
  my $tt = Template->new({
 -        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
-+        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
++        INCLUDE_PATH => '/usr/lib/perfsonar/toolkit/web-ng/templates/'
      }) || die "$Template::ERROR\n";
  
  my $page = 'admin/pages/admin_info.html';
@@ -154,7 +154,7 @@
  
  my $tt = Template->new({
 -        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
-+        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
++        INCLUDE_PATH => '/usr/lib/perfsonar/toolkit/web-ng/templates/'
      }) || die "$Template::ERROR\n";
  
  my $page = 'admin/pages/services.html';
@@ -165,7 +165,7 @@
  
  my $tt = Template->new({
 -        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
-+        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
++        INCLUDE_PATH => '/usr/lib/perfsonar/toolkit/web-ng/templates/'
      }) || die "$Template::ERROR\n";
  
  my $page = 'admin/pages/tests.html';
@@ -176,7 +176,7 @@
  
  my $tt = Template->new({
 -        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
-+        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
++        INCLUDE_PATH => '/usr/lib/perfsonar/toolkit/web-ng/templates/'
      }) || die "$Template::ERROR\n";
  
  

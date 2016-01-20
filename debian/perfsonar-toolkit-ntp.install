@@ -1,4 +1,4 @@
 etc/ntp_known_servers etc/perfsonar/toolkit
-scripts/autoselect_ntp_servers usr/lib/perfsonar/scripts
-scripts/configure_ntpd usr/lib/perfsonar/scripts
-templates/config/ntp_conf.tmpl usr/lib/perfsonar/templates/config
+scripts/autoselect_ntp_servers usr/lib/perfsonar/toolkit/scripts
+scripts/configure_ntpd usr/lib/perfsonar/toolkit/scripts
+templates/config/ntp_conf.tmpl usr/lib/perfsonar/toolkit/templates/config

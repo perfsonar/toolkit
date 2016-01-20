@@ -25,4 +25,4 @@ override_dh_auto_install:
 override_dh_install:
 	dh_install --exclude=dojo-release-ps-toolkit.tar.gz
 	tar xzf ${CURDIR}/web/root/content/dojo-release-ps-toolkit.tar.gz \
-            -C ${CURDIR}/debian/perfsonar-toolkit/usr/lib/perfsonar/web/root/content
+            -C ${CURDIR}/debian/perfsonar-toolkit/usr/lib/perfsonar/toolkit/web/root/content

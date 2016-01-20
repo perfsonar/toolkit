@@ -16,7 +16,8 @@ Depends: libperfsonar-perl, apache2-mpm-worker | httpd,
  libsys-statistics-linux-perl, libperfsonar-sls-perl,
  perfsonar-toolkit-library, liblog-dispatch-filerotate-perl,
  libcgi-ajax-perl, libcgi-session-perl,
- perfsonar-common, chkconfig, cron-apt, ${misc:Depends}
+ perfsonar-common, chkconfig, cron-apt,
+ perfsonar-toolkit-graphs, ${misc:Depends}
 Description: pS-Performance Toolkit web
  pS-Performance Toolkit web GUI and associated services.
 

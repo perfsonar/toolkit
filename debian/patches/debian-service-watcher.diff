@@ -17,5 +17,5 @@
  MAILTO=root
 -0 * * * * root /opt/perfsonar_ps/toolkit/scripts/service_watcher &> /var/log/perfsonar/service_watcher_error.log
 -5 1 * * * root /opt/perfsonar_ps/toolkit/scripts/service_watcher --regular_restart &> /var/log/perfsonar/service_watcher_error.log
-+0 * * * * root /usr/lib/perfsonar/scripts/service_watcher &> /var/log/perfsonar/service_watcher_error.log
-+5 1 * * * root /usr/lib/perfsonar/scripts/service_watcher --regular_restart &> /var/log/perfsonar/service_watcher_error.log
++0 * * * * root /usr/lib/perfsonar/toolkit/scripts/service_watcher &> /var/log/perfsonar/service_watcher_error.log
++5 1 * * * root /usr/lib/perfsonar/toolkit/scripts/service_watcher --regular_restart &> /var/log/perfsonar/service_watcher_error.log
