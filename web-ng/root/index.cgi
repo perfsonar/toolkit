@@ -34,7 +34,7 @@ my $https_url = $full_url;
     $https_url =~ s/^http:/https:/i;
 #}
 
-print $cgi->header('text/html');
+print $cgi->header(-type=>'text/html', -charset=>'utf-8');
 
 my $tt = Template->new({
         INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
@@ -45,6 +45,7 @@ my $page = 'components/dashboard.html';
 my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
+    $include_prefix . 'js/handlebars/handlebars.js', 
     $include_prefix . 'js/actions/Dispatcher.js', 
     $include_prefix . 'js/shared/SharedUIFunctions.js', 
     $include_prefix . 'js/stores/HostDetailsStore.js', 
@@ -60,7 +61,6 @@ if ($authenticated) {
 
 push @$js_files, (
     $include_prefix . 'js/stores/TestStore.js', 
-    $include_prefix . 'js/handlebars/handlebars.js', 
     '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
     '/serviceTest/JS/TestResultUtils.js', # TODO: fix to better relative URL
     $include_prefix . 'js/components/HostInfoComponent.js', 

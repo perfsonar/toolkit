@@ -263,7 +263,7 @@ if ($format eq "json") {
         host_memory => int((&totalmem()/(1024*1024*1024) + .5)) #round to nearest GB
     );
 
-    print $cgi->header('application/json');
+    print $cgi->header(-type=>'application/json', -charset=>'utf-8');
     print encode_json(\%json);
 }
 else {

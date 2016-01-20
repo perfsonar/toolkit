@@ -51,3 +51,23 @@ label.space {
     font-size:120%; 
     margin-left:1em;
 }
+
+table.test_results tr.no_data td.test-values {
+    color: #CCC;
+}
+
+table.test_results tr.no_data td.test-values span.loading {
+    vertical-align:middle;
+    font-weight:normal;
+    display:block;
+}
+
+/*
+table.test_results tr.data td.test-values.loading {
+    display:none;
+}
+
+table.test_results tr.no_data td.test-values.data {
+    display:none;
+}
+*/
