@@ -368,6 +368,11 @@ ln -sf /opt/perfsonar_ps/toolkit/web/templates/footer.tmpl /opt/perfsonar_ps/ser
 ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web/root/admin/logs
 ln -sf /var/log/perfsonar /opt/perfsonar_ps/toolkit/web-ng/root/admin/logs
 
+# Install links to the toolkit header/footer/sidebar in the log_view
+ln -sf /opt/perfsonar_ps/toolkit/web/templates/header.tmpl /opt/perfsonar_ps/toolkit/web/root/admin/log_view/templates/
+ln -sf /opt/perfsonar_ps/toolkit/web/templates/sidebar.html /opt/perfsonar_ps/toolkit/web/root/admin/log_view/templates/
+ln -sf /opt/perfsonar_ps/toolkit/web/templates/footer.tmpl /opt/perfsonar_ps/toolkit/web/root/admin/log_view/templates/
+
 # Overwrite the existing configuration files for the services with new
 # configuration files containing the default settings.
 cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/ls_registration_daemon.conf /opt/perfsonar_ps/ls_registration_daemon/etc/ls_registration_daemon.conf
