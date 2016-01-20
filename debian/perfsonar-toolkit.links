@@ -1,2 +1,5 @@
 /var/log/perfsonar /usr/lib/perfsonar/web/root/admin/logs
 /var/log/perfsonar /usr/lib/perfsonar/web-ng/root/admin/logs
+/usr/lib/perfsonar/web/templates/header.tmpl /usr/lib/perfsonar/web/root/admin/log_view/templates/
+/usr/lib/perfsonar/web/templates/footer.tmpl /usr/lib/perfsonar/web/root/admin/log_view/templates/
+/usr/lib/perfsonar/web/templates/sidebar.html /usr/lib/perfsonar/web/root/admin/log_view/templates/
