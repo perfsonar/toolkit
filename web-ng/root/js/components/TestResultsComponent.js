@@ -6,7 +6,10 @@ var TestResultsComponent = {
     test_list_topic: 'store.change.test_list',
     tests_topic: 'store.change.tests',
     inactive_threshold: (new Date() / 1000) - 86400 * 7, // now minus 7 days
-    ma_url: 'http://localhost/esmond/perfsonar/archive/'
+    ma_url: 'http://localhost/esmond/perfsonar/archive/',
+    testListSet: false,
+    testDataSet: false,
+    data: {},
 };
 
 $.urlParam = function(name){
@@ -20,18 +23,84 @@ $.urlParam = function(name){
 };
 
 TestResultsComponent.initialize = function() {
+    TestResultsComponent.data = {};
+    //$('#test-loading-modal').foundation('reveal', 'open');
+    $('#test-loading-modal').show();
     var ma_url = TestStore.getMAURL();
     TestResultsComponent.ma_url = ma_url;
     TestResultsComponent._registerHelpers();
-    Dispatcher.subscribe(TestResultsComponent.tests_topic, TestResultsComponent._setTestResults);
+    Dispatcher.subscribe(TestResultsComponent.tests_topic, TestResultsComponent._setTestData);
+    Dispatcher.subscribe(TestResultsComponent.test_list_topic, TestResultsComponent._setTestList);
 };
 
-TestResultsComponent._setTestResults = function( topic ) {
+TestResultsComponent._setTestData = function( ) {
+    var table_sel = "#testResultsTable";
+    var table_el = $( table_sel );
+    var rows_el = $("#testResultsTable tr.no_data");
+    rows_el.addClass('data');
+    rows_el.removeClass('no_data');
+    
+    var data = TestResultsComponent.data;
+    var test_data = TestStore.getTests();
+    data.test_data = test_data;
+    var test_list = data.test_results;
+    TestResultsComponent.testDataSet = true;
+    console.log("test data data", data);
+
+    var test_data_template = $("#test-data-value-template").html();
+    var template = Handlebars.compile(test_data_template);
+
+    for(var i=0; i<test_list.length; i++) {
+        var test = test_list[i];
+        var success = TestResultsComponent._setSingleTestData( test, test_data, template );
+
+    }
+
+
+};
+
+// Helper function that sets the stats data for ONE test
+TestResultsComponent._setSingleTestData = function ( test, test_data, template ) {
+    var source = test.source;
+    var dest = test.destination;
+    var result = $.grep(test_data, function(e){ 
+        return ( (e.source_ip == source && e.destination_ip == dest) || ( e.source_ip == dest && e.destination_ip == source) );
+    });
+
+    if (result.length == 0) {
+        // not found
+        console.log("test data not found; source: " + source + " dest: " + dest);
+    } else if (result.length == 1) {
+        // access the first (and only) element 
+        result = result[0];
+        var types = [ "throughput", "latency", "loss"  ];
+        for(var i in types) {
+            var type = types[i];
+            result.type = type;
+            var test_data_template = template(result);
+            $("tr#test_row_" + test.rowID + " td.test-values." + type).html(test_data_template);
+        }
+
+    } else {
+        // multiple items found
+        console.log("multiple test data found, this should not happen");
+        // TODO: handle this case anyway
+    }
+    
+
+};
+
+TestResultsComponent._setTestList = function( ) {
+    //$('#test-loading-modal').foundation('reveal', 'close');
+    $('#test-loading-modal').hide();
     if ($('#num_test_results').length == 0 || $('#num_test_results_holder').length == 0 || $("#test_results").length == 0) {
+        console.log("didn't find the template or holder");
         return;
     }
-    var data = {};
-    data.test_results = TestStore.getTests();
+    var data = TestResultsComponent.data;
+    data.test_results = TestStore.getTestList();
+    TestResultsComponent.testListSet = true;
+    console.log('test list data', data.test_results);
     for(var i=0; i<data.test_results.length; i++) {
         data.test_results[i].rowID = i;
     }
