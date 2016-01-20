@@ -5,6 +5,10 @@
      </header>
 </div>
 
+<span id="testDataErrorBox" class="alert-small-failure" style="display:none;">
+    <i class="fa fa-exclamation-triangle"></i> <span id="testDataErrorMessage"></span>
+</span>
+
 <!-- Test results loading indicator -->
 <!-- <div id="test-loading-modal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"> -->
 <div id="test-loading-modal" style="display:none;">
@@ -34,7 +38,7 @@
         </thead>        
         <tbody>
             {{#each test_results}}
-                <tr class="no_data" id="test_row_{{rowID}}">
+                <tr class="no_data {{#if ../summaryDataError}}summary_data_error{{/if}}" id="test_row_{{rowID}}">
                     <td>
                         <div class="hostname">{{source_host}}</div>
                         <div class="host_ip">{{source_ip}}</div>

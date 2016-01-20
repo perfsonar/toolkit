@@ -5,10 +5,14 @@ var TestResultsComponent = {
     test_list: null,
     test_list_topic: 'store.change.test_list',
     tests_topic: 'store.change.tests',
+    tests_error_topic: 'store.change.tests_error',
+    test_list_error_topic: 'store.change.test_list_error',
     inactive_threshold: (new Date() / 1000) - 86400 * 7, // now minus 7 days
     ma_url: 'http://localhost/esmond/perfsonar/archive/',
     testListSet: false,
+    testListError: false,
     testDataSet: false,
+    testsDataError: false,
     data: {},
 };
 
@@ -30,7 +34,64 @@ TestResultsComponent.initialize = function() {
     TestResultsComponent.ma_url = ma_url;
     TestResultsComponent._registerHelpers();
     Dispatcher.subscribe(TestResultsComponent.tests_topic, TestResultsComponent._setTestData);
+    Dispatcher.subscribe(TestResultsComponent.tests_error_topic, TestResultsComponent._setTestDataError);
     Dispatcher.subscribe(TestResultsComponent.test_list_topic, TestResultsComponent._setTestList);
+    Dispatcher.subscribe(TestResultsComponent.test_list_error_topic, TestResultsComponent._setTestListError);
+};
+
+
+/*
+TestResultsComponent._handleTestDataError = function( topic, errorThrown ) {
+    if ( TestResultsComponent.testListSet && TestResultsComponent.testErrorSet ) {
+        TestResultsComponent._setTestDataError( topic, errorThrown );
+    }
+};
+*/
+
+TestResultsComponent._setTestListError = function( topic, errorThrown ) {
+    if ( ! (TestResultsComponent.testListSet && TestResultsComponent.testErrorSet) ) {
+        //return;
+    }
+
+    console.log("test list topic", topic)
+    console.log("test list errorThrown", errorThrown)
+    //var messages_el = $("#testResultsTable tr.no_data span.loading");
+    //messages_el.text("Error: " + errorThrown);
+    //messages_el.hide();
+    $("span#testDataErrorBox").show();
+    var error = "Error loading test listing: ";
+    error += errorThrown;
+    if ( errorThrown == "timeout" ) {
+        error += " (this usually means you have too many results to show the list)";
+    }
+    $("span#testDataErrorMessage").text(error);
+    TestResultsComponent.testListError = true;
+    $('#test-loading-modal').hide();
+
+};
+
+TestResultsComponent._setTestDataError = function( topic, errorThrown ) {
+    if ( TestResultsComponent.testListError  ) {
+        return;
+    }
+    if ( ! (TestResultsComponent.testListSet && TestResultsComponent.testErrorSet) ) {
+        //return;
+    }
+
+    console.log("topic", topic)
+    console.log("errorThrown", errorThrown)
+    //var messages_el = $("#testResultsTable tr.no_data span.loading");
+    //messages_el.text("Error: " + errorThrown);
+    //messages_el.hide();
+    $("span#testDataErrorBox").show();
+    var error = "Error loading detailed test summary data: ";
+    error += errorThrown;
+    if ( errorThrown == "timeout" ) {
+        error += " (this usually means you have too many results to show a detailed summary)";
+    }
+    $("span#testDataErrorMessage").text(error);
+    TestResultsComponent.testsDataError = true;
+
 };
 
 TestResultsComponent._setTestData = function( ) {
@@ -53,9 +114,7 @@ TestResultsComponent._setTestData = function( ) {
     for(var i=0; i<test_list.length; i++) {
         var test = test_list[i];
         var success = TestResultsComponent._setSingleTestData( test, test_data, template );
-
     }
-
 
 };
 
@@ -110,6 +169,7 @@ TestResultsComponent._setTestList = function( ) {
     $('#num_test_results_holder').show();
     var test_results_template = $("#test-results-template").html();
     var template = Handlebars.compile(test_results_template);
+    data.summaryDataError = TestResultsComponent.testsDataError;
     var test_results = template(data);
     $("#test_results").html(test_results);
     for (var i in data.test_results) {
