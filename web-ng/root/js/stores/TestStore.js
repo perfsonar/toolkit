@@ -44,9 +44,10 @@ TestStore._retrieveList = function() {
                 Dispatcher.publish('store.change.test_list');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                Dispatcher.publish('store.change.test_list');
-            }
+                console.log("Error retrieving test list: " + errorThrown);
+                Dispatcher.publish('store.change.test_list_error', errorThrown);
+            },
+            //timeout: 3000, // sets timeout to 3 seconds
         });
 };
 
@@ -61,9 +62,10 @@ TestStore._retrieveTests = function() {
                 Dispatcher.publish('store.change.tests');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                Dispatcher.publish('store.change.tests');
-            }
+                console.log( " Error retrieving test data: " + errorThrown);
+                Dispatcher.publish('store.change.tests_error', errorThrown);
+            },
+            //timeout: 3000, // sets timeout to 3 seconds
         });
 };
 
