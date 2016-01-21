@@ -5,10 +5,14 @@ var TestResultsComponent = {
     test_list: null,
     test_list_topic: 'store.change.test_list',
     tests_topic: 'store.change.tests',
+    tests_error_topic: 'store.change.tests_error',
+    test_list_error_topic: 'store.change.test_list_error',
     inactive_threshold: (new Date() / 1000) - 86400 * 7, // now minus 7 days
     ma_url: 'http://localhost/esmond/perfsonar/archive/',
     testListSet: false,
+    testListError: false,
     testDataSet: false,
+    testsDataError: false,
     data: {},
 };
 
@@ -24,38 +28,47 @@ $.urlParam = function(name){
 
 TestResultsComponent.initialize = function() {
     TestResultsComponent.data = {};
-    //$('#test-loading-modal').foundation('reveal', 'open');
     $('#test-loading-modal').show();
     var ma_url = TestStore.getMAURL();
     TestResultsComponent.ma_url = ma_url;
     TestResultsComponent._registerHelpers();
-    Dispatcher.subscribe(TestResultsComponent.tests_topic, TestResultsComponent._setTestData);
+    Dispatcher.subscribe(TestResultsComponent.tests_topic, TestResultsComponent._handleTestData);
+    Dispatcher.subscribe(TestResultsComponent.tests_error_topic, TestResultsComponent._setTestDataError);
     Dispatcher.subscribe(TestResultsComponent.test_list_topic, TestResultsComponent._setTestList);
+    Dispatcher.subscribe(TestResultsComponent.test_list_error_topic, TestResultsComponent._setTestListError);
+};
+
+TestResultsComponent._handleTestData = function( ) {
+    var data = TestResultsComponent.data;
+    var test_data = TestStore.getTests();
+    data.test_data = test_data;
+    TestResultsComponent.testDataSet = true;
+    TestResultsComponent._setTestData();
+
 };
 
 TestResultsComponent._setTestData = function( ) {
+    // We only want to set the test summary data if we already have the listing
+    if ( !TestResultsComponent.testListSet || !TestResultsComponent.testDataSet ) {
+        return;
+    }
+    var data = TestResultsComponent.data;
+    var test_data = data.test_data;
+    var test_list = data.test_results;
+
     var table_sel = "#testResultsTable";
     var table_el = $( table_sel );
     var rows_el = $("#testResultsTable tr.no_data");
     rows_el.addClass('data');
     rows_el.removeClass('no_data');
     
-    var data = TestResultsComponent.data;
-    var test_data = TestStore.getTests();
-    data.test_data = test_data;
-    var test_list = data.test_results;
-    TestResultsComponent.testDataSet = true;
-    console.log("test data data", data);
-
     var test_data_template = $("#test-data-value-template").html();
     var template = Handlebars.compile(test_data_template);
 
     for(var i=0; i<test_list.length; i++) {
         var test = test_list[i];
         var success = TestResultsComponent._setSingleTestData( test, test_data, template );
-
     }
-
 
 };
 
@@ -69,7 +82,7 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
 
     if (result.length == 0) {
         // not found
-        console.log("test data not found; source: " + source + " dest: " + dest);
+        // there isn't much we can do in this case
     } else if (result.length == 1) {
         // access the first (and only) element 
         result = result[0];
@@ -83,8 +96,8 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
 
     } else {
         // multiple items found
-        console.log("multiple test data found, this should not happen");
-        // TODO: handle this case anyway
+        // this shouldn't happen
+        //console.log("multiple test data found, this should not happen");
     }
     
 
@@ -100,7 +113,6 @@ TestResultsComponent._setTestList = function( ) {
     var data = TestResultsComponent.data;
     data.test_results = TestStore.getTestList();
     TestResultsComponent.testListSet = true;
-    console.log('test list data', data.test_results);
     for(var i=0; i<data.test_results.length; i++) {
         data.test_results[i].rowID = i;
     }
@@ -110,6 +122,7 @@ TestResultsComponent._setTestList = function( ) {
     $('#num_test_results_holder').show();
     var test_results_template = $("#test-results-template").html();
     var template = Handlebars.compile(test_results_template);
+    data.summaryDataError = TestResultsComponent.testsDataError;
     var test_results = template(data);
     $("#test_results").html(test_results);
     for (var i in data.test_results) {
@@ -118,7 +131,40 @@ TestResultsComponent._setTestList = function( ) {
             + TestResultsComponent.ipToID(row.destination_ip);
         TestResultsComponent.setTracerouteLink(row.source_ip, row.destination_ip, container_id);
     }
+    TestResultsComponent._setTestData();
 };
+
+TestResultsComponent._setTestListError = function( topic, errorThrown ) {
+
+    $("span#testDataErrorBox").show();
+    var error = "Error loading test listing: ";
+    error += errorThrown;
+    if ( errorThrown == "timeout" ) {
+        error += " (this usually means you have too many results to show the list)";
+    }
+    $("span#testDataErrorMessage").text(error);
+    TestResultsComponent.testListError = true;
+    $('#test-loading-modal').hide();
+
+};
+
+TestResultsComponent._setTestDataError = function( topic, errorThrown ) {
+    // If the test listing didn't load, we can't load the summary data either
+    if ( TestResultsComponent.testListError ) {
+        return;
+    }
+
+    $("span#testDataErrorBox").show();
+    var error = "Error loading detailed test summary data: ";
+    error += errorThrown;
+    if ( errorThrown == "timeout" ) {
+        error += " (this usually means you have too many results to show a detailed summary)";
+    }
+    $("span#testDataErrorMessage").text(error);
+    TestResultsComponent.testsDataError = true;
+
+};
+
 
 TestResultsComponent._registerHelpers = function() {
     Handlebars.registerHelper ("formatValue", function (value, type) {

@@ -62,11 +62,16 @@ table.test_results tr.no_data td.test-values span.loading {
     display:block;
 }
 
-/*
-table.test_results tr.data td.test-values.loading {
+
+table.test_results tr.data td.test-values span.loading {
     display:none;
 }
 
+table.test_results tr.summary_data_error td.test-values span.loading {
+    display:none;
+}
+
+/*
 table.test_results tr.no_data td.test-values.data {
     display:none;
 }

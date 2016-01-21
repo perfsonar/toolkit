@@ -152,7 +152,7 @@ $info_update_method->add_input_parameter(
     description     => "The latitude of the node",
     required        => 0,
     allow_empty     => 1,
-    type            => 'float',
+    type            => 'number',
     );
 
 $info_update_method->add_input_parameter(
@@ -160,7 +160,7 @@ $info_update_method->add_input_parameter(
     description     => "The longitude of the node",
     required        => 0,
     allow_empty     => 1,
-    type            => 'float',
+    type            => 'number',
     );
 
 $info_update_method->add_input_parameter(
@@ -282,7 +282,7 @@ $metadata_update_method->add_input_parameter(
     description     => "The latitude of the node",
     required        => 0,
     allow_empty     => 1,
-    type            => 'float',
+    type            => 'number',
     );
 
 $metadata_update_method->add_input_parameter(
@@ -290,7 +290,7 @@ $metadata_update_method->add_input_parameter(
     description     => "The longitude of the node",
     required        => 0,
     allow_empty     => 1,
-    type            => 'float',
+    type            => 'number',
     );
 
 $metadata_update_method->add_input_parameter(
