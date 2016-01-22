@@ -194,7 +194,7 @@ AdminInfoUpdateComponent._saveError = function( topic, message ) {
 
 AdminInfoUpdateComponent._cancel = function() {
     Dispatcher.publish(AdminInfoUpdateComponent.formCancelTopic);
-    Dispatcher.publish(AdminInfoUpdateComponent.info_topic);
+    Dispatcher.publish(AdminInfoUpdateComponent.metadataTopic);
 
 };
 
