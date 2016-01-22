@@ -12,11 +12,10 @@ source /opt/rh/python27/enable
 . bin/activate
 
 #build esmond tables
-python esmond/manage.py syncdb --noinput
+python esmond/manage.py syncdb --noinput &> /dev/null
 
 #create api key
-KEY=`python esmond/manage.py add_ps_metadata_post_user perfsonar | grep "Key:" | cut -f2 -d " "`
-python esmond/manage.py add_timeseries_post_user perfsonar
+KEY=`python esmond/manage.py add_api_key_user perfsonar | grep "Key:" | cut -f2 -d " "`
 
 #put api key in regular_testing
 if [ -n "$KEY" ]; then
