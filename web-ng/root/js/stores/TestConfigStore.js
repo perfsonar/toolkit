@@ -29,6 +29,7 @@ TestConfigStore.testTypes = [
 ];
 
 Dispatcher.subscribe(TestConfigStore.topic, function() {
+    console.log('received test data changed event');
     TestConfigStore.data = TestConfigStore.getData();
     TestConfigStore._setAdditionalVariables();
     //console.log('data from dispatcher/testconfigstore', TestConfigStore.getData());    
@@ -137,18 +138,40 @@ TestConfigStore._setAdditionalVariables = function ( ) {
 
 };
 
+// Sets whether the test is enabled
+// Note that in the backend config, this is counter-intuitively
+// stored as "disabled" that's true if the test is disabled.
 TestConfigStore.setTestEnabled = function ( testID, testStatus ) {
     var data = TestConfigStore.data.test_configuration_raw;
     for(var i in data) {
         var test = data[i];
         if ( testID == test.test_id ) {
-            test.disabled = !testStatus;
+            var disabledStatus = !testStatus;
+            if ( disabledStatus ) {
+                disabledStatus = 1;
+            } else {
+                disabledStatus = 0;
+            }
+            test.disabled = disabledStatus;
+            break; // there should only be one
         }
     }
     //TestConfigStore._setAdditionalVariables();
     console.log('data after setTestEnabled', TestConfigStore.data);
 };
 
+TestConfigStore.setTestDescription = function ( testID, testDescription ) {
+    var data = TestConfigStore.data.test_configuration_raw;
+    for(var i in data) {
+        var test = data[i];
+        if ( testID == test.test_id ) {
+            test.description = testDescription;
+            break; // there should only be one
+        }
+    }
+    //TestConfigStore._setAdditionalVariables();
+    console.log('data after setTestEnabled', TestConfigStore.data);
+};
 // TestConfigStore.addHostToTest
 // Adds a host to a test in the Host-centric view
 TestConfigStore.addHostToTest = function (tests, test, member) {

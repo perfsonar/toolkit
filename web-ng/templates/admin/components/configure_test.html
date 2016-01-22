@@ -8,6 +8,7 @@
 
 <form id="configureTestForm" action="" method="POST">
 
+    <input type="hidden" id="config_test_id" name="config_test_id" value="{{test_id}}" />
     <div class="row">
         <div class="medium-12 columns">
             <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">Configure Test</h3>
@@ -235,8 +236,8 @@
 
                 <div class="row">
                     <div class="medium-12 columns text-right">
-                        <button class="button-primary" style="margin: 0 1em 0 0;">Save</button>
-                        <a href="#">Cancel</a>
+                        <button class="button-primary" style="margin: 0 1em 0 0;" id="testConfigOKButton">OK</button>
+                        <a href="#" id="testConfigCancelButton">Cancel</a>
                     </div>
                 </div>
 

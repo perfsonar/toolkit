@@ -31,6 +31,7 @@ TestConfigComponent.initialize = function() {
     $(".js-subrow").hide();
 
     $("div.config__form").on("click", ".cb_test_enabled", function(e, f) {
+        //console.log('!!!');
         //e.preventDefault();
         // use $(this).data("test-id");
         TestConfigComponent.toggleTestEnabled( this );
@@ -180,9 +181,9 @@ TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
     this.clickedTest = clickedThis;
     var checked = $( this.clickedTest ).prop("checked");
     if ( checked ) {
-        TestConfigStore.setTestEnabled( testID, true );
+        TestConfigStore.setTestEnabled( testID, 1 );
     } else {
-        TestConfigStore.setTestEnabled( testID, false );
+        TestConfigStore.setTestEnabled( testID, 0 );
     }
 
     //$(':checkbox').each(function () { this.checked = !this.checked; });
@@ -228,9 +229,41 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
         TestConfigComponent._setSwitch( '#useAutotuningSwitch' );
         $('.window_size').toggle();
     });
+    this.testConfig = testConfig;
+    var self = this;
+    $('#testConfigOKButton').click( function( e, testID ) {
+        console.log('ok clicked');
+        console.log('self', self);
+        console.log('testID: ' + testID);
+        console.log('e', e);
+        TestConfigComponent._getUserValues( self.testConfig );
+        console.log('testConfig after ok', testConfig);
+
+        Dispatcher.publish( TestConfigStore.topic );
+
+        e.preventDefault();
+        $('#configure-test-modal').foundation('reveal', 'close');
+        console.log("data after ok", TestConfigComponent.data);
+    });
+    $('#testConfigCancelButton').click( function( e ) {
+        console.log('cancel clicked');
+        e.preventDefault();
+        $('#configure-test-modal').foundation('reveal', 'close');
+    });
     $('form#configureTestForm input').change(SharedUIFunctions._showSaveBar);
     $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
     return false;
+};
+
+TestConfigComponent._getUserValues = function( testConfig ) {
+    var testEnabled = $('#testEnabledSwitch').prop("checked");
+    var testID = testConfig.test_id;
+    //testConfig.disabled = !testEnabled;
+    TestConfigStore.setTestEnabled( testID, testEnabled);
+    console.log('test enabled', testEnabled);
+    var testDescription = $("#test-name").val();
+    console.log('test description', testDescription);
+    TestConfigStore.setTestDescription( testID, testDescription );
 };
 
 TestConfigComponent._setSwitch = function( elID ) {
