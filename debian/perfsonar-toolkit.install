@@ -1,6 +1,9 @@
-etc/perfsonar_sudo etc/sudoers.d/
-etc/* etc/perfsonar/toolkit
 scripts/apache-toolkit_web_gui.conf etc/apache2/conf.d/
 web usr/lib/perfsonar/toolkit
 web-ng usr/lib/perfsonar/toolkit
 templates usr/lib/perfsonar/toolkit
+etc/administrative_info etc/perfsonar/toolkit
+etc/clean_esmond_db.conf etc/perfsonar/toolkit
+etc/default_service_configs etc/perfsonar/toolkit
+etc/enabled_services etc/perfsonar/toolkit
+etc/perfsonar_sudo etc/sudoers.d
