@@ -23,7 +23,7 @@ export DJANGO_SETTINGS_MODULE=esmond.settings
 cd /opt/esmond
 source /opt/rh/python27/enable
 . bin/activate
-MA_KEY=`python esmond/manage.py add_ps_metadata_post_user perfsonar | grep "Key:" | cut -f2 -d " "`
+MA_KEY=`python esmond/manage.py add_api_key_user perfsonar | grep "Key:" | cut -f2 -d " "`
 
 PERFSONAR="${BINDIR}/psb_to_esmond.pl -d --pidfile=${PIDFILE} --logfile=${LOGFILE} --user=${USER} --group=${GROUP} --statefile ${STATEFILE} --owmesh-dir ${OWMESH} --mapassword ${MA_KEY}"
 

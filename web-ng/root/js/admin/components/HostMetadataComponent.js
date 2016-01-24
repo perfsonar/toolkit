@@ -24,6 +24,7 @@ HostMetadataComponent._setMetadata = function( topic ) {
     var roleValues = SharedUIFunctions.getSelectedValues( allRoles, selectedRoles );  
     
     var roleSel = $('#node_role_select');
+    roleSel.empty();
     roleSel.select2( { 
         placeholder: HostMetadataComponent.rolePlaceholder,
         data: roleValues,
@@ -35,6 +36,7 @@ HostMetadataComponent._setMetadata = function( topic ) {
     var accessPolicyValues = SharedUIFunctions.getSelectedValues( allAccessPolicies, selectedAccessPolicies );
 
     var accessPolicySel = $('#access_policy');
+    accessPolicySel.empty();
     accessPolicySel.select2( { 
         placeholder: HostMetadataComponent.policyPlaceholder,
         data: accessPolicyValues,
