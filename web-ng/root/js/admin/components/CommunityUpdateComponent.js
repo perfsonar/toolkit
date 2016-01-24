@@ -86,7 +86,7 @@ CommunityUpdateComponent._selectCommunities = function() {
     var sel = $('#update_communities');
     var host = CommunityUpdateComponent.communities.host;
    
-    sel.empty();
+    sel.empty(); // remove old options, if any
 
     CommunityUpdateComponent._combineCommunities();
 
