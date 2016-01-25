@@ -319,4 +319,13 @@ TestConfigComponent._setSwitch = function( elID ) {
     //label_el.text(label);
 };
 
+TestConfigComponent.removeTestMember = function( memberID ) {
+    var row = $('tbody.test-members tr.subrow[member_id=' + memberID + ']');
+    row.remove();
+    //e.preventDefault();
+    //var dataGroup = $(this).attr("data-group");
+    //var el = $(".js-subrow[data-group=" + dataGroup + "]");
+    return false;
+};
+
 TestConfigComponent.initialize();

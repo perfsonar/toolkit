@@ -152,7 +152,7 @@
 
                 <div class="row">
                     <div class="medium-3 columns">
-                                <label for="useAutotuning" class="space">Use Autotuning SET VAL</label>
+                                <label for="useAutotuning" class="space">Use Autotuning</label>
                                 <div class="switch round small">
                                     <input id="useAutotuningSwitch" type="checkbox" {{#unless showWindowSize}} checked{{/unless}}>
                                     <label for="useAutotuningSwitch"></label>
@@ -161,7 +161,7 @@
 
                             </div>
                             <div class="medium-3 columns">
-                                    <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size SET VAL</label>
+                                    <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
                                     <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}">
                             </div>
                             <div class="medium-6 columns">
@@ -185,12 +185,12 @@
                     </thead>
                     <tbody class="test-members">
 {{#each members}}
-                    <tr class="subrow subrow--content">
+                    <tr class="subrow subrow--content" member_id="{{member_id}}">
                         <td>{{address}}</td>
                         <td><input type="text" value="{{description}}"></td>
                         <td><label class="inline-label">IPv4</label> <input type="checkbox" {{#if test_ipv4}}checked{{/if}}></td>
                         <td><label class="inline-label">IPv6</label> <input type="checkbox" {{#if test_ipv6}}checked{{/if}}></td>
-                        <td><a href="#"><i class="fa fa-trash" checked></i></a></td>
+                        <td><a href="" onclick="return TestConfigComponent.removeTestMember( {{member_id}} );" class="member-delete-button"><i class="fa fa-trash" checked></i></a></td>
                     </tr>
 {{/each}}
                     </tbody>
