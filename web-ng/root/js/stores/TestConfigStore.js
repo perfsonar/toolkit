@@ -146,40 +146,77 @@ TestConfigStore._setAdditionalVariables = function ( ) {
 
 };
 
+TestConfigStore.setTestSettings = function ( testID, settings ) {
+    var test = TestConfigStore.getTestByID( testID );
+    if ( settings.enabled ) {
+        test.disabled = 0;
+    } else {
+        test.disabled = 1;
+    }
+    if ( settings.description ) {
+        test.description = settings.description;
+    }
+    if ( settings.interface ) {
+        test.parameters.local_interface = settings.interface;
+    } else {
+        delete test.parameters.local_interface;
+    }
+    if ( test.type == 'bwctl/throughput') {
+        if ( settings.protocol ) {
+            test.parameters.protocol = settings.protocol;
+        } else {
+            delete test.parameters.protocol;
+        }
+        if ( settings.tos_bits ) {
+            test.parameters.tos_bits = settings.tos_bits;
+        } else {
+            test.parameters.tos_bits = 0;
+        }
+
+        if ( settings.window_size && !settings.autotuning ) {
+            test.parameters.window_size = settings.window_size;
+        } else {
+            test.parameters.window_size = 0;
+        }
+    }
+
+};
+
 // Sets whether the test is enabled
 // Note that in the backend config, this is counter-intuitively
 // stored as "disabled" that's true if the test is disabled.
-TestConfigStore.setTestEnabled = function ( testID, testStatus ) {
-    var data = TestConfigStore.data.test_configuration;
-    for(var i in data) {
-        var test = data[i];
-        if ( testID == test.test_id ) {
-            var disabledStatus = !testStatus;
-            if ( disabledStatus ) {
-                disabledStatus = 1;
-            } else {
-                disabledStatus = 0;
-            }
-            test.disabled = disabledStatus;
-            break; // there should only be one
-        }
+TestConfigStore.setTestEnabled = function ( test, testStatus ) {
+    var disabledStatus = !testStatus;
+    if ( disabledStatus ) {
+        disabledStatus = 1;
+    } else {
+        disabledStatus = 0;
     }
-    //TestConfigStore._setAdditionalVariables();
-    console.log('data after setTestEnabled', TestConfigStore.data);
+    test.disabled = disabledStatus;
+    console.log('test after setTestEnabled', test);
 };
 
-TestConfigStore.setTestDescription = function ( testID, testDescription ) {
+TestConfigStore.setTestDescription = function ( test, testDescription ) {
+    test.description = testDescription;
+    console.log('test after setTestDescription', test);
+};
+
+TestConfigStore.setInterface = function ( test, interface ) {
+    test.parameters.local_interface = interface;
+    console.log('test after setInterface', test);
+};
+
+TestConfigStore.getTestByID = function ( testID ) {
     var data = TestConfigStore.data.test_configuration;
     for(var i in data) {
         var test = data[i];
         if ( testID == test.test_id ) {
-            test.description = testDescription;
-            break; // there should only be one
+            return test;
         }
     }
-    //TestConfigStore._setAdditionalVariables();
-    console.log('data after setTestEnabled', TestConfigStore.data);
+    return {};
 };
+
 // TestConfigStore.addHostToTest
 // Adds a host to a test in the Host-centric view
 TestConfigStore.addHostToTest = function (tests, test, member) {

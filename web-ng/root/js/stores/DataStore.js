@@ -36,6 +36,7 @@ function DataStore(topic, url, autoload, type) {
     Dispatcher.subscribe( this.reloadTopic, this._retrieveData );
 
     this._retrieveData = function() {
+        console.log('retrieving data ...');
         var self = this;
         $.ajax({
             url: this.url,

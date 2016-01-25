@@ -227,7 +227,11 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     });
     $('#useAutotuningSwitch').change( function() {
         TestConfigComponent._setSwitch( '#useAutotuningSwitch' );
-        $('.window_size').toggle();
+        if ( $('#useAutotuningSwitch').prop('checked') ) {
+            $('.window_size').hide();
+        } else {
+            $('.window_size').show();
+        }
     });
     this.testConfig = testConfig;
     var self = this;
@@ -239,13 +243,16 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
         TestConfigComponent._getUserValues( self.testConfig );
         console.log('testConfig after ok', testConfig);
 
-        Dispatcher.publish( TestConfigStore.topic + '_reload' );
+        console.log('publishing reloadTopic ' + TestConfigStore.reloadTopic);
 
         e.preventDefault();
         $('#configure-test-modal').foundation('reveal', 'close');
         console.log("data after ok", TestConfigComponent.data);
         console.log("TestConfigStore data after ok", TestConfigStore.data);
         console.log("testconfigadminstore data after ok", TestConfigAdminStore.data);
+
+        // Fire the testConfigStore topic, signalling the data has changed
+        Dispatcher.publish( TestConfigStore.topic );
     });
     $('#testConfigCancelButton').click( function( e ) {
         console.log('cancel clicked');
@@ -260,12 +267,46 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
 TestConfigComponent._getUserValues = function( testConfig ) {
     var testEnabled = $('#testEnabledSwitch').prop("checked");
     var testID = testConfig.test_id;
+    var test = TestConfigStore.getTestByID( testID );
     //testConfig.disabled = !testEnabled;
-    TestConfigStore.setTestEnabled( testID, testEnabled);
+    //TestConfigStore.setTestEnabled( test, testEnabled);
     console.log('test enabled', testEnabled);
     var testDescription = $("#test-name").val();
     console.log('test description', testDescription);
-    TestConfigStore.setTestDescription( testID, testDescription );
+    //TestConfigStore.setTestDescription( test, testDescription );
+    var interface = $("#interfaceSelector").val();
+    console.log('interface: ' + interface);
+    //TestConfigStore.setInterface( test, interface);
+    var settings = {};
+    settings.enabled = testEnabled;
+    settings.description = testDescription;
+    settings.interface = interface;
+
+    switch ( test.type ) {
+        case 'bwctl/throughput':
+            console.log('setting bwctl settings ...');
+            var protocol = $('#protocolSelector').val();
+            console.log('protocol: ' + protocol);
+            settings.protocol = protocol;
+
+            var autotuning = $('#useAutotuningSwitch').val();
+            settings.autotuning = autotuning;
+            console.log('autotuning: ' + autotuning);
+
+            var tos_bits = $('#tosBits').val();
+            settings.tos_bits = tos_bits;
+            console.log('tos_bits: ' + tos_bits);
+
+            var window_size = $('#windowSize').val();
+            settings.window_size = window_size;
+
+            console.log('settings', settings);
+            break;        
+    }
+
+
+    TestConfigStore.setTestSettings( testID, settings );
+    console.log('test config after setTestSettings', test);
 };
 
 TestConfigComponent._setSwitch = function( elID ) {

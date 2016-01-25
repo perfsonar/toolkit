@@ -41,8 +41,8 @@
                 </div>
                 <div class="row">
                     <div class="medium-6 columns">
-                        <label for="interface">Interface</label>
-                        <select id="interface">
+                        <label for="interfaceSelector">Interface</label>
+                        <select id="interfaceSelector">
                             <option value="" {{#unless parameters.local_interface}}selected{{/unless}}>Default</option>
                         {{#each interfaces}}
                             <option value="{{iface}}" {{#compare iface ../parameters.local_interface}}selected{{/compare}}>{{iface}}</option> 
@@ -138,7 +138,7 @@
 
                 <div class="row">
                     <div class="medium-6 columns">
-                                <label for="tos-bits">Tool (make dropdown)</label>
+                                <label for="tool">Tool (make dropdown)</label>
                                 <input type="text" id="tool" value="{{parameters.tool}}">
                     </div>
                     <div class="medium-6 columns">
@@ -152,7 +152,7 @@
 
                 <div class="row">
                     <div class="medium-3 columns">
-                                <label for="useAutotuning" class="space">Use Autotuning</label>
+                                <label for="useAutotuning" class="space">Use Autotuning SET VAL</label>
                                 <div class="switch round small">
                                     <input id="useAutotuningSwitch" type="checkbox" {{#unless showWindowSize}} checked{{/unless}}>
                                     <label for="useAutotuningSwitch"></label>
@@ -161,12 +161,12 @@
 
                             </div>
                             <div class="medium-3 columns">
-                                    <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size</label>
+                                    <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size SET VAL</label>
                                     <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}">
                             </div>
                             <div class="medium-6 columns">
-                                <label for="tos-bits" class="space">TOS bits</label>
-                                <input type="text" id="tos-bits" value="0">
+                                <label for="tosBits" class="space">TOS bits</label>
+                                <input type="text" id="tosBits" value="{{parameters.tos_bits}}">
                             </div>
                     </div>
                 </div>
