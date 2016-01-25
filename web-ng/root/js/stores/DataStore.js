@@ -22,6 +22,7 @@ var DataStore = {
 
 function DataStore(topic, url, autoload, type) {
     this.topic = topic;
+    this.reloadTopic = topic + "_reload";
     this.saveTopic = topic + ".save";
     this.saveErrorTopic = topic + ".save_error";
     this.url = url;
@@ -31,6 +32,8 @@ function DataStore(topic, url, autoload, type) {
     }
     this.type = type || 'GET';
     this.data = null;
+
+    Dispatcher.subscribe( this.reloadTopic, this._retrieveData );
 
     this._retrieveData = function() {
         var self = this;

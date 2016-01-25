@@ -3,7 +3,7 @@
 var TestConfigAdminStore = new DataStore(TestConfigStore.topic, "services/regular_testing.cgi?method=update_test_configuration", false, "POST");
 
 TestConfigAdminStore.save = function( tests ) {
-    tests.data = $.extend( true, [], tests.test_configuration_raw );
+    tests.data = $.extend( true, [], tests.test_configuration );
     TestConfigAdminStore._sanitizeTestConfig( tests );
 
     var topic = TestConfigStore.saveTopic;

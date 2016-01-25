@@ -148,7 +148,7 @@ TestConfigComponent._loadInterfaceWhenReady = function() {
 TestConfigComponent._setTestData = function() {
     var data = {};
     data.testsByHost = TestConfigStore.getTestsByHost();
-    data.testsByTest = TestConfigStore.getTestConfiguration();
+    data.testsByTest = TestConfigStore.getTestConfigurationFormatted();
     TestConfigComponent.data = data;
     TestConfigComponent.dataSet = true;
     TestConfigComponent._loadInterfaceWhenReady();
@@ -239,11 +239,13 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
         TestConfigComponent._getUserValues( self.testConfig );
         console.log('testConfig after ok', testConfig);
 
-        Dispatcher.publish( TestConfigStore.topic );
+        Dispatcher.publish( TestConfigStore.topic + '_reload' );
 
         e.preventDefault();
         $('#configure-test-modal').foundation('reveal', 'close');
         console.log("data after ok", TestConfigComponent.data);
+        console.log("TestConfigStore data after ok", TestConfigStore.data);
+        console.log("testconfigadminstore data after ok", TestConfigAdminStore.data);
     });
     $('#testConfigCancelButton').click( function( e ) {
         console.log('cancel clicked');

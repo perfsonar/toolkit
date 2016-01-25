@@ -31,9 +31,16 @@ TestConfigStore.testTypes = [
 Dispatcher.subscribe(TestConfigStore.topic, function() {
     console.log('received test data changed event');
     TestConfigStore.data = TestConfigStore.getData();
+    console.log('data from dispatcher/testconfigstore', TestConfigStore.getData()); 
     TestConfigStore._setAdditionalVariables();
-    //console.log('data from dispatcher/testconfigstore', TestConfigStore.getData());    
 });
+
+TestConfigStore._processData = function() {
+};
+
+TestConfigStore.getTestConfigurationFormatted = function() {
+    return TestConfigStore.data.test_configuration_formatted;
+};
 
 TestConfigStore.getTestConfiguration = function() {
     return TestConfigStore.data.test_configuration;
@@ -46,8 +53,8 @@ TestConfigStore.getStatus = function() {
 
 TestConfigStore.getAllTestMembers = function() {
     var member_array = [];
-    for(var i in TestConfigStore.data.test_configuration) {
-        var test = TestConfigStore.data.test_configuration[i];
+    for(var i in TestConfigStore.data.test_configuration_formatted) {
+        var test = TestConfigStore.data.test_configuration_formatted[i];
         for(var j in test.members) {
             var member = test.members[j];
             member_array.push(member.address);
@@ -61,8 +68,8 @@ TestConfigStore.getTestsByHost = function() {
     var tests = {};
     var member_array = [];
     var host_id = 0;
-    for(var i in TestConfigStore.data.test_configuration) {
-        var test = TestConfigStore.data.test_configuration[i];
+    for(var i in TestConfigStore.data.test_configuration_formatted) {
+        var test = TestConfigStore.data.test_configuration_formatted[i];
         for(var j in test.members) {
             var member = test.members[j];
             member.host_id = host_id;
@@ -85,8 +92,9 @@ TestConfigStore.getTestsByHost = function() {
 // Set additional variables for each test/member
 TestConfigStore._setAdditionalVariables = function ( ) {
     console.log('setting additional variables');
-    TestConfigStore.data.test_configuration_raw = $.extend( true, [], TestConfigStore.data.test_configuration );
-    var tests = TestConfigStore.data.test_configuration;
+    TestConfigStore.data.test_configuration_formatted = [];
+    TestConfigStore.data.test_configuration_formatted = $.extend( true, [], TestConfigStore.data.test_configuration );
+    var tests = TestConfigStore.data.test_configuration_formatted;
 
     for(var i in tests) {
         var test = tests[i];
@@ -142,7 +150,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
 // Note that in the backend config, this is counter-intuitively
 // stored as "disabled" that's true if the test is disabled.
 TestConfigStore.setTestEnabled = function ( testID, testStatus ) {
-    var data = TestConfigStore.data.test_configuration_raw;
+    var data = TestConfigStore.data.test_configuration;
     for(var i in data) {
         var test = data[i];
         if ( testID == test.test_id ) {
@@ -161,7 +169,7 @@ TestConfigStore.setTestEnabled = function ( testID, testStatus ) {
 };
 
 TestConfigStore.setTestDescription = function ( testID, testDescription ) {
-    var data = TestConfigStore.data.test_configuration_raw;
+    var data = TestConfigStore.data.test_configuration;
     for(var i in data) {
         var test = data[i];
         if ( testID == test.test_id ) {
@@ -204,7 +212,7 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
 // the provided testID
 TestConfigStore.getTestConfig = function ( testID ) {
     var ret;
-    var data = TestConfigStore.data.test_configuration;
+    var data = TestConfigStore.data.test_configuration_formatted;
     for(var i in data) {
         var test = data[i];
         if ( test.test_id == testID ) {
