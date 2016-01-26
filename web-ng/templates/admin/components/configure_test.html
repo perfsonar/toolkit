@@ -175,7 +175,7 @@
 
             <div class="module module--config-table">
                 <h3 class="module-header__title font-bold">Test members</h3>
-                <table>
+                <table id="test-members">
                     <thead>
                         <tr>
                             <th>Host</th>
@@ -185,6 +185,8 @@
                     </thead>
                     <tbody class="test-members">
 {{#each members}}
+    {{> member}}
+{{!--
                     <tr class="subrow subrow--content" member_id="{{member_id}}">
                         <td>{{address}}</td>
                         <td><input type="text" value="{{description}}"></td>
@@ -192,17 +194,21 @@
                         <td><label class="inline-label">IPv6</label> <input type="checkbox" {{#if test_ipv6}}checked{{/if}}></td>
                         <td><a href="" onclick="return TestConfigComponent.removeTestMember( {{member_id}} );" class="member-delete-button"><i class="fa fa-trash" checked></i></a></td>
                     </tr>
+--}}
 {{/each}}
                     </tbody>
                 </table>
 
                 <!-- *** Add new test members panel *** -->
 
-                <a href="#" class="add_panel_heading"><i class="fa fa-plus"></i> Add Test Member(s)</a>
+                <a href="#" onclick="return TestConfigComponent.addTestMember" class="add_panel_heading"><i class="fa fa-plus"></i> Add Test Member(s)</a>
 
                 <div id="addTestMemberPanel" class="add_panel">
                 <fieldset>
-                    <p>Enter a host name below or <a href="#">browse communities</a> to add more test members.</p>
+                    <p>Enter host information below to add new test members.</p>
+<!--
+<p> or <a href="#">browse communities</a> to add more test members.</p>
+-->
 
                         <div class="row">
                             <div class="medium-4 columns">
@@ -217,7 +223,7 @@
                                 <div class="row">
                                     <div class="medium-6 columns">
                                         <label  class="inline-label" for="new-ipv4">IPv4</label>
-                                        <input type="checkbox" id="new-ipv4">
+                                        <input type="checkbox" id="new-ipv4" checked="checked">
                                     </div>
                                     <div class="medium-6 columns">
                                         <label  class="inline-label" for="new-ipv6">IPv6</label>
@@ -261,3 +267,15 @@
 
 </script>
 
+
+<script id="member-partial" type="text/x-handlebars-template">
+
+<tr class="subrow subrow--content" member_id="{{member_id}}">
+    <td>{{address}}</td>
+    <td><input type="text" value="{{description}}"></td>
+    <td><label class="inline-label">IPv4</label> <input type="checkbox" {{#if test_ipv4}}checked{{/if}}></td>
+    <td><label class="inline-label">IPv6</label> <input type="checkbox" {{#if test_ipv6}}checked{{/if}}></td>
+    <td><a href="" onclick="return TestConfigComponent.removeTestMember( '{{member_id}}' );" class="member-delete-button"><i class="fa fa-trash" checked></i></a></td>
+</tr>
+
+</script>

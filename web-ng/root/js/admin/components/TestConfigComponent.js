@@ -216,6 +216,12 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     var testConfig = TestConfigStore.getTestConfig( testID );
     testConfig.interfaces = TestConfigComponent.interfaces;
     console.log("test config", testConfig);
+
+    var memberTemplate = Handlebars.compile($("#member-partial").html());
+    TestConfigComponent.memberTemplate = memberTemplate;
+    //Handlebars.registerPartial("member", $("#member-partial").html());
+    Handlebars.registerPartial("member", memberTemplate);
+
     var config_template = $("#configureTestTemplate").html();
     var template = Handlebars.compile( config_template );
     var config_modal = template( testConfig );
@@ -233,6 +239,12 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
             $('.window_size').show();
         }
     });
+
+    $('#member_add_button').click( function( e ) {
+        TestConfigComponent.addTestMember(e);
+    });
+
+
     this.testConfig = testConfig;
     var self = this;
     $('#testConfigOKButton').click( function( e, testID ) {
@@ -325,6 +337,36 @@ TestConfigComponent.removeTestMember = function( memberID ) {
     //e.preventDefault();
     //var dataGroup = $(this).attr("data-group");
     //var el = $(".js-subrow[data-group=" + dataGroup + "]");
+    return false;
+};
+
+TestConfigComponent.addTestMember = function(e) {
+    e.preventDefault();
+    var test = this.testConfig;
+    var memberTemplate = TestConfigComponent.memberTemplate;
+    var hostname = $('#new-host-name').val();
+    var description = $('#new-host-description').val();
+    var new_host_ipv4 = $('#new-ipv4').prop("checked");
+    var new_host_ipv6 = $('#new-ipv6').prop("checked");
+    var id = TestConfigStore.generateMemberID( test );
+
+    var newHost = {};
+    newHost.address = hostname;
+    newHost.description = description;
+    newHost.test_ipv4 = new_host_ipv4;
+    newHost.test_ipv6 = new_host_ipv6;
+    newHost.member_id = id;
+
+    var memberMarkup = memberTemplate( newHost );
+
+
+    var table = $('table#test-members > tbody:last-child');
+    
+    table.append( memberMarkup );
+    
+    $('#new-host-name').val('');
+    $('#new-host-description').val('');
+
     return false;
 };
 

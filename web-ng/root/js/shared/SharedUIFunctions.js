@@ -124,6 +124,11 @@ SharedUIFunctions.getTime = function(seconds) {
     return output;
 };
 
+SharedUIFunctions.generateRandomIntInRange = function( min, max ) {
+    var rand = Math.floor(Math.random() * (max - min) + min);
+    return rand;
+};
+
 // Register a 'compare' helper function for handling conditional 
 // comparison of values
 // see https://gist.github.com/pheuter/3515945#gistcomment-1378171

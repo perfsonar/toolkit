@@ -182,6 +182,35 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
 
 };
 
+// Given a test config, this function generates and returns 
+// a new, integer unique id that doesn't conflict with any of 
+// the existing member ids
+TestConfigStore.generateMemberID = function( test ) {
+    var min = 2000000;
+    var max = 3000000;
+    var ids = {};
+    for(var i in test.members) {
+        var member_id = test.members[i].member_id;
+        ids[ test.members[i].member_id ] = 1;
+
+    }    
+    var rand = SharedUIFunctions.generateRandomIntInRange( min, max );
+    var i = 0;
+    while ( rand in ids ) {
+        rand = SharedUIFunctions.generateRandomIntInRange( min, max );
+        i++;
+
+        // If we've tried 100 times and haven't found any 
+        // usable ids, give up. This shouldn't happen
+        if ( i > 100 ) {
+            return false;
+        }
+    }
+    return rand;
+
+};
+
+
 // Sets whether the test is enabled
 // Note that in the backend config, this is counter-intuitively
 // stored as "disabled" that's true if the test is disabled.
