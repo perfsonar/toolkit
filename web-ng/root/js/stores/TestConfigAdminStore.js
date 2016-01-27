@@ -43,6 +43,9 @@ TestConfigAdminStore.save = function( tests ) {
 TestConfigAdminStore._sanitizeTestConfig = function( tests ) {
     for(var i in tests.data) {
         var test = tests.data[i];
+        if ( test.parameters.protocol == 'tcp' ) {
+            delete test.parameters.udp_bandwidth;
+        }
         for(var j in test.members) {
             var member = test.members[j];
             delete member.member_id;
