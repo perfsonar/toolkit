@@ -43,14 +43,12 @@ TestConfigComponent.initialize = function() {
     $("div.config__form").on("click", "a#viewByHost", function(e) {
         e.preventDefault();
         TestConfigComponent.tableView = 'host';
-        //SharedUIFunctions.setUrlParameter( 'view', TestConfigComponent.tableView );
         SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView );
         TestConfigComponent._showTable( );
     });
     $("div.config__form").on("click", "a#viewByTest", function(e) {
         e.preventDefault();
         TestConfigComponent.tableView = 'test';
-        //SharedUIFunctions.setUrlParameter( 'view', TestConfigComponent.tableView );
         SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView );
         TestConfigComponent._showTable( );
     });
