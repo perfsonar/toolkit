@@ -138,7 +138,8 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         // Set test_interval_formatted
         var interval = test.parameters.test_interval;
         if ( interval != undefined ) {
-            test.parameters.test_interval_formatted = SharedUIFunctions.getTime( interval );
+            var time = SharedUIFunctions.getTimeWithUnits( interval ); 
+            test.parameters.test_interval_formatted = time;
         }
     }
     console.log('data after adding additional info', TestConfigStore.data);

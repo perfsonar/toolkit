@@ -38,7 +38,7 @@
                         {{description}}
                     </td>
                     <td>{{type_formatted}}</td>
-                    <td>{{parameters.test_interval_formatted}}</td>
+                    <td>{{parameters.test_interval_formatted.valueFormatted}}</td>
                     <td>{{formatTestCount members.length}}</td>
                     <td><input type="checkbox" {{#unless disabled}}checked{{/unless}} class="cb_test_enabled" data-test-id="{{test_id}}"></td>
                     <td><a href="#" data-reveal-id="configure-test-modal"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>

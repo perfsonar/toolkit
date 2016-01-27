@@ -361,6 +361,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var protocol = $('#protocolSelector').val();
             console.log('protocol: ' + protocol);
             settings.protocol = protocol;
+
             var autotuning = $('#useAutotuningSwitch').val();
             settings.autotuning = autotuning;
             console.log('autotuning: ' + autotuning);

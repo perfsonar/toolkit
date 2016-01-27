@@ -89,41 +89,43 @@ Handlebars.registerHelper("everyOther", function (index, amount, scope) {
         return scope.fn(this);
 });
 
-SharedUIFunctions.getTime = function(seconds) {
+// Given a time in seconds, reduce to its lowest granularity and return
+// formatted value, raw values, and unit text
+SharedUIFunctions.getTimeWithUnits = function( seconds ) {
+    var granularity;
+    var unit;
 
-    //a day contains 60 * 60 * 24 = 86400 seconds
-    //an hour contains 60 * 60 = 3600 seconds
-    //a minute contains 60 seconds
-    //the amount of seconds we have left
-    var leftover = seconds;
+    if (seconds % 86400 == 0) {
+        granularity = 86400;
+        unit = 'day';
+    } else if (seconds % 3600 == 0) {
+        granularity = 3600;
+        unit = 'hour';
+    } else if (seconds % 60 == 0) {
+        granularity = 60;
+        unit = 'minute'
+    } else {
+        granularity = 1;
+        unit = 'second';
+    }
 
-    //how many full days fits in the amount of leftover seconds
-    var days = Math.floor(leftover / 86400);
+    var value = seconds / granularity;
+    var valueFormatted = value + ' ' + unit;
+    if ( value != 1 ) {
+        valueFormatted += 's';
+    }
+    var output = {};
+    output.seconds = seconds;
+    output.value = value;
+    output.valueFormatted = valueFormatted;
+    output.unit = unit;
 
-    //how many seconds are left
-    leftover = leftover - (days * 86400);
+    console.log('timeWithUnits output', output);
 
-    //how many full hours fits in the amount of leftover seconds
-    var hours = Math.floor(leftover / 3600);
-
-    //how many seconds are left
-    leftover = leftover - (hours * 3600);
-
-    //how many minutes fits in the amount of leftover seconds
-    var minutes = leftover / 60;
-
-    //how many seconds are left
-    leftover = leftover - (minutes * 60);
-
-    var output = '';
-    output += (days ? days + ' d ' : '');
-    output += (hours ? hours + ' hr ' : '');
-    output += (minutes ? minutes + ' min ' : '');
-    output += (leftover ? leftover + ' s ' : '');
-    
     return output;
 };
-
+ 
+   
 SharedUIFunctions.generateRandomIntInRange = function( min, max ) {
     var rand = Math.floor(Math.random() * (max - min) + min);
     return rand;

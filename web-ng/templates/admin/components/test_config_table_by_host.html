@@ -51,7 +51,7 @@
                     <tr class="subrow subrow--content subrow--indent js-subrow {{#if @last}}last{{/if}}{{#if ../expanded}} expanded{{/if}}" data-group="{{../host_id}}">
                         <td>{{description}}</td>
                         <td>{{type_formatted}}</td>
-                        <td>{{parameters.test_interval_formatted}}</td>
+                        <td>{{parameters.test_interval_formatted.valueFormatted}}</td>
                         <td>
                             <input type="checkbox" {{#unless disabled}}checked{{/unless}} class="cb_test_enabled" data-test-id="{{test_id}}" disabled="disabled">
                         </td>

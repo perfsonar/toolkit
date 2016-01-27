@@ -82,19 +82,20 @@
 {{else}}
                 <div class="row">
 
-                    <div class="medium-6 columns">
-                        {{#if parameters.test_interval_formatted}}
-                        <label for="time-between">Time between tests (TODO: make dropdown)</label>
-                        <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted}}" />
-<!--
-                        <select id="time-between">
-                            <option>10 Minutes</option>
-                            <option>15 Minutes</option>
-                            <option selected>30 Minutes</option>
-                            <option>60 Minutes</option>
-                        </select>
--->
+                    <div class="medium-3 columns">
+                        {{#if parameters.test_interval_formatted.value}}
+                        <label for="time-between">Time between tests</label>
+                        <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted.value}}" />
                         {{/if}}
+                    </div>
+                    <div class="medium-3 columns">
+                        <label for="time-between-units">Unit</label>
+                        <select id="time-between-units">
+                            <option value="second" {{#compare parameters.test_interval_formatted.unit "second"}}selected{{/compare}} >Seconds</option>
+                            <option value="minute" {{#compare parameters.test_interval_formatted.unit "minute"}}selected{{/compare}} >Minutes</option>
+                            <option value="hour" {{#compare parameters.test_interval_formatted.unit "hour"}}selected{{/compare}} >Hours</option>
+                            <option value="day" {{#compare parameters.test_interval_formatted.unit "day"}}selected{{/compare}} >Days</option>
+                        </select>
                     </div>
                     <div class="medium-6 columns">
                         {{#if showThroughputParameters}}
