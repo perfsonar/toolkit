@@ -182,6 +182,16 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
 
 };
 
+TestConfigStore.setTestMembers = function ( testID, settings ) {
+    console.log('setting test members');
+    var test = TestConfigStore.getTestByID( testID );
+    //test.members = []; 
+    //test.members = settings.members;
+    //TODO: investigate, is this necessary? doesn't seem to be
+
+
+};
+
 // Given a test config, this function generates and returns 
 // a new, integer unique id that doesn't conflict with any of 
 // the existing member ids
@@ -240,7 +250,7 @@ TestConfigStore.getTestByID = function ( testID ) {
     for(var i in data) {
         var test = data[i];
         if ( testID == test.test_id ) {
-            return test;
+            return TestConfigStore.data.test_configuration[i];
         }
     }
     return {};
@@ -250,7 +260,7 @@ TestConfigStore.getTestByID = function ( testID ) {
 // Adds a host to a test in the Host-centric view
 TestConfigStore.addHostToTest = function (tests, test, member) {
     var address = member.address;
-    var type = test.type;   
+    var type = test.type;
     var host_id = member.host_id;
     var protocol = test.parameters.protocol;
     var type_count_name = type + "_count";
@@ -271,6 +281,74 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
         tests[address][type_count_name] = 1;
     }
     return tests;
+
+};
+
+TestConfigStore.deleteMemberFromTest = function ( testID, memberID ) {
+    var test = TestConfigStore.getTestByID( testID );
+    var members = test.members;
+    this.test = test;
+
+    for (var i = members.length - 1; i >= 0; i--) {
+        var member = members[i];
+        if ( member.member_id == memberID ) {
+            members.splice( i, 1 );
+            return true;
+        }
+    }
+
+    return false;
+
+};
+
+TestConfigStore.getTestMemberIndex = function( memberID, testID ) {
+    var test = TestConfigStore.getTestByID( testID );
+    for ( var i in test.members ) {
+        if ( test.members[i].member_id == memberID ) {
+            return i;
+        }
+    }
+    return -1;
+};
+
+TestConfigStore.addOrUpdateTestMember = function ( testID, member ) {
+    var test = TestConfigStore.getTestByID( testID );
+    var memberIndex = TestConfigStore.getTestMemberIndex( member.member_id, testID );
+
+
+    /*
+    var result = $.grep( test.members, function( val, index ) {
+        return ( val.member_id == member.member_id  );
+    });
+    console.log('addOrUpdate grep result', result);
+    */
+    var config = {};
+    /*
+    config.address = member.address;
+    config.description = member.description;
+    config.test_ipv4 = member.test_ipv4;
+    config.test_ipv6 = member.test_ipv6;
+    */
+
+    if ( memberIndex >= 0 ) {
+        // The member was found in the config. Update it with the new values.
+        // We do this by taking the config as stored as 'defaults' and override
+        // anything that was specified in the GUI. This way we should be able to 
+        // retain any settings that were stored in the config that the GUI does not
+        // support
+        var result = test.members[ memberIndex ];
+
+        //var config = $.extend( {}, result, member );
+        var config = member;
+        test.members[memberIndex] = $.extend({}, result, member);
+        //test.members[memberIndex] = config;
+        return true;
+    } else {
+        // this member not found
+        // add it as a new member, in this case
+        test.members.push( member );
+        return true;
+    }
 
 };
 

@@ -253,6 +253,7 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
         console.log('testID: ' + testID);
         console.log('e', e);
         TestConfigComponent._getUserValues( self.testConfig );
+        TestConfigComponent._getNewMemberConfig ( self.testConfig );
         console.log('testConfig after ok', testConfig);
 
         console.log('publishing reloadTopic ' + TestConfigStore.reloadTopic);
@@ -275,6 +276,66 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
     return false;
 };
+
+TestConfigComponent._getNewMemberConfig = function( test ) {
+    var testTable = $('table#test-members');
+
+    // Create a hash containing the member ids
+    // we'll delete them from the hash as we update the values from the form
+    // if we have any left over at the end, these have been deleted from the
+    // form and need to be deleted from the backend
+    this.existingMemberIDs = {};
+    var existingMemberIDs = this.existingMemberIDs;
+    for( var i in test.members ) {
+        existingMemberIDs[ test.members[i].member_id ] = 1;
+    }
+
+    this.existingMemberIDs = existingMemberIDs;
+    this.test = test;
+    var self = this;
+    var tableRows = $('table#test-members > tbody > tr.member').each( function () {
+        var memberID = $(this).attr("member_id");
+        var testID = self.test.test_id;
+        var member = {};
+        member.member_id = memberID;
+        var row = $(this);
+        console.log('row', row);
+        var address = row.find('td.address').text();
+        console.log('address', address);
+        var description = row.find('input.description').val();
+        console.log('description', description);
+
+        var test_ipv4 = row.find('input.test_ipv4').prop('checked');
+        var test_ipv6 = row.find('input.test_ipv6').prop('checked');
+
+        console.log('test_ipv4', test_ipv4, 'test_ipv6', test_ipv6);
+
+        member.address = address;
+        member.description = description;
+        member.test_ipv4 = test_ipv4;
+        member.test_ipv6 = test_ipv6;
+
+        TestConfigStore.addOrUpdateTestMember( testID, member );
+        console.log('memberID ' + memberID);
+        delete self.existingMemberIDs[ memberID ];
+    });
+
+    // If there are any existingMemberIDs left, these are nodes that were
+    // in the config but NOT in the user input form (they need to
+    // be deleted).
+    $.each(existingMemberIDs, function( memberID, value ) {
+        console.log('memberID', memberID);
+        console.log('value', value);
+        var success = TestConfigStore.deleteMemberFromTest( test.test_id, memberID );
+        console.log('attempted to delete memberID: ' + memberID + ' success: ' + success);
+    });
+
+    console.log('test config before setTestMembers', test);
+    TestConfigStore.setTestMembers( test.test_id, test );
+    console.log('test config after setTestMembers', test);
+
+};
+
 
 TestConfigComponent._getUserValues = function( testConfig ) {
     var testEnabled = $('#testEnabledSwitch').prop("checked");
@@ -337,6 +398,8 @@ TestConfigComponent.removeTestMember = function( memberID ) {
     //e.preventDefault();
     //var dataGroup = $(this).attr("data-group");
     //var el = $(".js-subrow[data-group=" + dataGroup + "]");
+    SharedUIFunctions._showSaveBar();
+
     return false;
 };
 

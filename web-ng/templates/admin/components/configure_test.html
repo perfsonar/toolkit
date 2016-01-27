@@ -186,15 +186,6 @@
                     <tbody class="test-members">
 {{#each members}}
     {{> member}}
-{{!--
-                    <tr class="subrow subrow--content" member_id="{{member_id}}">
-                        <td>{{address}}</td>
-                        <td><input type="text" value="{{description}}"></td>
-                        <td><label class="inline-label">IPv4</label> <input type="checkbox" {{#if test_ipv4}}checked{{/if}}></td>
-                        <td><label class="inline-label">IPv6</label> <input type="checkbox" {{#if test_ipv6}}checked{{/if}}></td>
-                        <td><a href="" onclick="return TestConfigComponent.removeTestMember( {{member_id}} );" class="member-delete-button"><i class="fa fa-trash" checked></i></a></td>
-                    </tr>
---}}
 {{/each}}
                     </tbody>
                 </table>
@@ -270,11 +261,11 @@
 
 <script id="member-partial" type="text/x-handlebars-template">
 
-<tr class="subrow subrow--content" member_id="{{member_id}}">
-    <td>{{address}}</td>
-    <td><input type="text" value="{{description}}"></td>
-    <td><label class="inline-label">IPv4</label> <input type="checkbox" {{#if test_ipv4}}checked{{/if}}></td>
-    <td><label class="inline-label">IPv6</label> <input type="checkbox" {{#if test_ipv6}}checked{{/if}}></td>
+<tr class="subrow subrow--content member" member_id="{{member_id}}">
+    <td class="address">{{address}}</td>
+    <td><input type="text" class="description" value="{{description}}"></td>
+    <td><label class="inline-label">IPv4</label> <input type="checkbox" class="test_ipv4" {{#if test_ipv4}}checked{{/if}}></td>
+    <td><label class="inline-label">IPv6</label> <input type="checkbox" class="test_ipv6" {{#if test_ipv6}}checked{{/if}}></td>
     <td><a href="" onclick="return TestConfigComponent.removeTestMember( '{{member_id}}' );" class="member-delete-button"><i class="fa fa-trash" checked></i></a></td>
 </tr>
 
