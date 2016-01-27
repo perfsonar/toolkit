@@ -89,6 +89,76 @@ Handlebars.registerHelper("everyOther", function (index, amount, scope) {
         return scope.fn(this);
 });
 
+SharedUIFunctions.getSecondsFromFields = function( valueID, unitID ) {
+
+};
+
+SharedUIFunctions.getUrlParameter = function ( paramName ) {
+    var pageURL = decodeURIComponent(window.location.search.substring(1));
+    var URLVariables = pageURL.split('&');
+
+    var parameterName;
+    for (var i = 0; i < URLVariables.length; i++) {
+        parameterName = URLVariables[i].split('=');
+
+        if (parameterName[0] === paramName) {
+            return parameterName[1] === undefined ? true : parameterName[1];
+        }
+    }
+};
+
+
+SharedUIFunctions.setUrlParameter = function ( paramName, value ) {
+    var pageURL = decodeURIComponent(window.location.search.substring(1));
+    var URLVariables = pageURL.split('&');
+
+    var parameterName;
+    for (var i = 0; i < URLVariables.length; i++) {
+        parameterName = URLVariables[i].split('=');
+        console.log('parameterName', parameterName, 'value', value);
+
+        if (parameterName[0] === paramName) {
+            parameterName[0] = value;
+            console.log('parameterName after setting', parameterName, 'value', value);
+
+            var param = {};
+            param.view = value;
+            console.log('param', param);
+
+
+
+            return true;
+            //return parameterName[1] === undefined ? true : parameterName[1];
+        }
+    }
+};
+
+SharedUIFunctions.addQueryStringParameter = function(name, value) {
+    var url = window.location.href;
+    console.log('url', url);
+    var re = new RegExp("([?&]" + name + "=)[^&]+", "");
+
+    function add(sep) {
+        url += sep + name + "=" + encodeURIComponent(value);
+    }
+
+    function change() {
+        url = url.replace(re, "$1" + encodeURIComponent(value));
+    }
+    if (url.indexOf("?") === -1) {
+        add("?");
+    } else {
+        if (re.test(url)) {
+            change();
+        } else {
+            add("&");
+        }
+    }
+    //window.history.pushState("object or string", "View by " + value, url);
+    window.history.replaceState("object or string", "View by " + value, url);
+};
+
+
 // Given a time in seconds, reduce to its lowest granularity and return
 // formatted value, raw values, and unit text
 SharedUIFunctions.getTimeWithUnits = function( seconds ) {

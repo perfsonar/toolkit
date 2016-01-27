@@ -5,7 +5,7 @@ var TestConfigComponent = {
     data: null,
     dataSet: false,
     expandedDataGroups: {},
-    tableView: 'byHost',
+    tableView: 'host',
     interfaces: [],
     interfacesSet: false,
 };
@@ -14,7 +14,11 @@ TestConfigComponent.initialize = function() {
     //$('#loading-modal').foundation('reveal', 'open');
     Dispatcher.subscribe( TestConfigComponent.testConfigTopic, TestConfigComponent._setTestData );
     Dispatcher.subscribe( HostDetailsStore.detailsTopic, TestConfigComponent._setHostData );
-
+    var view = SharedUIFunctions.getUrlParameter( 'view' );
+    console.log('view', view);
+    if ( typeof view != 'undefined' && view == 'test' ) {    
+        TestConfigComponent.tableView = 'test';
+    }
 
     Handlebars.registerHelper('formatTestCount', function(count) {
         var ret;
@@ -38,11 +42,17 @@ TestConfigComponent.initialize = function() {
     });
     $("div.config__form").on("click", "a#viewByHost", function(e) {
         e.preventDefault();
-        TestConfigComponent._showTable('byHost');
+        TestConfigComponent.tableView = 'host';
+        //SharedUIFunctions.setUrlParameter( 'view', TestConfigComponent.tableView );
+        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView );
+        TestConfigComponent._showTable( );
     });
     $("div.config__form").on("click", "a#viewByTest", function(e) {
         e.preventDefault();
-        TestConfigComponent._showTable('byTest');
+        TestConfigComponent.tableView = 'test';
+        //SharedUIFunctions.setUrlParameter( 'view', TestConfigComponent.tableView );
+        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView );
+        TestConfigComponent._showTable( );
     });
     // Click to collapse/expand rows
     $("div#testConfigContainer").on("click", ".js-row", function(e) {
@@ -88,12 +98,9 @@ TestConfigComponent.hideRows = function(e) {
     return false;
 };
 
-TestConfigComponent._showTable = function( tableView ) {
-    if ( typeof (tableView) != 'undefined' ) {
-        TestConfigComponent.tableView = tableView;
-    }
+TestConfigComponent._showTable = function( ) {
     tableView = TestConfigComponent.tableView;
-    if (tableView == 'byHost') {
+    if (tableView == 'host') {
         $("#testConfigContainer .config-table-by-test").hide();
         $("#testConfigContainer .config-table-by-host").show();
         $("a#viewByHost").addClass('color-disabled');
@@ -114,9 +121,11 @@ TestConfigComponent._buildTable = function() {
         console.log('no data!');
         return;
     }
+    /* We *shouldn't* need this anymore since it happens in the constructor
     if ( tableView == undefined ) {
-        tableView = 'byHost';
+        tableView = 'host';
     }
+    */
 
     for (var i in Object.keys(data.testsByHost) ) {
         var host = data.testsByHost[i];
@@ -135,7 +144,7 @@ TestConfigComponent._buildTable = function() {
     var test_table = template(data);
     $("#testConfigContainer").append(test_table);
 
-    TestConfigComponent._showTable( tableView );
+    TestConfigComponent._showTable( );
 };
 
 

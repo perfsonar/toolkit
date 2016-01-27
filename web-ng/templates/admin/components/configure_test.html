@@ -89,7 +89,7 @@
                         {{/if}}
                     </div>
                     <div class="medium-3 columns">
-                        <label for="time-between-units">Unit</label>
+                        <label for="time-between-units">Units</label>
                         <select id="time-between-units">
                             <option value="second" {{#compare parameters.test_interval_formatted.unit "second"}}selected{{/compare}} >Seconds</option>
                             <option value="minute" {{#compare parameters.test_interval_formatted.unit "minute"}}selected{{/compare}} >Minutes</option>
@@ -97,27 +97,29 @@
                             <option value="day" {{#compare parameters.test_interval_formatted.unit "day"}}selected{{/compare}} >Days</option>
                         </select>
                     </div>
-                    <div class="medium-6 columns">
                         {{#if showThroughputParameters}}
-                        <label for="test-duration">Test duration (TODO: make dropdown)</label>
-                        <input type="text" id="test-duration" value="{{parameters.duration}}" />
-<!--
-                        <select id="test-duration">
-                            <option>5 Seconds</option>
-                            <option>10 Seconds</option>
-                            <option>15 Seconds</option>
-                            <option selected>30 Seconds</option>
-                            <option>45 Seconds</option>
-                            <option>60 Seconds</option>
-                        </select>
--->
+                            <div class="medium-3 columns">
+                                <label for="test-duration">Test duration</label>
+                                <input type="text" id="test-duration" value="{{parameters.duration}}" />
+                            </div>
+                            <div class="medium-3 columns">
+                                <label for="test-duration-units">Units</label>
+                                <select id="test-duration-units">
+
+                            <option value="second" {{#compare parameters.duration_formatted.unit "second"}}selected{{/compare}} >Seconds</option>
+                            <option value="minute" {{#compare parameters.duration_formatted.unit "minute"}}selected{{/compare}} >Minutes</option>
+                            <option value="hour" {{#compare parameters.duration_formatted.unit "hour"}}selected{{/compare}} >Hours</option>
+                            <option value="day" {{#compare parameters.duration_formatted.unit "day"}}selected{{/compare}} >Days</option>
+
+                                </select>
+                            </div>
                         {{/if}}
                         {{#if showPingParameters}}
-                            <label for="packetsPerTest">Packets per test</label>
-                            <input type="text" id="packetsPerTest" value="{{parameters.packet_count}}" />
-                                
+                            <div class="medium-6 columns">
+                                <label for="packetsPerTest">Packets per test</label>
+                                <input type="text" id="packetsPerTest" value="{{parameters.packet_count}}" />
+                            </div>        
                         {{/if}}
-                    </div>
                 </div> <!-- end div class="row" -->
 {{/if}}
 

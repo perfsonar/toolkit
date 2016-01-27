@@ -124,6 +124,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             } else {
                 test.showWindowSize = false;
             }
+            test.parameters.duration_formatted = SharedUIFunctions.getTimeWithUnits( test.parameters.duration );
         }
         if ( type == 'owamp') {
             test.showOWAMPParameters = true;
