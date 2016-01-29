@@ -49,7 +49,6 @@ lib/SimpleLookupService/Records/Network/Interface.pm
 lib/SimpleLookupService/Records/Network/Service.pm
 lib/SimpleLookupService/Records/Record.pm
 lib/SimpleLookupService/Records/RecordFactory.pm
-lib/perfSONAR_PS/Client/Echo.pm
 lib/perfSONAR_PS/Client/Esmond/ApiConnect.pm
 lib/perfSONAR_PS/Client/Esmond/ApiFilters.pm
 lib/perfSONAR_PS/Client/Esmond/BaseDataNode.pm
@@ -73,12 +72,10 @@ lib/perfSONAR_PS/Client/LS/PSRecords/PSInterface.pm
 lib/perfSONAR_PS/Client/LS/PSRecords/PSPerson.pm
 lib/perfSONAR_PS/Client/LS/PSRecords/PSService.pm
 lib/perfSONAR_PS/Client/LS/PSRecords/PSTest.pm
-lib/perfSONAR_PS/Client/MA.pm
 lib/perfSONAR_PS/Client/gLS/Keywords.pm
 lib/perfSONAR_PS/Common.pm
 lib/perfSONAR_PS/Config/OWP/Conf.pm
 lib/perfSONAR_PS/Config/OWP/Helper.pm
-lib/perfSONAR_PS/Messages.pm
 lib/perfSONAR_PS/NPToolkit/Config/AdministrativeInfo.pm
 lib/perfSONAR_PS/NPToolkit/Config/BWCTL.pm
 lib/perfSONAR_PS/NPToolkit/Config/Base.pm
@@ -173,7 +170,6 @@ lib/perfSONAR_PS/RegularTesting/Utils/CmdRunner.pm
 lib/perfSONAR_PS/RegularTesting/Utils/CmdRunner/Cmd.pm
 lib/perfSONAR_PS/RegularTesting/Utils/ConfigFile.pm
 lib/perfSONAR_PS/RegularTesting/Utils/SerializableObject.pm
-lib/perfSONAR_PS/Transport.pm
 lib/perfSONAR_PS/Utils/Closest.pm
 lib/perfSONAR_PS/Utils/Config/BWCTL.pm
 lib/perfSONAR_PS/Utils/Config/NTP.pm
@@ -188,7 +184,6 @@ lib/perfSONAR_PS/Utils/NTP.pm
 lib/perfSONAR_PS/Utils/NetLogger.pm
 lib/perfSONAR_PS/Utils/ParameterValidation.pm
 lib/perfSONAR_PS/Web/Sidebar.pm
-lib/perfSONAR_PS/XML/Document.pm
 lib/psTracerouteUtils.pm
 perl-perfSONAR_PS-Toolkit.spec
 python_lib/Internet2Commands.py
