@@ -183,8 +183,6 @@ SharedUIFunctions.getTimeWithUnits = function( seconds ) {
     output.valueFormatted = valueFormatted;
     output.unit = unit;
 
-    console.log('timeWithUnits output', output);
-
     return output;
 };
  

@@ -1,6 +1,6 @@
-<div id="configureTestContainer"></div>
+<div id="configureTestContainer"></div>     
 
-<script id="configureTestTemplate" type="text/x-handlebars-template">
+    <script id="configureTestTemplate" type="text/x-handlebars-template">
 
 <!-- *** Configure test modal (gear icon) *** -->
 
@@ -70,8 +70,15 @@
                 <div class="row">
 
                     <div class="medium-6 columns">
-                        <label for="packetRate">Packet Rate (packets per second) (MAKE DROPDOWN)</label>
-                        <input type="text" id="packetRate" value="{{parameters.packet_rate}}" />
+                        <label for="packetRateSel">Packet Rate (packets per second)</label>
+                        <select id="packetRateSel">
+                            <option value="10" {{#compare parameters.packet_rate 10}}selected="selected"{{/compare}}>10 (default)</option>
+                            <option value="50" {{#compare parameters.packet_rate 50}}selected="selected"{{/compare}}>50</option>
+                            <option value="100" {{#compare parameters.packet_rate 100}}selected="selected"{{/compare}}>100</option>
+                            <option value="250" {{#compare parameters.packet_rate 250}}selected="selected"{{/compare}}>250</option>
+                            <option value="500" {{#compare parameters.packet_rate 500}}selected="selected"{{/compare}}>500</option>
+                            <option value="1000" {{#compare parameters.packet_rate 1000}}selected="selected"{{/compare}}>1000</option>
+                        </select>
                         
                     </div>
                     <div class="medium-6 columns">
@@ -178,7 +185,7 @@
 
             <div class="module module--config-table">
                 <h3 class="module-header__title font-bold">Test members</h3>
-                <table id="test-members">
+                <table id="test-members"> 
                     <thead>
                         <tr>
                             <th>Host</th>
@@ -209,7 +216,7 @@
                                 <label for="new-host-name">Host name</label>
                                 <input type="text" id="new-host-name" placeholder="Host">
                             </div>
-                            <div class="medium-5 columns">
+                            <div class="medium-5 columns"> 
                                 <label for="new-host-description">Host description</label>
                                 <input type="text" id="new-host-description" placeholder="Description">
                             </div>

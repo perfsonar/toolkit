@@ -16,7 +16,7 @@ TestConfigComponent.initialize = function() {
     Dispatcher.subscribe( HostDetailsStore.detailsTopic, TestConfigComponent._setHostData );
     var view = SharedUIFunctions.getUrlParameter( 'view' );
     console.log('view', view);
-    if ( typeof view != 'undefined' && view == 'test' ) {    
+    if ( typeof view != 'undefined' && view == 'test' ) {
         TestConfigComponent.tableView = 'test';
     }
 
@@ -74,14 +74,10 @@ TestConfigComponent.initialize = function() {
         $(".new-host-save").show();
     });
 
-
-
-   
 };
 
 TestConfigComponent.save = function(e) {
     TestConfigAdminStore.save(TestConfigStore.data);
-    
 };
 
 TestConfigComponent.showRows = function(e) {
@@ -111,7 +107,7 @@ TestConfigComponent._showTable = function( ) {
         $("a#viewByTest").addClass('color-disabled');
     }
 };
-    
+
 TestConfigComponent._buildTable = function() {
     var tableView = TestConfigComponent.tableView;
     var data = TestConfigComponent.data;
@@ -170,7 +166,7 @@ TestConfigComponent._setHostData = function() {
 TestConfigComponent._showConfig = function( topic ) {
     TestConfigComponent._destroyTable();
 
-    //SharedUIFunctions._showSaveBar();    
+    //SharedUIFunctions._showSaveBar();
 
     // ** Test config tables **
     TestConfigComponent._buildTable( );
@@ -182,7 +178,7 @@ TestConfigComponent._destroyTable = function() {
 };
 
 TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
-    var testID = $(clickedThis).data("test-id");         
+    var testID = $(clickedThis).data("test-id");
     var test = $('#' + testID);
     var tests = $(".cb_test_enabled[data-test-id='" + testID + "']");
     this.clickedTest = clickedThis;
@@ -306,16 +302,11 @@ TestConfigComponent._getNewMemberConfig = function( test ) {
         var member = {};
         member.member_id = memberID;
         var row = $(this);
-        console.log('row', row);
         var address = row.find('td.address').text();
-        console.log('address', address);
         var description = row.find('input.description').val();
-        console.log('description', description);
 
         var test_ipv4 = row.find('input.test_ipv4').prop('checked');
         var test_ipv6 = row.find('input.test_ipv6').prop('checked');
-
-        console.log('test_ipv4', test_ipv4, 'test_ipv6', test_ipv6);
 
         member.address = address;
         member.description = description;
@@ -323,7 +314,6 @@ TestConfigComponent._getNewMemberConfig = function( test ) {
         member.test_ipv6 = test_ipv6;
 
         TestConfigStore.addOrUpdateTestMember( testID, member );
-        console.log('memberID ' + memberID);
         delete self.existingMemberIDs[ memberID ];
     });
 
@@ -383,10 +373,18 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
 
-            console.log('settings', settings);
-            break;        
+            break;
+        case 'owamp':
+            var packet_rate = $('#packetRateSel').val();
+            settings.packet_rate = packet_rate;
+
+            var packet_size = $('#packetSize').val();
+            settings.packet_size = packet_size;
+
+            break;
     }
 
+    console.log('settings', settings);
 
     TestConfigStore.setTestSettings( testID, settings );
     console.log('test config after setTestSettings', test);

@@ -36,7 +36,7 @@ Dispatcher.subscribe(TestConfigStore.topic, function() {
 });
 
 TestConfigStore._processData = function() {
-};
+};  
 
 TestConfigStore.getTestConfigurationFormatted = function() {
     return TestConfigStore.data.test_configuration_formatted;
@@ -128,7 +128,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         }
         if ( type == 'owamp') {
             test.showOWAMPParameters = true;
-            test.parameters.packet_size = test.parameters.packet_padding + 20;
+            test.parameters.packet_size = parseInt( test.parameters.packet_padding ) + 20;
             test.parameters.packet_rate = 1/test.parameters.packet_interval;
         }
         if ( type == 'traceroute') {
@@ -163,23 +163,37 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
     } else {
         delete test.parameters.local_interface;
     }
-    if ( test.type == 'bwctl/throughput') {
-        if ( settings.protocol ) {
-            test.parameters.protocol = settings.protocol;
-        } else {
-            delete test.parameters.protocol;
-        }
-        if ( settings.tos_bits ) {
-            test.parameters.tos_bits = settings.tos_bits;
-        } else {
-            test.parameters.tos_bits = 0;
-        }
+    switch ( test.type ) {
+        case 'bwctl/throughput':
+            if ( settings.protocol ) {
+                test.parameters.protocol = settings.protocol;
+            } else {
+                delete test.parameters.protocol;
+            }
+            if ( settings.tos_bits ) {
+                test.parameters.tos_bits = settings.tos_bits;
+            } else {
+                test.parameters.tos_bits = 0;
+            }
 
-        if ( settings.window_size && !settings.autotuning ) {
-            test.parameters.window_size = settings.window_size;
-        } else {
-            test.parameters.window_size = 0;
-        }
+            if ( settings.window_size && !settings.autotuning ) {
+                test.parameters.window_size = settings.window_size;
+            } else {
+                test.parameters.window_size = 0;
+            }
+            break;
+        case 'owamp':
+            if ( typeof settings.packet_rate != 'undefined' && settings.packet_rate > 0 ) {
+                test.parameters.packet_interval = 1 / parseInt( settings.packet_rate );
+            } else {
+                test.parameters.packet_interval = 0.1;
+            }
+            if ( typeof settings.packet_size != 'undefined' && settings.packet_size >= 20 ) {
+                test.parameters.packet_padding = parseInt( settings.packet_size ) - 20;
+            } else {
+                test.parameters.packet_padding = 0;
+            }
+            break;
     }
 
 };
