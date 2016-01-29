@@ -5,7 +5,7 @@ var TestConfigComponent = {
     data: null,
     dataSet: false,
     expandedDataGroups: {},
-    tableView: 'byHost',
+    tableView: 'host',
     interfaces: [],
     interfacesSet: false,
 };
@@ -14,7 +14,11 @@ TestConfigComponent.initialize = function() {
     //$('#loading-modal').foundation('reveal', 'open');
     Dispatcher.subscribe( TestConfigComponent.testConfigTopic, TestConfigComponent._setTestData );
     Dispatcher.subscribe( HostDetailsStore.detailsTopic, TestConfigComponent._setHostData );
-
+    var view = SharedUIFunctions.getUrlParameter( 'view' );
+    console.log('view', view);
+    if ( typeof view != 'undefined' && view == 'test' ) {    
+        TestConfigComponent.tableView = 'test';
+    }
 
     Handlebars.registerHelper('formatTestCount', function(count) {
         var ret;
@@ -31,17 +35,22 @@ TestConfigComponent.initialize = function() {
     $(".js-subrow").hide();
 
     $("div.config__form").on("click", ".cb_test_enabled", function(e, f) {
+        //console.log('!!!');
         //e.preventDefault();
         // use $(this).data("test-id");
         TestConfigComponent.toggleTestEnabled( this );
     });
     $("div.config__form").on("click", "a#viewByHost", function(e) {
         e.preventDefault();
-        TestConfigComponent._showTable('byHost');
+        TestConfigComponent.tableView = 'host';
+        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView, true, 'host' );
+        TestConfigComponent._showTable( );
     });
     $("div.config__form").on("click", "a#viewByTest", function(e) {
         e.preventDefault();
-        TestConfigComponent._showTable('byTest');
+        TestConfigComponent.tableView = 'test';
+        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView, true, 'host' );
+        TestConfigComponent._showTable( );
     });
     // Click to collapse/expand rows
     $("div#testConfigContainer").on("click", ".js-row", function(e) {
@@ -87,12 +96,9 @@ TestConfigComponent.hideRows = function(e) {
     return false;
 };
 
-TestConfigComponent._showTable = function( tableView ) {
-    if ( typeof (tableView) != 'undefined' ) {
-        TestConfigComponent.tableView = tableView;
-    }
+TestConfigComponent._showTable = function( ) {
     tableView = TestConfigComponent.tableView;
-    if (tableView == 'byHost') {
+    if (tableView == 'host') {
         $("#testConfigContainer .config-table-by-test").hide();
         $("#testConfigContainer .config-table-by-host").show();
         $("a#viewByHost").addClass('color-disabled');
@@ -113,9 +119,11 @@ TestConfigComponent._buildTable = function() {
         console.log('no data!');
         return;
     }
+    /* We *shouldn't* need this anymore since it happens in the constructor
     if ( tableView == undefined ) {
-        tableView = 'byHost';
+        tableView = 'host';
     }
+    */
 
     for (var i in Object.keys(data.testsByHost) ) {
         var host = data.testsByHost[i];
@@ -134,7 +142,7 @@ TestConfigComponent._buildTable = function() {
     var test_table = template(data);
     $("#testConfigContainer").append(test_table);
 
-    TestConfigComponent._showTable( tableView );
+    TestConfigComponent._showTable( );
 };
 
 
@@ -147,7 +155,7 @@ TestConfigComponent._loadInterfaceWhenReady = function() {
 TestConfigComponent._setTestData = function() {
     var data = {};
     data.testsByHost = TestConfigStore.getTestsByHost();
-    data.testsByTest = TestConfigStore.getTestConfiguration();
+    data.testsByTest = TestConfigStore.getTestConfigurationFormatted();
     TestConfigComponent.data = data;
     TestConfigComponent.dataSet = true;
     TestConfigComponent._loadInterfaceWhenReady();
@@ -180,9 +188,9 @@ TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
     this.clickedTest = clickedThis;
     var checked = $( this.clickedTest ).prop("checked");
     if ( checked ) {
-        TestConfigStore.setTestEnabled( testID, true );
+        TestConfigStore.setTestEnabled( testID, 1 );
     } else {
-        TestConfigStore.setTestEnabled( testID, false );
+        TestConfigStore.setTestEnabled( testID, 0 );
     }
 
     //$(':checkbox').each(function () { this.checked = !this.checked; });
@@ -215,6 +223,12 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     var testConfig = TestConfigStore.getTestConfig( testID );
     testConfig.interfaces = TestConfigComponent.interfaces;
     console.log("test config", testConfig);
+
+    var memberTemplate = Handlebars.compile($("#member-partial").html());
+    TestConfigComponent.memberTemplate = memberTemplate;
+    //Handlebars.registerPartial("member", $("#member-partial").html());
+    Handlebars.registerPartial("member", memberTemplate);
+
     var config_template = $("#configureTestTemplate").html();
     var template = Handlebars.compile( config_template );
     var config_modal = template( testConfig );
@@ -226,11 +240,156 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     });
     $('#useAutotuningSwitch').change( function() {
         TestConfigComponent._setSwitch( '#useAutotuningSwitch' );
-        $('.window_size').toggle();
+        if ( $('#useAutotuningSwitch').prop('checked') ) {
+            $('.window_size').hide();
+        } else {
+            $('.window_size').show();
+        }
+    });
+
+    $('#member_add_button').click( function( e ) {
+        TestConfigComponent.addTestMember(e);
+    });
+
+
+    this.testConfig = testConfig;
+    var self = this;
+    $('#testConfigOKButton').click( function( e, testID ) {
+        console.log('ok clicked');
+        console.log('self', self);
+        console.log('testID: ' + testID);
+        console.log('e', e);
+        TestConfigComponent._getUserValues( self.testConfig );
+        TestConfigComponent._getNewMemberConfig ( self.testConfig );
+        console.log('testConfig after ok', testConfig);
+
+        console.log('publishing reloadTopic ' + TestConfigStore.reloadTopic);
+
+        e.preventDefault();
+        $('#configure-test-modal').foundation('reveal', 'close');
+        console.log("data after ok", TestConfigComponent.data);
+        console.log("TestConfigStore data after ok", TestConfigStore.data);
+        console.log("testconfigadminstore data after ok", TestConfigAdminStore.data);
+
+        // Fire the testConfigStore topic, signalling the data has changed
+        Dispatcher.publish( TestConfigStore.topic );
+    });
+    $('#testConfigCancelButton').click( function( e ) {
+        console.log('cancel clicked');
+        e.preventDefault();
+        $('#configure-test-modal').foundation('reveal', 'close');
     });
     $('form#configureTestForm input').change(SharedUIFunctions._showSaveBar);
     $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
     return false;
+};
+
+TestConfigComponent._getNewMemberConfig = function( test ) {
+    var testTable = $('table#test-members');
+
+    // Create a hash containing the member ids
+    // we'll delete them from the hash as we update the values from the form
+    // if we have any left over at the end, these have been deleted from the
+    // form and need to be deleted from the backend
+    this.existingMemberIDs = {};
+    var existingMemberIDs = this.existingMemberIDs;
+    for( var i in test.members ) {
+        existingMemberIDs[ test.members[i].member_id ] = 1;
+    }
+
+    this.existingMemberIDs = existingMemberIDs;
+    this.test = test;
+    var self = this;
+    var tableRows = $('table#test-members > tbody > tr.member').each( function () {
+        var memberID = $(this).attr("member_id");
+        var testID = self.test.test_id;
+        var member = {};
+        member.member_id = memberID;
+        var row = $(this);
+        console.log('row', row);
+        var address = row.find('td.address').text();
+        console.log('address', address);
+        var description = row.find('input.description').val();
+        console.log('description', description);
+
+        var test_ipv4 = row.find('input.test_ipv4').prop('checked');
+        var test_ipv6 = row.find('input.test_ipv6').prop('checked');
+
+        console.log('test_ipv4', test_ipv4, 'test_ipv6', test_ipv6);
+
+        member.address = address;
+        member.description = description;
+        member.test_ipv4 = test_ipv4;
+        member.test_ipv6 = test_ipv6;
+
+        TestConfigStore.addOrUpdateTestMember( testID, member );
+        console.log('memberID ' + memberID);
+        delete self.existingMemberIDs[ memberID ];
+    });
+
+    // If there are any existingMemberIDs left, these are nodes that were
+    // in the config but NOT in the user input form (they need to
+    // be deleted).
+    $.each(existingMemberIDs, function( memberID, value ) {
+        console.log('memberID', memberID);
+        console.log('value', value);
+        var success = TestConfigStore.deleteMemberFromTest( test.test_id, memberID );
+        console.log('attempted to delete memberID: ' + memberID + ' success: ' + success);
+    });
+
+    console.log('test config before setTestMembers', test);
+    TestConfigStore.setTestMembers( test.test_id, test );
+    console.log('test config after setTestMembers', test);
+
+};
+
+
+TestConfigComponent._getUserValues = function( testConfig ) {
+    var testEnabled = $('#testEnabledSwitch').prop("checked");
+    var testID = testConfig.test_id;
+    var test = TestConfigStore.getTestByID( testID );
+    //testConfig.disabled = !testEnabled;
+    //TestConfigStore.setTestEnabled( test, testEnabled);
+    console.log('test enabled', testEnabled);
+    var testDescription = $("#test-name").val();
+    console.log('test description', testDescription);
+    //TestConfigStore.setTestDescription( test, testDescription );
+    var interface = $("#interfaceSelector").val();
+    console.log('interface: ' + interface);
+    //TestConfigStore.setInterface( test, interface);
+    var settings = {};
+    settings.enabled = testEnabled;
+    settings.description = testDescription;
+    settings.interface = interface;
+
+    switch ( test.type ) {
+        case 'bwctl/throughput':
+            console.log('setting bwctl settings ...');
+            var protocol = $('#protocolSelector').val();
+            console.log('protocol: ' + protocol);
+            settings.protocol = protocol;
+
+            var autotuning = $('#useAutotuningSwitch').val();
+            settings.autotuning = autotuning;
+            console.log('autotuning: ' + autotuning);
+
+            var tos_bits = $('#tosBits').val();
+            settings.tos_bits = tos_bits;
+            console.log('tos_bits: ' + tos_bits);
+
+            var window_size = $('#windowSize').val();
+            settings.window_size = window_size;
+
+            var protocol = $('#protocolSelector').val();
+            settings.protocol = protocol;
+
+            console.log('settings', settings);
+            break;        
+    }
+
+
+    TestConfigStore.setTestSettings( testID, settings );
+    console.log('test config after setTestSettings', test);
 };
 
 TestConfigComponent._setSwitch = function( elID ) {
@@ -241,6 +400,47 @@ TestConfigComponent._setSwitch = function( elID ) {
     $("span[for='" + checkbox_el.attr("id") + "']").text(label);
     //var label_el = checkbox_el.next('.switch_label' )
     //label_el.text(label);
+};
+
+TestConfigComponent.removeTestMember = function( memberID ) {
+    var row = $('tbody.test-members tr.subrow[member_id=' + memberID + ']');
+    row.remove();
+    //e.preventDefault();
+    //var dataGroup = $(this).attr("data-group");
+    //var el = $(".js-subrow[data-group=" + dataGroup + "]");
+    SharedUIFunctions._showSaveBar();
+
+    return false;
+};
+
+TestConfigComponent.addTestMember = function(e) {
+    e.preventDefault();
+    var test = this.testConfig;
+    var memberTemplate = TestConfigComponent.memberTemplate;
+    var hostname = $('#new-host-name').val();
+    var description = $('#new-host-description').val();
+    var new_host_ipv4 = $('#new-ipv4').prop("checked");
+    var new_host_ipv6 = $('#new-ipv6').prop("checked");
+    var id = TestConfigStore.generateMemberID( test );
+
+    var newHost = {};
+    newHost.address = hostname;
+    newHost.description = description;
+    newHost.test_ipv4 = new_host_ipv4;
+    newHost.test_ipv6 = new_host_ipv6;
+    newHost.member_id = id;
+
+    var memberMarkup = memberTemplate( newHost );
+
+
+    var table = $('table#test-members > tbody:last-child');
+    
+    table.append( memberMarkup );
+    
+    $('#new-host-name').val('');
+    $('#new-host-description').val('');
+
+    return false;
 };
 
 TestConfigComponent.initialize();

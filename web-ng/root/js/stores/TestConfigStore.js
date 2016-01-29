@@ -29,10 +29,18 @@ TestConfigStore.testTypes = [
 ];
 
 Dispatcher.subscribe(TestConfigStore.topic, function() {
+    console.log('received test data changed event');
     TestConfigStore.data = TestConfigStore.getData();
+    console.log('data from dispatcher/testconfigstore', TestConfigStore.getData()); 
     TestConfigStore._setAdditionalVariables();
-    //console.log('data from dispatcher/testconfigstore', TestConfigStore.getData());    
 });
+
+TestConfigStore._processData = function() {
+};
+
+TestConfigStore.getTestConfigurationFormatted = function() {
+    return TestConfigStore.data.test_configuration_formatted;
+};
 
 TestConfigStore.getTestConfiguration = function() {
     return TestConfigStore.data.test_configuration;
@@ -45,8 +53,8 @@ TestConfigStore.getStatus = function() {
 
 TestConfigStore.getAllTestMembers = function() {
     var member_array = [];
-    for(var i in TestConfigStore.data.test_configuration) {
-        var test = TestConfigStore.data.test_configuration[i];
+    for(var i in TestConfigStore.data.test_configuration_formatted) {
+        var test = TestConfigStore.data.test_configuration_formatted[i];
         for(var j in test.members) {
             var member = test.members[j];
             member_array.push(member.address);
@@ -60,8 +68,8 @@ TestConfigStore.getTestsByHost = function() {
     var tests = {};
     var member_array = [];
     var host_id = 0;
-    for(var i in TestConfigStore.data.test_configuration) {
-        var test = TestConfigStore.data.test_configuration[i];
+    for(var i in TestConfigStore.data.test_configuration_formatted) {
+        var test = TestConfigStore.data.test_configuration_formatted[i];
         for(var j in test.members) {
             var member = test.members[j];
             member.host_id = host_id;
@@ -84,8 +92,9 @@ TestConfigStore.getTestsByHost = function() {
 // Set additional variables for each test/member
 TestConfigStore._setAdditionalVariables = function ( ) {
     console.log('setting additional variables');
-    TestConfigStore.data.test_configuration_raw = $.extend( true, [], TestConfigStore.data.test_configuration );
-    var tests = TestConfigStore.data.test_configuration;
+    TestConfigStore.data.test_configuration_formatted = [];
+    TestConfigStore.data.test_configuration_formatted = $.extend( true, [], TestConfigStore.data.test_configuration );
+    var tests = TestConfigStore.data.test_configuration_formatted;
 
     for(var i in tests) {
         var test = tests[i];
@@ -115,6 +124,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             } else {
                 test.showWindowSize = false;
             }
+            test.parameters.duration_formatted = SharedUIFunctions.getTimeWithUnits( test.parameters.duration );
         }
         if ( type == 'owamp') {
             test.showOWAMPParameters = true;
@@ -129,7 +139,8 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         // Set test_interval_formatted
         var interval = test.parameters.test_interval;
         if ( interval != undefined ) {
-            test.parameters.test_interval_formatted = SharedUIFunctions.getTime( interval );
+            var time = SharedUIFunctions.getTimeWithUnits( interval ); 
+            test.parameters.test_interval_formatted = time;
         }
     }
     console.log('data after adding additional info', TestConfigStore.data);
@@ -137,23 +148,121 @@ TestConfigStore._setAdditionalVariables = function ( ) {
 
 };
 
-TestConfigStore.setTestEnabled = function ( testID, testStatus ) {
-    var data = TestConfigStore.data.test_configuration_raw;
+TestConfigStore.setTestSettings = function ( testID, settings ) {
+    var test = TestConfigStore.getTestByID( testID );
+    if ( settings.enabled ) {
+        test.disabled = 0;
+    } else {
+        test.disabled = 1;
+    }
+    if ( settings.description ) {
+        test.description = settings.description;
+    }
+    if ( settings.interface ) {
+        test.parameters.local_interface = settings.interface;
+    } else {
+        delete test.parameters.local_interface;
+    }
+    if ( test.type == 'bwctl/throughput') {
+        if ( settings.protocol ) {
+            test.parameters.protocol = settings.protocol;
+        } else {
+            delete test.parameters.protocol;
+        }
+        if ( settings.tos_bits ) {
+            test.parameters.tos_bits = settings.tos_bits;
+        } else {
+            test.parameters.tos_bits = 0;
+        }
+
+        if ( settings.window_size && !settings.autotuning ) {
+            test.parameters.window_size = settings.window_size;
+        } else {
+            test.parameters.window_size = 0;
+        }
+    }
+
+};
+
+TestConfigStore.setTestMembers = function ( testID, settings ) {
+    console.log('setting test members');
+    var test = TestConfigStore.getTestByID( testID );
+    //test.members = []; 
+    //test.members = settings.members;
+    //TODO: investigate, is this necessary? doesn't seem to be
+
+
+};
+
+// Given a test config, this function generates and returns 
+// a new, integer unique id that doesn't conflict with any of 
+// the existing member ids
+TestConfigStore.generateMemberID = function( test ) {
+    var min = 2000000;
+    var max = 3000000;
+    var ids = {};
+    for(var i in test.members) {
+        var member_id = test.members[i].member_id;
+        ids[ test.members[i].member_id ] = 1;
+
+    }    
+    var rand = SharedUIFunctions.generateRandomIntInRange( min, max );
+    var i = 0;
+    while ( rand in ids ) {
+        rand = SharedUIFunctions.generateRandomIntInRange( min, max );
+        i++;
+
+        // If we've tried 100 times and haven't found any 
+        // usable ids, give up. This shouldn't happen
+        if ( i > 100 ) {
+            return false;
+        }
+    }
+    return rand;
+
+};
+
+
+// Sets whether the test is enabled
+// Note that in the backend config, this is counter-intuitively
+// stored as "disabled" that's true if the test is disabled.
+TestConfigStore.setTestEnabled = function ( test, testStatus ) {
+    var disabledStatus = !testStatus;
+    if ( disabledStatus ) {
+        disabledStatus = 1;
+    } else {
+        disabledStatus = 0;
+    }
+    test.disabled = disabledStatus;
+    console.log('test after setTestEnabled', test);
+};
+
+TestConfigStore.setTestDescription = function ( test, testDescription ) {
+    test.description = testDescription;
+    console.log('test after setTestDescription', test);
+};
+
+TestConfigStore.setInterface = function ( test, interface ) {
+    test.parameters.local_interface = interface;
+    console.log('test after setInterface', test);
+};
+
+TestConfigStore.getTestByID = function ( testID ) {
+    var data = TestConfigStore.data.test_configuration;
     for(var i in data) {
         var test = data[i];
         if ( testID == test.test_id ) {
-            test.disabled = !testStatus;
+            return TestConfigStore.data.test_configuration[i];
         }
     }
-    //TestConfigStore._setAdditionalVariables();
-    console.log('data after setTestEnabled', TestConfigStore.data);
+    return {};
 };
 
 // TestConfigStore.addHostToTest
 // Adds a host to a test in the Host-centric view
 TestConfigStore.addHostToTest = function (tests, test, member) {
     var address = member.address;
-    var type = test.type;   
+    var type = test.type;
     var host_id = member.host_id;
     var protocol = test.parameters.protocol;
     var type_count_name = type + "_count";
@@ -177,11 +286,79 @@ TestConfigStore.addHostToTest = function (tests, test, member) {
 
 };
 
+TestConfigStore.deleteMemberFromTest = function ( testID, memberID ) {
+    var test = TestConfigStore.getTestByID( testID );
+    var members = test.members;
+    this.test = test;
+
+    for (var i = members.length - 1; i >= 0; i--) {
+        var member = members[i];
+        if ( member.member_id == memberID ) {
+            members.splice( i, 1 );
+            return true;
+        }
+    }
+
+    return false;
+
+};
+
+TestConfigStore.getTestMemberIndex = function( memberID, testID ) {
+    var test = TestConfigStore.getTestByID( testID );
+    for ( var i in test.members ) {
+        if ( test.members[i].member_id == memberID ) {
+            return i;
+        }
+    }
+    return -1;
+};
+
+TestConfigStore.addOrUpdateTestMember = function ( testID, member ) {
+    var test = TestConfigStore.getTestByID( testID );
+    var memberIndex = TestConfigStore.getTestMemberIndex( member.member_id, testID );
+
+
+    /*
+    var result = $.grep( test.members, function( val, index ) {
+        return ( val.member_id == member.member_id  );
+    });
+    console.log('addOrUpdate grep result', result);
+    */
+    var config = {};
+    /*
+    config.address = member.address;
+    config.description = member.description;
+    config.test_ipv4 = member.test_ipv4;
+    config.test_ipv6 = member.test_ipv6;
+    */
+
+    if ( memberIndex >= 0 ) {
+        // The member was found in the config. Update it with the new values.
+        // We do this by taking the config as stored as 'defaults' and override
+        // anything that was specified in the GUI. This way we should be able to 
+        // retain any settings that were stored in the config that the GUI does not
+        // support
+        var result = test.members[ memberIndex ];
+
+        //var config = $.extend( {}, result, member );
+        var config = member;
+        test.members[memberIndex] = $.extend({}, result, member);
+        //test.members[memberIndex] = config;
+        return true;
+    } else {
+        // this member not found
+        // add it as a new member, in this case
+        test.members.push( member );
+        return true;
+    }
+
+};
+
 // Gets the configuration for the one test that matches
 // the provided testID
 TestConfigStore.getTestConfig = function ( testID ) {
     var ret;
-    var data = TestConfigStore.data.test_configuration;
+    var data = TestConfigStore.data.test_configuration_formatted;
     for(var i in data) {
         var test = data[i];
         if ( test.test_id == testID ) {

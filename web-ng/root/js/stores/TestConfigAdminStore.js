@@ -3,7 +3,18 @@
 var TestConfigAdminStore = new DataStore(TestConfigStore.topic, "services/regular_testing.cgi?method=update_test_configuration", false, "POST");
 
 TestConfigAdminStore.save = function( tests ) {
-    tests.data = $.extend( true, [], tests.test_configuration_raw );
+    tests.data = $.extend( true, [], tests.test_configuration );
+    var data = tests.data;
+    for(var i in tests) {
+        var test = tests[i];
+        for(var j in test.members) {
+            var member = test.members[j];
+            delete member.id;
+            delete member.host_id;
+            delete member.member_id;
+        }
+
+    }
     TestConfigAdminStore._sanitizeTestConfig( tests );
 
     var topic = TestConfigStore.saveTopic;
@@ -32,6 +43,9 @@ TestConfigAdminStore.save = function( tests ) {
 TestConfigAdminStore._sanitizeTestConfig = function( tests ) {
     for(var i in tests.data) {
         var test = tests.data[i];
+        if ( test.parameters.protocol == 'tcp' ) {
+            delete test.parameters.udp_bandwidth;
+        }
         for(var j in test.members) {
             var member = test.members[j];
             delete member.member_id;
