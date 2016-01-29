@@ -107,17 +107,31 @@ SharedUIFunctions.getUrlParameter = function ( paramName ) {
     }
 };
 
-SharedUIFunctions.addQueryStringParameter = function(name, value) {
+SharedUIFunctions.addQueryStringParameter = function( name, value, removeDefault, defaultValue ) {
     var url = window.location.href;
-    console.log('url', url);
     var re = new RegExp("([?&]" + name + "=)[^&]+", "");
 
     function add(sep) {
-        url += sep + name + "=" + encodeURIComponent(value);
+        var endSepRe = new RegExp( "&$" );
+        if ( sep == '&' && ! url.match( endSepRe ) ) {
+            url += sep;
+        }
+        url += name + "=" + encodeURIComponent(value);
     }
 
     function change() {
         url = url.replace(re, "$1" + encodeURIComponent(value));
+    }
+    function remove() {
+        var removeRe = new RegExp("&?(view)=([^&]$|[^&]*)", "gi");
+
+        var ampRe = /\?&/;
+    
+        url = url.replace(removeRe, "");
+        url = url.replace(ampRe, "?");
+
+        var sepEndRe = /[&?]$/;
+        url = url.replace(sepEndRe, "");
     }
     if (url.indexOf("?") === -1) {
         add("?");
@@ -127,6 +141,11 @@ SharedUIFunctions.addQueryStringParameter = function(name, value) {
         } else {
             add("&");
         }
+    }
+
+    if ( removeDefault && value == defaultValue ) {
+        remove();
+        
     }
     //window.history.pushState("object or string", "View by " + value, url);
     window.history.replaceState("object or string", "View by " + value, url);

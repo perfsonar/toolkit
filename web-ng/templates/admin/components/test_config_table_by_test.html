@@ -40,8 +40,8 @@
                     <td>{{type_formatted}}</td>
                     <td>{{parameters.test_interval_formatted.valueFormatted}}</td>
                     <td>{{formatTestCount members.length}}</td>
-                    <td><input type="checkbox" {{#unless disabled}}checked{{/unless}} class="cb_test_enabled" data-test-id="{{test_id}}"></td>
-                    <td><a href="#" data-reveal-id="configure-test-modal"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                    <td><input type="checkbox" {{#unless disabled}}checked{{/unless}} class="cb_test_enabled"  disabled="disabled" data-test-id="{{test_id}}"></td>
+                    <td><a href="#" onclick="return TestConfigComponent.showTestConfigModal({{test_id}});"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
                 </tr>
                     <!-- *** Tests *** -->
                     <!-- A unique data attribute for each set of subrows (tests for that host) needs to be generated in the markup -->

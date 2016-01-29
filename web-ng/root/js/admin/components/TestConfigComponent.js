@@ -43,13 +43,13 @@ TestConfigComponent.initialize = function() {
     $("div.config__form").on("click", "a#viewByHost", function(e) {
         e.preventDefault();
         TestConfigComponent.tableView = 'host';
-        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView );
+        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView, true, 'host' );
         TestConfigComponent._showTable( );
     });
     $("div.config__form").on("click", "a#viewByTest", function(e) {
         e.preventDefault();
         TestConfigComponent.tableView = 'test';
-        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView );
+        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView, true, 'host' );
         TestConfigComponent._showTable( );
     });
     // Click to collapse/expand rows
