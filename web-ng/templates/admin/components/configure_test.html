@@ -58,13 +58,12 @@
                             </select>
                         {{/if}}
                         {{#if showTracerouteParameters}}
-                            <label for="toolSelector">Tool</label>
-                            <select id="toolSelector">
+                            <label for="toolSel">Tool</label>
+                            <select id="toolSel">
                                 <option value="">Default</option>
                                 <option value="tracepath" {{#compare parameters.tool "tracepath"}}selected{{/compare}}>tracepath</option>
-                                <option value="traceroute" {{#compare parameters.tool "tracepath"}}selected{{/compare}}>traceroute</option>
-                                <option value="paris-traceroute" {{#compare parameters.tool "tracepath"}}selected{{/compare}}>paris-traceroute</option>
-                                <option value="{{parameters.tool}}">{{parameters.tool}}</option>
+                                <option value="traceroute" {{#compare parameters.tool "traceroute"}}selected{{/compare}}>traceroute</option>
+                                <option value="paris-traceroute" {{#compare parameters.tool "paris-traceroute"}}selected{{/compare}}>paris-traceroute</option>
                             </select>
                         {{/if}}
 

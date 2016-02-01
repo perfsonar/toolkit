@@ -373,13 +373,33 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
 
+            // TODO: Add time between tests
+
             break;
         case 'owamp':
             var packet_rate = $('#packetRateSel').val();
             settings.packet_rate = packet_rate;
 
-            var packet_size = $('#packetSize').val();
+            var packet_size = $('#sizeofTestPackets').val();
             settings.packet_size = packet_size;
+
+            // TODO: get additional parameters
+
+            break;
+        case 'traceroute':
+            var tool = $('#toolSel').val();
+            settings.tool = tool;
+
+            var packet_size = $('#sizeOfTestPackets').val();
+            settings.packet_size = packet_size;
+
+            var first_ttl = $('#firstTTL').val();
+            settings.first_ttl = first_ttl;
+
+            var max_ttl = $('#maxTTL').val();
+            settings.max_ttl = max_ttl;
+
+            // TODO: add time between tests
 
             break;
     }

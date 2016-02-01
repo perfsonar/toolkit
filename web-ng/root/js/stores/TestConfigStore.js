@@ -194,6 +194,26 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
                 test.parameters.packet_padding = 0;
             }
             break;
+        case 'traceroute':
+            if (typeof settings.tool != 'undefined' && settings.tool != '') {
+                test.parameters.tool = settings.tool;
+            }
+            if ( typeof settings.packet_size != 'undefined' && settings.packet_size > 0 ) {
+                test.parameters.packet_size = settings.packet_size;
+            } else {
+                test.parameters.packet_size = 40; // TODO: change to use configured default
+            }
+            if ( !isNaN( parseInt( settings.first_ttl ) ) ) {
+                test.parameters.first_ttl = settings.first_ttl;
+            } else {
+                delete test.parameters.first_ttl;
+            }
+            if ( !isNaN( parseInt( settings.max_ttl ) ) ) {
+                test.parameters.max_ttl = settings.max_ttl;
+            } else {
+                delete test.parameters.max_ttl;
+            }
+            break;
     }
 
 };
