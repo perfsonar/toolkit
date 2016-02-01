@@ -56,8 +56,18 @@
                                 <option value="tcp" {{#compare parameters.protocol "tcp"}}selected{{/compare}}>TCP</option>
                                 <option value="udp" {{#compare parameters.protocol "udp"}}selected{{/compare}}>UDP</option>
                             </select>
-                            
                         {{/if}}
+                        {{#if showTracerouteParameters}}
+                            <label for="toolSelector">Tool</label>
+                            <select id="toolSelector">
+                                <option value="">Default</option>
+                                <option value="tracepath" {{#compare parameters.tool "tracepath"}}selected{{/compare}}>tracepath</option>
+                                <option value="traceroute" {{#compare parameters.tool "tracepath"}}selected{{/compare}}>traceroute</option>
+                                <option value="paris-traceroute" {{#compare parameters.tool "tracepath"}}selected{{/compare}}>paris-traceroute</option>
+                                <option value="{{parameters.tool}}">{{parameters.tool}}</option>
+                            </select>
+                        {{/if}}
+
                     </div>
 
                 </div>
@@ -90,7 +100,7 @@
 
                     <div class="medium-3 columns">
                         {{#if parameters.test_interval_formatted.value}}
-                        <label for="time-between">Time between tests</label>
+                        <label for="time-between-tests">Time between tests</label>
                         <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted.value}}" />
                         {{/if}}
                     </div>
@@ -103,6 +113,13 @@
                             <option value="day" {{#compare parameters.test_interval_formatted.unit "day"}}selected{{/compare}} >Days</option>
                         </select>
                     </div>
+                        {{#if showTracerouteParameters}}
+                            <div class="medium-6 columns">
+                                <label for="sizeOfTestPackets">Size of test packets</label>
+                                <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}">
+                            </div>
+
+                        {{/if}}
                         {{#if showThroughputParameters}}
                             <div class="medium-3 columns">
                                 <label for="test-duration">Test duration</label>
@@ -144,17 +161,22 @@
 {{/if}}
 
 {{#if showTracerouteParameters}}
-
+<!--
+<a href="#" onclick="$('#advancedParamsTraceroute').toggle(); return false;" class="add_panel_heading"><i class="fa fa-plus"></i> Advanced parameters</a>
+-->
+<div id="advancedParamsTraceroute">
                 <div class="row">
                     <div class="medium-6 columns">
-                                <label for="tool">Tool (make dropdown)</label>
-                                <input type="text" id="tool" value="{{parameters.tool}}">
+                        <label for="firstTTL">First hop to report (blank means don't skip any)</label>
+                        <input type="text" id="firstTTL" value="{{parameters.first_ttl}}" />
                     </div>
                     <div class="medium-6 columns">
-                        <label for="qwerty">QWERTY</label>
-                        <input type="text" id="querty" value="0">
+                        <label for="maxTTL">Maximum number of hops (blank means no limit)</label>
+                        <input type="text" id="maxTTL" value="{{parameters.max_ttl}}" />
                     </div>
                 </div>
+</div>
+
 {{/if}}
 
 {{#if showThroughputParameters}}
