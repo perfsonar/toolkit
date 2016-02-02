@@ -205,6 +205,8 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
         case 'traceroute':
             if (typeof settings.tool != 'undefined' && settings.tool != '') {
                 test.parameters.tool = settings.tool;
+            } else {
+                delete test.parameters.tool;
             }
             if ( typeof settings.packet_size != 'undefined' && settings.packet_size > 0 ) {
                 test.parameters.packet_size = settings.packet_size;

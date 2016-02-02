@@ -346,7 +346,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
 
-            var autotuning = $('#useAutotuningSwitch').val();
+            var autotuning = $('#useAutotuningSwitch').prop('checked');
             settings.autotuning = autotuning;
 
             var tos_bits = $('#tosBits').val();
@@ -369,10 +369,8 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var packet_rate = $('#packetRateSel').val();
             settings.packet_rate = packet_rate;
 
-            var packet_size = $('#sizeOfTestPackets').val();
+            var packet_size = $('#packetSize').val();
             settings.packet_size = packet_size;
-
-            // TODO: get additional parameters
 
             break;
         case 'pinger':
