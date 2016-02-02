@@ -20,6 +20,17 @@ TestConfigComponent.initialize = function() {
         TestConfigComponent.tableView = 'test';
     }
 
+    Handlebars.registerHelper('formatHostCount', function(count) {
+        var ret;
+        if ( count == undefined ) {
+            ret = '';
+        } else {
+            ret = count + ' host';
+            ret += ( count != 1 ? 's' : '' );
+        }
+        return ret;
+    });
+
     Handlebars.registerHelper('formatTestCount', function(count) {
         var ret;
         if ( count == undefined ) {
@@ -233,6 +244,15 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     $('#testEnabledSwitch').change( function() {
         TestConfigComponent._setSwitch( '#testEnabledSwitch' ); 
     });
+    $('#protocolSelector').change( function() {
+        console.log('protocol changed');
+        var protocol = $('#protocolSelector').val();
+        if ( protocol == 'udp' ) {
+            $('#udpBandwidthContainer').show();
+        } else {
+            $('#udpBandwidthContainer').hide();
+        }
+    });
     $('#useAutotuningSwitch').change( function() {
         TestConfigComponent._setSwitch( '#useAutotuningSwitch' );
         if ( $('#useAutotuningSwitch').prop('checked') ) {
@@ -358,6 +378,11 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
 
+            if ( protocol == 'udp' ) {
+                var udp_bandwidth = $('#udpBandwidth').val();
+                settings.udp_bandwidth = udp_bandwidth;
+            }
+
             var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
             settings.test_interval = test_interval;
 
@@ -419,7 +444,6 @@ TestConfigComponent._getDateValue = function( inputID ) {
     var selectorID = inputID + '_units';
     var num = $( inputID ).val();
     var unit = $( selectorID ).val();
-    console.log('value ' + num + ' unit: ' + unit);
 
     var seconds = SharedUIFunctions.getSecondsFromTimeUnits( num, unit );
     return seconds;

@@ -49,15 +49,21 @@
                         {{/each}}
                         </select>
                     </div>
-                    <div class="medium-6 columns">
                         {{#if showThroughputParameters}}
+                    <div class="medium-3 columns">
                             <label for="protocolSelector">Protocol</label>
                             <select id="protocolSelector">
                                 <option value="tcp" {{#compare parameters.protocol "tcp"}}selected{{/compare}}>TCP</option>
                                 <option value="udp" {{#compare parameters.protocol "udp"}}selected{{/compare}}>UDP</option>
                             </select>
+                    </div>
+                    <div class="medium-3 columns" id="udpBandwidthContainer" style="display:{{#compare parameters.protocol "udp"}}block{{else}}none{{/compare}};">
+                        <label for="udpBandwidth">UDP Bandwidth (MB)</label>
+                        <input type="text" id="udpBandwidth" value="{{#if parameters.udp_bandwidth_mb}}{{parameters.udp_bandwidth_mb}}{{else}}0{{/if}}" />
+                    </div>
                         {{/if}}
                         {{#if showTracerouteParameters}}
+                    <div class="medium-6 columns">
                             <label for="toolSel">Tool</label>
                             <select id="toolSel">
                                 <option value="">Default</option>
@@ -65,9 +71,9 @@
                                 <option value="traceroute" {{#compare parameters.tool "traceroute"}}selected{{/compare}}>traceroute</option>
                                 <option value="paris-traceroute" {{#compare parameters.tool "paris-traceroute"}}selected{{/compare}}>paris-traceroute</option>
                             </select>
+                    </div>
                         {{/if}}
 
-                    </div>
 
                 </div>
 

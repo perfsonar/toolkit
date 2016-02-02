@@ -36,7 +36,7 @@ Dispatcher.subscribe(TestConfigStore.topic, function() {
 });
 
 TestConfigStore._processData = function() {
-};  
+};
 
 TestConfigStore.getTestConfigurationFormatted = function() {
     return TestConfigStore.data.test_configuration_formatted;
@@ -73,7 +73,7 @@ TestConfigStore.getTestsByHost = function() {
         for(var j in test.members) {
             var member = test.members[j];
             member.host_id = host_id;
-            
+
             // This portion will need to happen in the get configuration section
             // or at least some of it
             tests = TestConfigStore.addHostToTest(tests, test, member);
@@ -110,6 +110,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         var udp_bandwidth = parseInt( test.parameters.udp_bandwidth );
         if ( test.parameters.protocol == "udp" && !isNaN(udp_bandwidth) ) {
             var formatted = udp_bandwidth / 1000000;
+            test.parameters.udp_bandwidth_mb = formatted;
             formatted += "M";
             test.parameters.udp_bandwidth_formatted = formatted;
             test.type_formatted += ' (' + formatted + ')';
@@ -165,8 +166,14 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
         case 'bwctl/throughput':
             if ( settings.protocol ) {
                 test.parameters.protocol = settings.protocol;
+                if ( settings.protocol == 'udp' && !isNaN( parseInt ( settings.udp_bandwidth ) ) ) {
+                    test.parameters.udp_bandwidth = parseInt( settings.udp_bandwidth ) * 1000000;
+                } else {
+                    delete test.parameters.udp_bandwidth;
+                }
             } else {
                 delete test.parameters.protocol;
+                delete test.parameters.udp_bandwidth;
             }
             if ( settings.tos_bits ) {
                 test.parameters.tos_bits = settings.tos_bits;
