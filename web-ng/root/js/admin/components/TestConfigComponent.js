@@ -374,6 +374,13 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             settings.protocol = protocol;
 
             // TODO: Add time between tests
+            // TODO: Add test duration
+
+            var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
+            settings.test_interval = test_interval;
+
+            var duration = TestConfigComponent._getDateValue( 'test-duration' );
+            settings.duration = duration;
 
             break;
         case 'owamp':
@@ -386,7 +393,21 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             // TODO: get additional parameters
 
             break;
+        case 'pinger':
+            var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
+            settings.test_interval = test_interval;
+            
+            var packet_count = $('#packetsPerTest').val();
+            settings.packet_count = packet_count;
+
+            var packet_interval = $('#timeBetweenPackets').val();
+            settings.packet_interval = packet_interval;
+
+            break;
         case 'traceroute':
+            var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
+            settings.test_interval = test_interval;
+
             var tool = $('#toolSel').val();
             settings.tool = tool;
 
@@ -399,8 +420,6 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var max_ttl = $('#maxTTL').val();
             settings.max_ttl = max_ttl;
 
-            // TODO: add time between tests
-
             break;
     }
 
@@ -408,6 +427,20 @@ TestConfigComponent._getUserValues = function( testConfig ) {
 
     TestConfigStore.setTestSettings( testID, settings );
     console.log('test config after setTestSettings', test);
+};
+
+// gets date value from an input and associated selector, which is assumed to have
+// an id of inputID + '_units'
+TestConfigComponent._getDateValue = function( inputID ) {
+    inputID = '#' + inputID;
+    var selectorID = inputID + '_units';
+    var num = $( inputID ).val();
+    var unit = $( selectorID ).val();
+    console.log('value ' + num + ' unit: ' + unit);
+
+    var seconds = SharedUIFunctions.getSecondsFromTimeUnits( num, unit );
+    return seconds;
+
 };
 
 TestConfigComponent._setSwitch = function( elID ) {

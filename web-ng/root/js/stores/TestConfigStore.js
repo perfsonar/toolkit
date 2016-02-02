@@ -181,6 +181,16 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             } else {
                 test.parameters.window_size = 0;
             }
+            if ( !isNaN( parseInt(settings.test_interval ) ) ) {
+                test.parameters.test_interval = settings.test_interval;
+            } else {
+                test.parameters.test_interval = 21600; // 6hrs TODO: change to use configured default
+            }
+            if ( !isNaN( parseInt(settings.duration ) ) ) {
+                test.parameters.duration = settings.duration;
+            } else {
+                test.parameters.duration = 20; // TODO: change to use configured default
+            }
             break;
         case 'owamp':
             if ( typeof settings.packet_rate != 'undefined' && settings.packet_rate > 0 ) {
@@ -212,6 +222,11 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
                 test.parameters.max_ttl = settings.max_ttl;
             } else {
                 delete test.parameters.max_ttl;
+            }
+            if ( !isNaN( parseInt(settings.test_interval ) ) ) {
+                test.parameters.test_interval = settings.test_interval;
+            } else {
+                test.parameters.test_interval = 600; // TODO: change to use configured default
             }
             break;
     }

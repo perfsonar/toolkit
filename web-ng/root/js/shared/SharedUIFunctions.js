@@ -126,7 +126,6 @@ SharedUIFunctions.addQueryStringParameter = function( name, value, removeDefault
         var removeRe = new RegExp("&?(view)=([^&]$|[^&]*)", "gi");
 
         var ampRe = /\?&/;
-    
         url = url.replace(removeRe, "");
         url = url.replace(ampRe, "?");
 
@@ -185,8 +184,21 @@ SharedUIFunctions.getTimeWithUnits = function( seconds ) {
 
     return output;
 };
- 
-   
+
+SharedUIFunctions.getSecondsFromTimeUnits = function ( value, unit  ) {
+    var orig_value = value;
+    if ( unit == 'minute') {
+        value = value * 60;
+    } else if ( unit == 'hour' ) {
+        value = value * 3600;
+    } else if ( unit == 'day' ) {
+        value = value * 86400;
+    }
+
+    console.log('getSecondsFromTimeUnits value: ' + value + ' unit: ' + unit + ' oldvalue ' + orig_value);
+    return value;
+};
+
 SharedUIFunctions.generateRandomIntInRange = function( min, max ) {
     var rand = Math.floor(Math.random() * (max - min) + min);
     return rand;

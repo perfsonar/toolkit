@@ -104,8 +104,8 @@
                         {{/if}}
                     </div>
                     <div class="medium-3 columns">
-                        <label for="time-between-units">Units</label>
-                        <select id="time-between-units">
+                        <label for="time-between-tests_units">Units</label>
+                        <select id="time-between-tests_units">
                             <option value="second" {{#compare parameters.test_interval_formatted.unit "second"}}selected{{/compare}} >Seconds</option>
                             <option value="minute" {{#compare parameters.test_interval_formatted.unit "minute"}}selected{{/compare}} >Minutes</option>
                             <option value="hour" {{#compare parameters.test_interval_formatted.unit "hour"}}selected{{/compare}} >Hours</option>
@@ -122,11 +122,11 @@
                         {{#if showThroughputParameters}}
                             <div class="medium-3 columns">
                                 <label for="test-duration">Test duration</label>
-                                <input type="text" id="test-duration" value="{{parameters.duration}}" />
+                                <input type="text" id="test-duration" value="{{parameters.duration_formatted.value}}" />
                             </div>
                             <div class="medium-3 columns">
-                                <label for="test-duration-units">Units</label>
-                                <select id="test-duration-units">
+                                <label for="test-duration_units">Units</label>
+                                <select id="test-duration_units">
 
                             <option value="second" {{#compare parameters.duration_formatted.unit "second"}}selected{{/compare}} >Seconds</option>
                             <option value="minute" {{#compare parameters.duration_formatted.unit "minute"}}selected{{/compare}} >Minutes</option>
