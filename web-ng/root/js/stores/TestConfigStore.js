@@ -143,8 +143,6 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             test.parameters.test_interval_formatted = time;
         }
     }
-    console.log('data after adding additional info', TestConfigStore.data);
-
 
 };
 
@@ -228,6 +226,29 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             } else {
                 test.parameters.test_interval = 600; // TODO: change to use configured default
             }
+            break;
+        case 'pinger':
+            if ( !isNaN( parseInt(settings.test_interval ) ) ) {
+                test.parameters.test_interval = settings.test_interval;
+            } else {
+                test.parameters.test_interval = 300; // TODO: change to use configured default
+            }
+            if ( typeof settings.packet_size != 'undefined' && settings.packet_size > 0 ) {
+                test.parameters.packet_size = settings.packet_size;
+            } else {
+                test.parameters.packet_size = 1000; // TODO: change to use configured default
+            }
+            if ( typeof settings.packet_interval != 'undefined' && settings.packet_size > 0 ) {
+                test.parameters.packet_interval = settings.packet_interval;
+            } else {
+                test.parameters.packet_interval = 1; // TODO: change to use configured default
+            }
+            if ( typeof settings.packet_count != 'undefined' && settings.packet_size > 0 ) {
+                test.parameters.packet_count = settings.packet_count;
+            } else {
+                test.parameters.packet_count = 10; // TODO: change to use configured default
+            }
+
             break;
     }
 

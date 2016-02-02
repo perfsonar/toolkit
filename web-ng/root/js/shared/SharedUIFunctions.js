@@ -195,7 +195,6 @@ SharedUIFunctions.getSecondsFromTimeUnits = function ( value, unit  ) {
         value = value * 86400;
     }
 
-    console.log('getSecondsFromTimeUnits value: ' + value + ' unit: ' + unit + ' oldvalue ' + orig_value);
     return value;
 };
 

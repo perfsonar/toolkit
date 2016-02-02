@@ -213,7 +213,6 @@ TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
 };
 
 TestConfigComponent.showTestConfigModal = function( testID ) {
-    console.log('test config testID', testID);
     var data = TestConfigStore.data;
     console.log('test config data', data);
     var testConfig = TestConfigStore.getTestConfig( testID );
@@ -252,20 +251,13 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     var self = this;
     $('#testConfigOKButton').click( function( e, testID ) {
         console.log('ok clicked');
-        console.log('self', self);
-        console.log('testID: ' + testID);
-        console.log('e', e);
         TestConfigComponent._getUserValues( self.testConfig );
         TestConfigComponent._getNewMemberConfig ( self.testConfig );
         console.log('testConfig after ok', testConfig);
 
-        console.log('publishing reloadTopic ' + TestConfigStore.reloadTopic);
-
         e.preventDefault();
         $('#configure-test-modal').foundation('reveal', 'close');
-        console.log("data after ok", TestConfigComponent.data);
         console.log("TestConfigStore data after ok", TestConfigStore.data);
-        console.log("testconfigadminstore data after ok", TestConfigAdminStore.data);
 
         // Fire the testConfigStore topic, signalling the data has changed
         Dispatcher.publish( TestConfigStore.topic );
@@ -340,12 +332,9 @@ TestConfigComponent._getUserValues = function( testConfig ) {
     var test = TestConfigStore.getTestByID( testID );
     //testConfig.disabled = !testEnabled;
     //TestConfigStore.setTestEnabled( test, testEnabled);
-    console.log('test enabled', testEnabled);
     var testDescription = $("#test-name").val();
-    console.log('test description', testDescription);
     //TestConfigStore.setTestDescription( test, testDescription );
     var interface = $("#interfaceSelector").val();
-    console.log('interface: ' + interface);
     //TestConfigStore.setInterface( test, interface);
     var settings = {};
     settings.enabled = testEnabled;
@@ -354,27 +343,20 @@ TestConfigComponent._getUserValues = function( testConfig ) {
 
     switch ( test.type ) {
         case 'bwctl/throughput':
-            console.log('setting bwctl settings ...');
             var protocol = $('#protocolSelector').val();
-            console.log('protocol: ' + protocol);
             settings.protocol = protocol;
 
             var autotuning = $('#useAutotuningSwitch').val();
             settings.autotuning = autotuning;
-            console.log('autotuning: ' + autotuning);
 
             var tos_bits = $('#tosBits').val();
             settings.tos_bits = tos_bits;
-            console.log('tos_bits: ' + tos_bits);
 
             var window_size = $('#windowSize').val();
             settings.window_size = window_size;
 
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
-
-            // TODO: Add time between tests
-            // TODO: Add test duration
 
             var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
             settings.test_interval = test_interval;
@@ -387,7 +369,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var packet_rate = $('#packetRateSel').val();
             settings.packet_rate = packet_rate;
 
-            var packet_size = $('#sizeofTestPackets').val();
+            var packet_size = $('#sizeOfTestPackets').val();
             settings.packet_size = packet_size;
 
             // TODO: get additional parameters
@@ -396,12 +378,15 @@ TestConfigComponent._getUserValues = function( testConfig ) {
         case 'pinger':
             var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
             settings.test_interval = test_interval;
-            
+
             var packet_count = $('#packetsPerTest').val();
             settings.packet_count = packet_count;
 
             var packet_interval = $('#timeBetweenPackets').val();
             settings.packet_interval = packet_interval;
+
+            var packet_size = $('#sizeOfTestPackets').val();
+            settings.packet_size = packet_size;
 
             break;
         case 'traceroute':
