@@ -27,8 +27,11 @@
                         <div class="medium-9 columns">
                             <div class="config__form">
                                     <h2 class="module-header__title">All scheduled tests</h2>
-                                    <p>Configure tests between this host and other hosts.</p>
-
+                                    <div>Configure tests between this host and other hosts.</div>
+                                    <div class="button-group">
+                                        <button id="testAddHostButton" class="button-quiet">+ Add Host</button>
+                                        <button id="testAddTestButton" href="#" class="button-quiet">+ Add Test</button>
+                                    </div>
 
                                     <!-- Begin table heading -->
 
@@ -40,7 +43,9 @@
                                                 <a href="" id="viewByTest">Test</a></span>
                                         </div>
                                         <div class="medium-6 columns text-right">
+                                            <!--
                                             <a href="#" data-reveal-id="defaultParametersModal">Default test parameters</a>
+-->
                                         </div>
                                     </div>
 
@@ -86,6 +91,7 @@
     [% INCLUDE admin/components/test_config_table_by_test.html %]
     [% INCLUDE admin/components/test_config_table_by_host.html %]
     [% INCLUDE admin/components/configure_test.html %]
+    [% INCLUDE admin/components/test_add_templates.html %]
 
     [% INCLUDE admin/components/test_config_default_parameters.html %]
 

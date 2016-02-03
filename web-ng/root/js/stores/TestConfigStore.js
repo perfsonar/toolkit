@@ -75,7 +75,7 @@ TestConfigStore.getTestsByHost = function() {
 
             // This portion will need to happen in the get configuration section
             // or at least some of it
-            tests = TestConfigStore.addHostToTest(tests, test, member);
+            tests = TestConfigStore.addHostToTestView(tests, test, member);
             host_id++;
         }
     }
@@ -281,14 +281,13 @@ TestConfigStore.setTestMembers = function ( testID, settings ) {
     //test.members = []; 
     //test.members = settings.members;
     //TODO: investigate, is this necessary? doesn't seem to be
-
-
 };
 
 // Given a test config, this function generates and returns 
 // a new, integer unique id that doesn't conflict with any of 
 // the existing member ids
-TestConfigStore.generateMemberID = function( test ) {
+TestConfigStore.generateMemberID = function( testID ) {
+    var test = TestConfigStore.getTestByID( testID );
     var min = 2000000;
     var max = 3000000;
     var ids = {};
@@ -349,9 +348,9 @@ TestConfigStore.getTestByID = function ( testID ) {
     return {};
 };
 
-// TestConfigStore.addHostToTest
+// TestConfigStore.addHostToTestView
 // Adds a host to a test in the Host-centric view
-TestConfigStore.addHostToTest = function (tests, test, member) {
+TestConfigStore.addHostToTestView = function (tests, test, member) {
     var address = member.address;
     var type = test.type;
     var host_id = member.host_id;

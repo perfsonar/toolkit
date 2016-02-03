@@ -76,3 +76,12 @@ table.test_results tr.no_data td.test-values.data {
     display:none;
 }
 */
+
+th.test_add, td.test_add {
+    display:none;
+}
+
+th.test_add input[type="checkbox"], td.test_add input[type="checkbox"] {
+    margin:0;
+
+}
