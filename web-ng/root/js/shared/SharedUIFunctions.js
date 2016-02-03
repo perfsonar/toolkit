@@ -23,25 +23,25 @@ var SharedUIFunctions = {
  *      * If no values, return an empty array
  */
 
-SharedUIFunctions.getSelectedValues = function( allValues, selectedValues ) { 
+SharedUIFunctions.getSelectedValues = function( allValues, selectedValues ) {
     for(var i in allValues) {
         var currentName = allValues[i].id;
-    
+
         if ( typeof selectedValues != 'undefined' ) {
             if ( typeof selectedValues == 'string' ) {
                 selectedValues = [ selectedValues ];
-            } 
+            }
             for (var j in selectedValues) {
                 var selectedName = selectedValues[j];
                 if ( selectedName == currentName ) {
                     allValues[i].selected = true;
                     continue;
                 }
-            }        
+            }
         }
-    } 
+    }
     return allValues;
-}; 
+};
 
 
 SharedUIFunctions._saveSuccess = function( topic, message ) {
@@ -83,15 +83,13 @@ SharedUIFunctions.getLabelText = function ( state ) {
 
 
 Handlebars.registerHelper("everyOther", function (index, amount, scope) {
-    if ( ++index % amount ) 
+    if ( ++index % amount ) { 
         return scope.inverse(this);
-    else 
+    } else {
         return scope.fn(this);
+    }
 });
 
-SharedUIFunctions.getSecondsFromFields = function( valueID, unitID ) {
-
-};
 
 SharedUIFunctions.getUrlParameter = function ( paramName ) {
     var pageURL = decodeURIComponent(window.location.search.substring(1));
@@ -112,8 +110,8 @@ SharedUIFunctions.addQueryStringParameter = function( name, value, removeDefault
     var re = new RegExp("([?&]" + name + "=)[^&]+", "");
 
     function add(sep) {
-        var endSepRe = new RegExp( "&$" );
-        if ( sep == '&' && ! url.match( endSepRe ) ) {
+        var endSepRe = new RegExp( "[&?]$" );
+        if ( (sep == '?' || sep == '&') && ! url.match( endSepRe ) ) {
             url += sep;
         }
         url += name + "=" + encodeURIComponent(value);
@@ -144,7 +142,6 @@ SharedUIFunctions.addQueryStringParameter = function( name, value, removeDefault
 
     if ( removeDefault && value == defaultValue ) {
         remove();
-        
     }
     //window.history.pushState("object or string", "View by " + value, url);
     window.history.replaceState("object or string", "View by " + value, url);

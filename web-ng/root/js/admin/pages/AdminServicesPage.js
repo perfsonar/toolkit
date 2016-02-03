@@ -1,7 +1,7 @@
 // make sure jquery, Dispatcher, TestStore, TestResultsComponent, 
 // HostServicesStore, HostAdminStore, HostServicesComponent all load before this.
 
-var AdminServicesPage = { 
+var AdminServicesPage = {
     adminServicesTopic: 'store.change.host_services',
     formChangeTopic: 'ui.form.change',
     formSubmitTopic:    'ui.form.submit',
@@ -23,7 +23,7 @@ AdminServicesPage.initialize = function() {
     $('#select_latency_services').click('latency', AdminServicesPage.selectServices);
 
     $('input:checkbox').filter(function() {
-            return this.id.match(/services_.+_cb$/);    
+            return this.id.match(/services_.+_cb$/);
         }).change(AdminServicesPage._showSaveBar);
     $('#admin_info_save_button').click( AdminServicesPage._save );
     $('#admin_info_cancel_button').click( AdminServicesPage._cancel);
@@ -34,7 +34,7 @@ AdminServicesPage.initialize = function() {
 AdminServicesPage._setEnabledServices = function(topic) {
     var data = HostServicesStore.getHostServices();
     $('#loading-modal').foundation('reveal', 'close');
-    
+
     var serviceList = AdminServicesPage.serviceList;
     for(var i in data.services) {
         var service = data.services[i];
@@ -49,7 +49,7 @@ AdminServicesPage._setEnabledServices = function(topic) {
                 service_cont_el.addClass("uninstalled");
                 service_el.prop("disabled", true);
             } else {
-                service_el.removeClass("uninstalled");                
+                service_el.removeClass("uninstalled");
                 service_cont_el.removeClass("uninstalled");
                 service_el.prop("disabled", false);
             }
@@ -72,17 +72,17 @@ AdminServicesPage.selectServices = function(arg) {
                 AdminServicesPage._checkService(serviceID, true);
             } else {
                 AdminServicesPage._checkService(serviceID, false);
-            }            
+            }
         } else {
             if ( jQuery.inArray(service, latencyServices) > -1 ) {
                 AdminServicesPage._checkService(serviceID, false);
             } else {
                 AdminServicesPage._checkService(serviceID, true);
-            }            
+            }
         }
     }
     AdminServicesPage._showSaveBar();
-    
+
 };
 
 AdminServicesPage._save = function() {
@@ -122,7 +122,7 @@ AdminServicesPage._checkService = function(serviceID, checked) {
 
 AdminServicesPage.clearServices = function() {
     $('input:checkbox').filter(function() {
-         return this.id.match(/services_.+_cb$/);    
+         return this.id.match(/services_.+_cb$/);
     })
     .prop("checked", false);
 };

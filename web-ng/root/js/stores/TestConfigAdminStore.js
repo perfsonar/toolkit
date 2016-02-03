@@ -18,10 +18,9 @@ TestConfigAdminStore.save = function( tests ) {
     TestConfigAdminStore._sanitizeTestConfig( tests );
 
     var topic = TestConfigStore.saveTopic;
-    var error_topic = TestConfigStore.saveErrorTopic; 
-   
+    var error_topic = TestConfigStore.saveErrorTopic;
+
     var testsJSON = JSON.stringify(tests);
-    console.log('tests', tests);
 
     $.ajax({
         url: TestConfigAdminStore.url,
@@ -51,7 +50,7 @@ TestConfigAdminStore._sanitizeTestConfig = function( tests ) {
             delete member.member_id;
 
         }
-    } 
+    }
 };
 
 TestConfigAdminStore.getTestConfiguration = function() {

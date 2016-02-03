@@ -28,15 +28,14 @@ TestConfigStore.testTypes = [
     },
 ];
 
+TestConfigStore.data_orig = null;
+
 Dispatcher.subscribe(TestConfigStore.topic, function() {
     console.log('received test data changed event');
     TestConfigStore.data = TestConfigStore.getData();
     console.log('data from dispatcher/testconfigstore', TestConfigStore.getData()); 
     TestConfigStore._setAdditionalVariables();
 });
-
-TestConfigStore._processData = function() {
-};
 
 TestConfigStore.getTestConfigurationFormatted = function() {
     return TestConfigStore.data.test_configuration_formatted;
@@ -147,7 +146,20 @@ TestConfigStore._setAdditionalVariables = function ( ) {
 
 };
 
+TestConfigStore.revertTestSettings = function ( ) {
+    var data = {};
+    $.extend(true, data, TestConfigStore.data_orig);
+    TestConfigStore.data = data;
+    Dispatcher.publish( TestConfigStore.topic );
+};
+
 TestConfigStore.setTestSettings = function ( testID, settings ) {
+    if ( TestConfigStore.data_orig === null ) {
+        var dataOrig = {};
+        $.extend(true, dataOrig, TestConfigStore.data);
+        TestConfigStore.data_orig = dataOrig;
+    }
+
     var test = TestConfigStore.getTestByID( testID );
     if ( settings.enabled ) {
         test.disabled = 0;

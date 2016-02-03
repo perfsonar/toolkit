@@ -2,6 +2,10 @@
 
 var TestConfigComponent = {
     testConfigTopic: 'store.change.test_config',
+    testConfigReloadTopic: 'store.change.test_config_reload',
+    saveTestConfigTopic: 'store.change.test_config.save',
+    saveTestConfigErrorTopic: 'store.change.test_config.save_error',
+    formSubmitTopic:    'ui.form.submit',
     data: null,
     dataSet: false,
     expandedDataGroups: {},
@@ -11,9 +15,17 @@ var TestConfigComponent = {
 };
 
 TestConfigComponent.initialize = function() {
-    //$('#loading-modal').foundation('reveal', 'open');
+    $('#loading-modal').foundation('reveal', 'open');
+    Dispatcher.subscribe(TestConfigComponent.saveTestConfigTopic, SharedUIFunctions._saveSuccess);
+    Dispatcher.subscribe(TestConfigComponent.saveTestConfigErrorTopic, SharedUIFunctions._saveError);
+
     Dispatcher.subscribe( TestConfigComponent.testConfigTopic, TestConfigComponent._setTestData );
     Dispatcher.subscribe( HostDetailsStore.detailsTopic, TestConfigComponent._setHostData );
+
+    // cancel button clicked 
+    $('#admin_info_cancel_button').click( TestConfigComponent._cancel);
+
+    // Get the view setting
     var view = SharedUIFunctions.getUrlParameter( 'view' );
     console.log('view', view);
     if ( typeof view != 'undefined' && view == 'test' ) {
@@ -88,6 +100,8 @@ TestConfigComponent.initialize = function() {
 };
 
 TestConfigComponent.save = function(e) {
+    Dispatcher.publish(TestConfigComponent.formSubmitTopic);
+    //SharedUIFunctions._showSaveBar();
     TestConfigAdminStore.save(TestConfigStore.data);
 };
 
@@ -156,6 +170,7 @@ TestConfigComponent._buildTable = function() {
 TestConfigComponent._loadInterfaceWhenReady = function() {
     if ( TestConfigComponent.dataSet && TestConfigComponent.interfacesSet ) {
         TestConfigComponent._showConfig();
+        $('#loading-modal').foundation('reveal', 'close');
     }
 };
 
@@ -492,13 +507,18 @@ TestConfigComponent.addTestMember = function(e) {
 
 
     var table = $('table#test-members > tbody:last-child');
-    
+
     table.append( memberMarkup );
-    
+
     $('#new-host-name').val('');
     $('#new-host-description').val('');
 
     return false;
+};
+
+TestConfigComponent._cancel = function() {
+    StickySaveBar._formCancel();
+    TestConfigStore.revertTestSettings();
 };
 
 TestConfigComponent.initialize();

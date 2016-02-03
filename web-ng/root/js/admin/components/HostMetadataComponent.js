@@ -21,8 +21,8 @@ HostMetadataComponent._setMetadata = function( topic ) {
     var data = HostMetadataStore.getHostMetadata();
     var allRoles = HostMetadataStore.allRoles;
     var selectedRoles = data.config.role;
-    var roleValues = SharedUIFunctions.getSelectedValues( allRoles, selectedRoles );  
-    
+    var roleValues = SharedUIFunctions.getSelectedValues( allRoles, selectedRoles );
+
     var roleSel = $('#node_role_select');
     roleSel.empty();
     roleSel.select2( { 
