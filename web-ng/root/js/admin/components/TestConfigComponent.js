@@ -60,8 +60,14 @@ TestConfigComponent.initialize = function() {
     $('#testAddHostButton').click( function(e) {
         e.preventDefault();
         TestConfigComponent.showTestAddHostModal();
-
     });
+
+    /*
+    $('#testAddTestButton').click( function(e) {
+        e.preventDefault();
+        TestConfigComponent.showTestAddTestModal();
+    });
+    */
 
     $("div.config__form").on("click", ".cb_test_enabled", function(e, f) {
         TestConfigComponent.toggleTestEnabled( this );
@@ -229,6 +235,48 @@ TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
 
 };
 
+TestConfigComponent.showTestAddTestModal = function( ) {
+    var data = TestConfigComponent.data;
+    var config_template = $("#testAddTestTemplate").html();
+    var template = Handlebars.compile( config_template );
+    var config_modal = template( data );
+    $("#testAddTestContainer").html(config_modal);
+    $('#test-add-test-modal').foundation('reveal', 'open');
+
+
+
+
+    $('#testAddTestOKButton').click( function( e ) {
+        console.log('ok clicked');
+        e.preventDefault();
+
+        // take some action to save the user input here
+        //var host = TestConfigComponent._getUserHostToAddInfo();
+        //var modified = TestConfigComponent._getUserTestsToAddHostInfo( host );
+        
+        // close the modal window
+        $('#test-add-test-modal').foundation('reveal', 'close');
+        console.log("TestConfigStore data after ok", TestConfigStore.data);
+
+        /*
+        if ( modified ) {
+            SharedUIFunctions._showSaveBar();
+        }
+        */
+
+        // Fire the testConfigStore topic, signalling the data has changed
+        //Dispatcher.publish( TestConfigStore.topic );
+    });
+
+
+    $('#testAddTestCancelButton').click( function( e ) {
+        console.log('cancel clicked');
+        e.preventDefault();
+        $('#test-add-test-modal').foundation('reveal', 'close');
+    });
+    
+};
+
 TestConfigComponent.showTestAddHostModal = function( ) {
     var data = TestConfigComponent.data;
     console.log('add host data', data);
@@ -248,7 +296,7 @@ TestConfigComponent.showTestAddHostModal = function( ) {
     $("#testAddHostTableContainer .test_add").show();
 
     $('#testAddHostOKButton').click( function( e ) {
-        console.log('cancel clicked');
+        console.log('ok clicked');
         e.preventDefault();
         var host = TestConfigComponent._getUserHostToAddInfo();
         var modified = TestConfigComponent._getUserTestsToAddHostInfo( host );
@@ -273,8 +321,20 @@ TestConfigComponent.showTestAddHostModal = function( ) {
 
 TestConfigComponent.showTestConfigModal = function( testID ) {
     var data = TestConfigStore.data;
+    var newTest = ( typeof testID  == 'undefined' );
+    var testConfig;
+    if ( newTest ) {
+        data = {};
+        testConfig = {};
+    } else {
+        testConfig = TestConfigStore.getTestConfig( testID );
+
+    }
+    testConfig.newTest = newTest;
     console.log('test config data', data);
-    var testConfig = TestConfigStore.getTestConfig( testID );
+    console.log('newTest', newTest);
+
+    // if they are adding a test, testID will be undefined
     testConfig.interfaces = TestConfigComponent.interfaces;
     console.log("test config", testConfig);
 
@@ -287,9 +347,31 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     var config_modal = template( testConfig );
     $("#configureTestContainer").html(config_modal);
     $('#configure-test-modal').foundation('reveal', 'open');
+    $('#newTestTypeSel').change( function() {
+        var type = $('#newTestTypeSel').val();
+        testConfig.type = type;
+        console.log('testConfig', testConfig);
+        if ( type == 'bwctl/throughput') {
+            testConfig.showThroughputParameters = true;
+        }
+        if ( type != '' ) {
+            $('#configureTestForm .existing_test_type_only').show();
+        } else {
+            $('#configureTestForm .existing_test_type_only').hide();
+
+        }
+
+    });
     $('#testEnabledSwitch').change( function() {
         TestConfigComponent._setSwitch( '#testEnabledSwitch' ); 
     });
+    if ( newTest ) {
+        $('#configureTestForm .new_test_only').show();
+        $('#configureTestForm .existing_test_type_only').hide();
+    } else { 
+        $('#configureTestForm .new_test_only').hide();
+        $('#configureTestForm .existing_test_type_only').show();
+    }
     $('#protocolSelector').change( function() {
         console.log('protocol changed');
         var protocol = $('#protocolSelector').val();

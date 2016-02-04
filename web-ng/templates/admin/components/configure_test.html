@@ -20,6 +20,21 @@
                 <!-- Begin common fields -->
 
 
+                <div class="row new_test_only" id="testTypeRow">
+                    <div class="medium-6 columns">
+                        <label for="newTestTypeSel">Type</label>
+                        <select id="newTestTypeSel">
+                            <option value="">-- Choose type --</option>
+                            <option value="bwctl/throughput">Throughput</option>
+                            <option value="owamp">One-way latency</option>
+                            <option value="ping">Ping</option>
+                            <option value="traceroute">Traceroute</option>
+                        </select>
+                    </div>
+                    <div class="medium-6 columns">
+                    </div>
+                </div>
+<div class="existing_test_type_only">
                 <div class="row">
                     <div class="medium-6 columns">
                         <label for="test-name" class="space">Test name/description</label>
@@ -208,8 +223,9 @@
                 </div>
 {{/if}}
 
+</div>      <!-- ends div with existing_test_type_only class -->
 
-            <div class="module module--config-table">
+            <div class="module module--config-table existing_test_type_only">
                 <h3 class="module-header__title font-bold">Test members</h3>
                 <table id="test-members"> 
                     <thead>

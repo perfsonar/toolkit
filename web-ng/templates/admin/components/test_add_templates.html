@@ -47,3 +47,90 @@
     </div>
 
 </script>
+
+
+
+<div id="testAddTestContainer"></div>
+
+<script id="testAddTestTemplate" type="text/x-handlebars-template">
+
+<!-- *** Add new test modal *** -->
+
+    <div id="test-add-test-modal" class="reveal-modal large text-left" data-reveal aria-labelledby="Add Test" aria-hidden="true" role="dialog">
+        <form id="testAddTestForm" action="" method="POST">
+
+            <div class="row">
+                <div class="medium-12 columns">
+                    <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">Add Test</h2>
+                    <p>Use this form to add a new test.</p>
+                    <p>Enter the details of the test to add.</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="medium-6 columns">
+                    <label for="newTestName">Test name/description</label>
+                    <input type="text" id="newTestName" />
+                </div>
+                <div class="medium-6 columns">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="medium-6 columns">
+                    <label for="newTestTypeSel">Type</label>
+                    <select id="newTestTypeSel">
+                    </select>
+                </div>
+                <div class="medium-6 columns">
+                    <label for="newTestTimeInterval">Time Between Tests</label>
+                    <select id="newTestTimeInterval">
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="medium-6 columns">
+                </div>
+                <div class="medium-6 columns">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="medium-6 columns">
+                </div>
+                <div class="medium-6 columns">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="medium-6 columns">
+                </div>
+                <div class="medium-6 columns">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="medium-6 columns">
+                </div>
+                <div class="medium-6 columns">
+                </div>
+            </div>
+            <div class="row">
+                <div class="medium-6 columns">
+                </div>
+                <div class="medium-6 columns">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="medium-12 columns text-right">
+                    <a href="#" id="testAddTestCancelButton" style="margin: 0 3em;">Cancel</a>
+                    <button class="button-primary" style="margin: 0 1em 0 0;" id="testAddTestOKButton">OK</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+</script>
