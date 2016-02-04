@@ -31,11 +31,17 @@ TestConfigStore.testTypes = [
 TestConfigStore.data_orig = null;
 
 Dispatcher.subscribe(TestConfigStore.topic, function() {
+    if ( TestConfigStore.data_orig === null ) {
+        TestConfigStore.data_orig = $.extend(true, {}, TestConfigStore.data);
+    }
     console.log('received test data changed event');
-    TestConfigStore.data = TestConfigStore.getData();
-    console.log('data from dispatcher/testconfigstore', TestConfigStore.getData()); 
-    TestConfigStore._setAdditionalVariables();
+    TestConfigStore.getTestConfigData();
 });
+
+TestConfigStore.getTestConfigData = function() {
+    console.log('data from dispatcher/testconfigstore', TestConfigStore.data); 
+    TestConfigStore._setAdditionalVariables();
+};
 
 TestConfigStore.getTestConfigurationFormatted = function() {
     return TestConfigStore.data.test_configuration_formatted;
@@ -147,18 +153,12 @@ TestConfigStore._setAdditionalVariables = function ( ) {
 };
 
 TestConfigStore.revertTestSettings = function ( ) {
-    var data = {};
-    $.extend(true, data, TestConfigStore.data_orig);
-    TestConfigStore.data = data;
+    TestConfigStore.data = $.extend(true, {}, TestConfigStore.data_orig);
+    TestConfigStore.getTestConfigData();
     Dispatcher.publish( TestConfigStore.topic );
 };
 
 TestConfigStore.setTestSettings = function ( testID, settings ) {
-    if ( TestConfigStore.data_orig === null ) {
-        var dataOrig = {};
-        $.extend(true, dataOrig, TestConfigStore.data);
-        TestConfigStore.data_orig = dataOrig;
-    }
 
     var test = TestConfigStore.getTestByID( testID );
     if ( settings.enabled ) {

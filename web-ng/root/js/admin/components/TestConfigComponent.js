@@ -23,7 +23,7 @@ TestConfigComponent.initialize = function() {
     Dispatcher.subscribe( HostDetailsStore.detailsTopic, TestConfigComponent._setHostData );
 
     // cancel button clicked 
-    $('#admin_info_cancel_button').click( TestConfigComponent._cancel);
+    $('#admin_info_cancel_button').click( TestConfigComponent._cancel );
 
     // Get the view setting
     var view = SharedUIFunctions.getUrlParameter( 'view' );
@@ -230,7 +230,6 @@ TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
 };
 
 TestConfigComponent.showTestAddHostModal = function( ) {
-    //var data = TestConfigStore.data;
     var data = TestConfigComponent.data;
     console.log('add host data', data);
     var config_template = $("#testAddHostTemplate").html();
@@ -252,9 +251,13 @@ TestConfigComponent.showTestAddHostModal = function( ) {
         console.log('cancel clicked');
         e.preventDefault();
         var host = TestConfigComponent._getUserHostToAddInfo();
-        TestConfigComponent._getUserTestsToAddHostInfo( host );
+        var modified = TestConfigComponent._getUserTestsToAddHostInfo( host );
         $('#test-add-host-modal').foundation('reveal', 'close');
         console.log("TestConfigStore data after ok", TestConfigStore.data);
+
+        if ( modified ) {
+            SharedUIFunctions._showSaveBar();
+        }
 
         // Fire the testConfigStore topic, signalling the data has changed
         Dispatcher.publish( TestConfigStore.topic );
@@ -277,7 +280,6 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
 
     var memberTemplate = Handlebars.compile($("#member-partial").html());
     TestConfigComponent.memberTemplate = memberTemplate;
-    //Handlebars.registerPartial("member", $("#member-partial").html());
     Handlebars.registerPartial("member", memberTemplate);
 
     var config_template = $("#configureTestTemplate").html();
@@ -285,7 +287,6 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     var config_modal = template( testConfig );
     $("#configureTestContainer").html(config_modal);
     $('#configure-test-modal').foundation('reveal', 'open');
-    //$('#myModal').foundation('reveal', 'close');
     $('#testEnabledSwitch').change( function() {
         TestConfigComponent._setSwitch( '#testEnabledSwitch' ); 
     });
@@ -344,7 +345,6 @@ TestConfigComponent._getUserHostToAddInfo = function() {
     var description = $('#test-add-host-description').val();
     host.description = description;
     console.log('host', host);
-    // TODO: get the host description also
     return host;
 };
 
@@ -352,6 +352,7 @@ TestConfigComponent._getUserTestsToAddHostInfo = function( host ) {
     var tests = [];
     this.host = host;
     var self = this;
+    var modified = false;
     var rows = $('#testAddHostTableContainer tbody tr').each( function(i) {
         var testID = $(this).attr("data-group");
         var address = self.host.address;
@@ -369,11 +370,13 @@ TestConfigComponent._getUserTestsToAddHostInfo = function( host ) {
 
         if ( ipv4 || ipv6 ) { 
             TestConfigStore.addOrUpdateTestMember( testID, member );
+            modified = true;
         }
 
         console.log('member', member);
        
     }); 
+    return modified;
 
 };
 
@@ -435,12 +438,8 @@ TestConfigComponent._getUserValues = function( testConfig ) {
     var testEnabled = $('#testEnabledSwitch').prop("checked");
     var testID = testConfig.test_id;
     var test = TestConfigStore.getTestByID( testID );
-    //testConfig.disabled = !testEnabled;
-    //TestConfigStore.setTestEnabled( test, testEnabled);
     var testDescription = $("#test-name").val();
-    //TestConfigStore.setTestDescription( test, testDescription );
     var interface = $("#interfaceSelector").val();
-    //TestConfigStore.setInterface( test, interface);
     var settings = {};
     settings.enabled = testEnabled;
     settings.description = testDescription;
@@ -541,16 +540,11 @@ TestConfigComponent._setSwitch = function( elID ) {
     var checked = checkbox_el.prop('checked');
     var label = SharedUIFunctions.getLabelText(checked);
     $("span[for='" + checkbox_el.attr("id") + "']").text(label);
-    //var label_el = checkbox_el.next('.switch_label' )
-    //label_el.text(label);
 };
 
 TestConfigComponent.removeTestMember = function( memberID ) {
     var row = $('tbody.test-members tr.subrow[member_id=' + memberID + ']');
     row.remove();
-    //e.preventDefault();
-    //var dataGroup = $(this).attr("data-group");
-    //var el = $(".js-subrow[data-group=" + dataGroup + "]");
     SharedUIFunctions._showSaveBar();
 
     return false;

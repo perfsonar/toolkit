@@ -1,25 +1,6 @@
 // Make sure jquery loads first
 // assumes Dispatcher has already been declared (so load that first as well)
 
-/*
-var DataStore = function() {
-    DataStore.topic = null;
-    DataStore.url = null;
-    DataStore.data = null;
-    //DataStore.initialize = function() {};
-};
-*/
-
-
-/*
-var DataStore = {
-    topic: null,
-    url: null,
-    data:null,
-};
-*/
-
-
 function DataStore(topic, url, autoload, type) {
     this.topic = topic;
     this.reloadTopic = topic + "_reload";
