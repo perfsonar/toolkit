@@ -94,6 +94,35 @@ TestConfigStore.getTestsByHost = function() {
     return tests_sorted;
 };
 
+// Set types to display
+// This sets variables used by the templates to determine which 
+// form elements to display (varies per type)
+
+TestConfigStore.setTypesToDisplay = function ( test ) {
+    var type = test.type;
+    // all disabled by default
+    test.showPingParameters = false;
+    test.showThroughputParameters = false;
+    test.showOWAMPParameters = false;
+    test.showTracerouteParameters = false;
+
+    // test interval - display for everything except owamp
+    test.showTestInterval = true;
+
+    if ( type == 'pinger') {
+        test.showPingParameters = true;
+    } else if ( type == 'bwctl/throughput' ) {
+        test.showThroughputParameters = true;
+    } else if ( type == 'owamp') {
+        test.showOWAMPParameters = true;
+        test.showTestInterval = false;
+    } else if ( type == 'traceroute') {
+        test.showTracerouteParameters = true;
+    }
+    console.log('types to display', test);
+
+};
+
 // Set additional variables for each test/member
 TestConfigStore._setAdditionalVariables = function ( ) {
     console.log('setting additional variables');
@@ -105,6 +134,12 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         var test = tests[i];
         var type = test.type;
         var protocol = test.parameters.protocol;
+
+        // Set types to display
+        // This sets variables used by the templates to determine which 
+        // form elements to display (varies per type)
+
+        TestConfigStore.setTypesToDisplay( test );
 
         // set test.type_formatted
         var formattedType = TestConfigStore._formatTestType( type );
@@ -120,11 +155,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             test.parameters.udp_bandwidth_formatted = formatted;
             test.type_formatted += ' (' + formatted + ')';
         }
-        if ( type == 'pinger' ) {
-            test.showPingParameters = true;
-        }
         if ( type == 'bwctl/throughput' ) {
-            test.showThroughputParameters = true;
             if ( test.parameters.window_size > 0 ) {
                 test.showWindowSize = true;
             } else {
@@ -133,13 +164,12 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             test.parameters.duration_formatted = SharedUIFunctions.getTimeWithUnits( test.parameters.duration );
         }
         if ( type == 'owamp') {
-            test.showOWAMPParameters = true;
             test.parameters.packet_size = parseInt( test.parameters.packet_padding ) + 20;
             test.parameters.packet_rate = 1/test.parameters.packet_interval;
         }
         if ( type == 'traceroute') {
-            test.showTracerouteParameters = true;
-
+            // TODO: remove? is there anything we need to do here
+            // for traceroute tests?
         }
 
         // Set test_interval_formatted

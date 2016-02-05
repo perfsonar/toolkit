@@ -338,22 +338,37 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     testConfig.interfaces = TestConfigComponent.interfaces;
     console.log("test config", testConfig);
 
+    var config_modal_template = $("#configureTestModalContainerTemplate").html();
+    var template = Handlebars.compile( config_modal_template );
+    $("#configureTestContainer").html( template() );
+
+    TestConfigComponent._drawConfigForm( testConfig );
+
+    $('#configure-test-modal').foundation('reveal', 'open');
+
+    return false;
+};
+
+TestConfigComponent._drawConfigForm = function( testConfig ) {
+    var newTest = testConfig.newTest;
     var memberTemplate = Handlebars.compile($("#member-partial").html());
     TestConfigComponent.memberTemplate = memberTemplate;
     Handlebars.registerPartial("member", memberTemplate);
 
     var config_template = $("#configureTestTemplate").html();
     var template = Handlebars.compile( config_template );
+    console.log('testConfig for redrawing form', testConfig);
     var config_modal = template( testConfig );
-    $("#configureTestContainer").html(config_modal);
-    $('#configure-test-modal').foundation('reveal', 'open');
+    $("#configure-test-modal").html(config_modal);
+
+
+
     $('#newTestTypeSel').change( function() {
         var type = $('#newTestTypeSel').val();
         testConfig.type = type;
+        TestConfigStore.setTypesToDisplay( testConfig );
+        TestConfigComponent._drawConfigForm( testConfig );
         console.log('testConfig', testConfig);
-        if ( type == 'bwctl/throughput') {
-            testConfig.showThroughputParameters = true;
-        }
         if ( type != '' ) {
             $('#configureTestForm .existing_test_type_only').show();
         } else {
@@ -363,7 +378,7 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
 
     });
     $('#testEnabledSwitch').change( function() {
-        TestConfigComponent._setSwitch( '#testEnabledSwitch' ); 
+        TestConfigComponent._setSwitch( '#testEnabledSwitch' );
     });
     if ( newTest ) {
         $('#configureTestForm .new_test_only').show();
@@ -417,7 +432,7 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     });
     $('form#configureTestForm input').change(SharedUIFunctions._showSaveBar);
     $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
-    return false;
+
 };
 
 TestConfigComponent._getUserHostToAddInfo = function() {
@@ -456,7 +471,7 @@ TestConfigComponent._getUserTestsToAddHostInfo = function( host ) {
         }
 
         console.log('member', member);
-       
+
     }); 
     return modified;
 
