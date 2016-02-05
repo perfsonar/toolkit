@@ -35,7 +35,7 @@ TestStore.initialize = function() {
 
 TestStore._retrieveList = function() {
         $.ajax({
-            url: "/serviceTest/graphData.cgi?action=test_list&url=" + TestStore.ma_url_enc,
+            url: "/perfsonar-graphs/graphData.cgi?action=test_list&url=" + TestStore.ma_url_enc,
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
@@ -53,7 +53,7 @@ TestStore._retrieveList = function() {
 
 TestStore._retrieveTests = function() {
     $.ajax({
-            url: "/serviceTest/graphData.cgi?action=tests&url=" + TestStore.ma_url_enc,
+            url: "/perfsonar-graphs/graphData.cgi?action=tests&url=" + TestStore.ma_url_enc,
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
