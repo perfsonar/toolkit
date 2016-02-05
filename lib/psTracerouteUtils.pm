@@ -29,7 +29,7 @@ package psTracerouteUtils;
 #=====================================================
 use warnings;
 use strict;
-use lib '/opt/perfsonar_ps/toolkit/lib';
+use lib '/usr/lib/perfsonar/lib';
 use perfSONAR_PS::Client::MA;
 use Exporter;                           # easy perl module functions
 use XML::Twig;

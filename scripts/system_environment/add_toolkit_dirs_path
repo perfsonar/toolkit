@@ -1,6 +1,6 @@
 #!/bin/bash
 #######################
-# Add /opt/perfsonar_ps/toolkit/scripts to everyone's path
+# Add /usr/lib/perfsonar/scripts to everyone's path
 #######################
 cat >/etc/profile.d/add_toolkit_dirs.sh <<EOF
 
