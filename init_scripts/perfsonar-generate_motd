@@ -37,13 +37,13 @@ use lib "$RealBin/../lib";
 
 # The generate_motd script gets installed into /etc/init.d, so we need to keep
 # a reference to the installed location.
-use lib "/opt/perfsonar_ps/toolkit/lib";
+use lib "/usr/lib/perfsonar/lib";
 
 use perfSONAR_PS::NPToolkit::Config::Version;
 
 use perfSONAR_PS::Utils::Host qw( discover_primary_address );
 
-my $motd_template = "/opt/perfsonar_ps/toolkit/templates/config/motd.tmpl";
+my $motd_template = "/etc/perfsonar/templates/motd.tmpl";
 
 if ( $ARGV[0] and $ARGV[0] eq "start" ) {
     stop();

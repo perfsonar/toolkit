@@ -1,1 +1,1 @@
-30 2 * * * root /opt/perfsonar_ps/toolkit/scripts/clean_esmond_db.sh &> /var/log/perfsonar/clean_esmond_db.log
+30 2 * * * root /usr/lib/perfsonar/scripts/clean_esmond_db.sh &> /var/log/perfsonar/clean_esmond_db.log

@@ -10,10 +10,10 @@ BWCTLDEFAULTS=("5001:5300" "5301:5600" "5601:5900" "6001:6200")
 OWAMPPARAMS=("testports")
 OWAMPDEFAULTS=("8760:9960")
 
-BWCTLFILE="/etc/bwctld/bwctld.conf"
-OWAMPFILE="/etc/owampd/owampd.conf"
-FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/perfsonar_firewall_settings.conf"
-OLD_FIREWALL_RULES="/opt/perfsonar_ps/toolkit/etc/old_firewall_settings.conf"
+BWCTLFILE="/etc/bwctl-server/bwctl-server.conf"
+OWAMPFILE="/etc/owamp-server/owamp-server.conf"
+FIREWALL_RULES="/etc/perfsonar/toolkit/perfsonar_firewall_settings.conf"
+OLD_FIREWALL_RULES="/etc/perfsonar/toolkit/old_firewall_settings.conf"
 
 if [ ! -f $FIREWALL_RULES ]; then
     echo "Couldn't find firewall rules"

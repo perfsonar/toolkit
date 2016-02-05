@@ -14,5 +14,5 @@ pathmunge () {
         fi
 }
 
-pathmunge "/opt/perfsonar_ps/toolkit/scripts"
+pathmunge "/usr/lib/perfsonar/scripts"
 EOF

@@ -13,19 +13,11 @@ if [ "$1" == "new" -o `echo "${PREV_VERSION:0:3} < 3.4" | bc` -eq 1 ]; then
 fi
 
 #Handle updating configs here
-grep "<service yum_cron>" /opt/perfsonar_ps/toolkit/etc/config_daemon.conf > /dev/null 2>&1
+grep "<service yum_cron>" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
 if [ $? != 0 ]; then
     sed -i '/<access>/a \\t<service yum_cron> \
 		\t\trestart	\t\t 1 \
 		\t\tstart \t\t 1 \
 		\t\tstop \t\t 1 \
-	\t</service>' /opt/perfsonar_ps/toolkit/etc/config_daemon.conf
-fi
-
-# Use the enabled_services file to check if we need to enable auto updates by
-# default (i.e. it's an upgrade of a pre-3.4 host)
-grep "yum_cron_enabled" /opt/perfsonar_ps/toolkit/etc/enabled_services > /dev/null 2>&1
-if [ $? != 0 ]; then
-    echo "" >> /opt/perfsonar_ps/toolkit/etc/enabled_services
-    echo "yum_cron_enabled=enabled" >> /opt/perfsonar_ps/toolkit/etc/enabled_services
+	\t</service>' /etc/perfsonar/toolkit/configdaemon.conf
 fi

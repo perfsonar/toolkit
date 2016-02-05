@@ -6,7 +6,7 @@
 # description: perfSONAR MA data conversion tool
 #
 
-PREFIX=/opt/perfsonar_ps/toolkit
+PREFIX=/usr/lib/perfsonar
 BINDIR=${PREFIX}/scripts
 RUNDIR=/var/run
 LOGFILE=/var/log/perfsonar/psb_to_esmond.log
@@ -17,10 +17,10 @@ USER=perfsonar
 GROUP=perfsonar
 
 #Get the MA key
-export ESMOND_ROOT=/opt/esmond
-export ESMOND_CONF=$ESMOND_ROOT/esmond.conf
+export ESMOND_ROOT=/usr/lib/esmond
+export ESMOND_CONF=/etc/esmond/esmond.conf
 export DJANGO_SETTINGS_MODULE=esmond.settings
-cd /opt/esmond
+cd /usr/lib/esmond
 source /opt/rh/python27/enable
 . bin/activate
 MA_KEY=`python esmond/manage.py add_api_key_user perfsonar | grep "Key:" | cut -f2 -d " "`

@@ -3,10 +3,10 @@
 addBwctlPorts(){  
     port_type=$1
     port_range=$2
-    grep ^${port_type} /etc/bwctld/bwctld.conf &> /dev/null
+    grep ^${port_type} /etc/bwctl-server/bwctl-server.conf &> /dev/null
     if [ $? != 0 ]; then
-        echo "" >> /etc/bwctld/bwctld.conf
-        echo "${port_type} ${port_range}" >> /etc/bwctld/bwctld.conf
+        echo "" >> /etc/bwctl-server/bwctl-server.conf
+        echo "${port_type} ${port_range}" >> /etc/bwctl-server/bwctl-server.conf
     fi  
 }
 

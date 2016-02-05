@@ -23,12 +23,12 @@ cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/pg_hba.conf /var/lib
 sed -i '/^JVM_OPTS="\$JVM_OPTS -Dcom.sun.management.jmx/ s/^/#/' /etc/cassandra/conf/cassandra-env.sh
 
 #set esmond env variables
-export ESMOND_ROOT=/opt/esmond
-export ESMOND_CONF=$ESMOND_ROOT/esmond.conf
+export ESMOND_ROOT=/usr/lib/esmond
+export ESMOND_CONF=/etc/esmond/esmond.conf
 export DJANGO_SETTINGS_MODULE=esmond.settings
 
 #initialize python
-cd /opt/esmond
+cd $ESMOND_ROOT
 source /opt/rh/python27/enable
 /opt/rh/python27/root/usr/bin/virtualenv --prompt="(esmond)" .
 . bin/activate
