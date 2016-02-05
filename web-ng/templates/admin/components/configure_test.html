@@ -1,17 +1,24 @@
 <div id="configureTestContainer"></div>
 
-<script id="configureTestTemplate" type="text/x-handlebars-template">
-
-<!-- *** Configure test modal (gear icon) *** -->
+<script id="configureTestModalContainerTemplate" type="text/x-handlebars-template">
 
 <div id="configure-test-modal" class="reveal-modal large text-left" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+</div>
+</script>
 
+<script id="configureTestTemplate" type="text/x-handlebars-template">
 <form id="configureTestForm" action="" method="POST">
 
     <input type="hidden" id="config_test_id" name="config_test_id" value="{{test_id}}" />
     <div class="row">
         <div class="medium-12 columns">
-            <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">Configure Test</h3>
+            <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">
+                {{#if newTest}}
+                    Add Test
+                {{else}}
+                    Configure Test
+                {{/if}}
+            </h2>
         </div>
     </div>
     <div class="row">
@@ -20,6 +27,21 @@
                 <!-- Begin common fields -->
 
 
+                <div class="row new_test_only" id="testTypeRow">
+                    <div class="medium-6 columns">
+                        <label for="newTestTypeSel">Type</label>
+                        <select id="newTestTypeSel">
+                            <option value="">-- Choose type --</option>
+                            <option value="bwctl/throughput" {{#compare type "bwctl/throughput"}}selected{{/compare}}>Throughput</option>
+                            <option value="owamp" {{#compare type "owamp"}}selected{{/compare}}>One-way latency</option>
+                            <option value="pinger" {{#compare type "pinger"}}selected{{/compare}}>Ping</option>
+                            <option value="traceroute" {{#compare type "traceroute"}}selected{{/compare}}>Traceroute</option>
+                        </select>
+                    </div>
+                    <div class="medium-6 columns">
+                    </div>
+                </div>
+<div class="existing_test_type_only">
                 <div class="row">
                     <div class="medium-6 columns">
                         <label for="test-name" class="space">Test name/description</label>
@@ -45,7 +67,7 @@
                         <select id="interfaceSelector">
                             <option value="" {{#unless parameters.local_interface}}selected{{/unless}}>Default</option>
                         {{#each interfaces}}
-                            <option value="{{iface}}" {{#compare iface ../parameters.local_interface}}selected{{/compare}}>{{iface}}</option> 
+                            <option value="{{iface}}" {{#compare iface ../parameters.local_interface}}selected{{/compare}}>{{iface}}</option>
                         {{/each}}
                         </select>
                     </div>
@@ -79,8 +101,6 @@
 
 <!-- End common fields -->
 
-<!-- Only show the duration/test length if not editing an owamp test -->
-
 {{#if showOWAMPParameters}}
                 <div class="row">
 
@@ -102,12 +122,10 @@
                 </div> <!-- end div class="row" -->
 {{else}}
                 <div class="row">
-
+                    {{#if showTestInterval}}
                     <div class="medium-3 columns">
-                        {{#if parameters.test_interval_formatted.value}}
                         <label for="time-between-tests">Time between tests</label>
                         <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted.value}}" />
-                        {{/if}}
                     </div>
                     <div class="medium-3 columns">
                         <label for="time-between-tests_units">Units</label>
@@ -118,6 +136,7 @@
                             <option value="day" {{#compare parameters.test_interval_formatted.unit "day"}}selected{{/compare}} >Days</option>
                         </select>
                     </div>
+                        {{/if}}
                         {{#if showTracerouteParameters}}
                             <div class="medium-6 columns">
                                 <label for="sizeOfTestPackets">Packet Size (bytes)</label>
@@ -208,8 +227,9 @@
                 </div>
 {{/if}}
 
+</div>      <!-- ends div with existing_test_type_only class -->
 
-            <div class="module module--config-table">
+            <div class="module module--config-table existing_test_type_only">
                 <h3 class="module-header__title font-bold">Test members</h3>
                 <table id="test-members"> 
                     <thead>
@@ -274,12 +294,6 @@
                     </div>
                 </div>
 
-                <!-- <div class="js-add-new-wrapper">
-                    <a href="#" class="button-primary js-add-new-host" style="margin-right: 1em;">Add new</a> <a href="./">Cancel</a>
-                </div>
-                <div class="new-host-save">
-                    <a href="#" class="button-primary js-save-new-host" style="margin-right: 1em;">Save</a> <a href="./">Cancel</a>
-                </div> -->
             </div>
         </div>
     </div>

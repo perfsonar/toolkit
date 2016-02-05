@@ -60,8 +60,14 @@ TestConfigComponent.initialize = function() {
     $('#testAddHostButton').click( function(e) {
         e.preventDefault();
         TestConfigComponent.showTestAddHostModal();
-
     });
+
+    /*
+    $('#testAddTestButton').click( function(e) {
+        e.preventDefault();
+        TestConfigComponent.showTestAddTestModal();
+    });
+    */
 
     $("div.config__form").on("click", ".cb_test_enabled", function(e, f) {
         TestConfigComponent.toggleTestEnabled( this );
@@ -229,6 +235,48 @@ TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
 
 };
 
+TestConfigComponent.showTestAddTestModal = function( ) {
+    var data = TestConfigComponent.data;
+    var config_template = $("#testAddTestTemplate").html();
+    var template = Handlebars.compile( config_template );
+    var config_modal = template( data );
+    $("#testAddTestContainer").html(config_modal);
+    $('#test-add-test-modal').foundation('reveal', 'open');
+
+
+
+
+    $('#testAddTestOKButton').click( function( e ) {
+        console.log('ok clicked');
+        e.preventDefault();
+
+        // take some action to save the user input here
+        //var host = TestConfigComponent._getUserHostToAddInfo();
+        //var modified = TestConfigComponent._getUserTestsToAddHostInfo( host );
+        
+        // close the modal window
+        $('#test-add-test-modal').foundation('reveal', 'close');
+        console.log("TestConfigStore data after ok", TestConfigStore.data);
+
+        /*
+        if ( modified ) {
+            SharedUIFunctions._showSaveBar();
+        }
+        */
+
+        // Fire the testConfigStore topic, signalling the data has changed
+        //Dispatcher.publish( TestConfigStore.topic );
+    });
+
+
+    $('#testAddTestCancelButton').click( function( e ) {
+        console.log('cancel clicked');
+        e.preventDefault();
+        $('#test-add-test-modal').foundation('reveal', 'close');
+    });
+    
+};
+
 TestConfigComponent.showTestAddHostModal = function( ) {
     var data = TestConfigComponent.data;
     console.log('add host data', data);
@@ -248,7 +296,7 @@ TestConfigComponent.showTestAddHostModal = function( ) {
     $("#testAddHostTableContainer .test_add").show();
 
     $('#testAddHostOKButton').click( function( e ) {
-        console.log('cancel clicked');
+        console.log('ok clicked');
         e.preventDefault();
         var host = TestConfigComponent._getUserHostToAddInfo();
         var modified = TestConfigComponent._getUserTestsToAddHostInfo( host );
@@ -273,23 +321,73 @@ TestConfigComponent.showTestAddHostModal = function( ) {
 
 TestConfigComponent.showTestConfigModal = function( testID ) {
     var data = TestConfigStore.data;
+    var newTest = ( typeof testID  == 'undefined' );
+    var testConfig;
+    if ( newTest ) {
+        data = {};
+        testConfig = {};
+    } else {
+        testConfig = TestConfigStore.getTestConfig( testID );
+
+    }
+    testConfig.newTest = newTest;
     console.log('test config data', data);
-    var testConfig = TestConfigStore.getTestConfig( testID );
+    console.log('newTest', newTest);
+
+    // if they are adding a test, testID will be undefined
     testConfig.interfaces = TestConfigComponent.interfaces;
     console.log("test config", testConfig);
 
+    var config_modal_template = $("#configureTestModalContainerTemplate").html();
+    var template = Handlebars.compile( config_modal_template );
+    $("#configureTestContainer").html( template() );
+
+    TestConfigComponent._drawConfigForm( testConfig );
+
+    $('#configure-test-modal').foundation('reveal', 'open');
+
+    return false;
+};
+
+TestConfigComponent._drawConfigForm = function( testConfig ) {
+    var newTest = testConfig.newTest;
     var memberTemplate = Handlebars.compile($("#member-partial").html());
     TestConfigComponent.memberTemplate = memberTemplate;
     Handlebars.registerPartial("member", memberTemplate);
 
     var config_template = $("#configureTestTemplate").html();
     var template = Handlebars.compile( config_template );
+    console.log('testConfig for redrawing form', testConfig);
     var config_modal = template( testConfig );
-    $("#configureTestContainer").html(config_modal);
-    $('#configure-test-modal').foundation('reveal', 'open');
-    $('#testEnabledSwitch').change( function() {
-        TestConfigComponent._setSwitch( '#testEnabledSwitch' ); 
+    $("#configure-test-modal").html(config_modal);
+
+
+
+    $('#newTestTypeSel').change( function() {
+        var type = $('#newTestTypeSel').val();
+        testConfig.type = type;
+        TestConfigStore.setTypesToDisplay( testConfig );
+        TestConfigComponent._drawConfigForm( testConfig );
+        console.log('testConfig', testConfig);
+        if ( type != '' ) {
+            $('#configureTestForm .existing_test_type_only').show();
+        } else {
+            $('#configureTestForm .existing_test_type_only').hide();
+
+        }
+
     });
+    $('#testEnabledSwitch').change( function() {
+        TestConfigComponent._setSwitch( '#testEnabledSwitch' );
+    });
+    if ( newTest ) {
+        $('#configureTestForm .new_test_only').show();
+        $('#configureTestForm .existing_test_type_only').hide();
+        $('#addTestMemberPanel').show();
+    } else { 
+        $('#configureTestForm .new_test_only').hide();
+        $('#configureTestForm .existing_test_type_only').show();
+    }
     $('#protocolSelector').change( function() {
         console.log('protocol changed');
         var protocol = $('#protocolSelector').val();
@@ -335,7 +433,7 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     });
     $('form#configureTestForm input').change(SharedUIFunctions._showSaveBar);
     $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
-    return false;
+
 };
 
 TestConfigComponent._getUserHostToAddInfo = function() {
@@ -374,7 +472,7 @@ TestConfigComponent._getUserTestsToAddHostInfo = function( host ) {
         }
 
         console.log('member', member);
-       
+
     }); 
     return modified;
 
@@ -436,8 +534,20 @@ TestConfigComponent._getNewMemberConfig = function( test ) {
 
 TestConfigComponent._getUserValues = function( testConfig ) {
     var testEnabled = $('#testEnabledSwitch').prop("checked");
-    var testID = testConfig.test_id;
-    var test = TestConfigStore.getTestByID( testID );
+    var newTest = testConfig.newTest;
+    var testID;
+    var test;
+    if ( newTest ) {
+        //testID = TestConfigStore.generateTestID();
+        test = TestConfigStore.addTest( testConfig );
+        testID = test.test_id;
+        console.log('new testID', testID);
+
+    } else {
+        testID = testConfig.test_id; 
+        test = TestConfigStore.getTestByID( testID );
+
+    }
     var testDescription = $("#test-name").val();
     var interface = $("#interfaceSelector").val();
     var settings = {};

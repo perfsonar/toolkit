@@ -94,6 +94,35 @@ TestConfigStore.getTestsByHost = function() {
     return tests_sorted;
 };
 
+// Set types to display
+// This sets variables used by the templates to determine which 
+// form elements to display (varies per type)
+
+TestConfigStore.setTypesToDisplay = function ( test ) {
+    var type = test.type;
+    // all disabled by default
+    test.showPingParameters = false;
+    test.showThroughputParameters = false;
+    test.showOWAMPParameters = false;
+    test.showTracerouteParameters = false;
+
+    // test interval - display for everything except owamp
+    test.showTestInterval = true;
+
+    if ( type == 'pinger') {
+        test.showPingParameters = true;
+    } else if ( type == 'bwctl/throughput' ) {
+        test.showThroughputParameters = true;
+    } else if ( type == 'owamp') {
+        test.showOWAMPParameters = true;
+        test.showTestInterval = false;
+    } else if ( type == 'traceroute') {
+        test.showTracerouteParameters = true;
+    }
+    console.log('types to display', test);
+
+};
+
 // Set additional variables for each test/member
 TestConfigStore._setAdditionalVariables = function ( ) {
     console.log('setting additional variables');
@@ -105,6 +134,12 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         var test = tests[i];
         var type = test.type;
         var protocol = test.parameters.protocol;
+
+        // Set types to display
+        // This sets variables used by the templates to determine which 
+        // form elements to display (varies per type)
+
+        TestConfigStore.setTypesToDisplay( test );
 
         // set test.type_formatted
         var formattedType = TestConfigStore._formatTestType( type );
@@ -120,11 +155,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             test.parameters.udp_bandwidth_formatted = formatted;
             test.type_formatted += ' (' + formatted + ')';
         }
-        if ( type == 'pinger' ) {
-            test.showPingParameters = true;
-        }
         if ( type == 'bwctl/throughput' ) {
-            test.showThroughputParameters = true;
             if ( test.parameters.window_size > 0 ) {
                 test.showWindowSize = true;
             } else {
@@ -133,13 +164,12 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             test.parameters.duration_formatted = SharedUIFunctions.getTimeWithUnits( test.parameters.duration );
         }
         if ( type == 'owamp') {
-            test.showOWAMPParameters = true;
             test.parameters.packet_size = parseInt( test.parameters.packet_padding ) + 20;
             test.parameters.packet_rate = 1/test.parameters.packet_interval;
         }
         if ( type == 'traceroute') {
-            test.showTracerouteParameters = true;
-
+            // TODO: remove? is there anything we need to do here
+            // for traceroute tests?
         }
 
         // Set test_interval_formatted
@@ -158,9 +188,24 @@ TestConfigStore.revertTestSettings = function ( ) {
     Dispatcher.publish( TestConfigStore.topic );
 };
 
+TestConfigStore.addTest = function ( test ) {
+    var tests = TestConfigStore.data.test_configuration;
+
+    var testID = TestConfigStore.generateTestID();
+    test.test_id = testID;
+    tests.push( test );
+    return test;
+
+};
+
 TestConfigStore.setTestSettings = function ( testID, settings ) {
 
     var test = TestConfigStore.getTestByID( testID );
+
+    if ( typeof test.parameters == 'undefined' || test.parameters === null ) {
+        test.parameters = {};
+    }
+
     if ( settings.enabled ) {
         test.disabled = 0;
     } else {
@@ -172,7 +217,9 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
     if ( settings.interface ) {
         test.parameters.local_interface = settings.interface;
     } else {
-        delete test.parameters.local_interface;
+        if ( typeof test.parameters != 'undefined' ) {
+            delete test.parameters.local_interface;
+        }
     }
     switch ( test.type ) {
         case 'bwctl/throughput':
@@ -208,6 +255,12 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             } else {
                 test.parameters.duration = 20; // TODO: change to use configured default
             }
+
+            if ( typeof test.parameters.tool == 'undefined' ) {
+                test.parameters.tool = 'iperf3,iperf';
+            }
+
+
             break;
         case 'owamp':
             if ( typeof settings.packet_rate != 'undefined' && settings.packet_rate > 0 ) {
@@ -283,8 +336,40 @@ TestConfigStore.setTestMembers = function ( testID, settings ) {
     //TODO: investigate, is this necessary? doesn't seem to be
 };
 
-// Given a test config, this function generates and returns 
-// a new, integer unique id that doesn't conflict with any of 
+// Given this function generates and returns 
+// a new, integer unique test id that doesn't conflict with any of 
+// the existing test ids
+TestConfigStore.generateTestID = function( ) {
+    var tests = TestConfigStore.data.test_configuration;
+
+    var min = 3000000;
+    var max = 4000000;
+    var ids = {};
+    for(var i in tests) {
+        var test = tests[i];
+        var test_id = test.test_id;
+        ids[ test_id ] = 1;
+    }
+    var rand = SharedUIFunctions.generateRandomIntInRange( min, max );
+    var i = 0;
+    while ( rand in ids ) {
+        rand = SharedUIFunctions.generateRandomIntInRange( min, max );
+        i++;
+
+        // If we've tried 100 times and haven't found any 
+        // usable ids, give up. This shouldn't happen
+        if ( i > 100 ) {
+            console.log('error generating test ids');
+            return false;
+        }
+    }
+    return rand;
+
+};
+
+
+// Given a test ID, this function generates and returns 
+// a new, integer unique member id that doesn't conflict with any of 
 // the existing member ids
 TestConfigStore.generateMemberID = function( testID ) {
     var test = TestConfigStore.getTestByID( testID );
@@ -407,6 +492,9 @@ TestConfigStore.addOrUpdateTestMember = function ( testID, member ) {
     var test = TestConfigStore.getTestByID( testID );
     var memberIndex = TestConfigStore.getTestMemberIndex( member.member_id, testID );
 
+    if ( ! $.isArray( test.members ) ) {
+        test.members = [];
+    }
 
     /*
     var result = $.grep( test.members, function( val, index ) {
