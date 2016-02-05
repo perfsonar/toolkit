@@ -330,7 +330,7 @@ rm -rf %{buildroot}
 
 make ROOTPATH=%{buildroot}/%{install_base} CONFIGPATH=%{buildroot}/%{config_base} install
 
-mv %{buildroot}/%{install_base}/etc %{buildroot}/%{config_base}
+mv etc/* %{buildroot}/%{config_base}
 
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
@@ -344,6 +344,7 @@ install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_
 install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_script_4}
 
 # Clean up unnecessary files
+rm -rf %{buildroot}/%{install_base}/etc
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
@@ -535,7 +536,6 @@ fi
 %{install_base}/web/*
 %{install_base}/web-ng/*
 %config(noreplace) %{install_base}/web/root/gui/services/etc/web_admin.conf
-%{install_base}/dependencies
 /etc/httpd/conf.d/*
 %attr(0640,root,root) /etc/sudoers.d/*
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
@@ -567,10 +567,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_1}
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_2}
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_3}
-%attr(0755,perfsonar,perfsonar) %{install_base}/init_scripts/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_1}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
