@@ -383,6 +383,7 @@ TestConfigComponent._drawConfigForm = function( testConfig ) {
     if ( newTest ) {
         $('#configureTestForm .new_test_only').show();
         $('#configureTestForm .existing_test_type_only').hide();
+        $('#addTestMemberPanel').show();
     } else { 
         $('#configureTestForm .new_test_only').hide();
         $('#configureTestForm .existing_test_type_only').show();
@@ -533,8 +534,20 @@ TestConfigComponent._getNewMemberConfig = function( test ) {
 
 TestConfigComponent._getUserValues = function( testConfig ) {
     var testEnabled = $('#testEnabledSwitch').prop("checked");
-    var testID = testConfig.test_id;
-    var test = TestConfigStore.getTestByID( testID );
+    var newTest = testConfig.newTest;
+    var testID;
+    var test;
+    if ( newTest ) {
+        //testID = TestConfigStore.generateTestID();
+        test = TestConfigStore.addTest( testConfig );
+        testID = test.test_id;
+        console.log('new testID', testID);
+
+    } else {
+        testID = testConfig.test_id; 
+        test = TestConfigStore.getTestByID( testID );
+
+    }
     var testDescription = $("#test-name").val();
     var interface = $("#interfaceSelector").val();
     var settings = {};
