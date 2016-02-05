@@ -330,8 +330,6 @@ rm -rf %{buildroot}
 
 make ROOTPATH=%{buildroot}/%{install_base} CONFIGPATH=%{buildroot}/%{config_base} install
 
-mv etc/* %{buildroot}/%{config_base}
-
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 
@@ -342,6 +340,8 @@ install -D -m 0755 init_scripts/%{init_script_1} %{buildroot}/etc/init.d/%{init_
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
 install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_script_4}
+
+mv etc/* %{buildroot}/%{config_base}
 
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/etc
