@@ -330,8 +330,7 @@ rm -rf %{buildroot}
 
 make ROOTPATH=%{buildroot}/%{install_base} CONFIGPATH=%{buildroot}/%{config_base} install
 
-install -D -m 0644 etc/* %{buildroot}/%{config_base}
-
+mv %{buildroot}/%{install_base}/etc %{buildroot}/%{config_base}
 
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
@@ -348,7 +347,6 @@ install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
-rm -rf %{buildroot}/%{install_base}/etc
 rm -rf %{buildroot}/%{install_base}/init_scripts
 
 %clean
