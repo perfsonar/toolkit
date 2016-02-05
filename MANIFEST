@@ -62,7 +62,6 @@ scripts/ps-toolkit-migrate-restore.sh
 scripts/psb_to_esmond.pl
 scripts/remove_home_partition
 scripts/service_watcher
-scripts/system_environment/add_dbxml_path
 scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path
 scripts/system_environment/bwctl_port_verify
@@ -79,7 +78,6 @@ scripts/system_environment/disable_weak_ssl_ciphers
 scripts/system_environment/disable_zeroconf
 scripts/system_environment/enable_apache_redirect
 scripts/system_environment/enable_auto_updates
-scripts/system_environment/enable_mysqld
 scripts/system_environment/enable_nscd
 scripts/system_environment/enable_web100_kernel_repository
 scripts/system_environment/enable_wheel_sudo
@@ -403,7 +401,6 @@ web-ng/templates/tests/results.html
 web-ng/templates/admin/components/admin_header_nav.html
 web-ng/templates/admin/components/sticky_bar.html
 web-ng/templates/admin/components/test_config_default_parameters.html
-web-ng/templates/admin/components/test_config_table.html
 web-ng/templates/admin/pages/admin_info.html
 web-ng/templates/admin/pages/host.html
 web-ng/templates/admin/pages/services.html
@@ -436,12 +433,9 @@ web/root/admin/log_view/bwctl.cgi
 web/root/admin/log_view/ndt.cgi
 web/root/admin/log_view/owamp.cgi
 web/root/admin/log_view/templates/.htaccess
-web/root/admin/log_view/templates/footer.tmpl
-web/root/admin/log_view/templates/header.tmpl
 web/root/admin/log_view/templates/log_view_bwctl.tmpl
 web/root/admin/log_view/templates/log_view_ndt.tmpl
 web/root/admin/log_view/templates/log_view_owamp.tmpl
-web/root/admin/log_view/templates/sidebar.html
 web/root/admin/ntp/etc/.htaccess
 web/root/admin/ntp/etc/logger.conf
 web/root/admin/ntp/etc/web_admin.conf

@@ -595,9 +595,9 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
 
 %files security
-%config(noreplace) %{config_base}/default_system_firewall_settings.conf
-%config(noreplace) %{config_base}/old_firewall_settings.conf
-%config(noreplace) %{config_base}/perfsonar_firewall_settings.conf
+%config %{config_base}/default_system_firewall_settings.conf
+%config %{config_base}/old_firewall_settings.conf
+%config %{config_base}/perfsonar_firewall_settings.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_firewall
 
 %files install
@@ -608,7 +608,7 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_sysctl
 
 %files ntp
-%config(noreplace) %{config_base}/ntp_known_servers
+%config %{config_base}/ntp_known_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_ntpd
 %{config_base}/templates/ntp_conf.tmpl
