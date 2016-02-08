@@ -103,6 +103,10 @@ Requires:		perfsonar-meshconfig-agent
 Requires:		perfsonar-meshconfig-jsonbuilder
 Requires:       perfsonar-oppd-bwctl
 Requires:       perfsonar-oppd-owamp
+Requires:       libperfsonar-esmond-perl
+Requires:       libperfsonar-perl
+Requires:       libperfsonar-regulartesting-perl
+Requires:       libperfsonar-sls-perl
 Requires:       libperfsonar-toolkit-perl
 Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
