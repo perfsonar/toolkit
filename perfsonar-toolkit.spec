@@ -95,14 +95,10 @@ Requires:		perl(warnings)
 
 #perfSONAR packages
 Requires:		perfsonar-common
+Requires:		perfsonar-core
 Requires:		perfsonar-lscachedaemon
-Requires:		perfsonar-lsregistrationdaemon
 Requires:		perfsonar-graphs
-Requires:		perfsonar-regulartesting
-Requires:		perfsonar-meshconfig-agent
 Requires:		perfsonar-meshconfig-jsonbuilder
-Requires:       perfsonar-oppd-bwctl
-Requires:       perfsonar-oppd-owamp
 Requires:       libperfsonar-esmond-perl
 Requires:       libperfsonar-perl
 Requires:       libperfsonar-regulartesting-perl
@@ -111,19 +107,8 @@ Requires:       libperfsonar-toolkit-perl
 Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
 
-#perfSONAR service packages
-Requires:		esmond          >= 2.0
-Requires:		bwctl-client    >= 1.6.0
-Requires:		bwctl-server    >= 1.6.0
-Requires:		ndt
-Requires:		owamp-client    >= 3.5.0
-Requires:		owamp-server    >= 3.5.0
-
 # Misc performance/performance-related tools
-Requires:		nuttcp
-Requires:		iperf
-Requires:		iperf3
-Requires:		paris-traceroute
+Requires:		ndt
 Requires:		tcptrace
 Requires:		xplot-tcptrace
 Requires:		coreutils
