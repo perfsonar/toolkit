@@ -37,4 +37,4 @@ source /opt/rh/python27/enable
 python esmond/manage.py syncdb --noinput &> /dev/null
 
 #create api key
-KEY=`python esmond/manage.py add_api_key_user perfsonar | grep "Key:" | cut -f2 -d " "`
+KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
