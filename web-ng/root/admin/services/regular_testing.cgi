@@ -31,10 +31,8 @@ if ( !$authenticated ) {
     exit;
 }
 
-
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $test_config_defaults_file = $basedir . '/etc/test_config_defaults.conf';
-warn "test config defaults file: $test_config_defaults_file";
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 our %conf = $conf_obj->getall;
 
@@ -62,6 +60,7 @@ $params->{config_file} = $config_file;
 $params->{load_regular_testing} = 1;
 $params->{load_ls_registration} = 0;
 $params->{test_config_defaults_file} = $test_config_defaults_file;
+
 my $regular_testing_info = perfSONAR_PS::NPToolkit::DataService::RegularTesting->new( $params );
 
 my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
@@ -114,7 +113,7 @@ $router->add_method($update_test_configuration_method);
 
 
 my $test_config_defaults_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            =>  "get_default_test_parameters",
+    name            =>  "get_test_defaults",
     description     =>  "Retrieves the default test parameters for all tests",
     callback        =>  sub { $regular_testing_info->get_default_test_parameters(@_); },
     auth_required   =>  1,

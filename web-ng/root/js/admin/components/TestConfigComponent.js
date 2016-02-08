@@ -350,10 +350,27 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
 };
 
 TestConfigComponent._drawConfigForm = function( testConfig ) {
+    if ( testConfig.type ) {
+        testConfig.defaults = $.extend( true, {}, TestConfigStore.data.defaults.type[ testConfig.type ] );
+        console.log('testConfig.defaults', testConfig.defaults);
+/*
+        if ( ( typeof testConfig.parameters == "undefined" 
+                || $.isEmptyObject(testConfig.parameters) )
+                && newTest ) {
+*/
+        if ( testConfig.newTest ) {
+            testConfig.parameters = $.extend( true, {}, testConfig.defaults );
+        } else {
+            testConfig.parameters = $.extend( true, {}, testConfig.defaults, testConfig.parameters );
+
+        }
+        TestConfigStore.setTypesToDisplay( testConfig );
+    }
     var newTest = testConfig.newTest;
     var memberTemplate = Handlebars.compile($("#member-partial").html());
     TestConfigComponent.memberTemplate = memberTemplate;
     Handlebars.registerPartial("member", memberTemplate);
+
 
     var config_template = $("#configureTestTemplate").html();
     var template = Handlebars.compile( config_template );
@@ -366,7 +383,7 @@ TestConfigComponent._drawConfigForm = function( testConfig ) {
     $('#newTestTypeSel').change( function() {
         var type = $('#newTestTypeSel').val();
         testConfig.type = type;
-        TestConfigStore.setTypesToDisplay( testConfig );
+        //TestConfigStore.setTypesToDisplay( testConfig );
         TestConfigComponent._drawConfigForm( testConfig );
         console.log('testConfig', testConfig);
         if ( type != '' ) {
@@ -544,7 +561,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
         console.log('new testID', testID);
 
     } else {
-        testID = testConfig.test_id; 
+        testID = testConfig.test_id;
         test = TestConfigStore.getTestByID( testID );
 
     }

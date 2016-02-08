@@ -117,7 +117,7 @@
                     </div>
                     <div class="medium-6 columns">
                         <label for="packetSize">Packet Size (bytes)</label>
-                        <input type="text" id="packetSize" value="{{parameters.packet_size}}" />
+                        <input type="text" id="packetSize" value="{{#if parameters.packet_size}}{{parameters.packet_size}}{{/if}}" />
                     </div>
                 </div> <!-- end div class="row" -->
 {{else}}

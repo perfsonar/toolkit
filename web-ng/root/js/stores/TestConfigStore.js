@@ -109,17 +109,28 @@ TestConfigStore.setTypesToDisplay = function ( test ) {
     // test interval - display for everything except owamp
     test.showTestInterval = true;
 
+    if ( typeof test.parameters != 'undefined' ) {
+        var interval = test.parameters.test_interval;
+        if ( typeof interval != "undefined" ) {
+            var time = SharedUIFunctions.getTimeWithUnits( interval ); 
+            test.parameters.test_interval_formatted = time;
+        }
+    }
+
     if ( type == 'pinger') {
         test.showPingParameters = true;
     } else if ( type == 'bwctl/throughput' ) {
         test.showThroughputParameters = true;
+        if ( typeof test.parameters != 'undefined' ) {
+            test.parameters.duration_formatted = SharedUIFunctions.getTimeWithUnits( test.parameters.duration );
+        }
     } else if ( type == 'owamp') {
         test.showOWAMPParameters = true;
         test.showTestInterval = false;
     } else if ( type == 'traceroute') {
         test.showTracerouteParameters = true;
     }
-    console.log('types to display', test);
+    //console.log('types to display', test);
 
 };
 
@@ -179,7 +190,27 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             test.parameters.test_interval_formatted = time;
         }
     }
+    TestConfigStore._setDefaultVariables();
 
+};
+
+TestConfigStore._setDefaultVariables = function ( ) {
+    //var defaults = TestConfigStore.data.defaults;
+    //TestConfigStore.data.defaults = {};
+    TestConfigStore.data.defaults = $.extend( true, {}, TestConfigStore.data.test_defaults );
+    var defaults = TestConfigStore.data.defaults;
+    for(var type in defaults.type) {
+        var def = defaults.type[ type ];
+
+        switch ( type ) {
+            case 'owamp':
+                def.packet_size = parseInt( def.packet_padding ) + 20;
+                break;
+        }
+
+
+    }
+    console.log('data after setting defaults', TestConfigStore.data);
 };
 
 TestConfigStore.revertTestSettings = function ( ) {
@@ -268,11 +299,18 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             } else {
                 test.parameters.packet_interval = 0.1;
             }
+            var packet_rate = 1 / test.parameters.packet_interval;
+
+            var sample_count = 60 * parseInt( packet_rate ); // 1 minute
+            test.parameters.sample_count = sample_count;
+
+            delete test.parameters.packet_rate;
             if ( typeof settings.packet_size != 'undefined' && settings.packet_size >= 20 ) {
                 test.parameters.packet_padding = parseInt( settings.packet_size ) - 20;
             } else {
                 test.parameters.packet_padding = 0;
             }
+            delete test.parameters.packet_size;
             break;
         case 'traceroute':
             if (typeof settings.tool != 'undefined' && settings.tool != '') {
@@ -323,8 +361,14 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
                 test.parameters.packet_count = 10; // TODO: change to use configured default
             }
 
+            // TTL is always 255
+            test.parameters.ttl = 255;
+
             break;
     }
+
+    delete test.parameters.test_interval_formatted;
+    delete test.parameters.duration_formatted; 
 
 };
 
