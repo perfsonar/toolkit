@@ -43,7 +43,7 @@ use perfSONAR_PS::NPToolkit::Config::Version;
 
 use perfSONAR_PS::Utils::Host qw( discover_primary_address );
 
-my $motd_template = "/etc/perfsonar/templates/motd.tmpl";
+my $motd_template = "/etc/perfsonar/toolkit/templates/motd.tmpl";
 
 if ( $ARGV[0] and $ARGV[0] eq "start" ) {
     stop();
