@@ -39,7 +39,7 @@ my $Default_mahost = 'http://localhost/esmond/perfsonar/archive/';
 #======================================================================
 #       U S E   A N D   R E Q U I R E
 
-use lib "/opt/perfsonar_ps/toolkit/lib";
+use lib "/usr/lib/perfsonar/lib";
 use strict;
 use psTracerouteUtils 2.0;
 use CGI qw(:standard);

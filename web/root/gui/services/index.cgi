@@ -307,7 +307,7 @@ exit 0;
 sub get_meshes {
     my @mesh_urls = ();
     eval {
-        my $mesh_config_conf = "/opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf";
+        my $mesh_config_conf = "/etc/perfsonar/meshconfig-agent.conf";
 
         die unless ( -f $mesh_config_conf );
 

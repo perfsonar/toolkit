@@ -196,7 +196,7 @@ TestResultsComponent.showResultsGraph = function(container, src, dst, ma_url, ro
     // first, clear the URL of the existing iframe
 //$("#test-results-graph-iframe").attr('src', '');
     TestResultsComponent.clearContainer(container);
-    var url = "/serviceTest/graphWidget.cgi?source=" + src;
+    var url = "/perfsonar-graphs/graphWidget.cgi?source=" + src;
     url += "&dest=" + dst + "&url=" + ma_url;
     
      $('<iframe />', {
@@ -236,7 +236,7 @@ TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_
     var ma_url = TestResultsComponent.ma_url;
     var container = $('#' + container_id);
     var link = $('#' + container_id + ' a.traceroute_link');
-    var tr_url = '/serviceTest/graphData.cgi?action=has_traceroute_data&url=' + ma_url
+    var tr_url = '/perfsonar-graphs/graphData.cgi?action=has_traceroute_data&url=' + ma_url
             + '&source=' + source_ip + '&dest=' + dest_ip;
     $.ajax({
         url: tr_url,

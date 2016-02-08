@@ -29,8 +29,7 @@ package psTracerouteUtils;
 #=====================================================
 use warnings;
 use strict;
-use lib '/opt/perfsonar_ps/toolkit/lib';
-use perfSONAR_PS::Client::MA;
+use lib '/usr/lib/perfsonar/lib';
 use Exporter;                           # easy perl module functions
 use XML::Twig;
 use XML::Simple qw(:strict);
@@ -63,10 +62,8 @@ our $VERSION = 2.0;		# 2.0 adds esmond support
 #=====================================================
 sub GetTracerouteData($$$$$);
 sub GetTracerouteMetadata($$$$);
-sub GetTracerouteMetadataFromMA($$$);
 sub GetTracerouteMetadataFromESmond($$$$);
 sub ParseTracerouteMetadataAnswer($$);
-sub GetTracerouteDataFromMA($$$$);
 sub GetTracerouteDataFromEsmond($$$$$);
 sub ConvertXMLtoHash($$);
 sub DeduplicateTracerouteData($$);
@@ -95,19 +92,7 @@ sub GetTracerouteMetadata($$$$) {
 	my $etime = shift;
 	my $endpoint = shift;
 
-	# old-school perfsonar SOAP measurement archive
-	if ($url =~ m/perfSONAR_PS/) {
-		my $ma_result = GetTracerouteMetadataFromMA($url,$stime,$etime);
-		ParseTracerouteMetadataAnswer($ma_result,$endpoint);
-		return('');
-
-	# new-school esmond REST measurement archive
-	} elsif ($url =~ m/esmond/) {
-		return(GetTracerouteMetadataFromESmond($url,$stime,$etime,$endpoint));
-
-	} else {
-		return("Unsure what kind of measurement archive this is.");
-	}
+	return(GetTracerouteMetadataFromESmond($url,$stime,$etime,$endpoint));
 }
 
 
@@ -131,64 +116,8 @@ sub GetTracerouteData($$$$$) {
 	my $topology = shift;
 
 	# new-school esmond REST measurement archive
-	if ($ma =~ m/esmond/) {
-		return(GetTracerouteDataFromEsmond($url,$ma,$stime,$etime,$topology));
-
-	# old-school perfsonar SOAP measurement archive
-	} else {
-		my $trdata = GetTracerouteDataFromMA($url,$ma,$stime,$etime);
-		ConvertXMLtoHash($trdata,$topology);
-		return('');
-	}
+	return(GetTracerouteDataFromEsmond($url,$ma,$stime,$etime,$topology));
 }
-
-
-
-
-
-#===============================================================================
-#                       GetTracerouteMetadataFromMA
-#
-#  Arguments:
-#     arg[0]: full url of the tracerouteMA 
-#     arg[1]: start time to query (unix time)
-#     arg[2]: end time to query (unix time)
-#
-#  Returns: 
-#     a hash of arrays with the xml responses  (yuck!)
-#
-sub GetTracerouteMetadataFromMA($$$) {
-
-        my $ma_host = shift;    
-        my $start_time = shift;
-        my $end_time = shift;
-
-        my $ma = new perfSONAR_PS::Client::MA( { instance => $ma_host } );
-
-        # Define subject.  I have no idea what this does, but it sure does look important.
-        my $subject = "<trace:subject xmlns:trace=\"http://ggf.org/ns/nmwg/tools/traceroute/2.0\" id=\"subject\">\n";
-        $subject .= "     <nmwgt:endPointPair xmlns:nmwgt=\"http://ggf.org/ns/nmwg/topology/2.0/\">\n";
-        $subject .= "     </nmwgt:endPointPair>\n";
-        $subject .=   "</trace:subject>\n";
-
-        # Set eventType
-        my @eventTypes = ("http://ggf.org/ns/nmwg/tools/traceroute/2.0");
-
-        my $result = $ma->metadataKeyRequest(
-                        {
-                                start     => $start_time,
-                                end             => $end_time,
-                                subject => $subject,
-                                eventTypes => \@eventTypes
-                        }
-                );
-        if(not defined $result){
-                die("Cannot connect to MA.\n");
-        }
-
-        return($result);
-
-} # end GetTracerouteMetadataFromMA
 
 
 #===============================================================================
@@ -309,55 +238,6 @@ sub ParseTracerouteMetadataAnswer($$) {
 		}
 
 	}
-
-}
-
-
-#===============================================================================
-#                       GetTracerouteDataFromMA
-#
-#  Arguments:
-#     arg[0]: host url of measurement archive
-#     arg[1]: id key to the data
-#     arg[2]: start time to query (unix time)
-#     arg[3]: end time to query (unix time)
-#
-#  Returns: 
-#     a hash of arrays with the xml responses
-#
-sub GetTracerouteDataFromMA($$$$) {
-
-        my $ma_host = shift;    
-	my $metadata_id = shift;
-        my $start_time = shift;
-        my $end_time = shift;
-
-        my $ma = new perfSONAR_PS::Client::MA( { instance => $ma_host } );
-
-        # ask for this key's stuff to be returned.
-	my $subject = "<nmwg:key id=\"key1\">\n";
-	$subject .= "  <nmwg:parameters id=\"key1\">\n";
-	$subject .= "    <nmwg:parameter name=\"maKey\">$metadata_id</nmwg:parameter>\n";
-	$subject .= "  </nmwg:parameters>\n";
-	$subject .= "</nmwg:key>\n";
-
-
-        # Set eventType
-        my @eventTypes = ("http://ggf.org/ns/nmwg/tools/traceroute/2.0");
-
-        my $result = $ma->setupDataRequest(
-                        {
-                                start     => $start_time,
-                                end             => $end_time,
-                                subject => $subject,
-                                eventTypes => \@eventTypes
-                        }
-                );
-        if(not defined $result){
-                die("Cannot connect to MA.\n");
-        }
-
-        return($result);
 
 }
 
