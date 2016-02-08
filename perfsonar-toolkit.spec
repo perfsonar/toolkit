@@ -94,7 +94,7 @@ Requires:		perl(version)
 Requires:		perl(warnings)
 
 #perfSONAR packages
-Requires:		perfSONAR-Bundles-common
+Requires:		perfsonar-common
 Requires:		perfsonar-lscachedaemon
 Requires:		perfsonar-lsregistrationdaemon
 Requires:		perfsonar-graphs
@@ -105,14 +105,15 @@ Requires:       perfsonar-oppd-bwctl
 Requires:       perfsonar-oppd-owamp
 Requires:       libperfsonar-toolkit-perl
 Requires:       perfsonar-toolkit-install
+Requires:       perfsonar-toolkit-systemenv
 
 #perfSONAR service packages
-Requires:		esmond
-Requires:		bwctl-client
-Requires:		bwctl-server
+Requires:		esmond          >= 2.0
+Requires:		bwctl-client    >= 1.6.0
+Requires:		bwctl-server    >= 1.6.0
 Requires:		ndt
-Requires:		owamp-client
-Requires:		owamp-server
+Requires:		owamp-client    >= 3.5.0
+Requires:		owamp-server    >= 3.5.0
 
 # Misc performance/performance-related tools
 Requires:		nuttcp
@@ -141,13 +142,13 @@ Requires(post):	perfsonar-lsregistrationdaemon
 Requires(post):	perfsonar-graphs
 Requires(post):	perfsonar-regulartesting
 
-Requires(post):	perfSONAR-Bundles-common
-Requires(post):	esmond
-Requires(post):	bwctl-client
-Requires(post):	bwctl-server
+Requires(post):	perfsonar-common
+Requires(post):	esmond          >= 2.0
+Requires(post):	bwctl-client    >= 1.6.0
+Requires(post):	bwctl-server    >= 1.6.0
 Requires(post):	ndt
-Requires(post):	owamp-client
-Requires(post):	owamp-server
+Requires(post):	owamp-client    >= 3.5.0
+Requires(post):	owamp-server    >= 3.5.0
 
 Requires(post):	coreutils
 Requires(post):	httpd
@@ -161,7 +162,7 @@ Requires(post):	nscd
 The perfSONAR Toolkit web GUI and associated services.
 
 %package systemenv
-Summary:		perfSONAR Toolkit NetInstall System Configuration
+Summary:		perfSONAR Toolkit System Configuration
 Group:			Development/Tools
 Requires:		perfsonar-toolkit
 Requires:       perfsonar-toolkit-security
@@ -169,10 +170,9 @@ Requires:       perfsonar-toolkit-sysctl
 Requires:       perfsonar-toolkit-servicewatcher
 Requires:       perfsonar-toolkit-ntp
 Requires:       perfsonar-toolkit-library
-Requires(post):	perfSONAR-Bundles-common
-Requires(post):	Internet2-repo
-Requires(post):	bwctl-server
-Requires(post):	owamp-server
+Requires(post):	perfsonar-common
+Requires(post):	bwctl-server    >= 1.6.0
+Requires(post):	owamp-server    >= 3.5.0
 Requires(post):	acpid
 Requires(post):	avahi
 Requires(post):	bluez-utils
@@ -184,11 +184,8 @@ Requires(post):	httpd
 Requires(post):	irda-utils
 Requires(post):	irqbalance
 Requires(post):	mdadm
-Requires(post):	mysql
-Requires(post):	mysql-server
 Requires(post):	nfs-utils
 Requires(post):	pcsc-lite
-Requires(post):	php-common
 Requires(post):	readahead
 Requires(post):	rootfiles
 Requires(pre):	rpm
@@ -206,7 +203,7 @@ practices.
 %package library
 Summary:                perfSONAR Toolkit library
 Group:                  Development/Tools
-Requires:               perfSONAR-Bundles-common
+Requires:               perfsonar-common
 Requires:               libperfsonar-toolkit-perl
 Obsoletes:              perl-perfSONAR_PS-Toolkit-Library
 Provides:               perl-perfSONAR_PS-Toolkit-Library
@@ -231,9 +228,9 @@ Requires:               coreutils
 Requires:               iptables
 Requires:               iptables-ipv6
 Requires:               fail2ban
-Requires:               perfSONAR-Bundles-common
+Requires:               perfsonar-common
 Requires(pre):          rpm
-Requires(post):         perfSONAR-Bundles-common
+Requires(post):         perfsonar-common
 Requires(post):         coreutils
 Requires(post):         system-config-firewall-base
 Requires(post):         chkconfig
@@ -252,10 +249,10 @@ Configures IPTables rules and installs fail2ban for perfSONAR Toolkit
 Summary:                perfSONAR Toolkit sysctl configuration
 Group:                  Development/Tools
 Requires:               coreutils
-Requires:               perfSONAR-Bundles-common
+Requires:               perfsonar-common
 Requires(pre):          rpm
 Requires(post):         coreutils
-Requires(post):         perfSONAR-Bundles-common
+Requires(post):         perfsonar-common
 Obsoletes:              perl-perfSONAR_PS-Toolkit-sysctl
 Provides:               perl-perfSONAR_PS-Toolkit-sysctl
 
@@ -270,7 +267,7 @@ Requires:               ntp
 Requires:               libperfsonar-toolkit-perl
 Requires:               perfsonar-toolkit-library
 Requires(pre):          rpm
-Requires(post):         perfSONAR-Bundles-common
+Requires(post):         perfsonar-common
 Requires(post):         chkconfig
 Requires(post):         coreutils
 Obsoletes:              perl-perfSONAR_PS-Toolkit-ntp
@@ -287,7 +284,7 @@ Requires:               ntp
 Requires:               perfsonar-toolkit-library
 Requires:               libperfsonar-toolkit-perl
 Requires(pre):          rpm
-Requires(post):         perfSONAR-Bundles-common
+Requires(post):         perfsonar-common
 Requires(post):         coreutils
 Obsoletes:              perl-perfSONAR_PS-Toolkit-service-watcher
 Provides:               perl-perfSONAR_PS-Toolkit-service-watcher
