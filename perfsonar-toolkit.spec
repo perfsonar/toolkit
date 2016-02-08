@@ -613,8 +613,8 @@ fi
 %doc %{install_base}/doc/*
 
 %files servicewatcher
-%config(noreplace) %{config_base}/service_watcher.conf
-%config(noreplace) %{config_base}/service_watcher-logger.conf
+%config(noreplace) %{config_base}/servicewatcher.conf
+%config(noreplace) %{config_base}/servicewatcher-logger.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
