@@ -160,6 +160,7 @@ Requires:       perfsonar-toolkit-servicewatcher
 Requires:       perfsonar-toolkit-ntp
 Requires:       perfsonar-toolkit-library
 Requires(post):	perfsonar-common
+Requires(post):	perfsonar-toolkit
 Requires(post):	bwctl-server    >= 1.6.0
 Requires(post):	owamp-server    >= 3.5.0
 Requires(post):	acpid
