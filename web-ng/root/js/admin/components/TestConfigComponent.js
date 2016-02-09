@@ -349,6 +349,21 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     return false;
 };
 
+TestConfigComponent.deleteTest = function( testID ) {
+    //var data = TestConfigStore.data;
+    var testConfig = TestConfigStore.getTestConfig( testID );
+    var description = testConfig.description;
+    var choice = window.confirm('Do you really want to delete the test "' + testConfig.description + '"? Your changes will not take effect until you click the Save button.');
+    if ( choice ) {
+        var success = TestConfigStore.deleteTest( testID );
+        if ( success ) {
+            Dispatcher.publish( TestConfigStore.topic );
+            SharedUIFunctions._showSaveBar();
+        }
+    }
+    return false;
+};
+
 TestConfigComponent._drawConfigForm = function( testConfig ) {
     if ( testConfig.type ) {
         testConfig.defaults = $.extend( true, {}, TestConfigStore.data.defaults.type[ testConfig.type ] );
