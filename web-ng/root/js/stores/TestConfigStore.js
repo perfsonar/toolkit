@@ -505,6 +505,19 @@ TestConfigStore.addHostToTestView = function (tests, test, member) {
 
 };
 
+TestConfigStore.deleteTest = function ( testID ) {
+    var data = TestConfigStore.data.test_configuration;
+    for(var i=data.length-1; i>=0; i--) {
+        var test = data[i];
+        if ( testID == test.test_id ) {
+            data.splice(i, 1);
+            return true;
+        }
+    }
+    return false;
+
+};
+
 TestConfigStore.deleteMemberFromTest = function ( testID, memberID ) {
     var test = TestConfigStore.getTestByID( testID );
     var members = test.members;

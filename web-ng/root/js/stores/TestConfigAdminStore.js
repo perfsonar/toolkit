@@ -5,8 +5,8 @@ var TestConfigAdminStore = new DataStore(TestConfigStore.topic, "services/regula
 TestConfigAdminStore.save = function( tests ) {
     tests.data = $.extend( true, [], tests.test_configuration );
     var data = tests.data;
-    for(var i in tests) {
-        var test = tests[i];
+    for(var i in tests.data) {
+        var test = tests.data[i];
         for(var j in test.members) {
             var member = test.members[j];
             delete member.id;
@@ -29,8 +29,15 @@ TestConfigAdminStore.save = function( tests ) {
         dataType: 'json',
         contentType: 'application/json',
         success: function(result) {
-            TestConfigStore._retrieveData();
-            Dispatcher.publish(topic, result.message);
+            var error_code = result["Return code"];
+            var error_message = result["Error message"];
+            if ( error_code == -1 ) {
+                SharedUIFunctions._saveError(TestConfigStore.saveErrorTopic, error_message);
+            } else {
+                TestConfigStore._retrieveData();
+                Dispatcher.publish(topic, result.message);
+            }
+
         },
         error: function(jqXHR, textStatus, errorThrown) {
             Dispatcher.publish(error_topic, errorThrown);
