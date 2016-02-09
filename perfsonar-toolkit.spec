@@ -228,6 +228,7 @@ Requires(post):         kernel
 Requires(post):         kernel-headers
 Requires(post):         iptables
 Requires(post):         iptables-ipv6
+Requires(post):         module-init-tools
 Obsoletes:              perl-perfSONAR_PS-Toolkit-security
 Provides:               perl-perfSONAR_PS-Toolkit-security
 
