@@ -56,8 +56,8 @@
                             <input type="checkbox" {{#unless disabled}}checked{{/unless}} class="cb_test_enabled" data-test-id="{{test_id}}" disabled="disabled">
                         </td>
                         <td>
-                            <a href="#" onclick="return TestConfigComponent.showTestConfigModal({{test_id}});"><i class="fa fa-gear"></i></a> 
-                            <a href="#"><i class="fa fa-remove"></i></a>
+                            <a href="" onclick="return TestConfigComponent.showTestConfigModal({{test_id}});"><i class="fa fa-gear"></i></a> 
+                            <a href="" onclick="return TestConfigComponent.deleteTestMember( {{test_id}}, {{member_id}});"><i class="fa fa-remove"></i></a>
                         </td>
                     </tr>
 
