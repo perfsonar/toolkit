@@ -160,6 +160,7 @@ Requires:       perfsonar-toolkit-servicewatcher
 Requires:       perfsonar-toolkit-ntp
 Requires:       perfsonar-toolkit-library
 Requires(post):	perfsonar-common
+Requires(post):	perfsonar-toolkit
 Requires(post):	bwctl-server    >= 1.6.0
 Requires(post):	owamp-server    >= 3.5.0
 Requires(post):	acpid
@@ -228,6 +229,7 @@ Requires(post):         kernel
 Requires(post):         kernel-headers
 Requires(post):         iptables
 Requires(post):         iptables-ipv6
+Requires(post):         module-init-tools
 Obsoletes:              perl-perfSONAR_PS-Toolkit-security
 Provides:               perl-perfSONAR_PS-Toolkit-security
 

@@ -9,7 +9,7 @@ if [ -z "$(ls -A /var/lib/pgsql/data)" ]; then
     sudo -u postgres psql -c "CREATE USER esmond WITH PASSWORD '7hc4m1'"
     sudo -u postgres psql -c "CREATE DATABASE esmond"
     sudo -u postgres psql -c "GRANT ALL ON DATABASE esmond to esmond"
-    cp -f /etc/perfsonar/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
+    cp -f /etc/perfsonar/toolkit/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
     /sbin/service postgresql restart
     sed -i "s/sql_db_name = .*/sql_db_name = esmond/g" /etc/esmond/esmond.conf
     sed -i "s/sql_db_user = .*/sql_db_user = esmond/g" /etc/esmond/esmond.conf
@@ -17,7 +17,7 @@ if [ -z "$(ls -A /var/lib/pgsql/data)" ]; then
 fi
 
 #install esmond config
-cp -f /etc/perfsonar/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
+cp -f /etc/perfsonar/toolkit/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
 
 #disable JMX in cassandra so will start even if /etc/sysconfig/network HOSTNAME does not resolve
 sed -i '/^JVM_OPTS="\$JVM_OPTS -Dcom.sun.management.jmx/ s/^/#/' /etc/cassandra/conf/cassandra-env.sh

@@ -21,6 +21,7 @@ if [ ! -f $FIREWALL_RULES ]; then
 fi
 
 main() {
+    /sbin/modprobe ip_tables
     if [ "${COMMAND}" == "install" ]; then   
         deleteOldFirewallRules
         echo "Adding perfSONAR firewall rules"
