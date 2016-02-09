@@ -479,12 +479,15 @@ TestConfigStore.getTestByID = function ( testID ) {
 
 // TestConfigStore.addHostToTestView
 // Adds a host to a test in the Host-centric view
-TestConfigStore.addHostToTestView = function (tests, test, member) {
+TestConfigStore.addHostToTestView = function (tests, testIn, member) {
+    var test = $.extend( true, {}, testIn);
     var address = member.address;
     var type = test.type;
     var host_id = member.host_id;
+    var member_id = member.member_id;
     var protocol = test.parameters.protocol;
     var type_count_name = type + "_count";
+    test.member_id = member_id;
 
     type_count_name = type_count_name.replace('/', '_');
     if ( !(address in tests) ) {
@@ -495,6 +498,8 @@ TestConfigStore.addHostToTestView = function (tests, test, member) {
     tests[address].tests.push(test);
     tests[address].address = address;
     tests[address].host_id = host_id;
+    // This won't work because it gets overwritten every time
+    //tests[address].member_id = member_id;
 
     if ( test[type_count_name] ) {
         tests[address][type_count_name]++;
@@ -521,7 +526,6 @@ TestConfigStore.deleteTest = function ( testID ) {
 TestConfigStore.deleteMemberFromTest = function ( testID, memberID ) {
     var test = TestConfigStore.getTestByID( testID );
     var members = test.members;
-    this.test = test;
 
     for (var i = members.length - 1; i >= 0; i--) {
         var member = members[i];
