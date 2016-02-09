@@ -11,7 +11,6 @@ etc/clean_esmond_db.conf
 etc/configdaemon-logger.conf
 etc/configdaemon.conf
 etc/default_service_configs/jail.local
-etc/default_service_configs/lsregistrationdaemon.conf
 etc/default_service_configs/pg_hba.conf
 etc/default_service_configs/regulartesting.conf
 etc/default_system_firewall_settings.conf

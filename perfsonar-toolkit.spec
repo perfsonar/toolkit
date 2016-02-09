@@ -390,12 +390,6 @@ ln -sf %{install_base}/web/templates/header.tmpl %{install_base}/web/root/admin/
 ln -sf %{install_base}/web/templates/sidebar.html %{install_base}/web/root/admin/log_view/templates/
 ln -sf %{install_base}/web/templates/footer.tmpl %{install_base}/web/root/admin/log_view/templates/
 
-# Overwrite the existing configuration files for the services with new
-# configuration files containing the default settings.
-if [ $1 -eq 1 ] ; then
-    cp -f %{config_base}/default_service_configs/lsregistrationdaemon.conf /etc/perfsonar/lsregistrationdaemon.conf
-fi
-
 #Remove old pS-NPToolkit-* community from admin_info (removal added in version 3.4)
 grep -v "site_project=pS-NPToolkit-" %{config_base}/administrative_info > %{config_base}/administrative_info.tmp
 mv %{config_base}/administrative_info.tmp %{config_base}/administrative_info
