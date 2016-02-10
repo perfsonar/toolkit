@@ -369,6 +369,10 @@ elif [ $1 -eq 2 ] ; then
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web-ng/etc/web_admin.conf
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web/root/admin/administrative_info/etc/web_admin.conf
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web/root/admin/regular_testing/etc/web_admin.conf
+    
+    #make sure we trash pre-3.5.1 config_daemon
+    /etc/init.d/config_daemon stop &>/dev/null || :
+    chkconfig --del config_daemon &>/dev/null || :
 fi
 
 
