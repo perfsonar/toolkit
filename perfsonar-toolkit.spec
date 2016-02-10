@@ -98,6 +98,7 @@ Requires:		perfsonar-common
 Requires:		perfsonar-core
 Requires:		perfsonar-lscachedaemon
 Requires:		perfsonar-graphs
+Requires:		perfsonar-traceroute-viewer
 Requires:		perfsonar-meshconfig-jsonbuilder
 Requires:       libperfsonar-esmond-perl
 Requires:       libperfsonar-perl
@@ -530,7 +531,6 @@ fi
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/reverse_traceroute.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/psTracerouteViewer/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/regular_testing/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/ntp/index.cgi
@@ -550,7 +550,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/communities.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/regular_testing.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/tests.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/psTracerouteViewer/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
