@@ -364,7 +364,8 @@ mkdir -p /var/lib/perfsonar/log_view/owamp
 #Make sure root is in the wheel group for fresh install. If upgrade, keep user settings
 if [ $1 -eq 1 ] ; then
     /usr/sbin/usermod -a -Gwheel root
-elif [ $1 -eq 2 ] ; then
+    
+    #3.5.1 fixes
     #make sure web_admin.conf points to the right lscache directory
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web-ng/etc/web_admin.conf
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web/root/admin/administrative_info/etc/web_admin.conf
