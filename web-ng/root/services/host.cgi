@@ -52,8 +52,6 @@ $params->{'load_ls_registration'} = 1;
 
 my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
 
-#my $cgi = CGI->new();
-
 my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
 
 my $summary_method = perfSONAR_PS::NPToolkit::WebService::Method->new(

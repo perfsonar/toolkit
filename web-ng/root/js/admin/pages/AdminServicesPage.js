@@ -11,6 +11,7 @@ var AdminServicesPage = {
     saveServicesTopic: 'store.host_services.save',
     saveServicesErrorTopic: 'store.host_services.save_error',
     serviceList: ['bwctl', 'owamp', 'ndt', 'npad'],
+    bandwidthServices: ['bwctl'],
     latencyServices: ['owamp'],
 };
 
@@ -63,6 +64,7 @@ AdminServicesPage.selectServices = function(arg) {
     var type = arg.data;
     arg.preventDefault();
     var serviceList = AdminServicesPage.serviceList;
+    var bandwidthServices = AdminServicesPage.bandwidthServices;
     var latencyServices = AdminServicesPage.latencyServices;
     for (var i in serviceList) {
         var service = serviceList[i];
@@ -74,10 +76,10 @@ AdminServicesPage.selectServices = function(arg) {
                 AdminServicesPage._checkService(serviceID, false);
             }
         } else {
-            if ( jQuery.inArray(service, latencyServices) > -1 ) {
-                AdminServicesPage._checkService(serviceID, false);
-            } else {
+            if ( jQuery.inArray(service, bandwidthServices) > -1 ) {
                 AdminServicesPage._checkService(serviceID, true);
+            } else {
+                AdminServicesPage._checkService(serviceID, false);
             }
         }
     }

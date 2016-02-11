@@ -8,7 +8,7 @@
 
 PREFIX=/usr/lib/perfsonar
 BINDIR=${PREFIX}/bin
-CONFDIR=/etc/perfsonar
+CONFDIR=/etc/perfsonar/toolkit
 RUNDIR=/var/run
 
 CONFFILE=${CONFDIR}/configdaemon.conf

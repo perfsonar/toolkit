@@ -245,7 +245,7 @@ TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_
         success: function(trace_data) {
             if (typeof trace_data !== "undefined") {
                 if (typeof trace_data.has_traceroute !== "undefined" && trace_data.has_traceroute == 1) {
-                    var trace_url = '/toolkit-old/gui/psTracerouteViewer/index.cgi?';
+                    var trace_url = '/perfsonar-traceroute-viewer/index.cgi?';
                     trace_url += '&mahost=' + trace_data.ma_url;
                     trace_url += '&stime=yesterday';
                     trace_url += '&etime=now';

@@ -98,6 +98,7 @@ Requires:		perfsonar-common
 Requires:		perfsonar-core
 Requires:		perfsonar-lscachedaemon
 Requires:		perfsonar-graphs
+Requires:		perfsonar-traceroute-viewer
 Requires:		perfsonar-meshconfig-jsonbuilder
 Requires:       libperfsonar-esmond-perl
 Requires:       libperfsonar-perl
@@ -363,11 +364,16 @@ mkdir -p /var/lib/perfsonar/log_view/owamp
 #Make sure root is in the wheel group for fresh install. If upgrade, keep user settings
 if [ $1 -eq 1 ] ; then
     /usr/sbin/usermod -a -Gwheel root
-elif [ $1 -eq 2 ] ; then
+    
+    #3.5.1 fixes
     #make sure web_admin.conf points to the right lscache directory
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web-ng/etc/web_admin.conf
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web/root/admin/administrative_info/etc/web_admin.conf
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web/root/admin/regular_testing/etc/web_admin.conf
+    
+    #make sure we trash pre-3.5.1 config_daemon
+    /etc/init.d/config_daemon stop &>/dev/null || :
+    chkconfig --del config_daemon &>/dev/null || :
 fi
 
 
@@ -389,12 +395,6 @@ ln -sf /var/log/perfsonar %{install_base}/web-ng/root/admin/logs
 ln -sf %{install_base}/web/templates/header.tmpl %{install_base}/web/root/admin/log_view/templates/
 ln -sf %{install_base}/web/templates/sidebar.html %{install_base}/web/root/admin/log_view/templates/
 ln -sf %{install_base}/web/templates/footer.tmpl %{install_base}/web/root/admin/log_view/templates/
-
-# Overwrite the existing configuration files for the services with new
-# configuration files containing the default settings.
-if [ $1 -eq 1 ] ; then
-    cp -f %{config_base}/default_service_configs/lsregistrationdaemon.conf /etc/perfsonar/lsregistrationdaemon.conf
-fi
 
 #Remove old pS-NPToolkit-* community from admin_info (removal added in version 3.4)
 grep -v "site_project=pS-NPToolkit-" %{config_base}/administrative_info > %{config_base}/administrative_info.tmp
@@ -536,7 +536,6 @@ fi
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/reverse_traceroute.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/psTracerouteViewer/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/regular_testing/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/ntp/index.cgi
@@ -556,7 +555,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/communities.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/regular_testing.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/tests.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/psTracerouteViewer/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
