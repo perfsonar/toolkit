@@ -7,11 +7,11 @@ var AdminInfoPage = {
 };
 
 AdminInfoPage.initialize = function() {
-    $('#loading-modal').foundation('reveal', 'open');
-    $("#adminInfoForm").submit(function(e) {
+    $("#adminInfoForm").on('valid.fndtn.abide', function(e) {
         Dispatcher.publish(AdminInfoPage.formSubmitTopic);
         e.preventDefault();
     });
+    $('#loading-modal').foundation('reveal', 'open');
 };
 
 AdminInfoPage.initialize();

@@ -16,7 +16,7 @@
 
 
 
-<form id="adminInfoForm">
+<form id="adminInfoForm" data-abide="ajax">
 
 <div class="config">
 
@@ -63,8 +63,9 @@
                         </div>
                         <div class="row">
                             <div class="medium-12 columns">
-                                <label class="config__label">Administrator Email</label>
-                                <input class="config__input" type="text" id="admin_email">
+                                <label class="config__label">Administrator Email </label>
+                                <input class="config__input" type="email" id="admin_email">
+                                <small class="error">Must be a valid e-mail address</small>
                             </div>
                         </div>
                         <div class="row">
