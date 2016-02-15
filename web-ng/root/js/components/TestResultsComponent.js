@@ -61,7 +61,7 @@ TestResultsComponent._setTestData = function( ) {
     var rows_el = $("#testResultsTable tr.no_data");
     rows_el.addClass('data');
     rows_el.removeClass('no_data');
-    
+
     var test_data_template = $("#test-data-value-template").html();
     var template = Handlebars.compile(test_data_template);
 
@@ -99,7 +99,7 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
         // this shouldn't happen
         //console.log("multiple test data found, this should not happen");
     }
-    
+
 
 };
 
@@ -116,6 +116,9 @@ TestResultsComponent._setTestList = function( ) {
     for(var i=0; i<data.test_results.length; i++) {
         data.test_results[i].rowID = i;
     }
+    data.test_results.sort(SortBySrcDst);
+
+
     data.ma_url = encodeURIComponent(TestResultsComponent.ma_url);
     data.num_test_results = data.test_results.length || 'No';
     $('#num_test_results').html(data.num_test_results);
@@ -133,6 +136,12 @@ TestResultsComponent._setTestList = function( ) {
     }
     TestResultsComponent._setTestData();
 };
+
+function SortBySrcDst(a, b){
+    var aHost = a.source_host + '0' + a.destination_host;
+    var bHost = b.source_host + '0' + b.destination_host;
+    return ((aHost < bHost) ? -1 : ((aHost > bHost) ? 1 : 0));
+}
 
 TestResultsComponent._setTestListError = function( topic, errorThrown ) {
 
@@ -198,7 +207,7 @@ TestResultsComponent.showResultsGraph = function(container, src, dst, ma_url, ro
     TestResultsComponent.clearContainer(container);
     var url = "/perfsonar-graphs/graphWidget.cgi?source=" + src;
     url += "&dest=" + dst + "&url=" + ma_url;
-    
+
      $('<iframe />', {
         name: 'Graph Frame',
         id:   'test-results-graph-iframe-' + rowID,
