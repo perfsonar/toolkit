@@ -54,6 +54,7 @@ my $js_files = [
     $include_prefix . 'js/stores/NTPConfigStore.js', 
     $include_prefix . 'js/stores/NTPClosestStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
+    $include_prefix . 'js/shared/SharedUIFunctions.js', 
     '/perfsonar-graphs/JS/d3.min.js', # TODO: fix to better relative URL
     '/perfsonar-graphs/JS/TestResultUtils.js', # TODO: fix to better relative URL
     $include_prefix . 'js/stores/HostDetailsStore.js', 
