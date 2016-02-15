@@ -4,10 +4,11 @@
 var NTPConfigStore = {
     ntpConfig: null,
     ntpConfigTopic: 'store.change.ntp_config',
+    ntpConfigErrorTopic: 'store.ntp_config.save_error',
 };
 
 NTPConfigStore.initialize = function() {
-    NTPConfigStore._retrieveNTPConfig();    
+    NTPConfigStore._retrieveNTPConfig();
 };
 
 NTPConfigStore._retrieveNTPConfig = function() {
@@ -22,6 +23,7 @@ NTPConfigStore._retrieveNTPConfig = function() {
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
+                Dispatcher.publish( NTPConfigStore.ntpConfigErrorTopic, errorThrown );
             }
         });
 };
