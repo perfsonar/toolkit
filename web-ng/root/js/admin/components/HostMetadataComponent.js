@@ -37,7 +37,7 @@ HostMetadataComponent._setMetadata = function( topic ) {
 
     var accessPolicySel = $('#access_policy');
     accessPolicySel.empty();
-    accessPolicySel.select2( { 
+    accessPolicySel.select2( {
         placeholder: HostMetadataComponent.policyPlaceholder,
         data: accessPolicyValues,
         allowClear: true, // allow an empty selection

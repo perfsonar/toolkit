@@ -4,6 +4,7 @@ var StickySaveBar = {
     formSuccessTopic:   'ui.form.success',
     formErrorTopic:     'ui.form.error',
     formCancelTopic:    'ui.form.cancel',
+    unsavedText: "You've made changes that haven't been saved.",
 };
 
 
@@ -17,10 +18,17 @@ StickySaveBar.initialize = function() {
         e.preventDefault();
         $(".sticky-bar--failure").fadeOut("fast");
     });
+    $(document).foundation({
+        abide: {
+            focus_on_invalid: false
+        }
+    });
+
 };
 
 StickySaveBar._formChange = function( topic ) {
     $("#sticky-unsaved-message").fadeIn("fast");
+    $("#sticky-unsaved-message").text(StickySaveBar.unsavedText);
     StickySaveBar._enableButtons();
     StickySaveBar._enableUnsavedWarning();
 };
@@ -34,6 +42,7 @@ StickySaveBar._disableButtons = function() {
 };
 
 StickySaveBar._enableUnsavedWarning = function() {
+    $("#sticky-unsaved-message").text(StickySaveBar.unsavedText);
     window.onbeforeunload = function() {
         // TODO: create enhanced captive dialog box with unsaved changes
         return "You have unsaved changes.";
@@ -42,6 +51,7 @@ StickySaveBar._enableUnsavedWarning = function() {
 };
 
 StickySaveBar._disableUnsavedWarning = function() {
+    $("#sticky-unsaved-message").text(StickySaveBar.unsavedText);
     window.onbeforeunload = null;
     /* 
      //if the above doesn't work, try this
@@ -56,6 +66,7 @@ StickySaveBar._formSubmit = function( topic, message ) {
     $("#sticky-unsaved-message").fadeOut("fast");
     $("#admin_info_save_button").prop("value", "Saving ...");
     StickySaveBar._disableButtons();    
+    $("#sticky-unsaved-message").text(StickySaveBar.unsavedText);
 };
 
 StickySaveBar._formSuccess = function( topic, message ) {
@@ -71,13 +82,28 @@ StickySaveBar._formSuccess = function( topic, message ) {
 };
 
 StickySaveBar._formError = function( topic, message ) {
-    StickySaveBar._enableButtons();    
+    StickySaveBar._enableButtons();
     $(".sticky-bar--failure").fadeIn("fast");
     $("#admin_info_save_button").prop("value", "Save");
     if (typeof message != "undefined" && message != "") {
         $("#sticky-failure-message").text(message);
     } else {
-        $("#sticky-failure-message").text("An error occured saving your changes.");
+        $("#sticky-failure-message").text( StickySaveBar.unsavedText );
+    }
+};
+
+StickySaveBar.showValidationError = function( ) {
+    var message = "Please correct the invalid form data before continuing.";
+    StickySaveBar.showError( message );
+};
+
+StickySaveBar.showError = function( message ) {
+    StickySaveBar._enableButtons();
+    $("#admin_info_save_button").prop("value", "Save");
+    if (typeof message != "undefined" && message != "") {
+        $("#sticky-unsaved-message").text(message);
+    } else {
+       // $("#sticky-failure-message").text("An error occured saving your changes.");
     }
 };
 
