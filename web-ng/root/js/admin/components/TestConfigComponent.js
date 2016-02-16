@@ -464,8 +464,12 @@ TestConfigComponent._drawConfigForm = function( ) {
         TestConfigComponent._setSwitch( '#useAutotuningSwitch' );
         if ( $('#useAutotuningSwitch').prop('checked') ) {
             $('.window_size').hide();
+            $('.window_size').removeAttr('required');
+            $('.window_size').removeAttr('pattern');
         } else {
             $('.window_size').show();
+            $('.window_size').removeAttr('required');
+            $('.window_size').attr('pattern', 'positive_integer');
         }
     });
 

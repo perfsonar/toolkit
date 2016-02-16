@@ -220,7 +220,8 @@
                             </div>
                             <div class="medium-3 columns">
                                     <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
-                                    <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}">
+                                    <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}" {{#if showWindowSize}} pattern="positive_integer" required{{/if}}>
+                                <small class="error">Must be a positive integer</small>
                             </div>
                             <div class="medium-6 columns">
                                 <label for="tosBits" class="space">TOS bits</label>
