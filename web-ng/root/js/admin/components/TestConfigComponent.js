@@ -9,7 +9,7 @@ var TestConfigComponent = {
     data: null,
     dataSet: false,
     expandedDataGroups: {},
-    tableView: 'host',
+    tableView: 'test',
     interfaces: [],
     interfacesSet: false,
 };
@@ -72,16 +72,17 @@ TestConfigComponent.initialize = function() {
     $("div.config__form").on("click", ".cb_test_enabled", function(e, f) {
         TestConfigComponent.toggleTestEnabled( this );
     });
+    var default_view = 'test';
     $("div.config__form").on("click", "a#viewByHost", function(e) {
         e.preventDefault();
         TestConfigComponent.tableView = 'host';
-        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView, true, 'host' );
+        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView, true, default_view );
         TestConfigComponent._showTable( );
     });
     $("div.config__form").on("click", "a#viewByTest", function(e) {
         e.preventDefault();
         TestConfigComponent.tableView = 'test';
-        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView, true, 'host' );
+        SharedUIFunctions.addQueryStringParameter( 'view', TestConfigComponent.tableView, true, default_view );
         TestConfigComponent._showTable( );
     });
     // Click to collapse/expand rows
@@ -253,7 +254,7 @@ TestConfigComponent.showTestAddTestModal = function( ) {
         // take some action to save the user input here
         //var host = TestConfigComponent._getUserHostToAddInfo();
         //var modified = TestConfigComponent._getUserTestsToAddHostInfo( host );
-        
+
         // close the modal window
         $('#test-add-test-modal').foundation('reveal', 'close');
         console.log("TestConfigStore data after ok", TestConfigStore.data);
