@@ -12,6 +12,7 @@ var TestConfigComponent = {
     tableView: 'test',
     interfaces: [],
     interfacesSet: false,
+    testConfig: null,
 };
 
 TestConfigComponent.initialize = function() {
@@ -343,12 +344,20 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     var template = Handlebars.compile( config_modal_template );
     $("#configureTestContainer").html( template() );
 
-    TestConfigComponent._drawConfigForm( testConfig );
+    TestConfigComponent.testConfig = testConfig;
+
+    TestConfigComponent._drawConfigForm( );
 
 
      $('#configure-test-modal').foundation('reveal', 'open', {
         //root_element: 'form',
     });
+
+     setTimeout(function(){
+           //$('#someid').addClass("done");
+           TestConfigComponent._setValidationEvents();
+     }, 200);
+
 
     //$(document).foundation('abide', 'reflow');
     $(document).foundation('abide', 'events');
@@ -384,7 +393,9 @@ TestConfigComponent.deleteTest = function( testID ) {
     return false;
 };
 
-TestConfigComponent._drawConfigForm = function( testConfig ) {
+TestConfigComponent._drawConfigForm = function( ) {
+    var testConfig = TestConfigComponent.testConfig;
+
     if ( testConfig.type ) {
         testConfig.defaults = $.extend( true, {}, TestConfigStore.data.defaults.type[ testConfig.type ] );
         console.log('testConfig.defaults', testConfig.defaults);
@@ -419,7 +430,7 @@ TestConfigComponent._drawConfigForm = function( testConfig ) {
         var type = $('#newTestTypeSel').val();
         testConfig.type = type;
         //TestConfigStore.setTypesToDisplay( testConfig );
-        TestConfigComponent._drawConfigForm( testConfig );
+        TestConfigComponent._drawConfigForm( );
         console.log('testConfig', testConfig);
         if ( type != '' ) {
             $('#configureTestForm .existing_test_type_only').show();
@@ -467,16 +478,9 @@ TestConfigComponent._drawConfigForm = function( testConfig ) {
     var self = this;
     $('#testConfigOKButton').click( function( e, testID ) {
         console.log('ok clicked');
-        TestConfigComponent._getUserValues( self.testConfig );
-        TestConfigComponent._getNewMemberConfig ( self.testConfig );
-        console.log('testConfig after ok', testConfig);
-
         e.preventDefault();
-        $('#configure-test-modal').foundation('reveal', 'close');
-        console.log("TestConfigStore data after ok", TestConfigStore.data);
-
-        // Fire the testConfigStore topic, signalling the data has changed
-        Dispatcher.publish( TestConfigStore.topic );
+        //TestConfigComponent.submitTestConfigForm( testConfig );
+        $('form#configureTestForm').submit();
     });
     $('#testConfigCancelButton').click( function( e ) {
         console.log('cancel clicked');
@@ -485,6 +489,50 @@ TestConfigComponent._drawConfigForm = function( testConfig ) {
     });
     $('form#configureTestForm input').change(SharedUIFunctions._showSaveBar);
     $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
+
+
+    $('form#configureTestForm').submit(function( e ) {
+        e.preventDefault();
+        //TestConfigComponent.submitTestConfigForm( self.testConfig );
+
+    });
+
+
+    //$(document).foundation('abide', 'events');
+};
+
+TestConfigComponent._setValidationEvents = function() {
+
+    $('form#configureTestForm')
+      .on('valid.fndtn.abide', function(e) {
+            if(e.namespace != 'abide.fndtn') {
+                return;
+            }
+            var testConfig = TestConfigComponent.testConfig;
+            TestConfigComponent.submitTestConfigForm( );
+            e.preventDefault();
+            $('#configure-test-modal').foundation('reveal', 'close');
+        })
+        .on('invalid.fndtn.abide', function (e) {
+            if(e.namespace != 'abide.fndtn') {
+                return;
+            }
+            //StickySaveBar.showValidationError();
+        });
+
+};
+
+TestConfigComponent.submitTestConfigForm = function( ) {
+    var testConfig = TestConfigComponent.testConfig;
+    TestConfigComponent._getUserValues( testConfig );
+    TestConfigComponent._getNewMemberConfig ( testConfig );
+    console.log('testConfig after ok', testConfig);
+
+    $('#configure-test-modal').foundation('reveal', 'close');
+    console.log("TestConfigStore data after ok", TestConfigStore.data);
+
+    // Fire the testConfigStore topic, signalling the data has changed
+    Dispatcher.publish( TestConfigStore.topic );
 
 };
 
@@ -585,6 +633,7 @@ TestConfigComponent._getNewMemberConfig = function( test ) {
 
 
 TestConfigComponent._getUserValues = function( testConfig ) {
+    var testConfig = TestConfigComponent.testConfig;
     var testEnabled = $('#testEnabledSwitch').prop("checked");
     var newTest = testConfig.newTest;
     var testID;
