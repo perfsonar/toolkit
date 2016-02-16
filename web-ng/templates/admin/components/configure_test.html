@@ -7,7 +7,7 @@
 </script>
 
 <script id="configureTestTemplate" type="text/x-handlebars-template">
-<form id="configureTestForm" action="" method="POST">
+<form id="configureTestForm" action="" method="POST" data-abide="ajax">
 
     <input type="hidden" id="config_test_id" name="config_test_id" value="{{test_id}}" />
     <div class="row">
@@ -45,7 +45,8 @@
                 <div class="row">
                     <div class="medium-6 columns">
                         <label for="test-name" class="space">Test name/description</label>
-                        <input type="text" id="test-name" placeholder="Test name" value="{{description}}" />
+                        <input type="text" id="test-name" required placeholder="Test name" value="{{description}}" />
+                        <small class="error">Test name is required</small>
 
                     </div>
                     <div class="medium-6 columns">
@@ -125,7 +126,8 @@
                     {{#if showTestInterval}}
                     <div class="medium-3 columns">
                         <label for="time-between-tests">Time between tests</label>
-                        <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted.value}}" />
+                        <input type="text" id="time-between-tests" pattern="positive_integer" value="{{parameters.test_interval_formatted.value}}" />
+                        <small class="error">Must be a positive integer</small>
                     </div>
                     <div class="medium-3 columns">
                         <label for="time-between-tests_units">Units</label>
@@ -147,7 +149,8 @@
                         {{#if showThroughputParameters}}
                             <div class="medium-3 columns">
                                 <label for="test-duration">Test duration</label>
-                                <input type="text" id="test-duration" value="{{parameters.duration_formatted.value}}" />
+                                <input type="text" id="test-duration" pattern="positive_integer" value="{{parameters.duration_formatted.value}}" />
+                                <small class="error">Must be a positive integer</small>
                             </div>
                             <div class="medium-3 columns">
                                 <label for="test-duration_units">Units</label>
@@ -221,7 +224,8 @@
                             </div>
                             <div class="medium-6 columns">
                                 <label for="tosBits" class="space">TOS bits</label>
-                                <input type="text" id="tosBits" value="{{parameters.tos_bits}}">
+                                <input type="text" id="tosBits" pattern="nonnegative_integer" value="{{parameters.tos_bits}}">
+                                <small class="error">Must be an integer of 0 or greater</small>
                             </div>
                     </div>
                 </div>
@@ -303,6 +307,7 @@
 
     <!-- Close button for modal -->
     <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a>
+
 </div>
 
 
@@ -320,3 +325,4 @@
 </tr>
 
 </script>
+

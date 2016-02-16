@@ -14,7 +14,13 @@ SharedUIFunctions.initValidation = function() {
 
     $(document).foundation({
         abide: {
-            focus_on_invalid: false
+            focus_on_invalid: false,
+            live_validate : true,
+            timeout : 100,
+            patterns: {
+                positive_integer: /^[1-9][0-9]*$/,
+                nonnegative_integer: /^[0-9]+$/,
+            }
         }
     });
 

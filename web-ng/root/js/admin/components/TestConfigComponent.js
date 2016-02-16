@@ -345,7 +345,13 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
 
     TestConfigComponent._drawConfigForm( testConfig );
 
-    $('#configure-test-modal').foundation('reveal', 'open');
+
+     $('#configure-test-modal').foundation('reveal', 'open', {
+        //root_element: 'form',
+    });
+
+    //$(document).foundation('abide', 'reflow');
+    $(document).foundation('abide', 'events');
 
     return false;
 };
