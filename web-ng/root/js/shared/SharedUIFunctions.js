@@ -8,6 +8,29 @@ var SharedUIFunctions = {
     formCancelTopic: 'ui.form.cancel',
 };
 
+SharedUIFunctions.initValidation = function() {
+
+// prevent abide validation library from focusing on the first invalid element
+
+    $(document).foundation({
+        abide: {
+            focus_on_invalid: false
+        }
+    });
+
+    // provide our own handler for scrolling (we need to provide an offset as the
+    // built-in scrolling doesn't work well in our case
+    $("body").on('invalid.fndtn.abide', function (e) {
+        if(e.namespace != 'abide.fndtn') {
+            return;
+        }
+        var invalid_fields = $(this).find('[data-invalid]');
+        $("html, body").animate({scrollTop: $(invalid_fields).offset().top - 30}, 500);
+    });
+};
+
+SharedUIFunctions.initValidation();
+
 /*
  * SharedUIFunctions.setSelect2Values( allValues, selectedValues )
  * Description: Creates the datastructure to pass to a select2 box in the format
