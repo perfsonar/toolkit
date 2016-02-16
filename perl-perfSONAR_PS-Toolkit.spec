@@ -566,9 +566,9 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
 
 %files security
-%config(noreplace) %{install_base}/etc/default_system_firewall_settings.conf
-%config(noreplace) %{install_base}/etc/old_firewall_settings.conf
-%config(noreplace) %{install_base}/etc/perfsonar_firewall_settings.conf
+%config %{install_base}/etc/default_system_firewall_settings.conf
+%config %{install_base}/etc/old_firewall_settings.conf
+%config %{install_base}/etc/perfsonar_firewall_settings.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_firewall
 
 %files Install-Scripts
