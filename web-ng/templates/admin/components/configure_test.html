@@ -118,7 +118,8 @@
                     </div>
                     <div class="medium-6 columns">
                         <label for="packetSize">Packet Size (bytes)</label>
-                        <input type="text" id="packetSize" value="{{#if parameters.packet_size}}{{parameters.packet_size}}{{/if}}" />
+                        <input type="text" id="packetSize" value="{{#if parameters.packet_size}}{{parameters.packet_size}}{{/if}}" pattern="positive_integer" />
+                        <small class="error">Positive integer required</small>
                     </div>
                 </div> <!-- end div class="row" -->
 {{else}}
@@ -142,7 +143,8 @@
                         {{#if showTracerouteParameters}}
                             <div class="medium-6 columns">
                                 <label for="sizeOfTestPackets">Packet Size (bytes)</label>
-                                <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}">
+                                <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}" pattern="positive_integer">
+                                <small class="error">Positive integer required</small>
                             </div>
 
                         {{/if}}
@@ -167,7 +169,8 @@
                         {{#if showPingParameters}}
                             <div class="medium-6 columns">
                                 <label for="packetsPerTest">Packets per test</label>
-                                <input type="text" id="packetsPerTest" value="{{parameters.packet_count}}" />
+                                <input type="text" id="packetsPerTest" value="{{parameters.packet_count}}" pattern="positive_integer" />
+                        <small class="error">Positive integer required</small>
                             </div>
                         {{/if}}
                 </div> <!-- end div class="row" -->
@@ -178,11 +181,13 @@
                 <div class="row">
                     <div class="medium-6 columns">
                                 <label for="timeBetweenPackets">Time between packets (seconds)</label>
-                                <input type="text" id="timeBetweenPackets" value="{{parameters.packet_interval}}">
+                                <input type="text" id="timeBetweenPackets" value="{{parameters.packet_interval}}" pattern="positive_integer">
+                                <small class="error">Positive integer required</small>
                     </div>
                     <div class="medium-6 columns">
                         <label for="sizeOfTestPackets">Packet Size (bytes)</label>
-                        <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}">
+                        <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}" pattern="positive_integer">
+                        <small class="error">Positive integer required</small>
                     </div>
                 </div>
 {{/if}}
@@ -195,11 +200,13 @@
                 <div class="row">
                     <div class="medium-6 columns">
                         <label for="firstTTL">First hop to report (blank means don't skip any)</label>
-                        <input type="text" id="firstTTL" value="{{parameters.first_ttl}}" />
+                        <input type="text" id="firstTTL" value="{{parameters.first_ttl}}" pattern="positive_integer" />
+                        <small class="error">Positive integer required</small>
                     </div>
                     <div class="medium-6 columns">
                         <label for="maxTTL">Maximum number of hops (blank means no limit)</label>
-                        <input type="text" id="maxTTL" value="{{parameters.max_ttl}}" />
+                        <input type="text" id="maxTTL" value="{{parameters.max_ttl}}" pattern="positive_integer" />
+                        <small class="error">Positive integer required</small>
                     </div>
                 </div>
 </div>
