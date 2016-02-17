@@ -463,13 +463,13 @@ TestConfigComponent._drawConfigForm = function( ) {
     $('#useAutotuningSwitch').change( function() {
         TestConfigComponent._setSwitch( '#useAutotuningSwitch' );
         if ( $('#useAutotuningSwitch').prop('checked') ) {
-            $('.window_size').hide();
-            $('.window_size').removeAttr('required');
-            $('.window_size').removeAttr('pattern');
+            $('#windowSize').hide();
+            $('#windowSize').removeAttr('required');
+            $('#windowSize').removeAttr('pattern');
         } else {
-            $('.window_size').show();
-            $('.window_size').removeAttr('required');
-            $('.window_size').attr('pattern', 'positive_integer');
+            $('#windowSize').show();
+            $('#windowSize').removeAttr('required');
+            $('#windowSize').attr('pattern', 'positive_integer');
         }
     });
 
@@ -483,7 +483,10 @@ TestConfigComponent._drawConfigForm = function( ) {
     $('#testConfigOKButton').click( function( e, testID ) {
         console.log('ok clicked');
         e.preventDefault();
-        //TestConfigComponent.submitTestConfigForm( testConfig );
+
+        if ( $('#addTestMemberPanel').is(":visible") && $('#new-host-name').val() != '' ) {
+            $('#member_add_button').click();
+        }
         $('form#configureTestForm').submit();
     });
     $('#testConfigCancelButton').click( function( e ) {
@@ -548,6 +551,36 @@ TestConfigComponent._getUserHostToAddInfo = function() {
     host.description = description;
     console.log('host', host);
     return host;
+};
+
+TestConfigComponent._updateExistingMemberByAddress = function( settings ) {
+    var address = settings.address;
+    console.log('settings', settings);
+    var testTable = $('table#test-members');
+    var test = TestConfigComponent.testConfig;
+    var exists = false;
+
+    $('table#test-members > tbody > tr.member').each( function () {
+        var row = $(this);
+        console.log('row', row);
+        var memberID = row.attr("member_id");
+        var testID = test.test_id;
+        var table_address = row.find('td.address').text();
+        if ( table_address == address ) {
+            console.log('address and table_address equal');
+            var description = row.find('description');
+            if ( typeof settings.description != 'undefined' && settings.description != '') {
+                description.text( settings.descripton );
+            }
+            var test_ipv4 = row.find('input.test_ipv4');
+            var test_ipv6 = row.find('input.test_ipv6');
+            test_ipv4.prop('checked', settings.test_ipv4);
+            test_ipv6.prop('checked', settings.test_ipv6);
+            exists = true;
+            return false;
+        }
+    });
+    return exists;
 };
 
 TestConfigComponent._getUserTestsToAddHostInfo = function( host ) {
@@ -765,29 +798,46 @@ TestConfigComponent.removeTestMember = function( memberID ) {
     return false;
 };
 
+
 TestConfigComponent.addTestMember = function(e) {
     e.preventDefault();
-    var test = this.testConfig;
+    var test = TestConfigComponent.testConfig;
+    var members = test.members;
+    console.log('members', members);
     var memberTemplate = TestConfigComponent.memberTemplate;
+
     var hostname = $('#new-host-name').val();
+    if ( typeof hostname == 'undefined' || hostname == '' ) {
+        return false;
+    }
     var description = $('#new-host-description').val();
     var new_host_ipv4 = $('#new-ipv4').prop("checked");
     var new_host_ipv6 = $('#new-ipv6').prop("checked");
-    var id = TestConfigStore.generateMemberID( test.test_id );
+    var settings = {};
+    settings.address = hostname;
+    settings.description = description;
+    settings.test_ipv4 = new_host_ipv4;
+    settings.test_ipv6 = new_host_ipv6;
+    var updated = TestConfigComponent._updateExistingMemberByAddress( settings );
+    console.log('updated', updated);
 
-    var newHost = {};
-    newHost.address = hostname;
-    newHost.description = description;
-    newHost.test_ipv4 = new_host_ipv4;
-    newHost.test_ipv6 = new_host_ipv6;
-    newHost.member_id = id;
+    if ( !updated ) {
+        var id = TestConfigStore.generateMemberID( test.test_id );
 
-    var memberMarkup = memberTemplate( newHost );
+        var newHost = {};
+        newHost.address = hostname;
+        newHost.description = description;
+        newHost.test_ipv4 = new_host_ipv4;
+        newHost.test_ipv6 = new_host_ipv6;
+        newHost.member_id = id;
+
+        var memberMarkup = memberTemplate( newHost );
 
 
-    var table = $('table#test-members > tbody:last-child');
+        var table = $('table#test-members > tbody:last-child');
 
-    table.append( memberMarkup );
+        table.append( memberMarkup );
+    }
 
     $('#new-host-name').val('');
     $('#new-host-description').val('');
