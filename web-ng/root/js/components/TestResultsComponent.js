@@ -61,7 +61,7 @@ TestResultsComponent._setTestData = function( ) {
     var rows_el = $("#testResultsTable tr.no_data");
     rows_el.addClass('data');
     rows_el.removeClass('no_data');
-    
+
     var test_data_template = $("#test-data-value-template").html();
     var template = Handlebars.compile(test_data_template);
 
@@ -99,7 +99,7 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
         // this shouldn't happen
         //console.log("multiple test data found, this should not happen");
     }
-    
+
 
 };
 
@@ -116,6 +116,9 @@ TestResultsComponent._setTestList = function( ) {
     for(var i=0; i<data.test_results.length; i++) {
         data.test_results[i].rowID = i;
     }
+    data.test_results.sort(SortBySrcDst);
+
+
     data.ma_url = encodeURIComponent(TestResultsComponent.ma_url);
     data.num_test_results = data.test_results.length || 'No';
     $('#num_test_results').html(data.num_test_results);
@@ -133,6 +136,12 @@ TestResultsComponent._setTestList = function( ) {
     }
     TestResultsComponent._setTestData();
 };
+
+function SortBySrcDst(a, b){
+    var aHost = a.source_host + '0' + a.destination_host;
+    var bHost = b.source_host + '0' + b.destination_host;
+    return ((aHost < bHost) ? -1 : ((aHost > bHost) ? 1 : 0));
+}
 
 TestResultsComponent._setTestListError = function( topic, errorThrown ) {
 
@@ -196,9 +205,9 @@ TestResultsComponent.showResultsGraph = function(container, src, dst, ma_url, ro
     // first, clear the URL of the existing iframe
 //$("#test-results-graph-iframe").attr('src', '');
     TestResultsComponent.clearContainer(container);
-    var url = "/serviceTest/graphWidget.cgi?source=" + src;
+    var url = "/perfsonar-graphs/graphWidget.cgi?source=" + src;
     url += "&dest=" + dst + "&url=" + ma_url;
-    
+
      $('<iframe />', {
         name: 'Graph Frame',
         id:   'test-results-graph-iframe-' + rowID,
@@ -236,7 +245,7 @@ TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_
     var ma_url = TestResultsComponent.ma_url;
     var container = $('#' + container_id);
     var link = $('#' + container_id + ' a.traceroute_link');
-    var tr_url = '/serviceTest/graphData.cgi?action=has_traceroute_data&url=' + ma_url
+    var tr_url = '/perfsonar-graphs/graphData.cgi?action=has_traceroute_data&url=' + ma_url
             + '&source=' + source_ip + '&dest=' + dest_ip;
     $.ajax({
         url: tr_url,
@@ -245,7 +254,7 @@ TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_
         success: function(trace_data) {
             if (typeof trace_data !== "undefined") {
                 if (typeof trace_data.has_traceroute !== "undefined" && trace_data.has_traceroute == 1) {
-                    var trace_url = '/toolkit-old/gui/psTracerouteViewer/index.cgi?';
+                    var trace_url = '/perfsonar-traceroute-viewer/index.cgi?';
                     trace_url += '&mahost=' + trace_data.ma_url;
                     trace_url += '&stime=yesterday';
                     trace_url += '&etime=now';

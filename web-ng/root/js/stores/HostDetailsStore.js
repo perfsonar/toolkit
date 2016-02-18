@@ -8,7 +8,7 @@ var HostDetailsStore = {
 
 HostDetailsStore.initialize = function() {
     HostDetailsStore._retrieveDetails();
-    
+
 };
 
 HostDetailsStore._retrieveDetails = function() {

@@ -1,0 +1,92 @@
+#!/bin/bash
+#
+# Init file for perfSONAR Toolkit Configuration Daemon
+#
+# chkconfig: 2345 11 20
+# description: perfSONAR Toolkit Configuration Daemon
+#
+
+PREFIX=/usr/lib/perfsonar
+BINDIR=${PREFIX}/bin
+CONFDIR=/etc/perfsonar/toolkit
+RUNDIR=/var/run
+
+CONFFILE=${CONFDIR}/configdaemon.conf
+LOGGERFILE=${CONFDIR}/configdaemon-logger.conf
+PIDFILE=${RUNDIR}/configdaemon.pid
+
+USER=perfsonar
+GROUP=perfsonar
+
+PERFSONAR="${BINDIR}/config_daemon.pl --config=${CONFFILE} --pidfile=${PIDFILE} --logger=${LOGGERFILE} --user=${USER} --group=${GROUP}"
+
+ERROR=0
+ARGV="$@"
+if [ "x$ARGV" = "x" ] ; then 
+    ARGS="help"
+fi
+
+for ARG in $@ $ARGS
+do
+    # check for pidfile
+    if [ -f $PIDFILE ] ; then
+        PID=`cat $PIDFILE`
+        if [ "x$PID" != "x" ] && kill -0 $PID 2>/dev/null ; then
+            STATUS="perfSONAR Toolkit Config Daemon (pid $PID) running"
+            RUNNING=1
+        else
+            STATUS="perfSONAR Toolkit Config Daemon (pid $PID?) not running"
+            RUNNING=0
+        fi
+    else
+        STATUS="perfSONAR Toolkit Config Daemon (no pid file) not running"
+        RUNNING=0
+    fi 
+
+    case $ARG in
+    start)
+	echo $PERFSONAR
+
+	if $PERFSONAR ; then
+	    echo "$0 $ARG: perfSONAR Toolkit Config Daemon started"
+            touch /var/lock/subsys/configdaemon
+	else
+	    echo "$0 $ARG: perfSONAR Toolkit Config Daemon could not be started"
+	    ERROR=3
+	fi
+	;;
+    stop)
+	if [ $RUNNING -eq 0 ]; then
+	    echo "$0 $ARG: $STATUS"
+	    continue
+	fi
+	if kill $PID ; then
+	    echo "$0 $ARG: perfSONAR Toolkit Config Daemon stopped"
+            rm /var/lock/subsys/configdaemon
+	else
+	    echo "$0 $ARG: perfSONAR Toolkit Config Daemon could not be stopped"
+	    ERROR=4
+	fi
+	;;
+    restart)
+    	$0 stop; echo "waiting..."; sleep 10; $0 start;
+	;;
+    *)
+	echo "usage: $0 (start|stop|restart|help)"
+	cat <<EOF
+
+start      - start perfSONAR Toolkit Config Daemon
+stop       - stop perfSONAR Toolkit Config Daemon
+restart    - restart perfSONAR Toolkit Config Daemon if running by sending a SIGHUP or start if 
+             not running
+help       - this screen
+
+EOF
+	ERROR=2
+    ;;
+
+    esac
+
+done
+
+exit $ERROR

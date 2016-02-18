@@ -21,8 +21,8 @@ HostMetadataComponent._setMetadata = function( topic ) {
     var data = HostMetadataStore.getHostMetadata();
     var allRoles = HostMetadataStore.allRoles;
     var selectedRoles = data.config.role;
-    var roleValues = SharedUIFunctions.getSelectedValues( allRoles, selectedRoles );  
-    
+    var roleValues = SharedUIFunctions.getSelectedValues( allRoles, selectedRoles );
+
     var roleSel = $('#node_role_select');
     roleSel.empty();
     roleSel.select2( { 
@@ -37,7 +37,7 @@ HostMetadataComponent._setMetadata = function( topic ) {
 
     var accessPolicySel = $('#access_policy');
     accessPolicySel.empty();
-    accessPolicySel.select2( { 
+    accessPolicySel.select2( {
         placeholder: HostMetadataComponent.policyPlaceholder,
         data: accessPolicyValues,
         allowClear: true, // allow an empty selection

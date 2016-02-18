@@ -15,8 +15,8 @@ use perfSONAR_PS::NPToolkit::Services::ServicesMap qw(get_service_object);
 
 my ( $status, $res );
 
-my $default_config             = "/opt/perfsonar_ps/toolkit/etc/service_watcher.conf";
-my $default_logger_config      = "/opt/perfsonar_ps/toolkit/etc/service_watcher-logger.conf";
+my $default_config             = "/etc/perfsonar/servicewatcher.conf";
+my $default_logger_config      = "/etc/perfsonar/servicewatcher-logger.conf";
 
 
 my ($LOGGER_CONF, $CONFIG_FILE, $REGULAR_RESTART, $DEBUGFLAG);

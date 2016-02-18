@@ -1,7 +1,8 @@
-PACKAGE=perfSONAR_PS-Toolkit
-ROOTPATH=/opt/perfsonar_ps/toolkit
-VERSION=3.5.0.6
-RELEASE=1
+PACKAGE=perfsonar-toolkit
+ROOTPATH=/usr/lib/perfsonar
+CONFIGPATH=/etc/perfsonar/toolkit
+VERSION=3.5.1
+RELEASE=0.2.rc1
 
 default:
 	@echo No need to build the package. Just run \"make install\"
@@ -17,26 +18,11 @@ dist:
 	tar czf $(PACKAGE)-$(VERSION).$(RELEASE).tar.gz -C /tmp $(PACKAGE)-$(VERSION).$(RELEASE)
 	rm -rf /tmp/$(PACKAGE)-$(VERSION).$(RELEASE)
 
-upgrade:
-	mkdir /tmp/$(PACKAGE)-$(VERSION).$(RELEASE)
-	tar ch --exclude=etc/* -T MANIFEST | tar x -C /tmp/$(PACKAGE)-$(VERSION).$(RELEASE)
-	tar czf $(PACKAGE)-$(VERSION).$(RELEASE)-upgrade.tar.gz -C /tmp $(PACKAGE)-$(VERSION).$(RELEASE)
-	rm -rf /tmp/$(PACKAGE)-$(VERSION).$(RELEASE)
-
-rpminstall:
+install:
 	mkdir -p ${ROOTPATH}
+	mkdir -p ${CONFIGPATH}
 	tar ch --exclude '*.git*' --exclude=web/* --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
 	tar c --exclude '*.git*' web | tar x -C ${ROOTPATH}
 	tar xzf ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz -C ${ROOTPATH}/web/root/content/
 	rm -f ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz
-
-install:
-	mkdir -p ${ROOTPATH}
-	tar ch --exclude '*.git*' --exclude=web/* --exclude=web-ng/* --exclude=*spec --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
-	tar c --exclude '*.git*' web | tar x -C ${ROOTPATH}
-	tar c --exclude '*.git*' web-ng | tar x -C ${ROOTPATH}
-	tar xzf ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz -C ${ROOTPATH}/web/root/content/
-	rm -f ${ROOTPATH}/web/root/content/dojo-release-ps-toolkit.tar.gz
-	chmod -R 755 /opt/perfsonar_ps/toolkit
-	chown -R perfsonar:perfsonar /opt/perfsonar_ps/toolkit
 

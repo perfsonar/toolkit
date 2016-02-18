@@ -46,9 +46,11 @@ if ( $conf{debug} ) {
 }
 
 my $data;
-my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( { 'config_file' => $config_file  } );
+my $params = {};
+$params->{'config_file'} = $config_file;
+$params->{'load_ls_registration'} = 1;
 
-#my $cgi = CGI->new();
+my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
 
 my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
 

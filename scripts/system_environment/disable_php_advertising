@@ -4,4 +4,6 @@
 # http://seclists.org/webappsec/2004/q4/324 for why). Can be run whether in
 # upgrade or new install mode.
 #######################
-sed -i 's|expose_php *=.*|expose_php = Off|' /etc/php.ini
+if [ -f /etc/php.ini ]; then
+    sed -i 's|expose_php *=.*|expose_php = Off|' /etc/php.ini
+fi

@@ -25,7 +25,7 @@ NTPConfigComponent.initialize = function() {
     Dispatcher.subscribe(NTPConfigComponent.configTopic, NTPConfigComponent._retrieveServers);
     Dispatcher.subscribe(NTPConfigComponent.ntpClosestTopic, NTPConfigComponent._getClosest);
     Dispatcher.subscribe(NTPConfigComponent.saveNTPConfigTopic, NTPConfigComponent._saveSuccess);
-    Dispatcher.subscribe(NTPConfigComponent.saveNTPConfigErrorTopic, NTPConfigComponent._saveError);
+    Dispatcher.subscribe(NTPConfigComponent.saveNTPConfigErrorTopic, SharedUIFunctions._saveError );
     NTPConfigComponent._setEventHandlers();
 };
 
@@ -56,14 +56,14 @@ NTPConfigComponent._setServers = function() {
     var servers = NTPConfigComponent.data.servers;
     // Make a COPY of the data to use in the modal window
     NTPConfigComponent.modalData.servers = $.extend([], servers);
-    
+
     NTPConfigComponent._drawServerSelector();
 };
 
 NTPConfigComponent._drawServerSelector = function() {
     var sel = $('#select_ntp_servers');
     var config = NTPConfigComponent.data.servers;
-   
+
     sel.empty();
 
     $.each(config, function(i, val) {
@@ -123,7 +123,7 @@ NTPConfigComponent.save = function() {
 
     HostAdminStore.saveNTP( {data: data} );
     NTPConfigComponent._initGlobalData();
-    
+
 };
 
 NTPConfigComponent._formatServers = function( data ) {
@@ -139,7 +139,7 @@ NTPConfigComponent._formatServers = function( data ) {
         var row = {};
         var hostname = keys[i];
         var selected = data[ keys[i] ].selected || 0;
-        var description = data[ keys[i] ].description;        
+        var description = data[ keys[i] ].description;
         row.id = hostname;
         row.text = NTPConfigComponent._formatServer(hostname, description);
         row.selected = selected;
@@ -376,7 +376,7 @@ NTPConfigComponent._getClosest = function( topic ) {
  * Takes an array of hostnames; changes the selected servers to match only those hosts
 */
 
-NTPConfigComponent._selectServers = function ( selection ) {    
+NTPConfigComponent._selectServers = function ( selection ) {
     var data = NTPConfigComponent.data.servers;
     var sel = $('#select_ntp_servers');
 
@@ -396,10 +396,6 @@ NTPConfigComponent._selectServers = function ( selection ) {
 
 NTPConfigComponent._saveSuccess = function( topic, message ) {
     Dispatcher.publish(NTPConfigComponent.formNTPSuccessTopic, message);
-};
-
-NTPConfigComponent._saveError = function( topic, message ) {
-    Dispatcher.publish(NTPConfigComponent.formNTPErrorTopic, message);
 };
 
 NTPConfigComponent._cancel = function() {
