@@ -9,10 +9,3 @@
  cat >$file <<EOF
  owamp.chic.net.internet2.edu 
  owamp.hous.net.internet2.edu
-@@ -61,5 +61,5 @@
- # Auto-select NTP servers based on proximity
- ####################
- if [ "$1" == "new" ]; then
--    /opt/perfsonar_ps/toolkit/scripts/autoselect_ntp_servers
-+    /usr/lib/perfsonar/scripts/autoselect_ntp_servers
- fi
