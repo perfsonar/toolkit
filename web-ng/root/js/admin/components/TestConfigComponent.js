@@ -188,12 +188,24 @@ TestConfigComponent._setTestData = function() {
     data.testsByTest = TestConfigStore.getTestConfigurationFormatted();
     TestConfigComponent.data = data;
     TestConfigComponent.dataSet = true;
-    var network_percent_used = TestConfigStore.data.status.network_percent_used;
+    TestConfigComponent._showStatusMessages();
+    TestConfigComponent._loadInterfaceWhenReady();
+};
+
+TestConfigComponent._showStatusMessages = function() {
+    var status = TestConfigStore.data.status;
+    var network_percent_used = status.network_percent_used;
     if ( !isNaN( parseInt( network_percent_used ) ) ) {
         $('#network_percent_used').text( network_percent_used );
         $('#throughput_percent_message').show();
     }
-    TestConfigComponent._loadInterfaceWhenReady();
+    var throughput_tests = status.throughput_tests;
+    var owamp_tests = status.owamp_tests;
+    if ( throughput_tests > 0 && owamp_tests > 0 ) {
+        $('#throughput_latency_message').show();
+    }
+
+
 };
 
 TestConfigComponent._setHostData = function() {
