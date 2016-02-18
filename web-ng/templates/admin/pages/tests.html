@@ -27,6 +27,15 @@
                         <div class="medium-9 columns">
                             <div class="config__form">
                                     <h2 class="module-header__title">All scheduled tests</h2>
+                                    <span class="alert-small-success" style="display:none;" id="throughput_percent_message">
+                                    Throughput tests will be running <span id="network_percent_used"></span>% of the time
+<!--
+                                    <a class="alert--dismiss" href="#">
+                                        <span class="visuallyhidden">Dismiss alert</span>
+                                        <i class="fa fa-close"></i>
+-->
+                                    </a>
+                                </span>
                                     <div>Configure tests between this host and other hosts.</div>
                                     <div class="button-group">
                                         <button id="testAddHostButton" class="button-quiet">+ Add Host</button>

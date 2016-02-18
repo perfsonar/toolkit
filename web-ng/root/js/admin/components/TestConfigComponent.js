@@ -191,6 +191,11 @@ TestConfigComponent._setTestData = function() {
     data.testsByTest = TestConfigStore.getTestConfigurationFormatted();
     TestConfigComponent.data = data;
     TestConfigComponent.dataSet = true;
+    var network_percent_used = TestConfigStore.data.status.network_percent_used;
+    if ( !isNaN( parseInt( network_percent_used ) ) ) {
+        $('#network_percent_used').text( network_percent_used );
+        $('#throughput_percent_message').show();
+    }
     TestConfigComponent._loadInterfaceWhenReady();
 };
 
@@ -244,8 +249,6 @@ TestConfigComponent.showTestAddTestModal = function( ) {
     var config_modal = template( data );
     $("#testAddTestContainer").html(config_modal);
     $('#test-add-test-modal').foundation('reveal', 'open');
-
-
 
 
     $('#testAddTestOKButton').click( function( e ) {
@@ -431,6 +434,8 @@ TestConfigComponent._drawConfigForm = function( ) {
         testConfig.type = type;
         //TestConfigStore.setTypesToDisplay( testConfig );
         TestConfigComponent._drawConfigForm( );
+        $(document).foundation('abide', 'events');
+        TestConfigComponent._setValidationEvents();
         console.log('testConfig', testConfig);
         if ( type != '' ) {
             $('#configureTestForm .existing_test_type_only').show();

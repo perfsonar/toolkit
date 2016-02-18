@@ -539,10 +539,10 @@ TestConfigStore.deleteMemberFromTest = function ( testID, memberID ) {
 
 };
 
-TestConfigStore.getTestMemberIndex = function( memberID, testID ) {
+TestConfigStore.getTestMemberIndex = function( address, testID ) {
     var test = TestConfigStore.getTestByID( testID );
     for ( var i in test.members ) {
-        if ( test.members[i].member_id == memberID ) {
+        if ( test.members[i].address == address ) {
             return i;
         }
     }
@@ -551,25 +551,13 @@ TestConfigStore.getTestMemberIndex = function( memberID, testID ) {
 
 TestConfigStore.addOrUpdateTestMember = function ( testID, member ) {
     var test = TestConfigStore.getTestByID( testID );
-    var memberIndex = TestConfigStore.getTestMemberIndex( member.member_id, testID );
+    var memberIndex = TestConfigStore.getTestMemberIndex( member.address, testID );
 
     if ( ! $.isArray( test.members ) ) {
         test.members = [];
     }
 
-    /*
-    var result = $.grep( test.members, function( val, index ) {
-        return ( val.member_id == member.member_id  );
-    });
-    console.log('addOrUpdate grep result', result);
-    */
     var config = {};
-    /*
-    config.address = member.address;
-    config.description = member.description;
-    config.test_ipv4 = member.test_ipv4;
-    config.test_ipv6 = member.test_ipv6;
-    */
 
     if ( memberIndex >= 0 ) {
         // The member was found in the config. Update it with the new values.
@@ -579,10 +567,8 @@ TestConfigStore.addOrUpdateTestMember = function ( testID, member ) {
         // support
         var result = test.members[ memberIndex ];
 
-        //var config = $.extend( {}, result, member );
         var config = member;
         test.members[memberIndex] = $.extend({}, result, member);
-        //test.members[memberIndex] = config;
         return true;
     } else {
         // this member not found
