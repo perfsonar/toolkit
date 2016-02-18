@@ -2,16 +2,16 @@
 
 <script id="configureTestModalContainerTemplate" type="text/x-handlebars-template">
 
-<div id="configure-test-modal" class="reveal-modal large text-left" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+<div id="configure-test-modal" class="reveal-modal xlarge text-left" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
 </div>
 </script>
 
 <script id="configureTestTemplate" type="text/x-handlebars-template">
-<form id="configureTestForm" action="" method="POST">
+<form id="configureTestForm" action="" method="POST" data-abide="ajax">
 
     <input type="hidden" id="config_test_id" name="config_test_id" value="{{test_id}}" />
     <div class="row">
-        <div class="medium-12 columns">
+        <div class="medium-6 columns">
             <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">
                 {{#if newTest}}
                     Add Test
@@ -20,7 +20,12 @@
                 {{/if}}
             </h2>
         </div>
+        <div class="medium-6 columns text-right">
+            <a href="#" id="testConfigCancelButton" style="margin: 0 3em;" class="testConfigCancelButton">Cancel</a>
+            <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton">OK</button>
+        </div>
     </div>
+
     <div class="row">
         <div class="medium-12 columns">
                         <h2 class="module-header__title font-bold">Test parameters</h2>
@@ -45,7 +50,8 @@
                 <div class="row">
                     <div class="medium-6 columns">
                         <label for="test-name" class="space">Test name/description</label>
-                        <input type="text" id="test-name" placeholder="Test name" value="{{description}}" />
+                        <input type="text" id="test-name" required placeholder="Test name" value="{{description}}" />
+                        <small class="error">Test name is required</small>
 
                     </div>
                     <div class="medium-6 columns">
@@ -117,7 +123,8 @@
                     </div>
                     <div class="medium-6 columns">
                         <label for="packetSize">Packet Size (bytes)</label>
-                        <input type="text" id="packetSize" value="{{#if parameters.packet_size}}{{parameters.packet_size}}{{/if}}" />
+                        <input type="text" id="packetSize" value="{{#if parameters.packet_size}}{{parameters.packet_size}}{{/if}}" pattern="positive_integer" />
+                        <small class="error">Positive integer required</small>
                     </div>
                 </div> <!-- end div class="row" -->
 {{else}}
@@ -125,7 +132,8 @@
                     {{#if showTestInterval}}
                     <div class="medium-3 columns">
                         <label for="time-between-tests">Time between tests</label>
-                        <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted.value}}" />
+                        <input type="text" id="time-between-tests" pattern="positive_integer" value="{{parameters.test_interval_formatted.value}}" />
+                        <small class="error">Must be a positive integer</small>
                     </div>
                     <div class="medium-3 columns">
                         <label for="time-between-tests_units">Units</label>
@@ -140,14 +148,16 @@
                         {{#if showTracerouteParameters}}
                             <div class="medium-6 columns">
                                 <label for="sizeOfTestPackets">Packet Size (bytes)</label>
-                                <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}">
+                                <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}" pattern="positive_integer">
+                                <small class="error">Positive integer required</small>
                             </div>
 
                         {{/if}}
                         {{#if showThroughputParameters}}
                             <div class="medium-3 columns">
                                 <label for="test-duration">Test duration</label>
-                                <input type="text" id="test-duration" value="{{parameters.duration_formatted.value}}" />
+                                <input type="text" id="test-duration" pattern="positive_integer" value="{{parameters.duration_formatted.value}}" />
+                                <small class="error">Must be a positive integer</small>
                             </div>
                             <div class="medium-3 columns">
                                 <label for="test-duration_units">Units</label>
@@ -164,7 +174,8 @@
                         {{#if showPingParameters}}
                             <div class="medium-6 columns">
                                 <label for="packetsPerTest">Packets per test</label>
-                                <input type="text" id="packetsPerTest" value="{{parameters.packet_count}}" />
+                                <input type="text" id="packetsPerTest" value="{{parameters.packet_count}}" pattern="positive_integer" />
+                        <small class="error">Positive integer required</small>
                             </div>
                         {{/if}}
                 </div> <!-- end div class="row" -->
@@ -175,11 +186,13 @@
                 <div class="row">
                     <div class="medium-6 columns">
                                 <label for="timeBetweenPackets">Time between packets (seconds)</label>
-                                <input type="text" id="timeBetweenPackets" value="{{parameters.packet_interval}}">
+                                <input type="text" id="timeBetweenPackets" value="{{parameters.packet_interval}}" pattern="positive_integer">
+                                <small class="error">Positive integer required</small>
                     </div>
                     <div class="medium-6 columns">
                         <label for="sizeOfTestPackets">Packet Size (bytes)</label>
-                        <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}">
+                        <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}" pattern="positive_integer">
+                        <small class="error">Positive integer required</small>
                     </div>
                 </div>
 {{/if}}
@@ -192,11 +205,13 @@
                 <div class="row">
                     <div class="medium-6 columns">
                         <label for="firstTTL">First hop to report (blank means don't skip any)</label>
-                        <input type="text" id="firstTTL" value="{{parameters.first_ttl}}" />
+                        <input type="text" id="firstTTL" value="{{parameters.first_ttl}}" pattern="positive_integer" />
+                        <small class="error">Positive integer required</small>
                     </div>
                     <div class="medium-6 columns">
                         <label for="maxTTL">Maximum number of hops (blank means no limit)</label>
-                        <input type="text" id="maxTTL" value="{{parameters.max_ttl}}" />
+                        <input type="text" id="maxTTL" value="{{parameters.max_ttl}}" pattern="positive_integer" />
+                        <small class="error">Positive integer required</small>
                     </div>
                 </div>
 </div>
@@ -217,11 +232,13 @@
                             </div>
                             <div class="medium-3 columns">
                                     <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
-                                    <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}">
+                                    <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}" {{#if showWindowSize}} pattern="positive_integer" required{{/if}}>
+                                <small class="error">Must be a positive integer</small>
                             </div>
                             <div class="medium-6 columns">
                                 <label for="tosBits" class="space">TOS bits</label>
-                                <input type="text" id="tosBits" value="{{parameters.tos_bits}}">
+                                <input type="text" id="tosBits" pattern="nonnegative_integer" value="{{parameters.tos_bits}}">
+                                <small class="error">Must be an integer of 0 or greater</small>
                             </div>
                     </div>
                 </div>
@@ -289,8 +306,8 @@
 
                 <div class="row">
                     <div class="medium-12 columns text-right">
-                        <a href="#" id="testConfigCancelButton" style="margin: 0 3em;">Cancel</a>
-                        <button class="button-primary" style="margin: 0 1em 0 0;" id="testConfigOKButton">OK</button>
+                        <a href="#" id="testConfigCancelButton" style="margin: 0 3em;" class="testConfigCancelButton">Cancel</a>
+                        <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton">OK</button>
                     </div>
                 </div>
 
@@ -302,7 +319,8 @@
 </form>
 
     <!-- Close button for modal -->
-    <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a>
+    <!-- <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a> -->
+
 </div>
 
 
@@ -320,3 +338,4 @@
 </tr>
 
 </script>
+
