@@ -16,7 +16,7 @@
 
 
 
-<form id="adminInfoForm">
+<form id="adminInfoForm" data-abide="ajax">
 
 <div class="config">
 
@@ -63,18 +63,21 @@
                         </div>
                         <div class="row">
                             <div class="medium-12 columns">
-                                <label class="config__label">Administrator Email</label>
-                                <input class="config__input" type="text" id="admin_email">
+                                <label class="config__label">Administrator Email </label>
+                                <input class="config__input" type="email" id="admin_email">
+                                <small class="error">Must be a valid e-mail address</small>
                             </div>
                         </div>
                         <div class="row">
                             <div class="large-4 columns">
                                 <label class="config__label">Latitude</label> 
-                                <input class="config__input" type="text" id="admin_latitude">
+                                <input class="config__input" type="text" pattern="number" id="admin_latitude">
+                                <small class="error">Must be a valid decimal</small>
                             </div>
                             <div class="large-4 columns">
                                 <label class="config__label">Longitude</label>
-                                <input class="config__input" type="text" id="admin_longitude">
+                                <input class="config__input" type="text" pattern="number" id="admin_longitude">
+                                <small class="error">Must be a valid decimal</small>
                             </div>
                             <div class="large-4 columns">
                                 <button name="" id="guess_lat_lon_button" style="display:none;" class="button-quiet button-quiet--form-align"><i class="fa fa-globe"> &nbsp;</i>Autofill Lat/Long</button>
@@ -126,7 +129,7 @@
                                             <div class="row">
                                                 <div class="medium-8 columns">
                                                     <input type="text" id="community_add_name" name="community_add_name" placeholder="Enter a community name">
-                                                </div>                                                
+                                                </div>
                                                 <div class="medium-4 columns">
                                                     <button id="community_add_button" class="button-secondary button-secondary--small" style="margin: 0; display: block; width: 100%;">Add</button>
                                                 </div>
@@ -136,7 +139,7 @@
                                 </div>
                                 <!-- End Communities module -->
             </div>
-            <!-- End config__form -->  
+            <!-- End config__form -->
 
 
                 </div>

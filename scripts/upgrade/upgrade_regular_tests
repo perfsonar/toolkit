@@ -17,7 +17,7 @@ use OWP::Conf;
 
 my $pinger_landmarks = "/opt/perfsonar_ps/PingER/etc/pinger-landmarks.xml";
 my $owmesh_conf = "/opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf";
-my $regular_test_conf = "/opt/perfsonar_ps/regular_testing/etc/regular_testing.conf";
+my $regular_test_conf = "/etc/perfsonar/regulartesting.conf";
 
 Log::Log4perl->easy_init($DEBUG);
 

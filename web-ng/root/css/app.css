@@ -1777,7 +1777,7 @@ input[type='button']:disabled.button-primary--hollow:hover {
 */
 
 .button-group {
-  padding: 2em 0;
+  padding: 1em 0;
 }
 
 .button-group button {

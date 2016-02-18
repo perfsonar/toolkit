@@ -10,13 +10,13 @@ var AutoUpdatesComponent = {
 };
 
 
-AutoUpdatesComponent.initialize = function() {    
+AutoUpdatesComponent.initialize = function() {
     Dispatcher.subscribe(AutoUpdatesComponent.detailsTopic, AutoUpdatesComponent._setAutoUpdates);
     Dispatcher.subscribe(AutoUpdatesComponent.saveAutoUpdatesTopic, AutoUpdatesComponent._saveSuccess);
     Dispatcher.subscribe(AutoUpdatesComponent.saveAutoUpdatesErrorTopic, AutoUpdatesComponent._saveError);
     $('#autoUpdatesSwitch').change( function() {
         AutoUpdatesComponent.autoUpdates = ! AutoUpdatesComponent.autoUpdates;
-        AutoUpdatesComponent._setSwitch();            
+        AutoUpdatesComponent._setSwitch();
     });
 };
 

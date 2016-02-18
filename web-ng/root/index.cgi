@@ -37,7 +37,7 @@ my $https_url = $full_url;
 print $cgi->header(-type=>'text/html', -charset=>'utf-8');
 
 my $tt = Template->new({
-        INCLUDE_PATH => '/opt/perfsonar_ps/toolkit/web-ng/templates/'
+        INCLUDE_PATH => '/usr/lib/perfsonar/web-ng/templates/'
     }) || die "$Template::ERROR\n";
 
 
@@ -61,8 +61,8 @@ if ($authenticated) {
 
 push @$js_files, (
     $include_prefix . 'js/stores/TestStore.js', 
-    '/serviceTest/JS/d3.min.js', # TODO: fix to better relative URL
-    '/serviceTest/JS/TestResultUtils.js', # TODO: fix to better relative URL
+    '/perfsonar-graphs/JS/d3.min.js', # TODO: fix to better relative URL
+    '/perfsonar-graphs/JS/TestResultUtils.js', # TODO: fix to better relative URL
     $include_prefix . 'js/components/HostInfoComponent.js', 
     $include_prefix . 'js/components/HostStatusSidebarComponent.js', 
     $include_prefix . 'js/components/HostServicesComponent.js', 

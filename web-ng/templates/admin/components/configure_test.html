@@ -1,16 +1,24 @@
 <div id="configureTestContainer"></div>
 
-<script id="configureTestTemplate" type="text/x-handlebars-template">
-
-<!-- *** Configure test modal (gear icon) *** -->
+<script id="configureTestModalContainerTemplate" type="text/x-handlebars-template">
 
 <div id="configure-test-modal" class="reveal-modal large text-left" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+</div>
+</script>
 
+<script id="configureTestTemplate" type="text/x-handlebars-template">
 <form id="configureTestForm" action="" method="POST">
 
+    <input type="hidden" id="config_test_id" name="config_test_id" value="{{test_id}}" />
     <div class="row">
         <div class="medium-12 columns">
-            <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">Configure Test</h3>
+            <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">
+                {{#if newTest}}
+                    Add Test
+                {{else}}
+                    Configure Test
+                {{/if}}
+            </h2>
         </div>
     </div>
     <div class="row">
@@ -19,6 +27,21 @@
                 <!-- Begin common fields -->
 
 
+                <div class="row new_test_only" id="testTypeRow">
+                    <div class="medium-6 columns">
+                        <label for="newTestTypeSel">Type</label>
+                        <select id="newTestTypeSel">
+                            <option value="">-- Choose type --</option>
+                            <option value="bwctl/throughput" {{#compare type "bwctl/throughput"}}selected{{/compare}}>Throughput</option>
+                            <option value="owamp" {{#compare type "owamp"}}selected{{/compare}}>One-way latency</option>
+                            <option value="pinger" {{#compare type "pinger"}}selected{{/compare}}>Ping</option>
+                            <option value="traceroute" {{#compare type "traceroute"}}selected{{/compare}}>Traceroute</option>
+                        </select>
+                    </div>
+                    <div class="medium-6 columns">
+                    </div>
+                </div>
+<div class="existing_test_type_only">
                 <div class="row">
                     <div class="medium-6 columns">
                         <label for="test-name" class="space">Test name/description</label>
@@ -40,82 +63,110 @@
                 </div>
                 <div class="row">
                     <div class="medium-6 columns">
-                        <label for="interface">Interface</label>
-                        <select id="interface">
+                        <label for="interfaceSelector">Interface</label>
+                        <select id="interfaceSelector">
                             <option value="" {{#unless parameters.local_interface}}selected{{/unless}}>Default</option>
                         {{#each interfaces}}
-                            <option value="{{iface}}" {{#compare iface ../parameters.local_interface}}selected{{/compare}}>{{iface}}</option> 
+                            <option value="{{iface}}" {{#compare iface ../parameters.local_interface}}selected{{/compare}}>{{iface}}</option>
                         {{/each}}
                         </select>
                     </div>
-                    <div class="medium-6 columns">
                         {{#if showThroughputParameters}}
+                    <div class="medium-3 columns">
                             <label for="protocolSelector">Protocol</label>
                             <select id="protocolSelector">
                                 <option value="tcp" {{#compare parameters.protocol "tcp"}}selected{{/compare}}>TCP</option>
                                 <option value="udp" {{#compare parameters.protocol "udp"}}selected{{/compare}}>UDP</option>
                             </select>
-                            
-                        {{/if}}
                     </div>
+                    <div class="medium-3 columns" id="udpBandwidthContainer" style="display:{{#compare parameters.protocol "udp"}}block{{else}}none{{/compare}};">
+                        <label for="udpBandwidth">UDP Bandwidth (MB)</label>
+                        <input type="text" id="udpBandwidth" value="{{#if parameters.udp_bandwidth_mb}}{{parameters.udp_bandwidth_mb}}{{else}}0{{/if}}" />
+                    </div>
+                        {{/if}}
+                        {{#if showTracerouteParameters}}
+                    <div class="medium-6 columns">
+                            <label for="toolSel">Tool</label>
+                            <select id="toolSel">
+                                <option value="">Default</option>
+                                <option value="tracepath" {{#compare parameters.tool "tracepath"}}selected{{/compare}}>tracepath</option>
+                                <option value="traceroute" {{#compare parameters.tool "traceroute"}}selected{{/compare}}>traceroute</option>
+                                <option value="paris-traceroute" {{#compare parameters.tool "paris-traceroute"}}selected{{/compare}}>paris-traceroute</option>
+                            </select>
+                    </div>
+                        {{/if}}
+
 
                 </div>
 
 <!-- End common fields -->
 
-<!-- Only show the duration/test length if not editing an owamp test -->
-
 {{#if showOWAMPParameters}}
                 <div class="row">
 
                     <div class="medium-6 columns">
-                        <label for="packetRate">Packet Rate (packets per second) (MAKE DROPDOWN)</label>
-                        <input type="text" id="packetRate" value="{{parameters.packet_rate}}" />
-                        
+                        <label for="packetRateSel">Packet Rate (packets per second)</label>
+                        <select id="packetRateSel">
+                            <option value="10" {{#compare parameters.packet_rate 10}}selected="selected"{{/compare}}>10 (default)</option>
+                            <option value="50" {{#compare parameters.packet_rate 50}}selected="selected"{{/compare}}>50</option>
+                            <option value="100" {{#compare parameters.packet_rate 100}}selected="selected"{{/compare}}>100</option>
+                            <option value="250" {{#compare parameters.packet_rate 250}}selected="selected"{{/compare}}>250</option>
+                            <option value="500" {{#compare parameters.packet_rate 500}}selected="selected"{{/compare}}>500</option>
+                            <option value="1000" {{#compare parameters.packet_rate 1000}}selected="selected"{{/compare}}>1000</option>
+                        </select>
                     </div>
                     <div class="medium-6 columns">
                         <label for="packetSize">Packet Size (bytes)</label>
-                        <input type="text" id="packetSize" value="{{parameters.packet_size}}" />
+                        <input type="text" id="packetSize" value="{{#if parameters.packet_size}}{{parameters.packet_size}}{{/if}}" />
                     </div>
                 </div> <!-- end div class="row" -->
 {{else}}
                 <div class="row">
-
-                    <div class="medium-6 columns">
-                        {{#if parameters.test_interval_formatted}}
-                        <label for="time-between">Time between tests (TODO: make dropdown)</label>
-                        <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted}}" />
-<!--
-                        <select id="time-between">
-                            <option>10 Minutes</option>
-                            <option>15 Minutes</option>
-                            <option selected>30 Minutes</option>
-                            <option>60 Minutes</option>
-                        </select>
--->
-                        {{/if}}
+                    {{#if showTestInterval}}
+                    <div class="medium-3 columns">
+                        <label for="time-between-tests">Time between tests</label>
+                        <input type="text" id="time-between-tests" value="{{parameters.test_interval_formatted.value}}" />
                     </div>
-                    <div class="medium-6 columns">
-                        {{#if showThroughputParameters}}
-                        <label for="test-duration">Test duration (TODO: make dropdown)</label>
-                        <input type="text" id="test-duration" value="{{parameters.duration}}" />
-<!--
-                        <select id="test-duration">
-                            <option>5 Seconds</option>
-                            <option>10 Seconds</option>
-                            <option>15 Seconds</option>
-                            <option selected>30 Seconds</option>
-                            <option>45 Seconds</option>
-                            <option>60 Seconds</option>
+                    <div class="medium-3 columns">
+                        <label for="time-between-tests_units">Units</label>
+                        <select id="time-between-tests_units">
+                            <option value="second" {{#compare parameters.test_interval_formatted.unit "second"}}selected{{/compare}} >Seconds</option>
+                            <option value="minute" {{#compare parameters.test_interval_formatted.unit "minute"}}selected{{/compare}} >Minutes</option>
+                            <option value="hour" {{#compare parameters.test_interval_formatted.unit "hour"}}selected{{/compare}} >Hours</option>
+                            <option value="day" {{#compare parameters.test_interval_formatted.unit "day"}}selected{{/compare}} >Days</option>
                         </select>
--->
+                    </div>
+                        {{/if}}
+                        {{#if showTracerouteParameters}}
+                            <div class="medium-6 columns">
+                                <label for="sizeOfTestPackets">Packet Size (bytes)</label>
+                                <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}">
+                            </div>
+
+                        {{/if}}
+                        {{#if showThroughputParameters}}
+                            <div class="medium-3 columns">
+                                <label for="test-duration">Test duration</label>
+                                <input type="text" id="test-duration" value="{{parameters.duration_formatted.value}}" />
+                            </div>
+                            <div class="medium-3 columns">
+                                <label for="test-duration_units">Units</label>
+                                <select id="test-duration_units">
+
+                            <option value="second" {{#compare parameters.duration_formatted.unit "second"}}selected{{/compare}} >Seconds</option>
+                            <option value="minute" {{#compare parameters.duration_formatted.unit "minute"}}selected{{/compare}} >Minutes</option>
+                            <option value="hour" {{#compare parameters.duration_formatted.unit "hour"}}selected{{/compare}} >Hours</option>
+                            <option value="day" {{#compare parameters.duration_formatted.unit "day"}}selected{{/compare}} >Days</option>
+
+                                </select>
+                            </div>
                         {{/if}}
                         {{#if showPingParameters}}
-                            <label for="packetsPerTest">Packets per test</label>
-                            <input type="text" id="packetsPerTest" value="{{parameters.packet_count}}" />
-                                
+                            <div class="medium-6 columns">
+                                <label for="packetsPerTest">Packets per test</label>
+                                <input type="text" id="packetsPerTest" value="{{parameters.packet_count}}" />
+                            </div>
                         {{/if}}
-                    </div>
                 </div> <!-- end div class="row" -->
 {{/if}}
 
@@ -127,24 +178,29 @@
                                 <input type="text" id="timeBetweenPackets" value="{{parameters.packet_interval}}">
                     </div>
                     <div class="medium-6 columns">
-                        <label for="sizeOfTestPackets">Size of test packets</label>
+                        <label for="sizeOfTestPackets">Packet Size (bytes)</label>
                         <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}">
                     </div>
                 </div>
 {{/if}}
 
 {{#if showTracerouteParameters}}
-
+<!--
+<a href="#" onclick="$('#advancedParamsTraceroute').toggle(); return false;" class="add_panel_heading"><i class="fa fa-plus"></i> Advanced parameters</a>
+-->
+<div id="advancedParamsTraceroute">
                 <div class="row">
                     <div class="medium-6 columns">
-                                <label for="tos-bits">Tool (make dropdown)</label>
-                                <input type="text" id="tool" value="{{parameters.tool}}">
+                        <label for="firstTTL">First hop to report (blank means don't skip any)</label>
+                        <input type="text" id="firstTTL" value="{{parameters.first_ttl}}" />
                     </div>
                     <div class="medium-6 columns">
-                        <label for="qwerty">QWERTY</label>
-                        <input type="text" id="querty" value="0">
+                        <label for="maxTTL">Maximum number of hops (blank means no limit)</label>
+                        <input type="text" id="maxTTL" value="{{parameters.max_ttl}}" />
                     </div>
                 </div>
+</div>
+
 {{/if}}
 
 {{#if showThroughputParameters}}
@@ -160,21 +216,22 @@
 
                             </div>
                             <div class="medium-3 columns">
-                                    <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size</label>
+                                    <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
                                     <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}">
                             </div>
                             <div class="medium-6 columns">
-                                <label for="tos-bits" class="space">TOS bits</label>
-                                <input type="text" id="tos-bits" value="0">
+                                <label for="tosBits" class="space">TOS bits</label>
+                                <input type="text" id="tosBits" value="{{parameters.tos_bits}}">
                             </div>
                     </div>
                 </div>
 {{/if}}
 
+</div>      <!-- ends div with existing_test_type_only class -->
 
-            <div class="module module--config-table">
+            <div class="module module--config-table existing_test_type_only">
                 <h3 class="module-header__title font-bold">Test members</h3>
-                <table>
+                <table id="test-members"> 
                     <thead>
                         <tr>
                             <th>Host</th>
@@ -184,31 +241,28 @@
                     </thead>
                     <tbody class="test-members">
 {{#each members}}
-                    <tr class="subrow subrow--content">
-                        <td>{{address}}</td>
-                        <td><input type="text" value="{{description}}"></td>
-                        <td><label class="inline-label">IPv4</label> <input type="checkbox" {{#if test_ipv4}}checked{{/if}}></td>
-                        <td><label class="inline-label">IPv6</label> <input type="checkbox" {{#if test_ipv6}}checked{{/if}}></td>
-                        <td><a href="#"><i class="fa fa-trash" checked></i></a></td>
-                    </tr>
+    {{> member}}
 {{/each}}
                     </tbody>
                 </table>
 
                 <!-- *** Add new test members panel *** -->
 
-                <a href="#" class="add_panel_heading"><i class="fa fa-plus"></i> Add Test Member(s)</a>
+                <a href="#" onclick="return TestConfigComponent.addTestMember" class="add_panel_heading"><i class="fa fa-plus"></i> Add Test Member(s)</a>
 
                 <div id="addTestMemberPanel" class="add_panel">
                 <fieldset>
-                    <p>Enter a host name below or <a href="#">browse communities</a> to add more test members.</p>
+                    <p>Enter host information below to add new test members.</p>
+<!--
+<p> or <a href="#">browse communities</a> to add more test members.</p>
+-->
 
                         <div class="row">
                             <div class="medium-4 columns">
                                 <label for="new-host-name">Host name</label>
                                 <input type="text" id="new-host-name" placeholder="Host">
                             </div>
-                            <div class="medium-5 columns">
+                            <div class="medium-5 columns"> 
                                 <label for="new-host-description">Host description</label>
                                 <input type="text" id="new-host-description" placeholder="Description">
                             </div>
@@ -216,7 +270,7 @@
                                 <div class="row">
                                     <div class="medium-6 columns">
                                         <label  class="inline-label" for="new-ipv4">IPv4</label>
-                                        <input type="checkbox" id="new-ipv4">
+                                        <input type="checkbox" id="new-ipv4" checked="checked">
                                     </div>
                                     <div class="medium-6 columns">
                                         <label  class="inline-label" for="new-ipv6">IPv6</label>
@@ -235,17 +289,11 @@
 
                 <div class="row">
                     <div class="medium-12 columns text-right">
-                        <button class="button-primary" style="margin: 0 1em 0 0;">Save</button>
-                        <a href="#">Cancel</a>
+                        <a href="#" id="testConfigCancelButton" style="margin: 0 3em;">Cancel</a>
+                        <button class="button-primary" style="margin: 0 1em 0 0;" id="testConfigOKButton">OK</button>
                     </div>
                 </div>
 
-                <!-- <div class="js-add-new-wrapper">
-                    <a href="#" class="button-primary js-add-new-host" style="margin-right: 1em;">Add new</a> <a href="./">Cancel</a>
-                </div>
-                <div class="new-host-save">
-                    <a href="#" class="button-primary js-save-new-host" style="margin-right: 1em;">Save</a> <a href="./">Cancel</a>
-                </div> -->
             </div>
         </div>
     </div>
@@ -260,3 +308,15 @@
 
 </script>
 
+
+<script id="member-partial" type="text/x-handlebars-template">
+
+<tr class="subrow subrow--content member" member_id="{{member_id}}">
+    <td class="address">{{address}}</td>
+    <td><input type="text" class="description" value="{{description}}"></td>
+    <td><label class="inline-label">IPv4</label> <input type="checkbox" class="test_ipv4" {{#if test_ipv4}}checked{{/if}}></td>
+    <td><label class="inline-label">IPv6</label> <input type="checkbox" class="test_ipv6" {{#if test_ipv6}}checked{{/if}}></td>
+    <td><a href="" onclick="return TestConfigComponent.removeTestMember( '{{member_id}}' );" class="member-delete-button"><i class="fa fa-trash" checked></i></a></td>
+</tr>
+
+</script>

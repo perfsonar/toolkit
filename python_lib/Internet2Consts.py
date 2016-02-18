@@ -18,8 +18,8 @@ WHITE="\x1b[1;37m"
 BLACK="\x1b[1;30m"
 
 # Base dir (used for saving things)
-BIN_DIR    = "/opt/perfsonar_ps/toolkit/scripts/"
-CONF_DIR   = "/usr/local/etc/"
+BIN_DIR    = "/usr/lib/perfsonar/scripts/"
+CONF_DIR   = "/etc/perfsonar"
 MARKER_DIR = "/usr/local/etc/nptools_markers/"
 TMP_DIR    = "/tmp/"
 
@@ -57,16 +57,16 @@ NTP_KNOWN_SERVERS = "/usr/local/etc/ntp.static.servers"
 NTP_CUSTOM_SERVERS = "/usr/local/etc/ntp.custom.servers"
 
 # BWCTL Config files
-BWCTL_ROOT   = "/usr/local/etc/"
-BWCTL_CONF   = BWCTL_ROOT + "bwctld.conf"
-BWCTL_LIMITS = BWCTL_ROOT + "bwctld.limits"
-BWCTL_KEYS   = BWCTL_ROOT + "bwctld.keys"
+BWCTL_ROOT   = "/etc/bwctl-server"
+BWCTL_CONF   = BWCTL_ROOT + "bwctl-server.conf"
+BWCTL_LIMITS = BWCTL_ROOT + "bwctl-server.limits"
+BWCTL_KEYS   = BWCTL_ROOT + "bwctl-server.keys"
 
 # OWAMP Config files
-OWAMP_ROOT   = "/usr/local/etc/"
-OWAMP_CONF   = OWAMP_ROOT + "owampd.conf"
-OWAMP_LIMITS = OWAMP_ROOT + "owampd.limits"
-OWAMP_KEYS   = OWAMP_ROOT + "owampd.pfs"
+OWAMP_ROOT   = "/etc/owamp-server"
+OWAMP_CONF   = OWAMP_ROOT + "owamp-server.conf"
+OWAMP_LIMITS = OWAMP_ROOT + "owamp-server.limits"
+OWAMP_KEYS   = OWAMP_ROOT + "owamp-server.pfs"
 
 # Internet2's version of saveconfig
 SAVECONFIG   = BIN_DIR + "save_config"
@@ -84,13 +84,8 @@ NPAD_MARKER  = MARKER_DIR + "customize.npad"
 TZ_MARKER    = MARKER_DIR + "customize.timezone"
 
 SSH_INIT_SCRIPT            = "/etc/init.d/ssh"
-APACHE_INIT_SCRIPT         = "/etc/init.d/apache2"
-BWCTL_INIT_SCRIPT          = "/etc/init.d/bwctld.sh"
-OWAMP_INIT_SCRIPT          = "/etc/init.d/owampd.sh"
+APACHE_INIT_SCRIPT         = "/etc/init.d/httpf"
+BWCTL_INIT_SCRIPT          = "/etc/init.d/bwctl-server"
+OWAMP_INIT_SCRIPT          = "/etc/init.d/owamp-server"
 NDT_INIT_SCRIPT            = "/etc/init.d/ndt"
 NPAD_INIT_SCRIPT           = "/etc/init.d/npad"
-PINGER_INIT_SCRIPT         = "/etc/init.d/PingER.sh"
-SNMP_MA_INIT_SCRIPT        = "/etc/init.d/snmpMA.sh"
-PSB_MA_INIT_SCRIPT         = "/etc/init.d/pSB.sh"
-PSB_MASTER_INIT_SCRIPT     = "/etc/init.d/pSB_master.sh"
-PSB_COLLECTOR_INIT_SCRIPT  = "/etc/init.d/pSB_collector.sh"

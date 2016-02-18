@@ -77,6 +77,34 @@ my $host_communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 
 $router->add_method($host_communities_method);
 
+#get hosts in community method (and with type)
+my $get_hosts_in_community_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "get_hosts_in_community",
+    description     =>  "Get the hosts in a community",
+    auth_required   => 1,
+    callback        =>  sub { $communities_info->get_hosts_in_community(@_); },
+    min_params      => 1,
+    #request_methods => ['POST']
+    );
+
+$get_hosts_in_community_method->add_input_parameter(
+    name            => "community",
+    description     => "The community to search",
+    required        => 1,
+    allow_empty     => 0,
+    type            => 'text',
+    );
+
+$get_hosts_in_community_method->add_input_parameter(
+    name            => "test_type",
+    description     => "The test type to search",
+    required        => 0,
+    allow_empty     => 0,
+    type            => 'text',
+    );
+
+$router->add_method($get_hosts_in_community_method);
+
 #add host community method
 my $add_host_community_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "add_host_communities",

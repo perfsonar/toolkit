@@ -19,17 +19,17 @@ CommunityUpdateComponent.initialize = function() {
     var addName = $('#community_add_name');
     var sel = $('#update_communities');
     addButton.click(function (e) {
-        var newCommunity = addName.val(); 
+        var newCommunity = addName.val();
         e.preventDefault();
         var host = CommunityUpdateComponent.communities.host;
         host[newCommunity] = 1;
         addName.val("");
-        
+
         sel.append( $("<option></option>")
                         .attr("value", newCommunity)
                         .prop("selected", true)
                         .text(newCommunity) );
-        
+
         sel.select2( { placeholder: CommunityUpdateComponent.placeholder });
     });
 
@@ -109,7 +109,7 @@ CommunityUpdateComponent._selectCommunities = function() {
         });
         CommunityUpdateComponent.closeEventSet = true;
     }
-    
+
 };
 
 CommunityUpdateComponent.save = function() {
@@ -117,7 +117,7 @@ CommunityUpdateComponent.save = function() {
     var communities_arr = sel.val() || [];
 
     HostAdminStore.saveCommunities( communities_arr );
-    
+
 };
 
 CommunityUpdateComponent.getSelectedCommunities = function() {

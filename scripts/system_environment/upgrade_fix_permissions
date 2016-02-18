@@ -17,16 +17,6 @@ chown -R apache:perfsonar /var/log/perfsonar/web_admin
 mkdir -p /var/lib/perfsonar
 find /var/lib/perfsonar -type d -exec chown perfsonar:perfsonar {} \;
 
-mkdir -p /var/lib/perfsonar/snmp_ma
-chown -R perfsonar:perfsonar /var/lib/perfsonar/snmp_ma
-
-mkdir -p /var/lib/perfsonar/perfsonarbuoy_ma/bwctl
-mkdir -p /var/lib/perfsonar/perfsonarbuoy_ma/owamp
-chown -R perfsonar:perfsonar /var/lib/perfsonar/perfsonarbuoy_ma
-
-mkdir -p /var/lib/perfsonar/lookup_service/xmldb
-chown -R perfsonar:perfsonar /var/lib/perfsonar/lookup_service
-
 # Make sure that /var/lib/owamp is owned by the owamp user
 chown -R owamp:owamp /var/lib/owamp
 

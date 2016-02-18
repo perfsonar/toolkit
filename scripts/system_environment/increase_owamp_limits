@@ -1,10 +1,10 @@
 #!/bin/bash
 #######################
-# Override the owampd.conf to make sure that the disk limit to 1G from the
+# Override the owamp-server.conf to make sure that the disk limit to 1G from the
 # default of 10M.
 #######################
 if [ "$1" == "new" ]; then
-cat >/etc/owampd/owampd.limits <<EOF
+cat >/etc/owamp-server/owamp-server.limits <<EOF
 limit root with delete_on_fetch=on, bandwidth=0, disk=0, allow_open_mode=on
 limit regular with delete_on_fetch=on, parent=root, bandwidth=20M, disk=10G, allow_open_mode=on
 limit jail with parent=root, bandwidth=1, disk=1, allow_open_mode=off
@@ -13,11 +13,11 @@ EOF
 fi
 
 if [ "$1" == "upgrade" ]; then
-# Up the owampd limits from 1M to 10M if they were using the default limits
-sed -r -i 's/(.*limit regular.*)bandwidth=1000000,/\1bandwidth=20M,/g' /etc/owampd/owampd.limits
-sed -r -i 's/(.*limit regular.*)bandwidth=10M,/\1bandwidth=20M,/g' /etc/owampd/owampd.limits
-sed -r -i 's/(.*limit regular.*)disk=1G,/\1disk=10G,/g' /etc/owampd/owampd.limits
+# Up the owamp-server limits from 1M to 10M if they were using the default limits
+sed -r -i 's/(.*limit regular.*)bandwidth=1000000,/\1bandwidth=20M,/g' /etc/owamp-server/owamp-server.limits
+sed -r -i 's/(.*limit regular.*)bandwidth=10M,/\1bandwidth=20M,/g' /etc/owamp-server/owamp-server.limits
+sed -r -i 's/(.*limit regular.*)disk=1G,/\1disk=10G,/g' /etc/owamp-server/owamp-server.limits
 
 # Increase and improve readability of the disk limit in the previous default
-sed -i 's/1073741824,/10G,/g' /etc/owampd/owampd.limits
+sed -i 's/1073741824,/10G,/g' /etc/owamp-server/owamp-server.limits
 fi

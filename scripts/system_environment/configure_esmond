@@ -9,26 +9,26 @@ if [ -z "$(ls -A /var/lib/pgsql/data)" ]; then
     sudo -u postgres psql -c "CREATE USER esmond WITH PASSWORD '7hc4m1'"
     sudo -u postgres psql -c "CREATE DATABASE esmond"
     sudo -u postgres psql -c "GRANT ALL ON DATABASE esmond to esmond"
-    cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
+    cp -f /etc/perfsonar/toolkit/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
     /sbin/service postgresql restart
-    sed -i "s/sql_db_name = .*/sql_db_name = esmond/g" /opt/esmond/esmond.conf
-    sed -i "s/sql_db_user = .*/sql_db_user = esmond/g" /opt/esmond/esmond.conf
-    sed -i "s/sql_db_password = .*/sql_db_password = 7hc4m1/g" /opt/esmond/esmond.conf
+    sed -i "s/sql_db_name = .*/sql_db_name = esmond/g" /etc/esmond/esmond.conf
+    sed -i "s/sql_db_user = .*/sql_db_user = esmond/g" /etc/esmond/esmond.conf
+    sed -i "s/sql_db_password = .*/sql_db_password = 7hc4m1/g" /etc/esmond/esmond.conf
 fi
 
 #install esmond config
-cp -f /opt/perfsonar_ps/toolkit/etc/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
+cp -f /etc/perfsonar/toolkit/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
 
 #disable JMX in cassandra so will start even if /etc/sysconfig/network HOSTNAME does not resolve
 sed -i '/^JVM_OPTS="\$JVM_OPTS -Dcom.sun.management.jmx/ s/^/#/' /etc/cassandra/conf/cassandra-env.sh
 
 #set esmond env variables
-export ESMOND_ROOT=/opt/esmond
-export ESMOND_CONF=$ESMOND_ROOT/esmond.conf
+export ESMOND_ROOT=/usr/lib/esmond
+export ESMOND_CONF=/etc/esmond/esmond.conf
 export DJANGO_SETTINGS_MODULE=esmond.settings
 
 #initialize python
-cd /opt/esmond
+cd $ESMOND_ROOT
 source /opt/rh/python27/enable
 /opt/rh/python27/root/usr/bin/virtualenv --prompt="(esmond)" .
 . bin/activate
@@ -37,4 +37,4 @@ source /opt/rh/python27/enable
 python esmond/manage.py syncdb --noinput &> /dev/null
 
 #create api key
-KEY=`python esmond/manage.py add_api_key_user perfsonar | grep "Key:" | cut -f2 -d " "`
+KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`

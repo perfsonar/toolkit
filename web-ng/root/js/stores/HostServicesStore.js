@@ -8,7 +8,7 @@ var HostServicesStore = {
 
 HostServicesStore.initialize = function() {
     HostServicesStore._retrieveServices();
-    
+
 };
 
 HostServicesStore._retrieveServices = function() {

@@ -3,45 +3,38 @@
     <!-- Begin config by test table -->
 
 <div class="config-table config-table-by-test">
-    
+
     <!-- *** List test with dropdowns *** -->
     <div class="module module--config-table" id="test_configuration_table_div">
-
-{{!-- 
-    <div class="row">
-        <div class="medium-6 columns">
-            <span>
-                <a href="#" class="color-disabled" id="expandAllHostsLink" onclick="TestConfigComponent.showRows()">Expand All</a> 
-                | 
-                <a href="#" id="collapseAllHostsLink" onclick="TestConfigComponent.hideRows()">Collapse All</a></span>
-        </div>
-        <div class="medium-6 columns text-right">
-        </div>
-    </div>
---}}
         <table>
             <thead>
                 <tr>
+                    <th class="test_add">ipv4</th>
+                    <th class="test_add">ipv6</th>
                     <th>Test Name</th>
                     <th>Type</th>
                     <th>Interval</th>
                     <th>Test Members</th>
                     <th>Enabled</th>
-                    <th>Actions</th>
+                    <th class="test_actions">Actions</th>
                 </tr>
             </thead>
             <tbody>
             {{#each testsByTest}}
-                <tr class="test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}}" data-group="{{test_id}}">
+                <tr class="test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}} subrow--content" data-group="{{test_id}}">
+                    <td class="test_add"><input type="checkbox" class="ipv4"></td>
+                    <td class="test_add"><input type="checkbox" class="ipv6"></td>
                     <td>
                         <!-- <a class="services--title-link" data-group="{{test_id}}" href="#">{{description}}<i class="fa fa-caret-down"></i></a> -->
                         {{description}}
                     </td>
                     <td>{{type_formatted}}</td>
-                    <td>{{parameters.test_interval_formatted}}</td>
-                    <td>{{formatTestCount members.length}}</td>
-                    <td><input type="checkbox" {{#unless disabled}}checked{{/unless}} class="cb_test_enabled" data-test-id="{{test_id}}"></td>
-                    <td><a href="#" data-reveal-id="configure-test-modal"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
+                    <td>{{parameters.test_interval_formatted.valueFormatted}}</td>
+                    <td>{{formatHostCount members.length}}</td>
+                    <td><input type="checkbox" {{#unless disabled}}checked{{/unless}} class="cb_test_enabled"  disabled="disabled" data-test-id="{{test_id}}"></td>
+                    <td class="test_actions">
+    <a href="" onclick="return TestConfigComponent.showTestConfigModal({{test_id}});"><i class="fa fa-gear"></i></a> 
+    <a href="" onclick="return TestConfigComponent.deleteTest({{test_id}});"><i class="fa fa-trash"></i></a></td>
                 </tr>
                     <!-- *** Tests *** -->
                     <!-- A unique data attribute for each set of subrows (tests for that host) needs to be generated in the markup -->
@@ -59,12 +52,9 @@
                         <td>{{description}}</td>
                         <td>{{test_ipv4}}</td>
                         <td>{{test_ipv6}}</td>
-                        <!--
-                        <td><a href="#" data-reveal-id="configure-test-modal"><i class="fa fa-gear"></i></a> <a href="#"><i class="fa fa-trash"></i></a></td>
-                    -->
                     </tr>
                 {{/each}}
---}}                    
+--}}
 
             {{/each}}
 

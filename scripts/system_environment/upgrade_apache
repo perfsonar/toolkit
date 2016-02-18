@@ -5,5 +5,5 @@
 # is in there and whatnot.
 #######################
 if [ "$1" == "upgrade" ]; then
-    /opt/perfsonar_ps/toolkit/scripts/upgrade/upgrade_apache_admin
+    /usr/lib/perfsonar/scripts/upgrade/upgrade_apache_admin
 fi

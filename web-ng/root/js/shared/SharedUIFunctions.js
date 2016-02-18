@@ -8,6 +8,29 @@ var SharedUIFunctions = {
     formCancelTopic: 'ui.form.cancel',
 };
 
+SharedUIFunctions.initValidation = function() {
+
+// prevent abide validation library from focusing on the first invalid element
+
+    $(document).foundation({
+        abide: {
+            focus_on_invalid: false
+        }
+    });
+
+    // provide our own handler for scrolling (we need to provide an offset as the
+    // built-in scrolling doesn't work well in our case
+    $("body").on('invalid.fndtn.abide', function (e) {
+        if(e.namespace != 'abide.fndtn') {
+            return;
+        }
+        var invalid_fields = $(this).find('[data-invalid]');
+        $("html, body").animate({scrollTop: $(invalid_fields).offset().top - 30}, 500);
+    });
+};
+
+SharedUIFunctions.initValidation();
+
 /*
  * SharedUIFunctions.setSelect2Values( allValues, selectedValues )
  * Description: Creates the datastructure to pass to a select2 box in the format
@@ -23,25 +46,25 @@ var SharedUIFunctions = {
  *      * If no values, return an empty array
  */
 
-SharedUIFunctions.getSelectedValues = function( allValues, selectedValues ) { 
+SharedUIFunctions.getSelectedValues = function( allValues, selectedValues ) {
     for(var i in allValues) {
         var currentName = allValues[i].id;
-    
+
         if ( typeof selectedValues != 'undefined' ) {
             if ( typeof selectedValues == 'string' ) {
                 selectedValues = [ selectedValues ];
-            } 
+            }
             for (var j in selectedValues) {
                 var selectedName = selectedValues[j];
                 if ( selectedName == currentName ) {
                     allValues[i].selected = true;
                     continue;
                 }
-            }        
+            }
         }
-    } 
+    }
     return allValues;
-}; 
+};
 
 
 SharedUIFunctions._saveSuccess = function( topic, message ) {
@@ -83,45 +106,121 @@ SharedUIFunctions.getLabelText = function ( state ) {
 
 
 Handlebars.registerHelper("everyOther", function (index, amount, scope) {
-    if ( ++index % amount ) 
+    if ( ++index % amount ) { 
         return scope.inverse(this);
-    else 
+    } else {
         return scope.fn(this);
+    }
 });
 
-SharedUIFunctions.getTime = function(seconds) {
 
-    //a day contains 60 * 60 * 24 = 86400 seconds
-    //an hour contains 60 * 60 = 3600 seconds
-    //a minute contains 60 seconds
-    //the amount of seconds we have left
-    var leftover = seconds;
+SharedUIFunctions.getUrlParameter = function ( paramName ) {
+    var pageURL = decodeURIComponent(window.location.search.substring(1));
+    var URLVariables = pageURL.split('&');
 
-    //how many full days fits in the amount of leftover seconds
-    var days = Math.floor(leftover / 86400);
+    var parameterName;
+    for (var i = 0; i < URLVariables.length; i++) {
+        parameterName = URLVariables[i].split('=');
 
-    //how many seconds are left
-    leftover = leftover - (days * 86400);
+        if (parameterName[0] === paramName) {
+            return parameterName[1] === undefined ? true : parameterName[1];
+        }
+    }
+};
 
-    //how many full hours fits in the amount of leftover seconds
-    var hours = Math.floor(leftover / 3600);
+SharedUIFunctions.addQueryStringParameter = function( name, value, removeDefault, defaultValue ) {
+    var url = window.location.href;
+    var re = new RegExp("([?&]" + name + "=)[^&]+", "");
 
-    //how many seconds are left
-    leftover = leftover - (hours * 3600);
+    function add(sep) {
+        var endSepRe = new RegExp( "[&?]$" );
+        if ( (sep == '?' || sep == '&') && ! url.match( endSepRe ) ) {
+            url += sep;
+        }
+        url += name + "=" + encodeURIComponent(value);
+    }
 
-    //how many minutes fits in the amount of leftover seconds
-    var minutes = leftover / 60;
+    function change() {
+        url = url.replace(re, "$1" + encodeURIComponent(value));
+    }
+    function remove() {
+        var removeRe = new RegExp("&?(view)=([^&]$|[^&]*)", "gi");
 
-    //how many seconds are left
-    leftover = leftover - (minutes * 60);
+        var ampRe = /\?&/;
+        url = url.replace(removeRe, "");
+        url = url.replace(ampRe, "?");
 
-    var output = '';
-    output += (days ? days + ' d ' : '');
-    output += (hours ? hours + ' hr ' : '');
-    output += (minutes ? minutes + ' min ' : '');
-    output += (leftover ? leftover + ' s ' : '');
-    
+        var sepEndRe = /[&?]$/;
+        url = url.replace(sepEndRe, "");
+    }
+    if (url.indexOf("?") === -1) {
+        add("?");
+    } else {
+        if (re.test(url)) {
+            change();
+        } else {
+            add("&");
+        }
+    }
+
+    if ( removeDefault && value == defaultValue ) {
+        remove();
+    }
+    //window.history.pushState("object or string", "View by " + value, url);
+    window.history.replaceState("object or string", "View by " + value, url);
+};
+
+
+// Given a time in seconds, reduce to its lowest granularity and return
+// formatted value, raw values, and unit text
+SharedUIFunctions.getTimeWithUnits = function( seconds ) {
+    var granularity;
+    var unit;
+
+    if (seconds % 86400 == 0) {
+        granularity = 86400;
+        unit = 'day';
+    } else if (seconds % 3600 == 0) {
+        granularity = 3600;
+        unit = 'hour';
+    } else if (seconds % 60 == 0) {
+        granularity = 60;
+        unit = 'minute'
+    } else {
+        granularity = 1;
+        unit = 'second';
+    }
+
+    var value = seconds / granularity;
+    var valueFormatted = value + ' ' + unit;
+    if ( value != 1 ) {
+        valueFormatted += 's';
+    }
+    var output = {};
+    output.seconds = seconds;
+    output.value = value;
+    output.valueFormatted = valueFormatted;
+    output.unit = unit;
+
     return output;
+};
+
+SharedUIFunctions.getSecondsFromTimeUnits = function ( value, unit  ) {
+    var orig_value = value;
+    if ( unit == 'minute') {
+        value = value * 60;
+    } else if ( unit == 'hour' ) {
+        value = value * 3600;
+    } else if ( unit == 'day' ) {
+        value = value * 86400;
+    }
+
+    return value;
+};
+
+SharedUIFunctions.generateRandomIntInRange = function( min, max ) {
+    var rand = Math.floor(Math.random() * (max - min) + min);
+    return rand;
 };
 
 // Register a 'compare' helper function for handling conditional 

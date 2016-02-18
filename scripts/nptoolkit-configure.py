@@ -85,7 +85,7 @@ def initialize():
     known_items = [
                     {
                          "description": "Configure drive to hold data/customizations",
-                         "command": "/opt/perfsonar_ps/toolkit/scripts/create_backing_store",
+                         "command": "/usr/lib/perfsonar/scripts/create_backing_store",
                          "isConfiguredFunction": storeConfigured,
                          "required": True,
                          "requiresReboot": True,
@@ -106,21 +106,21 @@ def initialize():
                     },
                     {
                          "description": "Manage Users",
-                         "command": "/opt/perfsonar_ps/toolkit/scripts/manage_users",
+                         "command": "/usr/lib/perfsonar/scripts/manage_users",
                          "isConfiguredFunction": None,
                          "required": False,
                          "requiresReboot": False,
                     },
 #                    {
 #                         "description": "Backup data/configurations",
-#                         "command": "/opt/perfsonar_ps/toolkit/scripts/",
+#                         "command": "/usr/lib/perfsonar/scripts/",
 #                         "isConfiguredFunction": None,
 #                         "required": False,
 #                         "requiresReboot": False,
 #                    },
 #                    {
 #                         "description": "Restore data/configurations",
-#                         "command": "/opt/perfsonar_ps/toolkit/scripts/",
+#                         "command": "/usr/lib/perfsonar/scripts/",
 #                         "isConfiguredFunction": None,
 #                         "required": False,
 #                         "requiresReboot": True,
