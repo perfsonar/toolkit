@@ -20,7 +20,7 @@ set -e
 
 case "$1" in
     configure)
-        /usr/lib/perfsonar/toolkit/scripts/configure_firewall install
+        /usr/lib/perfsonar/scripts/configure_firewall install
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
