@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#Handle updating configs here
+grep "<service ntp>" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
+if [ $? != 0 ]; then
+    sed -i '/<access>/a \\t<service ntp> \
+\t\trestart	\t 1 \
+\t\tstart \t\t 1 \
+\t\tstop \t\t 1 \
+\t</service>' /etc/perfsonar/toolkit/configdaemon.conf
+fi
