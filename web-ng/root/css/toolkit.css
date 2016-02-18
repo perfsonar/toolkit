@@ -85,3 +85,13 @@ th.test_add input[type="checkbox"], td.test_add input[type="checkbox"] {
     margin:0;
 
 }
+
+body.modal-open {
+   overflow: hidden;
+   /*position: fixed;*/
+}
+.reveal-modal {
+   overflow-y: auto;
+   height: 100%;
+   position: fixed;
+}
