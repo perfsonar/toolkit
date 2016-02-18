@@ -11,7 +11,7 @@
 
     <input type="hidden" id="config_test_id" name="config_test_id" value="{{test_id}}" />
     <div class="row">
-        <div class="medium-12 columns">
+        <div class="medium-6 columns">
             <h2 class="reveal-modal__heading reveal-modal__heading--large" id="modalTitle">
                 {{#if newTest}}
                     Add Test
@@ -20,7 +20,12 @@
                 {{/if}}
             </h2>
         </div>
+        <div class="medium-6 columns text-right">
+            <a href="#" id="testConfigCancelButton" style="margin: 0 3em;" class="testConfigCancelButton">Cancel</a>
+            <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton">OK</button>
+        </div>
     </div>
+
     <div class="row">
         <div class="medium-12 columns">
                         <h2 class="module-header__title font-bold">Test parameters</h2>
@@ -301,8 +306,8 @@
 
                 <div class="row">
                     <div class="medium-12 columns text-right">
-                        <a href="#" id="testConfigCancelButton" style="margin: 0 3em;">Cancel</a>
-                        <button class="button-primary" style="margin: 0 1em 0 0;" id="testConfigOKButton">OK</button>
+                        <a href="#" id="testConfigCancelButton" style="margin: 0 3em;" class="testConfigCancelButton">Cancel</a>
+                        <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton">OK</button>
                     </div>
                 </div>
 
@@ -314,7 +319,7 @@
 </form>
 
     <!-- Close button for modal -->
-    <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a>
+    <!-- <a class="close-reveal-modal" aria-label="Close"><i class="fa fa-close"></i></a> -->
 
 </div>
 

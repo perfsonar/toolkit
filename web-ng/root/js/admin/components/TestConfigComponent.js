@@ -485,7 +485,7 @@ TestConfigComponent._drawConfigForm = function( ) {
 
     this.testConfig = testConfig;
     var self = this;
-    $('#testConfigOKButton').click( function( e, testID ) {
+    $('#configureTestForm button.testConfigOKButton').click( function( e, testID ) {
         console.log('ok clicked');
         e.preventDefault();
 
@@ -494,7 +494,7 @@ TestConfigComponent._drawConfigForm = function( ) {
         }
         $('form#configureTestForm').submit();
     });
-    $('#testConfigCancelButton').click( function( e ) {
+    $('#configureTestForm a.testConfigCancelButton').click( function( e ) {
         console.log('cancel clicked');
         e.preventDefault();
         $('#configure-test-modal').foundation('reveal', 'close');
