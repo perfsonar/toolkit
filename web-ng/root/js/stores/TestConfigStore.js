@@ -34,12 +34,10 @@ Dispatcher.subscribe(TestConfigStore.topic, function() {
     if ( TestConfigStore.data_orig === null ) {
         TestConfigStore.data_orig = $.extend(true, {}, TestConfigStore.data);
     }
-    console.log('received test data changed event');
     TestConfigStore.getTestConfigData();
 });
 
 TestConfigStore.getTestConfigData = function() {
-    console.log('data from dispatcher/testconfigstore', TestConfigStore.data); 
     TestConfigStore._setAdditionalVariables();
 };
 
@@ -130,13 +128,11 @@ TestConfigStore.setTypesToDisplay = function ( test ) {
     } else if ( type == 'traceroute') {
         test.showTracerouteParameters = true;
     }
-    //console.log('types to display', test);
 
 };
 
 // Set additional variables for each test/member
 TestConfigStore._setAdditionalVariables = function ( ) {
-    console.log('setting additional variables');
     TestConfigStore.data.test_configuration_formatted = [];
     TestConfigStore.data.test_configuration_formatted = $.extend( true, [], TestConfigStore.data.test_configuration );
     var tests = TestConfigStore.data.test_configuration_formatted;
@@ -210,7 +206,6 @@ TestConfigStore._setDefaultVariables = function ( ) {
 
 
     }
-    console.log('data after setting defaults', TestConfigStore.data);
 };
 
 TestConfigStore.revertTestSettings = function ( ) {
@@ -373,7 +368,6 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
 };
 
 TestConfigStore.setTestMembers = function ( testID, settings ) {
-    console.log('setting test members');
     var test = TestConfigStore.getTestByID( testID );
     //test.members = []; 
     //test.members = settings.members;
@@ -403,7 +397,6 @@ TestConfigStore.generateTestID = function( ) {
         // If we've tried 100 times and haven't found any 
         // usable ids, give up. This shouldn't happen
         if ( i > 100 ) {
-            console.log('error generating test ids');
             return false;
         }
     }
@@ -453,17 +446,14 @@ TestConfigStore.setTestEnabled = function ( test, testStatus ) {
         disabledStatus = 0;
     }
     test.disabled = disabledStatus;
-    console.log('test after setTestEnabled', test);
 };
 
 TestConfigStore.setTestDescription = function ( test, testDescription ) {
     test.description = testDescription;
-    console.log('test after setTestDescription', test);
 };
 
 TestConfigStore.setInterface = function ( test, interface ) {
     test.parameters.local_interface = interface;
-    console.log('test after setInterface', test);
 };
 
 TestConfigStore.getTestByID = function ( testID ) {
