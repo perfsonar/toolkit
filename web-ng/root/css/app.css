@@ -2390,6 +2390,19 @@ to put the stuff inside. */
   text-align: center;
 }
 
+.reveal-modal.loading {
+  position: fixed;
+  overflow: hidden;
+  /* top: 50px !important; */
+  top:30% !important;  /* previous value */
+  left:20% !important;
+  height:150px; 
+  width:300px;
+  /*bottom: 50% !important; */
+  transform:translate(-40%, 0);
+
+}
+
 .reveal-modal.large {
   position: fixed;
   overflow: scroll;
@@ -2402,8 +2415,18 @@ to put the stuff inside. */
 }
 
 .reveal-modal.xlarge {
-  width: 95%;
+  /*width: 95%;*/
+  position: fixed;
+  overflow: scroll;
+  top: 30px !important; 
+/*  left:95% !important;
+  transform:translate(-97%, 0);
+
+  bottom: 50px !important;
+*/
 }
+
+.reveal-modal-bg { position: fixed; }
 
 .reveal-modal__heading {
   font-weight: 700;

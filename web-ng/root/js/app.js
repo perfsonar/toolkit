@@ -86,6 +86,12 @@ $(document).ready(function() {
         e.stopPropagation();
     });
 
+    $(document).on('open.fndtn.reveal', '[data-reveal]', function () {
+            $('body').addClass('modal-open');
+    });
+    $(document).on('close.fndtn.reveal', '[data-reveal]', function () {
+            $('body').removeClass('modal-open');
+    });
 
     // Select2 plugin - https://select2.github.io/
     /*
