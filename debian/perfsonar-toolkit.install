@@ -4,5 +4,4 @@ web-ng usr/lib/perfsonar/toolkit
 etc/administrative_info etc/perfsonar/toolkit
 etc/clean_esmond_db.conf etc/perfsonar/toolkit
 etc/default_service_configs etc/perfsonar/toolkit
-etc/enabled_services etc/perfsonar/toolkit
 etc/perfsonar_sudo etc/sudoers.d
