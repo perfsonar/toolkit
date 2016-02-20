@@ -3,3 +3,12 @@
 if [ ! -f  /etc/fail2ban/jail.local ]; then
     cp -f  /etc/perfsonar/toolkit/default_service_configs/jail.local /etc/fail2ban/jail.local
 fi
+
+#change for upgrades to fail2ban config file format
+grep -q "\\[sshd\\]" /etc/fail2ban/jail.local
+if [ $? -ne 0 ]; then
+    echo "" >> /etc/fail2ban/jail.local
+    echo "[sshd]" >> /etc/fail2ban/jail.local
+    echo "enabled = true" >> /etc/fail2ban/jail.local
+    /sbin/service fail2ban restart
+fi
