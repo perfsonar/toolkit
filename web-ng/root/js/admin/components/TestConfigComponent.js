@@ -13,6 +13,7 @@ var TestConfigComponent = {
     interfaces: [],
     interfacesSet: false,
     testConfig: null,
+    placeholder: 'Please select a community',
 };
 
 TestConfigComponent.initialize = function() {
@@ -350,6 +351,8 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
 
     TestConfigComponent._drawConfigForm( );
 
+    TestConfigComponent._showAddHostByCommunity( 'testConfigAddHostByCommunityContainer' );
+
 
      $('#configure-test-modal').foundation('reveal', 'open', {
         //root_element: 'form',
@@ -364,7 +367,83 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     //$(document).foundation('abide', 'reflow');
     $(document).foundation('abide', 'events');
 
+
     return false;
+};
+
+TestConfigComponent._showAddHostByCommunity = function( containerID ) {
+    var container = $('#' + containerID );
+    var data = {};
+
+
+    var host_comm_template = $('#testAddHostByCommunityTemplate').html();
+    var template = Handlebars.compile( host_comm_template );
+    container.html( template(data) );
+    TestConfigComponent._setAllCommunities();
+    //data.all_communities = sorted;
+
+    console.log('data', data);
+
+
+
+};
+
+TestConfigComponent._setAllCommunities = function( ) {
+    /* Sets the global communities in the format {name: selected} */
+    //TestConfigComponent.communities.all = {};
+    var communities = CommunityAllStore.getAllCommunities().keywords;
+
+    var sorted = [];
+    var keys = Object.keys(communities).sort();
+    for(var i in keys) {
+        var row = {};
+        row.id = i;
+        row.text = keys[i];
+        //row.selected = combined[ keys[i] ];
+        sorted.push( row );
+    }
+
+    console.log('sorted', sorted);
+    //return sorted;
+
+    TestConfigComponent._selectCommunities( sorted );
+
+};
+
+TestConfigComponent._selectCommunities = function( communities ) {
+    var sel = $('#testAddHostByCommunitySel');
+
+    sel.empty(); // remove old options, if any
+
+    sel.append( $("<option></option>") );
+    $.each(communities, function(i, val) {
+        sel.append( $("<option></option>")
+                        .attr("value", val.text)
+                        .prop("selected", false)
+                        .text(val.text) );
+    });
+
+    sel.select2( {
+        placeholder: "Select a community",
+        allowClear: true,
+        multiple: false,
+    });
+    /*
+    TestConfigComponent.select2Set = true;
+
+    if (! TestConfigComponent.closeEventSet ) {
+        sel.on('select2:unselect', function(e) {
+                var unselectedName = e.params.data.text;
+        });
+        TestConfigComponent.closeEventSet = true;
+    }
+    */
+
+    sel.change( function(e) {
+        var selectedCommunity = sel.val();
+        CommunityHostsStore.getHostByCommunity ( selectedCommunity, TestConfigComponent.testConfig.type );
+    });
+
 };
 
 TestConfigComponent.deleteTestMember = function( testID, memberID ) {
