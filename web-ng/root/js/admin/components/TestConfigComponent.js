@@ -24,6 +24,8 @@ TestConfigComponent.initialize = function() {
     Dispatcher.subscribe( TestConfigComponent.testConfigTopic, TestConfigComponent._setTestData );
     Dispatcher.subscribe( HostDetailsStore.detailsTopic, TestConfigComponent._setHostData );
 
+    Dispatcher.subscribe( CommunityHostsStore.topic, TestConfigComponent._setHostsFromCommunity );
+
     // cancel button clicked 
     $('#admin_info_cancel_button').click( TestConfigComponent._cancel );
 
@@ -444,6 +446,59 @@ TestConfigComponent._selectCommunities = function( communities ) {
         CommunityHostsStore.getHostByCommunity ( selectedCommunity, TestConfigComponent.testConfig.type );
     });
 
+};
+
+TestConfigComponent._setHostsFromCommunity = function() {
+    var data = CommunityHostsStore.getData();
+    console.log('hosts data', data);
+    var hosts = TestConfigComponent._processHostData( data );
+
+    console.log('hosts', hosts);
+    // hostsInCommunityTableContainer
+    // hostsInCommunityTable
+    var container_el = $('#hostsInCommunityTableContainer');
+    var template_el = $('#hostsInCommunityTableTemplate');
+    var raw_template = template_el.html();
+    var template = Handlebars.compile( raw_template );
+    container_el.html( template( { hosts: hosts } ) );
+};
+
+TestConfigComponent._processHostData = function ( data ) {
+    var hosts = [];
+
+    $.each(data.hosts, function(i, host) {
+        var host_row = {};
+        //console.log('i', i, 'host', host);
+        var address_formatted = '';
+        var description = host.description || '';
+        var name = host.name || '';
+        var address = host.address;
+        var ip = host.ip;
+        var dns_name = host.dns_name;
+        var test_ipv4 = host.ipv4;
+        var test_ipv6 = host.ipv6;
+        var port = host.port;
+        if ( dns_name ) {
+            address_formatted = dns_name;
+            if ( ip ) {
+                address_formatted += ' (' + ip + ')';
+            }
+        } else {
+            address_formatted = ip;
+        }
+        host_row.test_ipv4 = ( test_ipv4 == 1 );
+        host_row.test_ipv6 = ( test_ipv6 == 1 );
+        host_row.name = name;
+        host_row.description = description;
+        host_row.address = address;
+        host_row.dns_name = dns_name;
+        host_row.ip = ip;
+        host_row.address_formatted = address_formatted;
+        host_row.port = port;
+        hosts.push( host_row );
+
+    });
+    return hosts;
 };
 
 TestConfigComponent.deleteTestMember = function( testID, memberID ) {

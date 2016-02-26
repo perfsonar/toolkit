@@ -13,5 +13,23 @@
     <div class="medium-3 columns">
     </div>
 </div>
+<div id="hostsInCommunityTableContainer"></div>
 </script>
 
+<script id="hostsInCommunityTableTemplate" type="text/x-handlebars-template">
+                <table id="test-members"> 
+                    <thead>
+                        <tr>
+                            <th>Host</th>
+                            <th>Description</th>
+                            <th>IPv</th>
+                        </tr>
+                    </thead>
+                    <tbody class="test-members">
+                        {{#each hosts}}
+                            {{> member}}
+                        {{/each}}
+                    </tbody>
+                </table>
+
+</script>
