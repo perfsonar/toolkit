@@ -1,0 +1,73 @@
+#!/bin/bash
+
+##
+# Migrates data out of /opt/perfsonar_ps/toolkit/etc/administrative_info into
+# /etc/perfsonar/lsregistrationdaemon.conf as required by 3.5.1
+
+FILE=""
+LS_CONF="/etc/perfsonar/lsregistrationdaemon.conf"
+
+#check for file
+if [ -e "/opt/perfsonar_ps/toolkit/etc/administrative_info" ]; then
+    FILE="/opt/perfsonar_ps/toolkit/etc/administrative_info"
+elif [ -e "/opt/perfsonar_ps/toolkit/etc/administrative_info.rpmsave" ]; then
+    FILE="/opt/perfsonar_ps/toolkit/etc/administrative_info.rpmsave"
+else
+    exit 0
+fi
+
+#make sure we have a newline at the ned of the file
+sed -i -e '$a\' $LS_CONF
+
+#Move options to lsregistrationdaemon.conf
+ADMIN_NAME=""
+ADMIN_EMAIL=""
+while read line; do
+    #make sure has = sign
+    (echo $line | grep -q '=') || continue
+    #skip unsupported variable
+    (echo $line | grep -q 'site_location')
+    if [ $? -eq 0 ]; then
+        continue
+    fi
+  
+    IFS='=' read -r -a kv <<< "$line"
+  
+    #need to do string replaces of full_name, administrator_email, state, zipcode
+    kv[0]=$(echo -n ${kv[0]} | sed 's/full_name/name/g')
+    kv[0]=$(echo -n ${kv[0]} | sed 's/administrator_email/email/g')
+    kv[0]=$(echo -n ${kv[0]} | sed 's/state/region/g')
+    kv[0]=$(echo -n ${kv[0]} | sed 's/zipcode/zip_code/g')
+  
+    #remove any defined but unset references to the key
+    sed -i "s/^\s*${kv[0]}\s*$//g" $LS_CONF
+  
+    if [ "${kv[0]}" = "site_project" ]; then
+        # if it's a site_project you can have multiple 
+        # so set as long as one of same value is not already there
+        grep -qe "^\s*${kv[0]}\s\+${kv[1]}$" $LS_CONF || \
+            echo "${kv[0]}   ${kv[1]}" >> $LS_CONF
+    elif [ "${kv[0]}" = "name" ]; then
+        grep -qe "^\s*${kv[0]}\s\+${kv[1]}$" $LS_CONF || \
+            ADMIN_NAME=${kv[1]}
+    elif [ "${kv[0]}" = "email" ]; then
+        grep -qe "^\s*${kv[0]}\s\+${kv[1]}$" $LS_CONF || \
+            ADMIN_EMAIL=${kv[1]}
+    else
+        #anything else, only set if it doesn't already have a value
+         grep -qe "^\s*${kv[0]}\s\+" $LS_CONF || \
+            echo "${kv[0]}   ${kv[1]}" >> $LS_CONF
+    fi
+done <$FILE
+
+#check if we need to set admin
+if [ -n "$ADMIN_NAME" ] && [ -n "$ADMIN_EMAIL" ]; then
+    echo "<administrator>" >> $LS_CONF
+    echo "  email  $ADMIN_EMAIL" >> $LS_CONF
+    echo "  name   $ADMIN_NAME" >> $LS_CONF
+    echo "</administrator>" >> $LS_CONF
+fi
+
+#make sure we don't do this again
+mv -f /opt/perfsonar_ps/toolkit/etc/administrative_info /opt/perfsonar_ps/toolkit/etc/administrative_info.old 2> /dev/null
+mv -f /opt/perfsonar_ps/toolkit/etc/administrative_info.rpmsave /opt/perfsonar_ps/toolkit/etc/administrative_info.rpmsave.old 2> /dev/null

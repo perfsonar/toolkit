@@ -83,6 +83,7 @@ scripts/system_environment/enable_web100_kernel_repository
 scripts/system_environment/enable_wheel_sudo
 scripts/system_environment/increase_owamp_limits
 scripts/system_environment/increase_owamp_port_range
+scripts/system_environment/migrate_admininfo
 scripts/system_environment/upgrade_apache
 scripts/system_environment/upgrade_fix_permissions
 scripts/update_administrative_info.pl
