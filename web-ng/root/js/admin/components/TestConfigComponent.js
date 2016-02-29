@@ -382,10 +382,8 @@ TestConfigComponent._showAddHostByCommunity = function( containerID ) {
     var template = Handlebars.compile( host_comm_template );
     container.html( template(data) );
     TestConfigComponent._setAllCommunities();
-    //data.all_communities = sorted;
 
     console.log('data', data);
-
 
 
 };
@@ -443,8 +441,19 @@ TestConfigComponent._selectCommunities = function( communities ) {
 
     sel.change( function(e) {
         var selectedCommunity = sel.val();
-        CommunityHostsStore.getHostByCommunity ( selectedCommunity, TestConfigComponent.testConfig.type );
+        if ( selectedCommunity != '' ) {
+            CommunityHostsStore.getHostByCommunity ( selectedCommunity, TestConfigComponent.testConfig.type );
+        } else {
+            TestConfigComponent._clearCommunityHosts();
+
+        }
     });
+
+};
+
+TestConfigComponent._clearCommunityHosts = function() {
+    var container_el = $('#hostsInCommunityTableContainer table tbody.test-members');
+    container_el.empty();
 
 };
 
@@ -454,6 +463,7 @@ TestConfigComponent._setHostsFromCommunity = function() {
     var hosts = TestConfigComponent._processHostData( data );
 
     console.log('hosts', hosts);
+    hosts.action = "add";
     // hostsInCommunityTableContainer
     // hostsInCommunityTable
     var container_el = $('#hostsInCommunityTableContainer');
@@ -461,6 +471,7 @@ TestConfigComponent._setHostsFromCommunity = function() {
     var raw_template = template_el.html();
     var template = Handlebars.compile( raw_template );
     container_el.html( template( { hosts: hosts } ) );
+    $('#hostsInCommunityTableContainer  a.member-add-button').click( TestConfigComponent.addTestMemberFromCommunity );
 };
 
 TestConfigComponent._processHostData = function ( data ) {
@@ -497,6 +508,11 @@ TestConfigComponent._processHostData = function ( data ) {
         host_row.port = port;
         hosts.push( host_row );
 
+    });
+    hosts.sort(function(a,b){
+        if(a.address > b.address){ return  1 }
+        if(a.address < b.address){ return -1 }
+        return 0;
     });
     return hosts;
 };
@@ -582,7 +598,7 @@ TestConfigComponent._drawConfigForm = function( ) {
         $('#configureTestForm .new_test_only').show();
         $('#configureTestForm .existing_test_type_only').hide();
         $('#addTestMemberPanel').show();
-    } else { 
+    } else {
         $('#configureTestForm .new_test_only').hide();
         $('#configureTestForm .existing_test_type_only').show();
     }
@@ -702,8 +718,8 @@ TestConfigComponent._updateExistingMemberByAddress = function( settings ) {
             var test_ipv6 = row.find('input.test_ipv6');
             test_ipv4.prop('checked', settings.test_ipv4);
             test_ipv6.prop('checked', settings.test_ipv6);
-            exists = true;
-            return false;
+            //exists = true;
+            return true;
         }
     });
     return exists;
@@ -915,11 +931,59 @@ TestConfigComponent.removeTestMember = function( memberID ) {
 };
 
 
-TestConfigComponent.addTestMember = function(e) {
+TestConfigComponent.addTestMemberFromCommunity = function( e ) {
     e.preventDefault();
+    var button = $(this);
+    var row = button.parent().parent();
+
+    var settings = {};
+    var hostname = row.find('td.address').text();
+    var description = row.find('input.description').val();
+    var new_host_ipv4 = row.find('input.test_ipv4').prop('checked');
+    var new_host_ipv6 = row.find('input.test_ipv6').prop('checked');
+    button.addClass('disabled');
+    var settings = {};
+    settings.address = hostname;
+    settings.description = description;
+    settings.test_ipv4 = new_host_ipv4;
+    settings.test_ipv6 = new_host_ipv6;
+
+    console.log('settings', settings);
+
+    TestConfigComponent._addMemberWithSettings( settings );
+
+
+};
+
+TestConfigComponent._addMemberWithSettings = function(settings) {
     var test = TestConfigComponent.testConfig;
     var members = test.members;
     var memberTemplate = TestConfigComponent.memberTemplate;
+
+    var updated = TestConfigComponent._updateExistingMemberByAddress( settings );
+
+    if ( !updated ) {
+        var id = TestConfigStore.generateMemberID( test.test_id );
+
+        var newHost = {};
+        newHost.address = settings.address;
+        newHost.description = settings.description;
+        newHost.test_ipv4 = settings.test_ipv4;
+        newHost.test_ipv6 = settings.test_ipv6;
+        newHost.member_id = id;
+
+        var memberMarkup = memberTemplate( newHost );
+
+
+        var table = $('table#test-members > tbody:last-child');
+
+        table.append( memberMarkup );
+    }
+
+};
+
+TestConfigComponent.addTestMember = function(e) {
+    e.preventDefault();
 
     var hostname = $('#new-host-name').val();
     if ( typeof hostname == 'undefined' || hostname == '' ) {
@@ -933,25 +997,9 @@ TestConfigComponent.addTestMember = function(e) {
     settings.description = description;
     settings.test_ipv4 = new_host_ipv4;
     settings.test_ipv6 = new_host_ipv6;
-    var updated = TestConfigComponent._updateExistingMemberByAddress( settings );
 
-    if ( !updated ) {
-        var id = TestConfigStore.generateMemberID( test.test_id );
+    TestConfigComponent._addMemberWithSettings( settings );
 
-        var newHost = {};
-        newHost.address = hostname;
-        newHost.description = description;
-        newHost.test_ipv4 = new_host_ipv4;
-        newHost.test_ipv6 = new_host_ipv6;
-        newHost.member_id = id;
-
-        var memberMarkup = memberTemplate( newHost );
-
-
-        var table = $('table#test-members > tbody:last-child');
-
-        table.append( memberMarkup );
-    }
 
     $('#new-host-name').val('');
     $('#new-host-description').val('');
