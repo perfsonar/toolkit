@@ -10,7 +10,6 @@
 </span>
 
 <!-- Test results loading indicator -->
-<!-- <div id="test-loading-modal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"> -->
 <div id="test-loading-modal" style="display:none;">
     <h3>
         <i class="fa fa-spinner fa-pulse"></i><span class="loading_text" id="loading_text">    Loading Tests ...</span>
@@ -34,7 +33,7 @@
                 <th>Latency (ms)</th>
                 <th>Loss</th>
             </tr>
-        </thead>        
+        </thead>
         <tbody>
             {{#each test_results}}
                 <tr class="no_data {{#if ../summaryDataError}}summary_data_error{{/if}}" id="test_row_{{rowID}}">
@@ -48,7 +47,7 @@
                                 Details
                             </a>
                             <span id="trace_{{ipToID source_ip}}_{{ipToID destination_ip}}" class="traceroute_link_container">
-                                  
+
                                 | <a href="#" class="traceroute_link" target="_blank">Traceroute</a>
                             </span>
                     </td>
@@ -97,7 +96,7 @@
     </td>
     <td class="test-values data loss">
         <i class="fa fa-arrow-right"></i>  {{formatValue loss_src_average "loss_src"}}<br />
-        <i class="fa fa-arrow-left"></i> {{formatValue loss_dst_average "loss_dst"}}                    
+        <i class="fa fa-arrow-left"></i> {{formatValue loss_dst_average "loss_dst"}}
     </td>
 
 </script>

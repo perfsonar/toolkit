@@ -368,7 +368,11 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
 
     //$(document).foundation('abide', 'reflow');
     $(document).foundation('abide', 'events');
-
+    $('#browseCommunitiesLink').click( function(e) {
+        e.preventDefault();
+        $('#testAddHostByCommunityDiv').show();
+        $('#addHostManually').hide();
+    });
 
     return false;
 };
@@ -382,6 +386,12 @@ TestConfigComponent._showAddHostByCommunity = function( containerID ) {
     var template = Handlebars.compile( host_comm_template );
     container.html( template(data) );
     TestConfigComponent._setAllCommunities();
+
+    $('#addHostManuallyLink').click( function(e) {
+        e.preventDefault();
+        $('#testAddHostByCommunityDiv').hide();
+        $('#addHostManually').show();
+    });
 
     console.log('data', data);
 
@@ -442,6 +452,8 @@ TestConfigComponent._selectCommunities = function( communities ) {
     sel.change( function(e) {
         var selectedCommunity = sel.val();
         if ( selectedCommunity != '' ) {
+            $('#hosts-in-community-loading-modal').show();
+            $('#community-hosts').hide();
             CommunityHostsStore.getHostByCommunity ( selectedCommunity, TestConfigComponent.testConfig.type );
         } else {
             TestConfigComponent._clearCommunityHosts();
@@ -454,11 +466,13 @@ TestConfigComponent._selectCommunities = function( communities ) {
 TestConfigComponent._clearCommunityHosts = function() {
     var container_el = $('#hostsInCommunityTableContainer table tbody.test-members');
     container_el.empty();
-
+    $('#community-hosts').hide();
 };
 
 TestConfigComponent._setHostsFromCommunity = function() {
     var data = CommunityHostsStore.getData();
+
+    $('#hosts-in-community-loading-modal').hide();
     console.log('hosts data', data);
     var hosts = TestConfigComponent._processHostData( data );
 
@@ -467,8 +481,6 @@ TestConfigComponent._setHostsFromCommunity = function() {
     hosts_data.hosts = hosts;
     hosts_data.hostAction = "add";
     console.log('hosts_data', hosts_data);
-    // hostsInCommunityTableContainer
-    // hostsInCommunityTable
     var container_el = $('#hostsInCommunityTableContainer');
     var template_el = $('#hostsInCommunityTableTemplate');
     var raw_template = template_el.html();
