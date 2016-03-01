@@ -463,15 +463,19 @@ TestConfigComponent._setHostsFromCommunity = function() {
     var hosts = TestConfigComponent._processHostData( data );
 
     console.log('hosts', hosts);
-    hosts.action = "add";
+    var hosts_data = {};
+    hosts_data.hosts = hosts;
+    hosts_data.hostAction = "add";
+    console.log('hosts_data', hosts_data);
     // hostsInCommunityTableContainer
     // hostsInCommunityTable
     var container_el = $('#hostsInCommunityTableContainer');
     var template_el = $('#hostsInCommunityTableTemplate');
     var raw_template = template_el.html();
     var template = Handlebars.compile( raw_template );
-    container_el.html( template( { hosts: hosts } ) );
+    container_el.html( template( { hosts: hosts_data } ) );
     $('#hostsInCommunityTableContainer  a.member-add-button').click( TestConfigComponent.addTestMemberFromCommunity );
+
 };
 
 TestConfigComponent._processHostData = function ( data ) {
@@ -563,6 +567,8 @@ TestConfigComponent._drawConfigForm = function( ) {
         }
         TestConfigStore.setTypesToDisplay( testConfig );
     }
+    testConfig.hostAction = 'update';
+    console.log('testConfig', testConfig);
     var newTest = testConfig.newTest;
     var memberTemplate = Handlebars.compile($("#member-partial").html());
     TestConfigComponent.memberTemplate = memberTemplate;
@@ -978,6 +984,8 @@ TestConfigComponent._addMemberWithSettings = function(settings) {
         var table = $('table#test-members > tbody:last-child');
 
         table.append( memberMarkup );
+
+        SharedUIFunctions._showSaveBar();
     }
 
 };

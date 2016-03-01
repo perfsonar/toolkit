@@ -17,7 +17,7 @@
 </script>
 
 <script id="hostsInCommunityTableTemplate" type="text/x-handlebars-template">
-                <table id="test-members"> 
+                <table id="community-hosts"> 
                     <thead>
                         <tr>
                             <th>Host</th>
@@ -26,8 +26,8 @@
                         </tr>
                     </thead>
                     <tbody class="test-members">
-                        {{#each hosts}}
-                            {{> member}}
+                        {{#each hosts.hosts}}
+                            {{> member action=../hosts/hostAction}}
                         {{/each}}
                     </tbody>
                 </table>

@@ -258,7 +258,7 @@
                     </thead>
                     <tbody class="test-members">
                         {{#each members}}
-                            {{> member}}
+                            {{> member action=../hostAction}}
                         {{/each}}
                     </tbody>
                 </table>
@@ -334,7 +334,8 @@
     <td><input type="text" class="description" value="{{description}}"></td>
     <td><label class="inline-label">IPv4</label> <input type="checkbox" class="test_ipv4" {{#if test_ipv4}}checked{{/if}}></td>
     <td><label class="inline-label">IPv6</label> <input type="checkbox" class="test_ipv6" {{#if test_ipv6}}checked{{/if}}></td>
-    {{#compare action add}}
+    {{action}}
+    {{#compare action "add"}}
         <td><a href="#" class="member-add-button"><i class="fa fa-plus"></i></a></td>
 
     {{else}}
