@@ -1,0 +1,58 @@
+<div id="testAddHostByCommunityContainer"></div>
+
+<script id="testAddHostByCommunityTemplate" type="text/x-handlebars-template">
+<div id="testAddHostByCommunityDiv" style="display:none;">
+
+    <fieldset>
+
+        <b>Add host by community</b>
+
+        <p>Select a community to find hosts, or <a href="" id="addHostManuallyLink">manually enter host information</a>.</p>
+
+        <div class="row">
+            <div class="medium-9 columns">
+
+                <select id="testAddHostByCommunitySel" class="js-select" style="width:100%;">
+                </select>
+
+        <!-- Hosts in Community loading indicator -->
+        <div id="hosts-in-community-loading-modal" style="display:none;">
+            <h3>
+                <i class="fa fa-spinner fa-pulse"></i><span class="loading_text" id="loading_text">    Loading Hosts ...</span>
+            </h3>
+
+        </div>
+        <!-- End hosts in community loading indicator -->
+            </div>
+            <div class="medium-3 columns">
+            </div>
+        </div>
+        <div id="hostsInCommunityTableContainer"></div>
+    </fieldset>
+
+</div>
+
+</script>
+
+<script id="hostsInCommunityTableTemplate" type="text/x-handlebars-template">
+
+                <table id="community-hosts"> 
+                    <thead>
+                        <tr>
+                            <th>Host</th>
+                            <th>Description</th>
+                            <th>IPv</th>
+                        </tr>
+                    </thead>
+                    <tbody class="test-members">
+                        {{#each hosts.hosts}}
+                            {{> member action=../hosts/hostAction}}
+                        {{else}}
+                            <tr><td>No hosts found</td></tr>
+                        {{/each}}
+
+                    </tbody>
+                </table>
+
+
+</script>

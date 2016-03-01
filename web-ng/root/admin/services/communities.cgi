@@ -98,7 +98,7 @@ $get_hosts_in_community_method->add_input_parameter(
 $get_hosts_in_community_method->add_input_parameter(
     name            => "test_type",
     description     => "The test type to search",
-    required        => 0,
+    required        => 1,
     allow_empty     => 0,
     type            => 'text',
     );
