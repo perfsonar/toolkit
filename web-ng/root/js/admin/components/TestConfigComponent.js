@@ -262,7 +262,6 @@ TestConfigComponent.showTestAddTestModal = function( ) {
     $("#testAddTestContainer").html(config_modal);
     $('#test-add-test-modal').foundation('reveal', 'open');
 
-
     $('#testAddTestOKButton').click( function( e ) {
         e.preventDefault();
 
@@ -288,7 +287,7 @@ TestConfigComponent.showTestAddTestModal = function( ) {
         e.preventDefault();
         $('#test-add-test-modal').foundation('reveal', 'close');
     });
-    
+
 };
 
 TestConfigComponent.showTestAddHostModal = function( ) {
@@ -393,9 +392,6 @@ TestConfigComponent._showAddHostByCommunity = function( containerID ) {
         $('#addHostManually').show();
     });
 
-    console.log('data', data);
-
-
 };
 
 TestConfigComponent._setAllCommunities = function( ) {
@@ -412,9 +408,6 @@ TestConfigComponent._setAllCommunities = function( ) {
         //row.selected = combined[ keys[i] ];
         sorted.push( row );
     }
-
-    console.log('sorted', sorted);
-    //return sorted;
 
     TestConfigComponent._selectCommunities( sorted );
 
@@ -473,14 +466,11 @@ TestConfigComponent._setHostsFromCommunity = function() {
     var data = CommunityHostsStore.getData();
 
     $('#hosts-in-community-loading-modal').hide();
-    console.log('hosts data', data);
     var hosts = TestConfigComponent._processHostData( data );
 
-    console.log('hosts', hosts);
     var hosts_data = {};
     hosts_data.hosts = hosts;
     hosts_data.hostAction = "add";
-    console.log('hosts_data', hosts_data);
     var container_el = $('#hostsInCommunityTableContainer');
     var template_el = $('#hostsInCommunityTableTemplate');
     var raw_template = template_el.html();
@@ -495,7 +485,6 @@ TestConfigComponent._processHostData = function ( data ) {
 
     $.each(data.hosts, function(i, host) {
         var host_row = {};
-        //console.log('i', i, 'host', host);
         var address_formatted = '';
         var description = host.description || '';
         var name = host.name || '';
@@ -580,7 +569,6 @@ TestConfigComponent._drawConfigForm = function( ) {
         TestConfigStore.setTypesToDisplay( testConfig );
     }
     testConfig.hostAction = 'update';
-    console.log('testConfig', testConfig);
     var newTest = testConfig.newTest;
     var memberTemplate = Handlebars.compile($("#member-partial").html());
     TestConfigComponent.memberTemplate = memberTemplate;
@@ -639,6 +627,14 @@ TestConfigComponent._drawConfigForm = function( ) {
             $('#windowSize').removeAttr('required');
             $('#windowSize').attr('pattern', 'positive_integer');
         }
+    });
+
+    TestConfigComponent._showAddHostByCommunity( 'testConfigAddHostByCommunityContainer' );
+
+    $('#browseCommunitiesLink').click( function(e) {
+        e.preventDefault();
+        $('#testAddHostByCommunityDiv').show();
+        $('#addHostManually').hide();
     });
 
     $('#member_add_button').click( function( e ) {
@@ -966,10 +962,7 @@ TestConfigComponent.addTestMemberFromCommunity = function( e ) {
     settings.test_ipv4 = new_host_ipv4;
     settings.test_ipv6 = new_host_ipv6;
 
-    console.log('settings', settings);
-
     TestConfigComponent._addMemberWithSettings( settings );
-
 
 };
 
