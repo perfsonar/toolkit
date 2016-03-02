@@ -534,7 +534,7 @@ h6 {
 
 a {
   color: #0089ff;
-  text-decoration: underline;
+  /* text-decoration: underline; */
 }
 a:hover {
   color: #a5d5ff;
@@ -1371,6 +1371,10 @@ table.test_results tr {
 .test_results i.fa {
   font-size: 10px;
   color: #a9b1b5;
+}
+
+.test_results i.fa-external-link {
+    color:inherit;
 }
 
 td.test-values {
