@@ -30,7 +30,7 @@
             {{#each testsByHost}}
                 <tr class="js-row test {{#everyOther @index 2}}even{{else}}odd{{/everyOther}}" data-group="{{host_id}}">
                     <td>
-                        <a class="services--title-link" data-group="{{host_id}}" href="#">{{address}}<i class="fa fa-caret-down"></i></a>
+                        <a class="services--title-link" data-group="{{host_id}}" href="#">{{address}}&nbsp;<i class="fa fa-caret-down"></i></a>
                     </td>
                     <td>{{formatTestCount bwctl_throughput_count}}</td>
                     <td>{{formatTestCount owamp_count}}</td>
