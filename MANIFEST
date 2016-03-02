@@ -280,6 +280,7 @@ web-ng/root/js/select2/select2.full.js
 web-ng/root/js/select2/select2.full.min.js
 web-ng/root/js/select2/select2.js
 web-ng/root/js/select2/select2.min.js
+web-ng/root/js/stores/CommunityHostsStore.js
 web-ng/root/js/stores/HostAdminStore.js
 web-ng/root/js/stores/HostDetailsStore.js
 web-ng/root/js/stores/HostHealthStore.js
@@ -291,6 +292,7 @@ web-ng/root/services/communities.cgi
 web-ng/root/services/host.cgi
 web-ng/templates/admin/components/configure_test.html
 web-ng/templates/admin/components/test_add_templates.html
+web-ng/templates/admin/components/test_config_add_host_by_community.html
 web-ng/templates/admin/components/test_config_table_by_host.html
 web-ng/templates/admin/components/test_config_table_by_test.html
 web-ng/templates/admin/pages/tests.html
