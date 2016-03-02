@@ -35,16 +35,17 @@
                     <i class="fa fa-exclamation-triangle"></i>
                     This host is configured with both bandwidth and one-way latency tests. Bandwidth tests can interfere with one-way latency tests.
                 </span>
-                                    <div>Configure tests between this host and other hosts.</div>
-                                    <div class="button-group">
-                                        <button id="testAddHostButton" class="button-quiet">+ Add Host</button>
-                                        <button id="testAddTestButton" href="#" class="button-quiet"onclick="return TestConfigComponent.showTestConfigModal();">+ Add Test</button>
+                                    <div class="button-group-testing">
+                                        <button id="testAddHostButton" class="button-quiet">+ Host</button>
+                                        <button id="testAddTestButton" href="#" class="button-quiet"onclick="return TestConfigComponent.showTestConfigModal();">+ Test</button>
                                     </div>
+
+                                    <div>Configure tests between this host and other hosts.</div>
 
                                     <!-- Begin table heading -->
 
                                     <!-- *** Sort by host or test and set default test parameters *** -->
-                                    <div class="row">
+                                    <div class="row" style="clear:both;margin-top:2em;">
                                         <div class="medium-6 columns">
                                             <span>View by: 
                                                 <a href="" id="viewByTest">Test</a></span>

@@ -1784,7 +1784,11 @@ input[type='button']:disabled.button-primary--hollow:hover {
   padding: 1em 0;
 }
 
-.button-group button {
+.button-group-testing {
+    float:right;
+}
+
+.button-group button, .button-group-testing button {
   margin-right: 1em;
 }
 
