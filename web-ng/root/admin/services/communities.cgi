@@ -57,7 +57,11 @@ if ( $conf{debug} ) {
 }
 
 my $data;
-my $communities_info = perfSONAR_PS::NPToolkit::DataService::Communities->new( { 'config_file' => $config_file  } );
+my $params = {};
+$params->{'config_file'} = $config_file;
+$params->{'load_ls_registration'} = 1;
+
+my $communities_info = perfSONAR_PS::NPToolkit::DataService::Communities->new( $params );
 
 my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
 
@@ -98,7 +102,7 @@ $get_hosts_in_community_method->add_input_parameter(
 $get_hosts_in_community_method->add_input_parameter(
     name            => "test_type",
     description     => "The test type to search",
-    required        => 0,
+    required        => 1,
     allow_empty     => 0,
     type            => 'text',
     );

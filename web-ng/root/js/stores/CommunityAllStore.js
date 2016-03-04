@@ -8,7 +8,7 @@ var CommunityAllStore = {
 
 CommunityAllStore.initialize = function() {
     CommunityAllStore._retrieveCommunities();
-    
+
 };
 
 CommunityAllStore._retrieveCommunities = function() {
