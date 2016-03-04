@@ -5,7 +5,7 @@
  
  saveFirewallRules() {
 -    for iptables_cmd in "iptables" "ip6tables"; do
-+    for iptables_cmd in "iptables-persistent"; do
++    for iptables_cmd in "netfilter-persistent"; do
          service $iptables_cmd save
      done
  }
