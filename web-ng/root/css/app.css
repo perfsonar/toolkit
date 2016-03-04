@@ -534,7 +534,7 @@ h6 {
 
 a {
   color: #0089ff;
-  text-decoration: underline;
+  /* text-decoration: underline; */
 }
 a:hover {
   color: #a5d5ff;
@@ -1373,6 +1373,10 @@ table.test_results tr {
   color: #a9b1b5;
 }
 
+.test_results i.fa-external-link {
+    color:inherit;
+}
+
 td.test-values {
   font-weight:bold;
 }
@@ -1780,7 +1784,11 @@ input[type='button']:disabled.button-primary--hollow:hover {
   padding: 1em 0;
 }
 
-.button-group button {
+.button-group-testing {
+    float:right;
+}
+
+.button-group button, .button-group-testing button {
   margin-right: 1em;
 }
 

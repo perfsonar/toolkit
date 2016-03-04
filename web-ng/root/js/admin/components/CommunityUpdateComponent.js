@@ -85,7 +85,7 @@ CommunityUpdateComponent._setAllCommunities = function( topic ) {
 CommunityUpdateComponent._selectCommunities = function() {
     var sel = $('#update_communities');
     var host = CommunityUpdateComponent.communities.host;
-   
+
     sel.empty(); // remove old options, if any
 
     CommunityUpdateComponent._combineCommunities();
@@ -98,7 +98,7 @@ CommunityUpdateComponent._selectCommunities = function() {
                         .text(val.text) );
     });
 
-    sel.select2( { 
+    sel.select2( {
         placeholder: CommunityUpdateComponent.placeholder,
     });
     CommunityUpdateComponent.select2Set = true;

@@ -52,6 +52,8 @@ my $js_files = [
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
     $include_prefix . 'js/actions/Dispatcher.js', 
     $include_prefix . 'js/stores/DataStore.js', 
+    $include_prefix . 'js/stores/CommunityAllStore.js', 
+    $include_prefix . 'js/stores/CommunityHostsStore.js', 
     $include_prefix . 'js/stores/TestConfigStore.js', 
     $include_prefix . 'js/stores/TestConfigAdminStore.js', 
     $include_prefix . 'js/stores/HostDetailsStore.js', 
