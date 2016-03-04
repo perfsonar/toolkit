@@ -1,8 +1,8 @@
-perfsonar-toolkit (3.5.1-1) debian-jessie-release; urgency=low
+perfsonar-toolkit (3.5.1-2) debian-jessie-release; urgency=low
 
   * Porting to Jessie
 
- -- Antoine Delvaux <adelvaux@man.poznan.pl>  Fri, 04 Mar 2016 11:09:33 +0100
+ -- Antoine Delvaux <adelvaux@man.poznan.pl>  Fri, 04 Mar 2016 17:42:09 +0100
 
 perfsonar-toolkit (3.5.0-1) perfsonar-wheezy-release; urgency=low
 
