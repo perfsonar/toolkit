@@ -1,14 +1,14 @@
-perfsonar-toolkit (3.5.1~8.rc1-1~bpo70+1) debian-wheezy-staging; urgency=low
+perfsonar-toolkit (3.5.1-1~bpo70+1) debian-wheezy-release; urgency=low
 
   * Backport to Wheezy.
 
- -- Antoine Delvaux <adelvaux@man.poznan.pl>  Sat, 27 Feb 2016 18:27:02 +0000
+ -- Antoine Delvaux <adelvaux@man.poznan.pl>  Fri, 04 Mar 2016 11:11:11 +0100
 
-perfsonar-toolkit (3.5.1~8.rc1-1) debian-jessie-staging; urgency=low
+perfsonar-toolkit (3.5.1-1) debian-jessie-release; urgency=low
 
   * Porting to Jessie
 
- -- Antoine Delvaux <adelvaux@man.poznan.pl>  Sat, 27 Feb 2016 18:24:36 +0000
+ -- Antoine Delvaux <adelvaux@man.poznan.pl>  Fri, 04 Mar 2016 11:09:33 +0100
 
 perfsonar-toolkit (3.5.0-1) perfsonar-wheezy-release; urgency=low
 
