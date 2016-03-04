@@ -16,7 +16,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="perfSONAR Toolkit Configuration Daemon"
 NAME=perfsonar-toolkit-config-daemon
-DAEMON=/usr/lib/perfsonar/toolkit/bin/configdaemon.pl
+DAEMON=/usr/lib/perfsonar/bin/configdaemon.pl
 PIDFILE=/var/run/configdaemon.pid
 SCRIPTNAME=/etc/init.d/$NAME
 CONFDIR=/etc/perfsonar/toolkit
