@@ -22,15 +22,31 @@
         </div>
         <div class="medium-6 columns text-right">
             <a href="#" id="testConfigCancelButton" style="margin: 0 3em;" class="testConfigCancelButton">Cancel</a>
-            <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton">OK</button>
+            <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton"{{#unless editable}} disabled{{/unless}}>OK</button>
         </div>
     </div>
 
+    {{#unless editable}}
+    <div class="row">
+        <div class="medium-12 columns">
+                <span class="alert-small-message" style="" id="throughput_latency_message">
+                    {{#if added_by_mesh}}
+                        <i class="fa fa-th"></i>
+                        This test was generated automatically by a Mesh Config and cannot be edited.
+                    {{else}}
+                        <i class="fa fa-exclamation-triangle"></i>
+                        This test was generated automatically and cannot be edited.
+                    {{/if}}
+                </span>
+
+        </div>
+
+    </div>
+    {{/unless}}
     <div class="row">
         <div class="medium-12 columns">
                         <h2 class="module-header__title font-bold">Test parameters</h2>
                 <!-- Begin common fields -->
-
 
                 <div class="row new_test_only" id="testTypeRow">
                     <div class="medium-6 columns">
@@ -309,7 +325,7 @@
                 <div class="row">
                     <div class="medium-12 columns text-right">
                         <a href="#" id="testConfigCancelButton" style="margin: 0 3em;" class="testConfigCancelButton">Cancel</a>
-                        <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton">OK</button>
+                        <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton"{{#unless editable}} disabled{{/unless}}>OK</button>
                     </div>
                 </div>
 

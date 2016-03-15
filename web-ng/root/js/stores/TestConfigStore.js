@@ -28,6 +28,8 @@ TestConfigStore.testTypes = [
     },
 ];
 
+TestConfigStore.defaultTracerouteDescription = 'perfSONAR Toolkit Default Traceroute Test';
+
 TestConfigStore.data_orig = null;
 
 Dispatcher.subscribe(TestConfigStore.topic, function() {
@@ -140,6 +142,10 @@ TestConfigStore._setAdditionalVariables = function ( ) {
     for(var i in tests) {
         var test = tests[i];
         var type = test.type;
+        test.editable = true;
+        if ( test.added_by_mesh ) {
+            test.editable = false;
+        }
         var protocol = test.parameters.protocol;
 
         // Set types to display
@@ -177,6 +183,10 @@ TestConfigStore._setAdditionalVariables = function ( ) {
         if ( type == 'traceroute') {
             // TODO: remove? is there anything we need to do here
             // for traceroute tests?
+            if ( test.description == TestConfigStore.defaultTracerouteDescription ) {
+                test.editable = false;
+
+            }
         }
 
         // Set test_interval_formatted
@@ -185,6 +195,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             var time = SharedUIFunctions.getTimeWithUnits( interval ); 
             test.parameters.test_interval_formatted = time;
         }
+            console.log('test', test);
     }
     TestConfigStore._setDefaultVariables();
 

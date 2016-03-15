@@ -1377,6 +1377,11 @@ table.test_results tr {
     color:inherit;
 }
 
+i.fa.disabled, tr.disabled td, tr.disabled td i.fa {
+    color:#aaa;
+}
+
+
 td.test-values {
   font-weight:bold;
 }
