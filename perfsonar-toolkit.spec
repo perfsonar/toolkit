@@ -20,7 +20,7 @@
 %define relnum  1 
 
 Name:			perfsonar-toolkit
-Version:		3.5.1
+Version:		3.5.1.1
 Release:		%{relnum}
 Summary:		perfSONAR Toolkit
 License:		Distributable, see LICENSE
