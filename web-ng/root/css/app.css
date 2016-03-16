@@ -2513,3 +2513,13 @@ to put the stuff inside. */
 .new-host-save {
   display: none;
 }
+
+table .has-tip {
+    border-bottom:none;
+    font-weight:inherit;
+    color:inherit;
+}
+
+table .has-tip:hover {
+    border-bottom:none;
+}

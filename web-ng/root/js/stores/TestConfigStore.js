@@ -10,7 +10,7 @@ var TestConfigStore = new DataStore("store.change.test_config", "services/regula
 // Could probably have used a hash with raw values as keys, but they may
 // contain invalid keyname characters
 TestConfigStore.testTypes = [
-    { 
+    {
         raw: "pinger",
         formatted: "Ping (RTT)",
     },
@@ -195,7 +195,6 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             var time = SharedUIFunctions.getTimeWithUnits( interval ); 
             test.parameters.test_interval_formatted = time;
         }
-            console.log('test', test);
     }
     TestConfigStore._setDefaultVariables();
 
