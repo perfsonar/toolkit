@@ -65,12 +65,6 @@ TestConfigComponent.initialize = function() {
         TestConfigComponent.showTestAddHostModal();
     });
 
-    /*
-    $('#testAddTestButton').click( function(e) {
-        e.preventDefault();
-        TestConfigComponent.showTestAddTestModal();
-    });
-    */
 
     $("div.config__form").on("click", ".cb_test_enabled", function(e, f) {
         TestConfigComponent.toggleTestEnabled( this );
@@ -254,42 +248,6 @@ TestConfigComponent.toggleTestEnabled = function( clickedThis ) {
 
 };
 
-TestConfigComponent.showTestAddTestModal = function( ) {
-    var data = TestConfigComponent.data;
-    var config_template = $("#testAddTestTemplate").html();
-    var template = Handlebars.compile( config_template );
-    var config_modal = template( data );
-    $("#testAddTestContainer").html(config_modal);
-    $('#test-add-test-modal').foundation('reveal', 'open');
-
-    $('#testAddTestOKButton').click( function( e ) {
-        e.preventDefault();
-
-        // take some action to save the user input here
-        //var host = TestConfigComponent._getUserHostToAddInfo();
-        //var modified = TestConfigComponent._getUserTestsToAddHostInfo( host );
-
-        // close the modal window
-        $('#test-add-test-modal').foundation('reveal', 'close');
-
-        /*
-        if ( modified ) {
-            SharedUIFunctions._showSaveBar();
-        }
-        */
-
-        // Fire the testConfigStore topic, signalling the data has changed
-        //Dispatcher.publish( TestConfigStore.topic );
-    });
-
-
-    $('#testAddTestCancelButton').click( function( e ) {
-        e.preventDefault();
-        $('#test-add-test-modal').foundation('reveal', 'close');
-    });
-
-};
-
 TestConfigComponent.showTestAddHostModal = function( ) {
     var data = TestConfigComponent.data;
     var config_template = $("#testAddHostTemplate").html();
@@ -301,7 +259,18 @@ TestConfigComponent.showTestAddHostModal = function( ) {
 
     var test_template = $("#testConfigByTestTableTemplate").html();
     template = Handlebars.compile(test_template);
-    var test_table = template(data);
+    var testsByTest = [];
+    for(var i in data.testsByTest) {
+        var row = data.testsByTest[i];
+        if ( !row.editable ) {
+            continue;
+        }
+        testsByTest.push(row);
+
+    }
+    var editableData = {};
+    editableData.testsByTest = testsByTest;
+    var test_table = template(editableData);
     $("#testAddHostTableContainer").html(test_table);
 
     $("#testAddHostTableContainer .test_actions").hide();
@@ -335,6 +304,8 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
     if ( newTest ) {
         data = {};
         testConfig = {};
+        testConfig.editable = true;
+        testConfig.added_by_mesh = false;
     } else {
         testConfig = TestConfigStore.getTestConfig( testID );
 
