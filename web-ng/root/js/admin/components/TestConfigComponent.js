@@ -183,7 +183,6 @@ TestConfigComponent._setTestData = function() {
     var data = {};
     data.testsByHost = TestConfigStore.getTestsByHost();
     data.testsByTest = TestConfigStore.getTestConfigurationFormatted();
-    console.log('component data', data);
     TestConfigComponent.data = data;
     TestConfigComponent.dataSet = true;
     TestConfigComponent._showStatusMessages();
@@ -260,8 +259,7 @@ TestConfigComponent.showTestAddHostModal = function( ) {
 
     var test_template = $("#testConfigByTestTableTemplate").html();
     template = Handlebars.compile(test_template);
-    console.log('data for add table', data);
-    var testsByTest = []; //$.extend([], data.testsByTest);
+    var testsByTest = [];
     for(var i in data.testsByTest) {
         var row = data.testsByTest[i];
         if ( !row.editable ) {
