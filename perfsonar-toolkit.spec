@@ -17,7 +17,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  1 
+%define relnum  2 
 
 Name:			perfsonar-toolkit
 Version:		3.5.1.3
@@ -242,9 +242,11 @@ Summary:                perfSONAR Toolkit sysctl configuration
 Group:                  Development/Tools
 Requires:               coreutils
 Requires:               perfsonar-common
+Requires:               initscripts
 Requires(pre):          rpm
 Requires(post):         coreutils
 Requires(post):         perfsonar-common
+Requires(post):         initscripts
 Obsoletes:              perl-perfSONAR_PS-Toolkit-sysctl
 Provides:               perl-perfSONAR_PS-Toolkit-sysctl
 
