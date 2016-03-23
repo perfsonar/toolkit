@@ -396,24 +396,16 @@ ln -sf %{install_base}/web/templates/header.tmpl %{install_base}/web/root/admin/
 ln -sf %{install_base}/web/templates/sidebar.html %{install_base}/web/root/admin/log_view/templates/
 ln -sf %{install_base}/web/templates/footer.tmpl %{install_base}/web/root/admin/log_view/templates/
 
-#Remove old pS-NPToolkit-* community from admin_info (removal added in version 3.4)
-grep -v "site_project=pS-NPToolkit-" %{config_base}/administrative_info > %{config_base}/administrative_info.tmp
-mv %{config_base}/administrative_info.tmp %{config_base}/administrative_info
-
 #Set bundle type and version
 echo "perfsonar-toolkit" > /var/lib/perfsonar/bundles/bundle_type
 echo "%{version}" > /var/lib/perfsonar/bundles/bundle_version
 chmod 644 /var/lib/perfsonar/bundles/bundle_type
 chmod 644 /var/lib/perfsonar/bundles/bundle_version
 
-#Make sure that the administrator_info file gets reloaded
-%{install_base}/scripts/update_administrative_info.pl 2> /dev/null
-
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
 # so we'll put that in the "maybe" category.
 chmod o+r /etc/perfsonar/lsregistrationdaemon.conf
-chmod o+r %{config_base}/administrative_info
 chmod o+r %{config_base}/ntp_known_servers
 chmod o+r /etc/bwctl-server/bwctl-server.limits 2> /dev/null
 chmod o+r /etc/bwctl-server/bwctl-server.keys 2> /dev/null
@@ -575,7 +567,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/update_administrative_info.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade/*
 
 %files systemenv
