@@ -86,7 +86,6 @@ scripts/system_environment/increase_owamp_port_range
 scripts/system_environment/migrate_admininfo
 scripts/system_environment/upgrade_apache
 scripts/system_environment/upgrade_fix_permissions
-scripts/update_administrative_info.pl
 scripts/upgrade/upgrade_apache_admin
 scripts/upgrade/upgrade_regular_tests
 web-ng/etc/logger.conf
