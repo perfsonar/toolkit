@@ -22,8 +22,8 @@ NDTNPAD_ENABLED=
 
 NDT=`/sbin/chkconfig --list ndt | grep on`
 NPAD=`/sbin/chkconfig --list npad | grep -w on`
-OWAMP=`/sbin/chkconfig --list owampd | grep -w on`
-BWCTL=`/sbin/chkconfig --list bwctld | grep -w on`
+OWAMP=`/sbin/chkconfig --list owamp-server | grep -w on`
+BWCTL=`/sbin/chkconfig --list bwctl-server | grep -w on`
 
 if [ "x$NDT" != "x" -o "x$NPAD" != "x" ]; then
         NDTNPAD_ENABLED=1

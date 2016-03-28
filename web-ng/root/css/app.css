@@ -1377,6 +1377,11 @@ table.test_results tr {
     color:inherit;
 }
 
+i.fa.disabled, tr.disabled td, tr.disabled td i.fa {
+    color:#aaa;
+}
+
+
 td.test-values {
   font-weight:bold;
 }
@@ -2507,4 +2512,14 @@ to put the stuff inside. */
 
 .new-host-save {
   display: none;
+}
+
+table .has-tip {
+    border-bottom:none;
+    font-weight:inherit;
+    color:inherit;
+}
+
+table .has-tip:hover {
+    border-bottom:none;
 }
