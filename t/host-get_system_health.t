@@ -16,6 +16,7 @@ use Scalar::Util qw(looks_like_number);
 
 use perfSONAR_PS::NPToolkit::DataService::Host;
 use perfSONAR_PS::NPToolkit::UnitTests::Router;
+use perfSONAR_PS::NPToolkit::UnitTests::Util qw( positive_number );
 
 my $basedir = 't';
 my $config_file = $basedir . '/etc/web_admin.conf';
@@ -23,7 +24,7 @@ my $ls_file = $basedir . '/etc/lsregistrationdaemon.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 my %conf = $conf_obj->getall;
 
-my $router = perfSONAR_PS::NPToolkit::UnitTests::Router->new();
+my $router = perfSONAR_PS::NPToolkit::UnitTests::Router->new( { authenticated => 0 } );
 
 isa_ok( $router, 'perfSONAR_PS::NPToolkit::UnitTests::Router' );
 
@@ -48,16 +49,12 @@ warn "data: " . Dumper $data;
 #    'swap_total' => 2097147904
 #};
 
-ok( looks_like_number ( $data->{'mem_total'} ), 'Total memory is a number');
-ok ( $data->{'mem_total'} > 0, 'Total memory > 0' );
+ok( positive_number( $data->{'mem_total'} ), 'Total memory is a positive number');
+ok( positive_number ( $data->{'swap_total'} ), 'Swap memory is a positive number');
+ok( positive_number ( $data->{'rootfs'}->{'total'} ), 'Root FS total space is a positive number');
 
-ok( looks_like_number ( $data->{'swap_total'} ), 'Swap memory is a number');
-ok ( $data->{'swap_total'} > 0, 'Swap memory > 0' );
 
-ok( looks_like_number ( $data->{'rootfs'}->{'total'} ), 'Root FS total space is a number');
-ok ( $data->{'rootfs'}->{'total'} > 0, 'Root FS total space > 0' );
-
-# make sure these values are NOT defined
+# make sure these values are NOT defined, since we aren't authenticated
 
 is( $data->{'mem_used'}, undef, "Used mememory undefined as expected");
 is( $data->{'rootfs'}->{'used'}, undef, "Used root FS space undefined as expected");
@@ -75,7 +72,19 @@ $data = $router->call_method( { method => sub { $info->get_system_health(@_); } 
 
 warn "data: " . Dumper $data;
 
-#is( $data->{'mem_used'}, undef, "Used mememory undefined as expected");
+# Check public values
+ok( positive_number( $data->{'mem_total'} ), 'Total memory is a positive number');
+ok( positive_number ( $data->{'swap_total'} ), 'Swap memory is a positive number');
+ok( positive_number ( $data->{'rootfs'}->{'total'} ), 'Root FS total space is a positive number');
+
+# Check private values (which we should now have, since we're authenticated)
+ok( positive_number( $data->{'mem_used'} ), 'Used memory is a positive number');
+ok( positive_number( $data->{'rootfs'}->{'used'} ), 'Used root FS space is a positive number');
+ok( positive_number( $data->{'cpu_util'} ), 'CPU utilization is a positive number');
+ok( positive_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute) is a positive number');
+ok( positive_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
+ok( positive_number( $data->{'load_avg'}->{'avg_1'} ), 'Load average (1 minute) is a positive number');
+
 
 #data: $VAR1 = {
 #    'swap_used' => 1480769536,
@@ -93,7 +102,3 @@ warn "data: " . Dumper $data;
 #        'avg_1' => '0.28'
 #    }
 #};
-#
-
-# check the administrative info
-is ( $data->{'administrator'}->{'name'}, 'Node Admin', 'Administrator Name' );

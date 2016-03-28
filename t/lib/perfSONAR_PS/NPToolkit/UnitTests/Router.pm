@@ -3,9 +3,9 @@ package perfSONAR_PS::NPToolkit::UnitTests::Router;
 use fields qw( authenticated error_code error_message );
 
 =head1 NAME
-perfSONAR_PS::NPToolkit::UnitTests::Router - Fake Router class for init tests
+perfSONAR_PS::NPToolkit::UnitTests::Router - Fake Router class for unit tests
 =head1 DESCRIPTION
-This module provides methods for writing unit tests
+This module provides methods for testing webservices with a fake router.
 =cut
 
 use strict;
