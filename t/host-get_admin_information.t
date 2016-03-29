@@ -4,16 +4,18 @@
 use strict;
 use warnings;
 use FindBin qw($Bin);
+use lib "$Bin/lib";
 use lib "$Bin/../lib";
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init( {level => 'OFF'} );
 
-use Test::More tests => 9;
+use Test::More tests => 1;
 
 use Config::General;
 use Data::Dumper;
 
 use perfSONAR_PS::NPToolkit::DataService::Host;
+use perfSONAR_PS::NPToolkit::UnitTests::Util qw( test_result );
 
 my $basedir = 't';
 my $config_file = $basedir . '/etc/web_admin.conf';
@@ -32,15 +34,26 @@ my $info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
 $data = $info->get_admin_information();
 
 # check the administrative info
-is ( $data->{'administrator'}->{'name'}, 'Node Admin', 'Administrator Name' );
-is ( $data->{'administrator'}->{'organization'}, 'Test Org', 'Organization' );
-is ( $data->{'administrator'}->{'email'}, 'admin@test.com', 'E-mail address' );
 
-# check the location
-is ( $data->{'location'}->{'country'}, 'US', 'Country' );
-is ( $data->{'location'}->{'city'}, 'Bloomington', 'City' );
-is ( $data->{'location'}->{'state'}, 'IN', 'State' );
-is ( $data->{'location'}->{'zipcode'}, '47401', 'Zip Code' );
-is ( $data->{'location'}->{'longitude'}, '-28.23', 'Longitude' );
-is ( $data->{'location'}->{'latitude'}, '123.456', 'Longitude' );
+my $expected_admin_info = {
+    'administrator' => 
+        { 'name' => 'Node Admin',
+            'organization' => 'Test Org',
+            'email' => 'admin@test.com',
+        },
+    'location' => {
+        'country' => 'US',
+        'city' => 'Bloomington',
+        'state' => 'IN',
+        'zipcode' => '47401',
+        'longitude' => '-28.23',
+        'latitude' => '123.456',
+    },
+};
+
+my $admin_info = {};
+$admin_info->{'administrator'} = $data->{'administrator'};
+$admin_info->{'location'} = $data->{'location'};
+
+test_result($admin_info, $expected_admin_info, "Administrative info data is as expected");
 
