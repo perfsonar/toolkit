@@ -76,7 +76,7 @@ ok( positive_number ( $data->{'rootfs'}->{'total'} ), 'Root FS total space is a 
 # Check private values (which we should now have, since we're authenticated)
 ok( positive_number( $data->{'mem_used'} ), 'Used memory is a positive number');
 ok( positive_number( $data->{'rootfs'}->{'used'} ), 'Used root FS space is a positive number');
-ok( positive_number( $data->{'cpu_util'} ), 'CPU utilization is a positive number');
+ok( looks_like_number( $data->{'cpu_util'} ), 'CPU utilization is a number');
 ok( positive_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute) is a positive number');
 ok( positive_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
 ok( positive_number( $data->{'load_avg'}->{'avg_1'} ), 'Load average (1 minute) is a positive number');
