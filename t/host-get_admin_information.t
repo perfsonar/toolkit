@@ -1,4 +1,5 @@
 #!/usr/bin/perl -w
+# This test verifies the output of the get_admin_information method
 
 use strict;
 use warnings;

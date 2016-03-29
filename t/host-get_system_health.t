@@ -1,5 +1,9 @@
-#!/usr/bin/perl -w
-
+#!/usr/bin/perl
+# This test checks the values returned for the get_system_health call
+# First, it calls the function as an unauthenticated user and
+# makes sure that no information is disclosed that should be private.
+# Then, it calls the function as an authenticated user and verifies
+# that the correct addition fields are present.
 use strict;
 use warnings;
 use FindBin qw($Bin);
@@ -8,7 +12,7 @@ use lib "$Bin/../lib";
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init( {level => 'OFF'} );
 
-use Test::More tests => 9;
+use Test::More tests => 18;
 
 use Config::General;
 use Data::Dumper;
@@ -39,15 +43,7 @@ isa_ok( $info, 'perfSONAR_PS::NPToolkit::DataService::Host' );
 # This first call with not be authenticated
 $data = $router->call_method( { method => sub { $info->get_system_health(@_); } } );
 
-warn "data: " . Dumper $data;
-
-#data: $VAR1 = {
-#    'mem_total' => 1966542848,
-#    'rootfs' => {
-#        'total' => '39062237184'
-#    },
-#    'swap_total' => 2097147904
-#};
+#warn "data: " . Dumper $data;
 
 ok( positive_number( $data->{'mem_total'} ), 'Total memory is a positive number');
 ok( positive_number ( $data->{'swap_total'} ), 'Swap memory is a positive number');
@@ -56,10 +52,10 @@ ok( positive_number ( $data->{'rootfs'}->{'total'} ), 'Root FS total space is a 
 
 # make sure these values are NOT defined, since we aren't authenticated
 
-is( $data->{'mem_used'}, undef, "Used mememory undefined as expected");
-is( $data->{'rootfs'}->{'used'}, undef, "Used root FS space undefined as expected");
-is( $data->{'cpu_util'}, undef, "CPU utilization undefined as expected");
-is( $data->{'load_avg'}, undef, "Load average undefined as expected");
+is( $data->{'mem_used'}, undef, "Used mememory not disclosed to unauthenticated users");
+is( $data->{'rootfs'}->{'used'}, undef, "Used root FS space not disclosed to unauthenticated users");
+is( $data->{'cpu_util'}, undef, "CPU utilization not disclosed to unauthenticated users");
+is( $data->{'load_avg'}, undef, "Load average not disclosed to unauthenticated users");
 
 
 
@@ -70,7 +66,7 @@ $router->set_authenticated( { authenticated => 1 } );
 # return more values
 $data = $router->call_method( { method => sub { $info->get_system_health(@_); } } );
 
-warn "data: " . Dumper $data;
+#warn "data: " . Dumper $data;
 
 # Check public values
 ok( positive_number( $data->{'mem_total'} ), 'Total memory is a positive number');
@@ -85,20 +81,3 @@ ok( positive_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute
 ok( positive_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
 ok( positive_number( $data->{'load_avg'}->{'avg_1'} ), 'Load average (1 minute) is a positive number');
 
-
-#data: $VAR1 = {
-#    'swap_used' => 1480769536,
-#    'mem_used' => 1821913088,
-#    'mem_total' => 1966542848,
-#    'rootfs' => {
-#        'used' => '28865273856',
-#        'total' => '39062237184'
-#    },
-#    'swap_total' => 2097147904,
-#    'cpu_util' => '1.04',
-#    'load_avg' => {
-#        'avg_15' => '0.18',
-#        'avg_5' => '0.18',
-#        'avg_1' => '0.28'
-#    }
-#};
