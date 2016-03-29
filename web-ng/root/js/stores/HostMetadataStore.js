@@ -37,7 +37,7 @@ HostMetadataStore._retrieveMetadata = function() {
             success: function (data) {
                 data = HostMetadataStore._setCommunities( data );
                 data = HostMetadataStore._setRole( data );
-                HostMetadataStore.hostMetadata = data;                
+                HostMetadataStore.hostMetadata = data;
                 Dispatcher.publish(HostMetadataStore.metadataTopic);
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -47,7 +47,7 @@ HostMetadataStore._retrieveMetadata = function() {
 };
 
 HostMetadataStore._setCommunities = function( data  ) {
-    var communities = data.config.site_project;
+    var communities = data.communities;
     communities = SharedUIFunctions._getAsArray( communities );
     /*
     if ( typeof communities == 'string' ) {
