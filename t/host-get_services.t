@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# This test verifies the output of the get_metadata method
+# This test verifies the output of the get_services method
 
 use strict;
 use warnings;
@@ -31,7 +31,7 @@ $params->{'ls_config_file'} = $ls_file;
 
 my $info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
 
-$data = $info->get_metadata();
+$data = $info->get_services();
 
 warn "data:\n" . Dumper $data;
 
@@ -58,33 +58,3 @@ $admin_info->{'administrator'} = $data->{'administrator'};
 $admin_info->{'location'} = $data->{'location'};
 
 test_result($admin_info, $expected_admin_info, "Administrative info data is as expected");
-
-
-my $expected_communities = [    'Indiana',
-                                'perfSONAR',
-                                'perfSONAR-PS',
-                            ];
-
-my $communities = $data->{'communities'};
-
-test_result($communities, $expected_communities, "Communities are as expected");
-
-# check for expected values under the 'config' section (only interested in a subset)
-
-my $expected_config = {
-    'access_policy' => 'public',
-    'access_policy_notes' => 'This is a unit test, but feel free to test to it if you like.',
-    'check_interval' => '3600',
-    'allow_internal_addresses' => 0,
-    'role' => 'test-host'
-};
-
-my $config = {};
-$config->{'access_policy'} = $data->{'config'}->{'access_policy'};
-$config->{'access_policy_notes'} = $data->{'config'}->{'access_policy_notes'};
-$config->{'check_interval'} = $data->{'config'}->{'check_interval'};
-$config->{'allow_internal_addresses'} = $data->{'config'}->{'allow_internal_addresses'};
-$config->{'role'} = $data->{'config'}->{'role'};
-
-test_result($config, $expected_config, "Metadata config values are as expected");
-
