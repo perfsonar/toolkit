@@ -20,7 +20,7 @@ use Scalar::Util qw(looks_like_number);
 
 use perfSONAR_PS::NPToolkit::DataService::Host;
 use perfSONAR_PS::NPToolkit::UnitTests::Router;
-use perfSONAR_PS::NPToolkit::UnitTests::Util qw( positive_number );
+use perfSONAR_PS::NPToolkit::UnitTests::Util qw( positive_number nonnegative_number );
 
 my $basedir = 't';
 my $config_file = $basedir . '/etc/web_admin.conf';
@@ -76,8 +76,8 @@ ok( positive_number ( $data->{'rootfs'}->{'total'} ), 'Root FS total space is a 
 # Check private values (which we should now have, since we're authenticated)
 ok( positive_number( $data->{'mem_used'} ), 'Used memory is a positive number');
 ok( positive_number( $data->{'rootfs'}->{'used'} ), 'Used root FS space is a positive number');
-ok( looks_like_number( $data->{'cpu_util'} ), 'CPU utilization is a number');
-ok( positive_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute) is a positive number');
-ok( positive_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
-ok( positive_number( $data->{'load_avg'}->{'avg_1'} ), 'Load average (1 minute) is a positive number');
+ok( nonnegative_number( $data->{'cpu_util'} ), 'CPU utilization is a number');
+ok( nonnegative_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute) is a positive number');
+ok( nonnegative_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
+ok( nonnegative_number( $data->{'load_avg'}->{'avg_1'} ), 'Load average (1 minute) is a positive number');
 

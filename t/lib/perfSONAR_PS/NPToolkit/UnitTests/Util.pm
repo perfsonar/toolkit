@@ -21,7 +21,7 @@ use Config::General;
 use Params::Validate qw(:all);
 use Scalar::Util qw(looks_like_number);
 
-our @EXPORT_OK = qw( test_health positive_number );
+our @EXPORT_OK = qw( test_health positive_number nonnegative_number );
 
 sub test_health {
     my $values = @_;
@@ -31,6 +31,14 @@ sub test_health {
 sub positive_number {
     my $value = shift;
     if ( looks_like_number($value) && $value > 0 ) {
+        return 1;
+    }
+    return 0;
+}
+
+sub nonnegative_number {
+    my $value = shift;
+    if ( looks_like_number($value) && $value >= 0 ) {
         return 1;
     }
     return 0;
