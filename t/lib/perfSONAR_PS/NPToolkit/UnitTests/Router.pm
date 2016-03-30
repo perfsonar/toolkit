@@ -1,6 +1,6 @@
 package perfSONAR_PS::NPToolkit::UnitTests::Router;
 
-use fields qw( authenticated error_code error_message );
+use fields qw( authenticated error_code error_message input_params );
 
 =head1 NAME
 perfSONAR_PS::NPToolkit::UnitTests::Router - Fake Router class for unit tests
@@ -81,6 +81,18 @@ sub set_authenticated {
 }
 
 
+sub set_input_params {
+    my ( $self, @params ) = @_;
+    my $parameters = validate(
+        @params,
+        {
+            input_params => 1,
+        }
+    );
+    $self->{'input_params'} = $parameters->{'input_params'};
+    return $self->{'input_params'};
+
+}
+
+
 1;
-
-

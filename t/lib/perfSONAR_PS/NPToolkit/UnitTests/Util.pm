@@ -20,8 +20,9 @@ use Test::More;
 use Config::General;
 use Params::Validate qw(:all);
 use Scalar::Util qw(looks_like_number);
+use Data::Dumper;
 
-our @EXPORT_OK = qw( test_health positive_number nonnegative_number test_result );
+our @EXPORT_OK = qw( test_health positive_number nonnegative_number test_result hash_to_parameters );
 
 sub test_health {
     my $values = @_;
@@ -69,6 +70,29 @@ sub test_result {
     # use Data::Dumper;
     # print Dumper($registration);
 
+}
+
+# Takes a hashref of variables to set and converts it to the format taken by
+# the webservice libraries
+sub hash_to_parameters {
+    my ( $values ) = @_;
+    my $parameters = {};
+    warn "values:\n" . Dumper $values;
+
+    # disable logging
+    Log::Log4perl->easy_init( {level => 'OFF'} );
+    while ( my ( $key, $value ) = each ( %$values ) ) { 
+        my $row = {};
+
+        $parameters->{$key}->{is_set} = 1;
+        $parameters->{ $key }->{'value'} = $value;
+        #$row->{$key}->{is_set} = 1;
+        #$row->{ $key }->{'value'} = $value;
+
+        #push @$parameters, $row;
+    }
+    warn "parameters:\n" . Dumper $parameters;
+    return $parameters;
 }
 
 1;
