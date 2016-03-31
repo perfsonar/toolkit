@@ -26,9 +26,9 @@ use perfSONAR_PS::NPToolkit::UnitTests::Router;
 my $basedir = 't';
 my $config_file = $basedir . '/etc/web_admin.conf';
 my $ls_file_orig = $basedir . '/etc/lsregistrationdaemon.conf';
-my $ls_file = $basedir . '/tmp/etc/lsregistrationdaemon.conf';
-
-fcopy( $ls_file_orig, $ls_file ) or die ("Error copying config file");
+my $ls_file_new = $basedir . '/tmp/etc/lsregistrationdaemon.conf';
+my $ls_file_new_first = $ls_file_new;
+my $delete_files = 1;
 
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 my %conf = $conf_obj->getall;
@@ -37,12 +37,11 @@ my $data;
 my $host_params = {};
 $host_params->{'config_file'} = $config_file;
 $host_params->{'load_ls_registration'} = 1;
-$host_params->{'ls_config_file'} = $ls_file;
+$host_params->{'ls_config_file'} = $ls_file_new;
 
 # original_metadata is the data we expect to get back before making changes
 my $original_metadata = get_original_metadata();
 
-warn "original metadata: " . Dumper $original_metadata;
 # updated_metadata is the data we expect after a successful edit/save
 my $updated_metadata = get_updated_metadata();
 
@@ -77,6 +76,9 @@ push @$tests, $row;
 
 warn "tests\n" . Dumper $tests;
 
+# COPY OVER INITIAL CONFIG
+fcopy( $ls_file_orig, $ls_file_new ) or die ("Error copying config file");
+
 # GET INITIAL DATA
 my $router = perfSONAR_PS::NPToolkit::UnitTests::Router->new( );
 
@@ -87,19 +89,20 @@ isa_ok( $info, 'perfSONAR_PS::NPToolkit::DataService::Host' );
 
 $data = $router->call_method( { method => sub { $info->get_metadata(@_); } } );
 
-#warn "data:\n" . Dumper $data;
-
 # check the metadata
-
 test_result($data, $original_metadata, "Metadata values are as expected");
 
+my $i = 0;
 foreach my $test ( @$tests ) {
-    # TODO : move file copy/load to within this loop
     my $save_success = $test->{'save_succeed'};
     my $restart_success = $test->{'restart_succeed'};
     my $expected_data = $test->{'expected_data'};
     my $expected_save_response = $test->{'expected_save_response'};
     my $qmock = Test::MockObject->new();
+
+    $ls_file_new = $basedir . '/tmp/etc/lsregistrationdaemon.conf-' . $i;
+    fcopy( $ls_file_orig, $ls_file_new ) or die ("Error copying config file");
+    $host_params->{'ls_config_file'} = $ls_file_new;
 
 # Testing this scenario
 # save method succeeds, restarting service succeeds
@@ -113,12 +116,12 @@ foreach my $test ( @$tests ) {
         restartService => sub{ perfSONAR_PS::NPToolkit::UnitTests::Mock::succeed_value( $restart_success ) }
     );
 
-$router = perfSONAR_PS::NPToolkit::UnitTests::Router->new( );
+    $router = perfSONAR_PS::NPToolkit::UnitTests::Router->new( );
 
-isa_ok( $router, 'perfSONAR_PS::NPToolkit::UnitTests::Router' );
+    isa_ok( $router, 'perfSONAR_PS::NPToolkit::UnitTests::Router' );
 
-$info = perfSONAR_PS::NPToolkit::DataService::Host->new( $host_params );
-isa_ok( $info, 'perfSONAR_PS::NPToolkit::DataService::Host' );
+    $info = perfSONAR_PS::NPToolkit::DataService::Host->new( $host_params );
+    isa_ok( $info, 'perfSONAR_PS::NPToolkit::DataService::Host' );
 
 
     my $update = flatten_metadata ( $updated_metadata );
@@ -147,34 +150,19 @@ isa_ok( $info, 'perfSONAR_PS::NPToolkit::DataService::Host' );
     test_result($data, $expected_data, $message);
 
     warn "updated data:\n" . Dumper $data;
-    #last;
+    if ( $delete_files ) {
+        unlink $ls_file_new or die ("Error deleting temp config file");
+    }
+    $i++;
 }
 
-# Testing this scenario
-# save method succeeds, restarting service fails
+if ( $delete_files ) {
+    unlink $ls_file_new_first or die ("Error deleting temp config file");
+    my $ls_file_new = $basedir . '/tmp/etc/lsregistrationdaemon.conf';
+    rmdir $basedir . '/tmp/etc' or die "Error deleting t/tmp/etc directory";
+    rmdir $basedir . '/tmp' or warn "Error deleting t/tmp directory";
+}
 
-
-
-
-
-# check all these situations
-# save method succeds, restart fails
-# save method fails, restart succeeds
-# save method fails, restart fails
-# unauthorized attempt to save
-
-#$qmock->fake_module('perfSONAR_PS::NPToolkit::ConfigManager::ConfigClient', saveFile => sub { save_file_mock(0, @_) } );
-
-#my $router = perfSONAR_PS::NPToolkit::UnitTests::Router->new( );
-
-#$router->set_input_params( { input_params => $update } );
-
-#$data = $router->call_method( { method => sub { $info->update_metadata(@_); } } );
-
-#warn "data:\n" . Dumper $data;
-
-
-#unlink $ls_file or die ("Error deleting temp config file");
 
 sub flatten_metadata {
     my $data = shift;
