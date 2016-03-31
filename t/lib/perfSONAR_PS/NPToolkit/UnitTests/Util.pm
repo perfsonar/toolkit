@@ -61,7 +61,6 @@ sub test_result {
 sub hash_to_parameters {
     my ( $values ) = @_;
     my $parameters = {};
-    #warn "values:\n" . Dumper $values;
 
     # disable logging
     Log::Log4perl->easy_init( {level => 'OFF'} );
@@ -69,7 +68,6 @@ sub hash_to_parameters {
         $parameters->{$key}->{is_set} = 1;
         $parameters->{ $key }->{'value'} = $value;
     }
-    #warn "parameters:\n" . Dumper $parameters;
     return $parameters;
 }
 

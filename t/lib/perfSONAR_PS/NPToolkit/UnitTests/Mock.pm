@@ -25,7 +25,6 @@ our @EXPORT_OK = qw( save_file_mock success_value );
 sub succeed_value {
     my $success = shift;
     #$success = shift;
-    warn "success: $success";
     return $success;
 }
 
@@ -46,12 +45,10 @@ sub save_file_mock {
 
     my $filename    = $parameters->{filename};
     my $contents = $parameters->{content};
-    warn "filename: $filename; save_success: $success";
 
     # return an error if filename contains '..' or stars with '/'
     # as this means it's attempting to write to a parent directory
     if ( $filename =~ m|\.\.| or $filename =~ m|^/| ) {
-        warn "Error: filename attempts to write a parent directory";
         return (-1, "Error: unit test attempts to write a parent directory");
     }
 

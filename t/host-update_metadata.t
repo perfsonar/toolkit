@@ -1,5 +1,12 @@
 #!/usr/bin/perl -w
 # This test verifies the output of the get_metadata method
+# The general approach here is to create an array of tests to run, with some parameters
+# We test that get_metadata works initially.
+# Then run update_metadata, reload the config, and make sure get_metadata matches
+# check all these situations:
+# save method succeds, service restart fails
+# save method fails, restart succeeds
+# save method fails, restart fails
 
 use strict;
 use warnings;
@@ -74,8 +81,6 @@ $row->{'expected_save_response'}    = 0;
 $row->{'expected_data'}             = $updated_metadata;
 push @$tests, $row;
 
-warn "tests\n" . Dumper $tests;
-
 # COPY OVER INITIAL CONFIG
 fcopy( $ls_file_orig, $ls_file_new ) or die ("Error copying config file");
 
@@ -125,14 +130,11 @@ foreach my $test ( @$tests ) {
 
 
     my $update = flatten_metadata ( $updated_metadata );
-    #warn "flattened: " . Dumper $update;
     $update = hash_to_parameters( $update );
-    #warn "parameters " . Dumper $update;
     $router->set_input_params( { input_params => $update } );
 
     $data = $router->call_method( { method => sub { $info->update_metadata(@_); } } );
 
-    warn "data:\n" . Dumper $data;
     my $message = $data->{'error_msg'};
     $message = $data->{'status_msg'} if $data->{'status_msg'};
     my $response = $data->{'success'};
@@ -149,7 +151,6 @@ foreach my $test ( @$tests ) {
     $message .= " ( save_success: $save_success; restart_success: $restart_success )";
     test_result($data, $expected_data, $message);
 
-    warn "updated data:\n" . Dumper $data;
     if ( $delete_files ) {
         unlink $ls_file_new or die ("Error deleting temp config file");
     }
