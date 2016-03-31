@@ -9,7 +9,7 @@ use lib "$Bin/../lib";
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init( {level => 'OFF'} );
 
-use Test::More tests => 1;
+use Test::More tests => 15;
 
 use Config::General;
 use Data::Dumper;
@@ -34,105 +34,130 @@ my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 my %conf = $conf_obj->getall;
 
 my $data;
-my $params = {};
-$params->{'config_file'} = $config_file;
-$params->{'load_ls_registration'} = 1;
-$params->{'ls_config_file'} = $ls_file;
+my $host_params = {};
+$host_params->{'config_file'} = $config_file;
+$host_params->{'load_ls_registration'} = 1;
+$host_params->{'ls_config_file'} = $ls_file;
+
+# original_metadata is the data we expect to get back before making changes
+my $original_metadata = get_original_metadata();
+
+warn "original metadata: " . Dumper $original_metadata;
+# updated_metadata is the data we expect after a successful edit/save
+my $updated_metadata = get_updated_metadata();
 
 # We must create our mocks before instantiating the objects that use them
 # mock the external dependencies called by new
 
-my $qmock = Test::MockObject->new();
-$qmock->fake_module('perfSONAR_PS::NPToolkit::ConfigManager::ConfigClient', saveFile => sub { perfSONAR_PS::NPToolkit::UnitTests::Mock::save_file_mock(1, @_) } );
-$qmock->fake_module('perfSONAR_PS::NPToolkit::ConfigManager::ConfigClient', restartService => sub{ perfSONAR_PS::NPToolkit::UnitTests::Mock::succeed_value( 0 ) } );
+my $tests = [];
+my $row = {};
+# NOTE: For these tests, 'save_succeeded' and 'restart_succeded' use 0 for false
+# and 1 for true. 
+# However, the restart response uses 0 for success and -1 for failure.
+$row->{'save_succeed'}              = 0;
+$row->{'restart_succeed'}           = -1;
+$row->{'expected_save_response'}    = 0;
+$row->{'expected_data'}             = $original_metadata; # save was unsucessful
+push @$tests, $row;
 
+$row = {};
+$row->{'save_succeed'}              = 1;
+$row->{'restart_succeed'}           = 0;
+$row->{'expected_save_response'}    = 1;
+$row->{'expected_data'}             = $updated_metadata;
+push @$tests, $row;
+
+$row = {};
+$row->{'save_succeed'}              = 1;
+$row->{'restart_succeed'}           = -1;
+$row->{'expected_save_response'}    = 0;
+# the file is saved before the services are restarted, so the file should be updated
+$row->{'expected_data'}             = $updated_metadata;
+push @$tests, $row;
+
+warn "tests\n" . Dumper $tests;
+
+# GET INITIAL DATA
 my $router = perfSONAR_PS::NPToolkit::UnitTests::Router->new( );
 
 isa_ok( $router, 'perfSONAR_PS::NPToolkit::UnitTests::Router' );
 
-my $info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
+my $info = perfSONAR_PS::NPToolkit::DataService::Host->new( $host_params );
 isa_ok( $info, 'perfSONAR_PS::NPToolkit::DataService::Host' );
 
 $data = $router->call_method( { method => sub { $info->get_metadata(@_); } } );
 
-warn "data:\n" . Dumper $data;
+#warn "data:\n" . Dumper $data;
 
 # check the metadata
 
-my $expected_metadata = {
-    'communities' => [
-        'Indiana',
-        'perfSONAR',
-        'perfSONAR-PS'
-    ],
-    'administrator' => {
-        'email' => 'admin@test.com',
-        'name' => 'Node Admin',
-        'organization' => 'Test Org'
-    },
-    'location' => {
-        'country' => 'US',
-        'longitude' => '-28.23',
-        'city' => 'Bloomington',
-        'latitude' => '123.456',
-        'zipcode' => '47401',
-        'state' => 'IN'
-    },
-    'config' => {
-        'access_policy' => 'public',
-        'role' => 'test-host',
-        'access_policy_notes' => 'This is a unit test, but feel free to test to it if you like.'
-    }
-};
+test_result($data, $original_metadata, "Metadata values are as expected");
 
-test_result($data, $expected_metadata, "Metadata values are as expected");
+foreach my $test ( @$tests ) {
+    # TODO : move file copy/load to within this loop
+    my $save_success = $test->{'save_succeed'};
+    my $restart_success = $test->{'restart_succeed'};
+    my $expected_data = $test->{'expected_data'};
+    my $expected_save_response = $test->{'expected_save_response'};
+    my $qmock = Test::MockObject->new();
+
+# Testing this scenario
+# save method succeeds, restarting service succeeds
+    $qmock->fake_module(
+        'perfSONAR_PS::NPToolkit::ConfigManager::ConfigClient',
+        saveFile => sub { perfSONAR_PS::NPToolkit::UnitTests::Mock::save_file_mock( $save_success, @_ ) }
+    );
+
+    $qmock->fake_module(
+        'perfSONAR_PS::NPToolkit::ConfigManager::ConfigClient',
+        restartService => sub{ perfSONAR_PS::NPToolkit::UnitTests::Mock::succeed_value( $restart_success ) }
+    );
+
+$router = perfSONAR_PS::NPToolkit::UnitTests::Router->new( );
+
+isa_ok( $router, 'perfSONAR_PS::NPToolkit::UnitTests::Router' );
+
+$info = perfSONAR_PS::NPToolkit::DataService::Host->new( $host_params );
+isa_ok( $info, 'perfSONAR_PS::NPToolkit::DataService::Host' );
 
 
-my $updated_metadata = {
-    'communities' => [
-        'IndianaZ',
-        'perfSONAR new',
-        'perfSONAR-PS new'
-    ],
-    'administrator' => {
-        'email' => 'newadmin@test.com',
-        'name' => 'Node Adminz',
-        'organization' => 'Test Orgz'
-    },
-    'location' => {
-        'country' => 'CO',
-        'longitude' => '-74.0779491',
-        'city' => 'Bogatá',
-        'latitude' => '4.7002952',
-        'zipcode' => '113456',
-        'state' => ''
-    },
-    'config' => {
-        'access_policy' => 'private',
-        'role' => 'regional',
-        'access_policy_notes' => 'New node'
-    }
-};
+    my $update = flatten_metadata ( $updated_metadata );
+    #warn "flattened: " . Dumper $update;
+    $update = hash_to_parameters( $update );
+    #warn "parameters " . Dumper $update;
+    $router->set_input_params( { input_params => $update } );
 
-my $update = flatten_metadata ( $updated_metadata );
+    $data = $router->call_method( { method => sub { $info->update_metadata(@_); } } );
 
-$update = hash_to_parameters( $update );
+    warn "data:\n" . Dumper $data;
+    my $message = $data->{'error_msg'};
+    $message = $data->{'status_msg'} if $data->{'status_msg'};
+    my $response = $data->{'success'};
+    $message = "Save response is as expected";
+    $message .= " ( save_success: $save_success; restart_success: $restart_success )";
+    is( $response, $expected_save_response, $message );
 
-$router->set_input_params( { input_params => $update } );
+    # re-instantiate the Host info object so it reloads the config
+    $info = perfSONAR_PS::NPToolkit::DataService::Host->new( $host_params );
 
-$data = $router->call_method( { method => sub { $info->update_metadata(@_); } } );
+    $router->set_input_params( { input_params => {} } );
+    $data = $router->call_method( { method => sub { $info->get_metadata(@_); } } );
+    $message = "Metadata values are as expected";
+    $message .= " ( save_success: $save_success; restart_success: $restart_success )";
+    test_result($data, $expected_data, $message);
 
-warn "data:\n" . Dumper $data;
+    warn "updated data:\n" . Dumper $data;
+    #last;
+}
 
-$router->set_input_params( { input_params => {} } );
+# Testing this scenario
+# save method succeeds, restarting service fails
 
-$data = $router->call_method( { method => sub { $info->get_metadata(@_); } } );
-test_result($data, $updated_metadata, "Metadata values are as expected");
 
-warn "updated data:\n" . Dumper $data;
+
+
 
 # check all these situations
-# save method succeeds, restart succeeds
 # save method succeds, restart fails
 # save method fails, restart succeeds
 # save method fails, restart fails
@@ -174,6 +199,64 @@ sub flatten_metadata {
         }
 
     }
-    warn "flattened\n" . Dumper $flattened;
     return $flattened;
 }
+
+sub get_updated_metadata {
+    my $data = {
+        'communities' => [
+            'IndianaZ',
+            'perfSONAR new',
+            'perfSONAR-PS new'
+        ],
+        'administrator' => {
+            'email' => 'newadmin@test.com',
+            'name' => 'Node Adminz',
+            'organization' => 'Test Orgz'
+        },
+        'location' => {
+            'country' => 'CO',
+            'longitude' => '-74.0779491',
+            'city' => 'Bogatá',
+            'latitude' => '4.7002952',
+            'zipcode' => '113456',
+            'state' => 'Newstate'
+        },
+        'config' => {
+            'access_policy' => 'private',
+            'role' => 'regional',
+            'access_policy_notes' => 'New node'
+        }
+    };
+    return $data;
+}
+
+sub get_original_metadata {
+    my $data = {
+        'communities' => [
+            'Indiana',
+            'perfSONAR',
+            'perfSONAR-PS'
+        ],
+        'administrator' => {
+            'email' => 'admin@test.com',
+            'name' => 'Node Admin',
+            'organization' => 'Test Org'
+        },
+        'location' => {
+            'country' => 'US',
+            'longitude' => '-28.23',
+            'city' => 'Bloomington',
+            'latitude' => '123.456',
+            'zipcode' => '47401',
+            'state' => 'IN'
+        },
+        'config' => {
+            'access_policy' => 'public',
+            'role' => 'test-host',
+            'access_policy_notes' => 'This is a unit test, but feel free to test to it if you like.'
+        }
+    };
+    return $data;
+}
+

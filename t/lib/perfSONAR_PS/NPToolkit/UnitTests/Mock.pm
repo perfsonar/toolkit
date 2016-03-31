@@ -33,7 +33,6 @@ sub succeed_value {
 # return 0 if successful, -1 if unsuccessful
 sub save_file_mock {
     my $success = shift;
-    warn "GOT HERE";
     my $self = shift;
     my $parameters = validate(
         @_,
@@ -43,9 +42,11 @@ sub save_file_mock {
         }
     );
 
+    return -1 unless $success;
+
     my $filename    = $parameters->{filename};
     my $contents = $parameters->{content};
-    warn "filename: $filename";
+    warn "filename: $filename; save_success: $success";
 
     # return an error if filename contains '..' or stars with '/'
     # as this means it's attempting to write to a parent directory
@@ -56,12 +57,12 @@ sub save_file_mock {
 
     my ($status, $res);
 
-    unless (open( FILE, ">:utf8", $filename ) && $success) {
+    unless (open( FILE, ">:utf8", $filename ) ) {
         my $msg = "Couldn't write $filename: $@";
         return -1;
     }
 
-    print FILE $contents or die ("$!");
+    print FILE $contents;
     close( FILE );
 
     return 0;

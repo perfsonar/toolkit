@@ -48,27 +48,11 @@ sub nonnegative_number {
 sub test_result {
     my ( $result, $expected, $description ) = @_;
     $description = "Test result data is as expected" if not defined $description or $description eq '';
-    #my ($result, $expected, $extra_conf) = @_;
 
     # disable logging
     Log::Log4perl->easy_init( {level => 'OFF'} );
 
-    #build basic config
-    #my %conf = ();
-    #$conf{'ls_instance'} =  TEST_LS_INSTANCE;
-    #$conf{'client_uuid_file'} = TEST_CLIENT_UUID_FILE;
-    #$conf{'ls_key_db'} = TEST_KEY_DB;
-    #$conf{'allow_internal_addresses'} = 1; #increase autodetection chances
-    #foreach my $opt(keys %{ $extra_conf }){
-    #    $conf{$opt} = $extra_conf->{$opt};
-    #}
-    ##test_init
-    #ok($record->init(\%conf) == 0, "service init");
-
     is_deeply($result, $expected, $description);
-
-    # use Data::Dumper;
-    # print Dumper($registration);
 
 }
 
@@ -77,21 +61,15 @@ sub test_result {
 sub hash_to_parameters {
     my ( $values ) = @_;
     my $parameters = {};
-    warn "values:\n" . Dumper $values;
+    #warn "values:\n" . Dumper $values;
 
     # disable logging
     Log::Log4perl->easy_init( {level => 'OFF'} );
     while ( my ( $key, $value ) = each ( %$values ) ) { 
-        my $row = {};
-
         $parameters->{$key}->{is_set} = 1;
         $parameters->{ $key }->{'value'} = $value;
-        #$row->{$key}->{is_set} = 1;
-        #$row->{ $key }->{'value'} = $value;
-
-        #push @$parameters, $row;
     }
-    warn "parameters:\n" . Dumper $parameters;
+    #warn "parameters:\n" . Dumper $parameters;
     return $parameters;
 }
 
