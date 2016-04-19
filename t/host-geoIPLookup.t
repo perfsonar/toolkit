@@ -9,18 +9,20 @@ use lib "$Bin/../lib";
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init( {level => 'OFF'} );
 
-use Test::More tests => 6;
+use Test::More tests => 8;
 
 use Data::Dumper;
 
 use perfSONAR_PS::NPToolkit::UnitTests::Util qw( test_result );
 use perfSONAR_PS::Utils::GeoLookup qw(geoIPLookup);
 
-# test IP addresses: perfsonar-dev.grnoc.iu.edu ipv4 & ipv6, ps-dashboard.es.net ipv4 & ipv6,
-# 	bdw-vncv1.pfs2.canarie.ca in Ottawa ipv4 adn ipv6
-# NOTE: the City ipv6 database is only returning Country correctly!
+# test IP addresses below are for:    
+#             perfsonar-dev.grnoc.iu.edu ipv4 & ipv6, 
+#             ps-dashboard.es.net ipv4 & ipv6,
+#             bdw-vncv1.pfs2.canarie.ca ipv4 & ipv6, 
+#             www.swisscom.com ipv4 (coords are of the country-center) & ipv6
 my $expected_results = {
-	"140.182.44.162" => {
+    "140.182.44.162" => {
           'country' => 'US',
           'country_full' => 'United States',
           'state_abbr' => 'IN',
@@ -31,11 +33,11 @@ my $expected_results = {
           'time_zone' => 'America/Indiana/Indianapolis',
           'code' => '47408'
         },
-	"2001:18e8:3:10:8000::1" => {
+    "2001:18e8:3:10:8000::1" => {
           'country' => 'US',
           'country_full' => 'United States'
         },
-	"198.128.153.14" => {
+    "198.128.153.14" => {
           'country' => 'US',
           'country_full' => 'United States',
           'state_abbr' => 'CA',
@@ -45,12 +47,12 @@ my $expected_results = {
           'longitude' => '-122.2536',
           'time_zone' => 'America/Los_Angeles',
           'code' => '94720'
-	},
-	"2001:400:210:153::14" => {
+    },
+    "2001:400:210:153::14" => {
           'country' => 'US',
           'country_full' => 'United States'
-	},
-	"205.189.32.128" => {
+    },
+    "205.189.32.128" => {
           'country' => 'CA',
           'country_full' => 'Canada',
           'state_abbr' => 'ON',
@@ -60,17 +62,28 @@ my $expected_results = {
           'longitude' => '-75.7026',
           'time_zone' => 'America/Toronto',
           'code' => 'K1P'
-	},
-	"2001:410:102:b81b::2" => {
+    },
+    "2001:410:102:b81b::2" => {
           'country' => 'CA',
           'country_full' => 'Canada'
-	}
+    },
+    "193.222.73.227" => {
+          'country' => 'CH',
+          'longitude' => '8.0000',
+          'latitude' => '47.0000',
+          'time_zone' => 'Europe/Zurich',
+          'country_full' => 'Switzerland'
+     },
+    "2a02:a90:ffff:ffff::c:1d" => {
+          'country' => 'CH',
+          'country_full' => 'Switzerland'
+    }
 };
 
 my $result;
 foreach my $ip (keys %$expected_results) {
-	$result = geoIPLookup($ip);
-	test_result($result, $expected_results->{$ip}, "location data is as expected for $ip");
-	#warn $ip." geoIPLookup result = ".Dumper $result;
-}	
-	
+    $result = geoIPLookup($ip);
+    test_result($result, $expected_results->{$ip}, "location data is as expected for $ip");
+    #warn $ip." geoIPLookup result = ".Dumper $result;
+}    
+    
