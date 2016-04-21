@@ -1457,6 +1457,11 @@ select {
   width: auto;
 }
 
+.advanced_params { 
+  padding-top: 4px;
+  display: none;
+}
+
 /*------------------------------------------------------------------------------
 
     Alerts

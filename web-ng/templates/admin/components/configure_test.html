@@ -24,7 +24,7 @@
             <a href="#" id="testConfigCancelButton" style="margin: 0 3em;" class="testConfigCancelButton">Cancel</a>
             <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton"{{#unless editable}} disabled{{/unless}}>OK</button>
         </div>
-    </div>
+    </div> <!-- end row --> 
 
     {{#unless editable}}
     <div class="row">
@@ -41,7 +41,7 @@
 
         </div>
 
-    </div>
+    </div>  <!-- end row -->
     {{/unless}}
     <div class="row">
         <div class="medium-12 columns">
@@ -61,7 +61,7 @@
                     </div>
                     <div class="medium-6 columns">
                     </div>
-                </div>
+                </div> <!-- end row -->
 <div class="existing_test_type_only">
                 <div class="row">
                     <div class="medium-6 columns">
@@ -82,7 +82,7 @@
 
                         </div>
                     </div>
-                </div>
+                </div>  <!-- end row -->
                 <div class="row">
                     <div class="medium-6 columns">
                         <label for="interfaceSelector">Interface</label>
@@ -119,31 +119,13 @@
                         {{/if}}
 
 
-                </div>
+                </div>  <!-- end row -->
 
 <!-- End common fields -->
 
-{{#if showOWAMPParameters}}
-                <div class="row">
 
-                    <div class="medium-6 columns">
-                        <label for="packetRateSel">Packet Rate (packets per second)</label>
-                        <select id="packetRateSel">
-                            <option value="10" {{#compare parameters.packet_rate 10}}selected="selected"{{/compare}}>10 (default)</option>
-                            <option value="50" {{#compare parameters.packet_rate 50}}selected="selected"{{/compare}}>50</option>
-                            <option value="100" {{#compare parameters.packet_rate 100}}selected="selected"{{/compare}}>100</option>
-                            <option value="250" {{#compare parameters.packet_rate 250}}selected="selected"{{/compare}}>250</option>
-                            <option value="500" {{#compare parameters.packet_rate 500}}selected="selected"{{/compare}}>500</option>
-                            <option value="1000" {{#compare parameters.packet_rate 1000}}selected="selected"{{/compare}}>1000</option>
-                        </select>
-                    </div>
-                    <div class="medium-6 columns">
-                        <label for="packetSize">Packet Size (bytes)</label>
-                        <input type="text" id="packetSize" value="{{#if parameters.packet_size}}{{parameters.packet_size}}{{/if}}" pattern="positive_integer" />
-                        <small class="error">Positive integer required</small>
-                    </div>
-                </div> <!-- end div class="row" -->
-{{else}}
+<!-- Put 'Time between tests' in same row as other params -->
+{{#unless showOWAMPParameters}}
                 <div class="row">
                     {{#if showTestInterval}}
                     <div class="medium-3 columns">
@@ -195,69 +177,105 @@
                             </div>
                         {{/if}}
                 </div> <!-- end div class="row" -->
+{{/unless}}
+
+{{#if showOWAMPParameters}}
+                <a href="#" id="advanced_owamp_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
+                <div id="advancedParamsOwamp" class="advanced_params">
+
+                    <div class="row">
+                        <div class="medium-6 columns">
+                            <label for="packetRateSel">Packet Rate (packets per second)</label>
+                            <select id="packetRateSel">
+                                <option value="10" {{#compare parameters.packet_rate 10}}selected="selected"{{/compare}}>10 (default)</option>
+                                <option value="50" {{#compare parameters.packet_rate 50}}selected="selected"{{/compare}}>50</option>
+                                <option value="100" {{#compare parameters.packet_rate 100}}selected="selected"{{/compare}}>100</option>
+                                <option value="250" {{#compare parameters.packet_rate 250}}selected="selected"{{/compare}}>250</option>
+                                <option value="500" {{#compare parameters.packet_rate 500}}selected="selected"{{/compare}}>500</option>
+                                <option value="1000" {{#compare parameters.packet_rate 1000}}selected="selected"{{/compare}}>1000</option>
+                            </select>
+                        </div>
+                        <div class="medium-6 columns">
+                            <label for="packetSize">Packet Size (bytes)</label>
+                            <input type="text" id="packetSize" value="{{#if parameters.packet_size}}{{parameters.packet_size}}{{/if}}" pattern="positive_integer" />
+                            <small class="error">Positive integer required</small>
+                        </div>
+                    </div> <!-- end div class="row" -->
+
+		</div> <!-- end advanced_params div -->
 {{/if}}
 
 {{#if showPingParameters}}
 
-                <div class="row">
-                    <div class="medium-6 columns">
+                <a href="#" id="advanced_ping_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
+                <div id="advancedParamsPing" class="advanced_params">
+
+                    <div class="row">
+                        <div class="medium-6 columns">
                                 <label for="timeBetweenPackets">Time between packets (seconds)</label>
                                 <input type="text" id="timeBetweenPackets" value="{{parameters.packet_interval}}" pattern="positive_integer">
                                 <small class="error">Positive integer required</small>
-                    </div>
-                    <div class="medium-6 columns">
-                        <label for="sizeOfTestPackets">Packet Size (bytes)</label>
-                        <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}" pattern="positive_integer">
-                        <small class="error">Positive integer required</small>
-                    </div>
-                </div>
+                        </div>
+                        <div class="medium-6 columns">
+                            <label for="sizeOfTestPackets">Packet Size (bytes)</label>
+                            <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}" pattern="positive_integer">
+                            <small class="error">Positive integer required</small>
+                        </div>
+                    </div> <!-- end row -->
+
+		</div> <!-- end advanced_params div -->
 {{/if}}
 
 {{#if showTracerouteParameters}}
-<!--
-<a href="#" onclick="$('#advancedParamsTraceroute').toggle(); return false;" class="add_panel_heading"><i class="fa fa-plus"></i> Advanced parameters</a>
--->
-<div id="advancedParamsTraceroute">
-                <div class="row">
-                    <div class="medium-6 columns">
-                        <label for="firstTTL">First hop to report (blank means don't skip any)</label>
-                        <input type="text" id="firstTTL" value="{{parameters.first_ttl}}" pattern="positive_integer" />
-                        <small class="error">Positive integer required</small>
-                    </div>
-                    <div class="medium-6 columns">
-                        <label for="maxTTL">Maximum number of hops (blank means no limit)</label>
-                        <input type="text" id="maxTTL" value="{{parameters.max_ttl}}" pattern="positive_integer" />
-                        <small class="error">Positive integer required</small>
-                    </div>
-                </div>
-</div>
+
+                <a href="#" id="advanced_traceroute_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
+                <div id="advancedParamsTraceroute" class="advanced_params">
+
+                    <div class="row">
+                        <div class="medium-6 columns">
+                            <label for="firstTTL">First hop to report (blank means don't skip any)</label>
+                            <input type="text" id="firstTTL" value="{{parameters.first_ttl}}" pattern="positive_integer" />
+                            <small class="error">Positive integer required</small>
+                        </div>
+                        <div class="medium-6 columns">
+                            <label for="maxTTL">Maximum number of hops (blank means no limit)</label>
+                            <input type="text" id="maxTTL" value="{{parameters.max_ttl}}" pattern="positive_integer" />
+                            <small class="error">Positive integer required</small>
+                        </div>
+                    </div> <!-- end row -->
+
+		</div> <!-- end advanced_params div -->
 
 {{/if}}
 
 {{#if showThroughputParameters}}
 
-                <div class="row">
-                    <div class="medium-3 columns">
-                                <label for="useAutotuning" class="space">Use Autotuning</label>
-                                <div class="switch round small">
-                                    <input id="useAutotuningSwitch" type="checkbox" {{#unless showWindowSize}} checked{{/unless}}>
-                                    <label for="useAutotuningSwitch"></label>
-                                    <span for="useAutotuningSwitch" class="switch_label">{{#if showWindowSize}}Disabled{{else}}Enabled{{/if}}</span>
-                                </div>
+                <a href="#" id="advanced_throughput_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
+                <div id="advancedParamsThroughput" class="advanced_params">
 
+                    <div class="row">
+                        <div class="medium-3 columns">
+                            <label for="useAutotuning" class="space">Use Autotuning</label>
+                            <div class="switch round small">
+                                <input id="useAutotuningSwitch" type="checkbox" {{#unless showWindowSize}} checked{{/unless}}>
+                                <label for="useAutotuningSwitch"></label>
+                                <span for="useAutotuningSwitch" class="switch_label">{{#if showWindowSize}}Disabled{{else}}Enabled{{/if}}</span>
                             </div>
-                            <div class="medium-3 columns">
-                                    <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
-                                    <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}" {{#if showWindowSize}} pattern="positive_integer" required{{/if}}>
-                                <small class="error">Must be a positive integer</small>
-                            </div>
-                            <div class="medium-6 columns">
-                                <label for="tosBits" class="space">TOS bits</label>
-                                <input type="text" id="tosBits" pattern="nonnegative_integer" value="{{parameters.tos_bits}}">
-                                <small class="error">Must be an integer of 0 or greater</small>
-                            </div>
-                    </div>
-                </div>
+                        </div>
+                        <div class="medium-3 columns">
+                            <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
+                            <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}" {{#if showWindowSize}} pattern="positive_integer" required{{/if}}>
+                            <small class="error">Must be a positive integer</small>
+                        </div>
+                        <div class="medium-6 columns">
+                            <label for="tosBits" class="space">TOS bits</label>
+                            <input type="text" id="tosBits" pattern="nonnegative_integer" value="{{parameters.tos_bits}}">
+                            <small class="error">Must be an integer of 0 or greater</small>
+                        </div>
+                    </div>  <!-- end row -->
+
+                </div> <!-- end advanced_params div -->
+
 {{/if}}
 
 </div>      <!-- ends div with existing_test_type_only class -->
@@ -320,18 +338,18 @@
                         </fieldset>
                     </div>
                     <div id="testConfigAddHostByCommunityContainer"></div>
-                </div>
+                </div>  <!-- end addTestMemberPanel div -->
 
                 <div class="row">
                     <div class="medium-12 columns text-right">
                         <a href="#" id="testConfigCancelButton" style="margin: 0 3em;" class="testConfigCancelButton">Cancel</a>
                         <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton"{{#unless editable}} disabled{{/unless}}>OK</button>
                     </div>
-                </div>
+                </div>  <!-- end row -->
 
-            </div>
-        </div>
-    </div>
+            </div> <!-- end existing_test_type_only div -->
+        </div> <!-- end medium 12-columns div -->
+    </div>  <!-- end row div -->
 
 
 </form>

@@ -608,10 +608,25 @@ TestConfigComponent._drawConfigForm = function( ) {
         $('#addHostManually').hide();
     });
 
+    $('#advanced_traceroute_button').click( function( e ) {
+	TestConfigComponent.advancedParamsTraceroute(e);
+    });
+
+    $('#advanced_throughput_button').click( function( e ) {
+	TestConfigComponent.advancedParamsThroughput(e);
+    });
+
+    $('#advanced_ping_button').click( function( e ) {
+	TestConfigComponent.advancedParamsPing(e);
+    });
+
+    $('#advanced_owamp_button').click( function( e ) {
+	TestConfigComponent.advancedParamsOwamp(e);
+    });
+
     $('#member_add_button').click( function( e ) {
         TestConfigComponent.addTestMember(e);
     });
-
 
     this.testConfig = testConfig;
     var self = this;
@@ -989,6 +1004,26 @@ TestConfigComponent.addTestMember = function(e) {
     $('#new-host-description').val('');
 
     return false;
+};
+
+TestConfigComponent.advancedParamsTraceroute = function(e) {
+    e.preventDefault(); 
+    $('#advancedParamsTraceroute').toggle();
+};
+
+TestConfigComponent.advancedParamsThroughput = function(e) {
+    e.preventDefault(); 
+    $('#advancedParamsThroughput').toggle();
+};
+
+TestConfigComponent.advancedParamsPing = function(e) {
+    e.preventDefault(); 
+    $('#advancedParamsPing').toggle();
+};
+
+TestConfigComponent.advancedParamsOwamp = function(e) {
+    e.preventDefault(); 
+    $('#advancedParamsOwamp').toggle();
 };
 
 TestConfigComponent._cancel = function() {
