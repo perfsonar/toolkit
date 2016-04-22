@@ -108,7 +108,6 @@ TestConfigComponent.initialize = function() {
 
 TestConfigComponent.save = function(e) {
     Dispatcher.publish(TestConfigComponent.formSubmitTopic);
-    //SharedUIFunctions._showSaveBar();
     TestConfigAdminStore.save(TestConfigStore.data);
 };
 
@@ -213,8 +212,6 @@ TestConfigComponent._setHostData = function() {
 
 TestConfigComponent._showConfig = function( topic ) {
     TestConfigComponent._destroyTable();
-
-    //SharedUIFunctions._showSaveBar();
 
     // ** Test config tables **
     TestConfigComponent._buildTable( );
@@ -609,19 +606,19 @@ TestConfigComponent._drawConfigForm = function( ) {
     });
 
     $('#advanced_traceroute_button').click( function( e ) {
-	TestConfigComponent.advancedParamsTraceroute(e);
+        TestConfigComponent.toggle_advTraceroute(e);
     });
 
     $('#advanced_throughput_button').click( function( e ) {
-	TestConfigComponent.advancedParamsThroughput(e);
+        TestConfigComponent.toggle_advThroughput(e);
     });
 
     $('#advanced_ping_button').click( function( e ) {
-	TestConfigComponent.advancedParamsPing(e);
+        TestConfigComponent.toggle_advPing(e);
     });
 
     $('#advanced_owamp_button').click( function( e ) {
-	TestConfigComponent.advancedParamsOwamp(e);
+        TestConfigComponent.toggle_advOwamp(e);
     });
 
     $('#member_add_button').click( function( e ) {
@@ -638,22 +635,21 @@ TestConfigComponent._drawConfigForm = function( ) {
         }
         $('form#configureTestForm').submit();
     });
+
     $('#configureTestForm a.testConfigCancelButton').click( function( e ) {
         e.preventDefault();
         $('#configure-test-modal').foundation('reveal', 'close');
     });
+
     $('form#configureTestForm input').change(SharedUIFunctions._showSaveBar);
+
     $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
 
 
     $('form#configureTestForm').submit(function( e ) {
         e.preventDefault();
-        //TestConfigComponent.submitTestConfigForm( self.testConfig );
-
     });
 
-
-    //$(document).foundation('abide', 'events');
 };
 
 TestConfigComponent._setValidationEvents = function() {
@@ -672,7 +668,8 @@ TestConfigComponent._setValidationEvents = function() {
             if(e.namespace != 'abide.fndtn') {
                 return;
             }
-            //StickySaveBar.showValidationError();
+	    // if there are errors in any advanced params, be sure the div is visible 
+            TestConfigComponent._invalid_in_advanced();
         });
 
 };
@@ -1006,24 +1003,47 @@ TestConfigComponent.addTestMember = function(e) {
     return false;
 };
 
-TestConfigComponent.advancedParamsTraceroute = function(e) {
-    e.preventDefault(); 
-    $('#advancedParamsTraceroute').toggle();
+TestConfigComponent._invalid_in_advanced = function(e) {
+    // See if there are any errors in Advanced Parameter values.
+    // If there are, be sure the Advanced Parameters div is visible.
+    var invalid_fields = $('#configureTestForm').find('[data-invalid]');
+    var invalid_in_advanced = 0;
+    for (var i = 0; i < invalid_fields.length; i++) {
+        var adv_div = $("#"+invalid_fields[i].id).parents('div.advanced_params');
+        var adv_id = adv_div.attr('id');
+        if (adv_id !== undefined) {
+            adv_div.show();
+            return true;
+        }
+    }
+    return false;
 };
 
-TestConfigComponent.advancedParamsThroughput = function(e) {
+// If there are errors, _invalid_in_advanced() will open the Advanced Params div.
+// Allow it to be toggled (closed) only if there are no invalid entries.
+TestConfigComponent.toggle_advTraceroute = function(e) {
     e.preventDefault(); 
-    $('#advancedParamsThroughput').toggle();
+    if (!TestConfigComponent._invalid_in_advanced()) {
+        $('#advTracerouteDiv').toggle();
+    }
 };
-
-TestConfigComponent.advancedParamsPing = function(e) {
+TestConfigComponent.toggle_advThroughput = function(e) {
     e.preventDefault(); 
-    $('#advancedParamsPing').toggle();
+    if (!TestConfigComponent._invalid_in_advanced()) {
+        $('#advThroughputDiv').toggle();
+    }
 };
-
-TestConfigComponent.advancedParamsOwamp = function(e) {
+TestConfigComponent.toggle_advPing = function(e) {
     e.preventDefault(); 
-    $('#advancedParamsOwamp').toggle();
+    if (!TestConfigComponent._invalid_in_advanced()) {
+        $('#advPingDiv').toggle();
+    }
+};
+TestConfigComponent.toggle_advOwamp = function(e) {
+    e.preventDefault(); 
+    if (!TestConfigComponent._invalid_in_advanced()) {
+        $('#advOwampDiv').toggle();
+    }
 };
 
 TestConfigComponent._cancel = function() {
