@@ -275,6 +275,16 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             } else {
                 test.parameters.tos_bits = 0;
             }
+            if ( settings.streams ) {
+                test.parameters.streams = settings.streams;
+            } else {
+                delete test.parameters.streams;
+            }
+            if ( settings.omit_interval ) {
+                test.parameters.omit_interval = settings.omit_interval;
+            } else {
+                delete test.parameters.omit_interval;
+            }
 
             if ( settings.window_size && !settings.autotuning ) {
                 test.parameters.window_size = settings.window_size;

@@ -263,7 +263,7 @@
                             </div>
                         </div>
                         <div class="medium-3 columns">
-                            <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
+                            <label for="windowSize" id="windowSizeLabel" class="space window_size {{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
                             <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}" {{#if showWindowSize}} pattern="positive_integer" required{{/if}}>
                             <small class="error">Must be a positive integer</small>
                         </div>
@@ -273,6 +273,18 @@
                             <small class="error">Must be an integer of 0 or greater</small>
                         </div>
                     </div>  <!-- end row -->
+                    <div class="row">
+                        <div class="medium-6 columns">
+                            <label for="streams">Number of Parallel Streams</label>
+                            <input type="text" id="streams" value="{{parameters.streams}}" pattern="positive_integer" />
+                            <small class="error">Must be an integer of 1 or greater</small>
+                        </div>
+                        <div class="medium-6 columns">
+                            <label for="omit_interval">Omit Interval (sec)</label>
+                            <input type="text" id="omit_interval" value="{{parameters.omit_interval}}" pattern="nonnegative_integer" />
+                            <small class="error">Must be an integer of 0 or greater</small>
+                    </div>  <!-- end row -->
+
 
                 </div> <!-- end advanced_params div -->
 

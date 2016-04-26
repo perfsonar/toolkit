@@ -590,10 +590,12 @@ TestConfigComponent._drawConfigForm = function( ) {
             $('#windowSize').hide();
             $('#windowSize').removeAttr('required');
             $('#windowSize').removeAttr('pattern');
+            $('#windowSizeLabel').hide();
         } else {
             $('#windowSize').show();
-            $('#windowSize').removeAttr('required');
+            $('#windowSize').attr('required');
             $('#windowSize').attr('pattern', 'positive_integer');
+            $('#windowSizeLabel').show();
         }
     });
 
@@ -835,6 +837,12 @@ TestConfigComponent._getUserValues = function( testConfig ) {
 
             var tos_bits = $('#tosBits').val();
             settings.tos_bits = tos_bits;
+
+            var streams  = $('#streams').val();
+            settings.streams = streams;
+
+            var omit_interval = $('#omit_interval').val();
+            settings.omit_interval = omit_interval;
 
             var window_size = $('#windowSize').val();
             settings.window_size = window_size;
