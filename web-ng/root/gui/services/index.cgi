@@ -8,7 +8,6 @@ use Template;
 use POSIX;
 use Data::Dumper;
 use JSON::XS;
-use Sys::MemInfo qw(totalmem);
 use FindBin qw($RealBin);
 
 my $basedir = "$RealBin/../../..";
@@ -18,7 +17,7 @@ use lib "$RealBin/../../../../lib";
 use perfSONAR_PS::NPToolkit::Config::Version;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 
-use perfSONAR_PS::Utils::Host qw( discover_primary_address );
+use perfSONAR_PS::Utils::Host qw( discover_primary_address totalmem );
 use perfSONAR_PS::Utils::LookupService qw( is_host_registered );
 
 use perfSONAR_PS::NPToolkit::Services::ServicesMap qw(get_service_object);

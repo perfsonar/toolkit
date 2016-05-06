@@ -8,13 +8,14 @@ use POSIX;
 use Data::Dumper;
 use JSON::XS;
 use XML::Simple;
-use Sys::MemInfo qw(totalmem);
 use FindBin qw($RealBin);
 
 
 my $basedir = "$RealBin/../../";
 
 use lib "$RealBin/../../../lib";
+
+use perfSONAR_PS::Utils::Host qw( totalmem );
 
 use perfSONAR_PS::NPToolkit::WebService::ParameterTypes qw($parameter_types);
 

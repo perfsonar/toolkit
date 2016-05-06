@@ -68,7 +68,6 @@ Socket6
 Statistics::Descriptive
 Storable
 Symbol
-Sys::MemInfo
 Sys::Statistics::Linux
 Template
 Template::Filters
