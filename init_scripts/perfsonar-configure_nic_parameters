@@ -80,7 +80,7 @@ ret=0
 
 # Do not save and apply if we've already run
 for interface in $interfaces; do
-    /sbin/ifconfig $interface > /dev/null 2>&1
+    /sbin/ip link show $interface > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         continue;
     fi
@@ -136,7 +136,7 @@ return $ret
 }
 
 TXQUEUELEN_SET() {
-/sbin/ifconfig $1 txqueuelen $2
+/sbin/ip link set $1 txqueuelen $2
 }
 
 TCP_CONG_SET() {

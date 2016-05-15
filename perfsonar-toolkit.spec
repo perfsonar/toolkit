@@ -21,7 +21,7 @@
 
 Name:			perfsonar-toolkit
 Version:		3.5.1.3
-Release:		%{relnum}
+Release:		%{relnum}%{?dist}
 Summary:		perfSONAR Toolkit
 License:		Distributable, see LICENSE
 Group:			Applications/Communications
@@ -594,7 +594,7 @@ fi
 %{config_base}/templates/ntp_conf.tmpl
 
 %files library
-%{install_base}/lib/*
+%{install_base}/lib/perfSONAR_PS/*
 %{install_base}/python_lib/*
 %doc %{install_base}/doc/*
 

@@ -8,7 +8,6 @@ use POSIX;
 use Data::Dumper;
 use JSON::XS;
 use XML::Simple;
-use Sys::MemInfo qw(totalmem);
 use FindBin qw($RealBin);
 
 my $basedir = "$RealBin/../../../";
