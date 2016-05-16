@@ -166,19 +166,22 @@ Requires(post):	bwctl-server    >= 1.6.0
 Requires(post):	owamp-server    >= 3.5.0
 Requires(post):	acpid
 Requires(post):	avahi
-Requires(post):	bluez-utils
 Requires(post):	chkconfig
-Requires(post): cpuspeed
 Requires(post):	cups
-Requires(post):	hal
 Requires(post):	httpd
 Requires(post):	irda-utils
 Requires(post):	irqbalance
 Requires(post):	mdadm
 Requires(post):	nfs-utils
 Requires(post):	pcsc-lite
-Requires(post):	readahead
 Requires(post):	rootfiles
+%if 0%{?el7}
+%else
+Requires(post):	hal
+Requires(post):	readahead
+Requires(post):	bluez-utils
+Requires(post): cpuspeed
+%endif
 Requires(pre):	rpm
 Requires(post):	rsyslog
 Requires(post):	setup
