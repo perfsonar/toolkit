@@ -598,6 +598,7 @@ fi
 
 %files library
 %{install_base}/lib/perfSONAR_PS/*
+%{install_base}/lib/OWP/*
 %{install_base}/python_lib/*
 %doc %{install_base}/doc/*
 
