@@ -37,7 +37,6 @@ Requires:		perl(CGI::Ajax)
 Requires:		perl(CGI::Carp)
 Requires:		perl(CGI::Session)
 Requires:		perl(Class::Accessor)
-Requires:		perl(Class::Fields)
 Requires:		perl(Config::General)
 Requires:		perl(Cwd)
 Requires:		perl(Data::Dumper)
@@ -54,7 +53,6 @@ Requires:		perl(File::Spec)
 Requires:		perl(FindBin)
 Requires:		perl(Getopt::Long)
 Requires:		perl(IO::File)
-Requires:		perl(IO::Interface)
 Requires:		perl(IO::Socket)
 Requires:		perl(JSON::XS)
 Requires:		perl(LWP::Simple)
@@ -109,7 +107,6 @@ Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
 
 # Misc performance/performance-related tools
-Requires:		ndt
 Requires:		tcptrace
 Requires:		xplot-tcptrace
 Requires:		coreutils
@@ -119,6 +116,10 @@ Requires:		mod_ssl
 Requires:		nagios-plugins-all
 Requires:		nscd
 Requires:		yum-cron
+%if 0%{?el7}
+%else
+Requires:		ndt
+%endif
 
 Obsoletes:		perl-perfSONAR_PS-TopologyService
 Obsoletes:		perl-perfSONAR_PS-Toolkit
@@ -136,9 +137,12 @@ Requires(post):	perfsonar-common
 Requires(post):	esmond          >= 2.0
 Requires(post):	bwctl-client    >= 1.6.0
 Requires(post):	bwctl-server    >= 1.6.0
-Requires(post):	ndt
 Requires(post):	owamp-client    >= 3.5.0
 Requires(post):	owamp-server    >= 3.5.0
+%if 0%{?el7}
+%else
+Requires(post):	ndt
+%endif
 
 Requires(post):	coreutils
 Requires(post):	httpd
