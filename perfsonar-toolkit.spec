@@ -111,7 +111,6 @@ Requires:		tcptrace
 Requires:		xplot-tcptrace
 Requires:		coreutils
 Requires:		httpd
-Requires:		mod_auth_shadow
 Requires:		mod_ssl
 Requires:		nagios-plugins-all
 Requires:		nscd
@@ -119,6 +118,7 @@ Requires:		yum-cron
 %if 0%{?el7}
 %else
 Requires:		ndt
+Requires:		mod_auth_shadow
 %endif
 
 Obsoletes:		perl-perfSONAR_PS-TopologyService
@@ -142,12 +142,12 @@ Requires(post):	owamp-server    >= 3.5.0
 %if 0%{?el7}
 %else
 Requires(post):	ndt
+Requires(post):	mod_auth_shadow
 %endif
 
 Requires(post):	coreutils
 Requires(post):	httpd
 Requires(post):	iperf
-Requires(post):	mod_auth_shadow
 Requires(post):	mod_ssl
 Requires(post):	nscd
 
@@ -353,7 +353,13 @@ rm -rf %{buildroot}
 
 %post
 # Add a group of users who can login to the web ui
+%if 0%{?el7}
+touch /etc/perfsonar/toolkit/psadmin.htpasswd
+chgrp apache /etc/perfsonar/toolkit/psadmin.htpasswd
+chmod 0640 /etc/perfsonar/toolkit/psadmin.htpasswd
+%else
 /usr/sbin/groupadd psadmin 2> /dev/null || :
+%endif
 /usr/sbin/groupadd pssudo 2> /dev/null || :
 
 mkdir -p /var/log/perfsonar/web_admin
