@@ -652,7 +652,32 @@ TestConfigComponent._drawConfigForm = function( ) {
         e.preventDefault();
     });
 
+    // make the throughput test's Tool selector into a select2 component
+    $("#TPtools").select2({ 
+        maximumSelectionLength: 2,
+        width: "100%" 
+     });
+    // make it so selected values can be dragged to reorder. Uses jquery-ui's sortable.
+    $("ul.select2-selection__rendered").sortable({ containment: 'parent' });   //can there be more than 1 select2???
+    // make the selections show up in the order the user chooses them          //all select2's???
+    $("select").on("select2:select", function (evt) {
+        var element = evt.params.data.element;
+        var $element = $(element);
+        $element.detach();
+        $(this).append($element);
+        $(this).trigger("change");
+    }); 
+    // preselect default or existing values.
+    // For a new test, testConfig.parameters is undefined on first draw, then has 
+    // values from defaults file on 2nd draw after choosing test type
+    // For existing tests, testConfig.parameters come from /etc/perfonar/regulartesting.conf. 
+    if (testConfig.parameters !== undefined) {
+        var selectedToolsArray = testConfig.parameters.tool.split(",");  
+        $("#TPtools").select2('val',selectedToolsArray); // adds both values but order matches order of options in dropdown 
+    };
+
 };
+
 
 TestConfigComponent._setValidationEvents = function() {
 
@@ -670,7 +695,7 @@ TestConfigComponent._setValidationEvents = function() {
             if(e.namespace != 'abide.fndtn') {
                 return;
             }
-	    // if there are errors in any advanced params, be sure the div is visible 
+	        // if there are errors in any advanced params, be sure the div is visible 
             TestConfigComponent._invalid_in_advanced();
         });
 
@@ -860,6 +885,14 @@ TestConfigComponent._getUserValues = function( testConfig ) {
 
             var duration = TestConfigComponent._getDateValue( 'test-duration' );
             settings.duration = duration;
+
+            // use the DOM to get the tool values in the order shown in the UI, in case they were dragged
+            var tool_vals = [];
+            $('li.select2-selection__choice').each(function(index) {
+                var item = $( this ).attr('title');
+                tool_vals.push(item);
+            });
+            settings.tool = tool_vals.toString();
 
             break;
         case 'owamp':

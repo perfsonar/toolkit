@@ -46,7 +46,7 @@
     <div class="row">
         <div class="medium-12 columns">
                         <h2 class="module-header__title font-bold">Test parameters</h2>
-                <!-- Begin common fields -->
+<!-- Begin common fields -->
 
                 <div class="row new_test_only" id="testTypeRow">
                     <div class="medium-6 columns">
@@ -124,7 +124,7 @@
 <!-- End common fields -->
 
 
-<!-- Put 'Time between tests' in same row as other params -->
+<!-- Params on the same line as 'Time between tests' -->
 {{#unless showOWAMPParameters}}
                 <div class="row">
                     {{#if showTestInterval}}
@@ -179,7 +179,9 @@
                 </div> <!-- end div class="row" -->
 {{/unless}}
 
+<!-- OWAMPP Advanced Params -->
 {{#if showOWAMPParameters}}
+
                 <a href="#" id="advanced_owamp_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
                 <div id="advOwampDiv" class="advanced_params">
 
@@ -205,6 +207,7 @@
 		</div> <!-- end advanced_params div -->
 {{/if}}
 
+<!-- PING Advanced Params -->
 {{#if showPingParameters}}
 
                 <a href="#" id="advanced_ping_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
@@ -226,6 +229,7 @@
 		</div> <!-- end advanced_params div -->
 {{/if}}
 
+<!-- TRACEROUTE Advanced Params -->
 {{#if showTracerouteParameters}}
 
                 <a href="#" id="advanced_traceroute_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
@@ -248,6 +252,7 @@
 
 {{/if}}
 
+<!-- THROUGHTPUT Advanced Params -->
 {{#if showThroughputParameters}}
 
                 <a href="#" id="advanced_throughput_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
@@ -274,15 +279,24 @@
                         </div>
                     </div>  <!-- end row -->
                     <div class="row">
-                        <div class="medium-6 columns">
+                        <div class="medium-3 columns">
                             <label for="streams">Number of Parallel Streams</label>
                             <input type="text" id="streams" value="{{parameters.streams}}" pattern="positive_integer" />
                             <small class="error">Must be an integer of 1 or greater</small>
                         </div>
-                        <div class="medium-6 columns">
+                        <div class="medium-3 columns">
                             <label for="omit_interval">Omit Interval (sec)</label>
                             <input type="text" id="omit_interval" value="{{parameters.omit_interval}}" pattern="nonnegative_integer" />
                             <small class="error">Must be an integer of 0 or greater</small>
+                        </div>
+                        <div class="medium-6 columns">
+                            <!-- selections will always order themselves as listed here! user has to drag to reorder -->
+                            <label for="TPtools">Tools (choose which to try, THEN drag to order)</label>
+                            <select id="TPtools" multiple="multiple">
+                                <option value="iperf3">iperf3</option>
+                                <option value="iperf">iperf</option>
+                            </select>
+                        </div>
                     </div>  <!-- end row -->
 
 
