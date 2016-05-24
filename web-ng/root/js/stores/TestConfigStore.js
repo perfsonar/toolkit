@@ -302,8 +302,10 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
                 test.parameters.duration = 20; // TODO: change to use configured default
             }
 
-            if ( typeof test.parameters.tool == 'undefined' ) {
+            if ( typeof settings.tool == 'undefined' ) {
                 test.parameters.tool = 'iperf3,iperf';
+            } else {
+                test.parameters.tool = settings.tool;
             }
 
 

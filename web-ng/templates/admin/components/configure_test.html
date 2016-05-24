@@ -289,12 +289,10 @@
                             <input type="text" id="omit_interval" value="{{parameters.omit_interval}}" pattern="nonnegative_integer" />
                             <small class="error">Must be an integer of 0 or greater</small>
                         </div>
-                        <div class="medium-6 columns">
+                        <div class="medium-6 columns" id="TPtoolsContainer">
                             <!-- selections will always order themselves as listed here! user has to drag to reorder -->
                             <label for="TPtools">Tools (choose which to try, THEN drag to order)</label>
                             <select id="TPtools" multiple="multiple">
-                                <option value="iperf3">iperf3</option>
-                                <option value="iperf">iperf</option>
                             </select>
                         </div>
                     </div>  <!-- end row -->
