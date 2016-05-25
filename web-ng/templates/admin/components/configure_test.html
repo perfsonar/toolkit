@@ -290,10 +290,11 @@
                             <small class="error">Must be an integer of 0 or greater</small>
                         </div>
                         <div class="medium-6 columns" id="TPtoolsContainer">
-                            <!-- selections will always order themselves as listed here! user has to drag to reorder -->
-                            <label for="TPtools">Tools (choose which to try, THEN drag to order)</label>
-                            <select id="TPtools" multiple="multiple">
+                            <!-- add options programmatically in TestConfigComponent.js -->
+                            <label for="TPtools">Tool(s), in order of preference</label>
+                            <select id="TPtools" multiple="multiple" required>
                             </select>
+                            <small class="error">At least one tool is required</small>
                         </div>
                     </div>  <!-- end row -->
 

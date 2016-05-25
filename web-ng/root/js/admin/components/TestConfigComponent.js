@@ -647,52 +647,63 @@ TestConfigComponent._drawConfigForm = function( ) {
         e.preventDefault();
     });
 
+    // Add options to the throughput test's Tools selector, taking the order from the defaults file or 
+    // the existing test's config file. Then, when it's turned into a select2, setting the val will show 
+    // the pre-selected tools in the correct order. 
+    // Add any selected options followed by any unselected options!
     var tpSel = $("#TPtools");
-    
-    // preselect default or existing values.
-    // For a new test, testConfig.parameters is undefined on first draw, then has 
-    // values from defaults file on 2nd draw after choosing test type
-    // For existing tests, testConfig.parameters come from /etc/perfonar/regulartesting.conf. 
+    var all_options = ['iperf3','iperf'];
+
     if (testConfig.parameters !== undefined) {
         tpSel.empty();
         var selectedToolsArray = testConfig.parameters.tool.split(",");
+        var options_union = selectedToolsArray.concat(all_options);
         var data = [];
-        for(var i in selectedToolsArray) {
+        for(var i in options_union) { 
             var row = {};
-            row.id = selectedToolsArray[i]; 
-            row.text = selectedToolsArray[i]; 
-            data.push(row);
-            tpSel.append( $("<option></option>")
+            row.text = options_union[i];
+            row.id   = options_union[i];
+            if (!array_contains(data,row.text)) {
+                data.push(row);
+                tpSel.append( $("<option></option>")
                     .attr("value", row.id)
-                    //.prop("selected", row.selected)
                     .text(row.text) );
+            }
         }
-        //$("#TPtools").select2('data', data); // adds both values but order matches order of options in dropdown 
-        $("#TPtools").select2({ 
+        // make it a select2 object
+        $("#TPtools").select2({
             maximumSelectionLength: 2,
-            width: "100%" 
+            width: "100%"
         });
-        $("#TPtools").select2('val',selectedToolsArray); // adds both values but order matches order of options in dropdown 
+        $("#TPtools").select2('val',selectedToolsArray);
     } else {
-        // make the throughput test's Tool selector into a select2 component
-        $("#TPtools").select2({ 
+        // when adding a new test; haven't selected test type yet.
+        $("#TPtools").select2({
             maximumSelectionLength: 2,
-            width: "100%" 
+            width: "100%"
         });
     }
     // make it so selected values can be dragged to reorder. Uses jquery-ui's sortable.
     $("#TPtoolsContainer ul.select2-selection__rendered").sortable({ containment: 'parent' });
-    // make the selections show up in the order the user chooses them
+    // make options clicked on by the user show up in that order 
     $("#TPtoolsContainer select").on("select2:select", function (evt) {
         var element = evt.params.data.element;
         var $element = $(element);
         $element.detach();
         $(this).append($element);
         $(this).trigger("change");
-    }); 
+    });
 
 };
 
+array_contains = function(data,val) {
+    for(var i in data) {
+        if( data[i].text == val ) {
+            return true;
+        }
+    }
+   return false;
+};
 
 TestConfigComponent._setValidationEvents = function() {
 
