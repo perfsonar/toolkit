@@ -14,9 +14,16 @@ etc/default_service_configs/jail.local
 etc/default_service_configs/pg_hba.conf
 etc/default_service_configs/regulartesting.conf
 etc/default_system_firewall_settings.conf
+etc/firewalld/services/bwctl.xml
+etc/firewalld/services/ndt.xml
+etc/firewalld/services/npad.xml
+etc/firewalld/services/oppd.xml
+etc/firewalld/services/owamp.xml
+etc/firewalld/services/traceroute.xml
 etc/ntp_known_servers
 etc/old_firewall_settings.conf
 etc/perfsonar_firewall_settings.conf
+etc/perfsonar_firewalld_settings.conf
 etc/perfsonar_sudo
 etc/servicewatcher-logger.conf
 etc/servicewatcher.conf

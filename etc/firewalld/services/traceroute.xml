@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Traceroute</short>
+  <description>Incoming traceroute connections.</description>
+  <port protocol="udp" port="33434-33634"/> <!-- UDP Traceroute (Incoming) -->
+</service>

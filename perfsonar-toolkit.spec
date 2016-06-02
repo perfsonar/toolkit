@@ -223,20 +223,24 @@ Installs install scripts
 Summary:                perfSONAR Toolkit IPTables configuration
 Group:                  Development/Tools
 Requires:               coreutils
+%if 0%{?el7}
+Requires:               firewalld
+%else
 Requires:               iptables
 Requires:               iptables-ipv6
+Requires(post):         iptables
+Requires(post):         iptables-ipv6
+Requires(post):         chkconfig
+%endif
 Requires:               fail2ban
 Requires:               perfsonar-common
 Requires(pre):          rpm
 Requires(post):         perfsonar-common
 Requires(post):         coreutils
 Requires(post):         system-config-firewall-base
-Requires(post):         chkconfig
 Requires(post):         kernel-devel
 Requires(post):         kernel
 Requires(post):         kernel-headers
-Requires(post):         iptables
-Requires(post):         iptables-ipv6
 Requires(post):         module-init-tools
 Obsoletes:              perl-perfSONAR_PS-Toolkit-security
 Provides:               perl-perfSONAR_PS-Toolkit-security
@@ -338,6 +342,10 @@ install -D -m 0755 init_scripts/%{init_script_1} %{buildroot}/etc/init.d/%{init_
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
 install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_script_4}
+
+mkdir -p %{buildroot}/usr/lib/firewalld/services/
+mv etc/firewalld/services/* %{buildroot}/usr/lib/firewalld/services/
+rm -rf etc/firewalld
 
 mv etc/* %{buildroot}/%{config_base}
 
@@ -508,9 +516,14 @@ echo "Running: configure_firewall install"
 %{install_base}/scripts/configure_firewall install
 
 #enabling services
+%if 0%{?el7}
+systemctl enable firewalld
+systemctl enable fail2ban
+%else
 chkconfig iptables on
 chkconfig ip6tables on
 chkconfig fail2ban on
+%endif
 
 %post sysctl
 
@@ -598,7 +611,9 @@ fi
 %config %{config_base}/default_system_firewall_settings.conf
 %config %{config_base}/old_firewall_settings.conf
 %config %{config_base}/perfsonar_firewall_settings.conf
+%config %{config_base}/perfsonar_firewalld_settings.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_firewall
+/usr/lib/firewalld/services/*.xml
 
 %files install
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>BWCTL</short>
+  <description>BWCTL test service.</description>
+  <port protocol="tcp" port="4823"/> <!-- BWCTL Control (Incoming) -->
+</service>
