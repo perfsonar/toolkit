@@ -4,8 +4,15 @@
 #
 # Author: Sowmya Balasubramanian
 
-import yum 
+import os
 import sys
+
+bindir = os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])))
+libdir = os.path.join(bindir, "..", "python_lib")
+
+sys.path.append(libdir)
+
+import yum
 import Internet2Lib
 import Internet2Consts
 
