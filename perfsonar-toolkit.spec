@@ -116,6 +116,8 @@ Requires:		nagios-plugins-all
 Requires:		nscd
 Requires:		yum-cron
 %if 0%{?el7}
+BuildRequires: systemd
+%{?systemd_requires: %systemd_requires}
 %else
 Requires:		ndt
 Requires:		mod_auth_shadow
@@ -338,7 +340,11 @@ install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 
+%if 0%{?el7}
+install -D -m 0644 init_scripts/%{init_script_1}.service %{buildroot}/%{_unitdir}/%{init_script_1}.service
+%else
 install -D -m 0755 init_scripts/%{init_script_1} %{buildroot}/etc/init.d/%{init_script_1}
+%endif
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
 install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_script_4}
@@ -435,12 +441,19 @@ chmod o+r /etc/bwctl-server/bwctl-server.keys 2> /dev/null
 chmod o+r /etc/owamp-server/owamp-server.limits 2> /dev/null
 chmod o+r /etc/owamp-server/owamp-server.pfs 2> /dev/null
 
+%if 0%{?el7}
+%else
 chkconfig --add %{init_script_1}
+%endif
 chkconfig --add %{init_script_2}
 chkconfig --add %{init_script_3}
 chkconfig --add %{init_script_4}
 
+%if 0%{?el7}
+systemctl --quiet enable %{init_script_1}
+%else
 chkconfig %{init_script_1} on
+%endif
 chkconfig %{init_script_2} on
 chkconfig %{init_script_3} on
 chkconfig %{init_script_4} on
@@ -454,7 +467,11 @@ chkconfig cassandra on
 chkconfig postgresql on
 
 #Restart config_daemon and fix nic parameters
+%if 0%{?el7}
+systemctl restart %{init_script_1} &>/dev/null || :
+%else
 /etc/init.d/%{init_script_1} restart &>/dev/null || :
+%endif
 /etc/init.d/%{init_script_3} start &>/dev/null || :
 
 %post systemenv
@@ -587,7 +604,11 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
+%if 0%{?el7}
+%attr(0644,root,root) %{_unitdir}/%{init_script_1}.service
+%else
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_1}
+%endif
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}

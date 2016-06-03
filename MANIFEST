@@ -32,6 +32,7 @@ etc/templates/motd.tmpl
 etc/templates/ntp_conf.tmpl
 etc/templates/tcpbw100_html.tmpl
 init_scripts/perfsonar-configdaemon
+init_scripts/perfsonar-configdaemon.service
 init_scripts/perfsonar-configure_nic_parameters
 init_scripts/perfsonar-generate_motd
 init_scripts/perfsonar-psb_to_esmond
