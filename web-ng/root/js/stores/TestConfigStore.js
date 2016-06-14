@@ -286,7 +286,16 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             } else {
                 delete test.parameters.omit_interval;
             }
-
+            if ( settings.send_only ) {
+                test.parameters.send_only = settings.send_only;
+            } else {
+                delete test.parameters.send_only;
+            }
+            if ( settings.receive_only ) {
+                test.parameters.receive_only = settings.receive_only;
+            } else {
+                delete test.parameters.receive_only;
+            }
             if ( settings.window_size && !settings.autotuning ) {
                 test.parameters.window_size = settings.window_size;
             } else {

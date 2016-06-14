@@ -112,7 +112,7 @@
 <!-- End common fields -->
 
 
-<!-- Params on the same line as 'Time between tests' -->
+<!-- 'Time between tests' and params on the same line -->
 {{#unless showOWAMPParameters}}
                 <div class="row">
                     {{#if showTestInterval}}
@@ -192,7 +192,6 @@
                         </div>
                     </div> <!-- end div class="row" -->
 
-		</div> <!-- end advanced_params div -->
 {{/if}}
 
 <!-- PING Advanced Params -->
@@ -214,7 +213,6 @@
                         </div>
                     </div> <!-- end row -->
 
-		</div> <!-- end advanced_params div -->
 {{/if}}
 
 <!-- TRACEROUTE Advanced Params -->
@@ -245,8 +243,6 @@
                         </div>
                     </div> <!-- end row -->
 
-		</div> <!-- end advanced_params div -->
-
 {{/if}}
 
 <!-- THROUGHTPUT Advanced Params -->
@@ -256,6 +252,20 @@
                 <div id="advThroughputDiv" class="advanced_params">
 
                     <div class="row">
+                        <!-- for send_only and receive_only -->
+                        <div class="medium-3 columns">
+                            <label for="send_receive">Direction</label>
+                            <select id="send_receive">
+                                <option value="">Send and Receive</option>
+                                <option value="send_only" {{#compare parameters.send_only "1"}}selected="selected"{{/compare}} >Send Only</option>
+                                <option value="receive_only" {{#compare parameters.receive_only "1"}}selected="selected"{{/compare}} >Receive Only</option>
+                            </select>
+                        </div>
+                        <div class="medium-3 columns">
+                            <label for="tosBits" class="space">TOS bits</label>
+                            <input type="text" id="tosBits" pattern="nonnegative_integer" value="{{parameters.tos_bits}}">
+                            <small class="error">Must be an integer of 0 or greater</small>
+                        </div>
                         <div class="medium-3 columns">
                             <label for="useAutotuning" class="space">Use Autotuning</label>
                             <div class="switch round small">
@@ -268,11 +278,6 @@
                             <label for="windowSize" id="windowSizeLabel" class="space window_size {{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
                             <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}" {{#if showWindowSize}} pattern="positive_integer" required{{/if}}>
                             <small class="error">Must be a positive integer</small>
-                        </div>
-                        <div class="medium-6 columns">
-                            <label for="tosBits" class="space">TOS bits</label>
-                            <input type="text" id="tosBits" pattern="nonnegative_integer" value="{{parameters.tos_bits}}">
-                            <small class="error">Must be an integer of 0 or greater</small>
                         </div>
                     </div>  <!-- end row -->
                     <div class="row">
@@ -295,10 +300,13 @@
                         </div>
                     </div>  <!-- end row -->
 
-
-                </div> <!-- end advanced_params div -->
-
 {{/if}}
+
+<!-- Common Advanced Params (none right now) -->
+                    <div class="row">
+                    </div>  <!-- end row -->
+
+                </div> <!-- end whichever advanced_params div we're using -->
 
 </div>      <!-- ends div with existing_test_type_only class -->
 

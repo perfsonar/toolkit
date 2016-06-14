@@ -892,6 +892,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
     settings.interface = interface;
 
     switch ( test.type ) {
+
         case 'bwctl/throughput':
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
@@ -933,7 +934,16 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             });
             settings.tool = tool_vals.toString();
 
+            // set send_only and receive_only depending on value of send_receive
+            var send_receive = $('#send_receive').val();
+            if (send_receive == "send_only") {
+                settings.send_only = 1;
+            } else if (send_receive == "receive_only") {
+                settings.receive_only = 1;
+            }
+
             break;
+
         case 'owamp':
             var packet_rate = $('#packetRateSel').val();
             settings.packet_rate = packet_rate;
@@ -942,6 +952,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             settings.packet_size = packet_size;
 
             break;
+
         case 'pinger':
             var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
             settings.test_interval = test_interval;
@@ -956,6 +967,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             settings.packet_size = packet_size;
 
             break;
+
         case 'traceroute':
             var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
             settings.test_interval = test_interval;
