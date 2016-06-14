@@ -106,18 +106,6 @@
                         <input type="text" id="udpBandwidth" value="{{#if parameters.udp_bandwidth_mb}}{{parameters.udp_bandwidth_mb}}{{else}}0{{/if}}" />
                     </div>
                         {{/if}}
-                        {{#if showTracerouteParameters}}
-                    <div class="medium-6 columns">
-                            <label for="toolSel">Tool</label>
-                            <select id="toolSel">
-                                <option value="">Default</option>
-                                <option value="tracepath" {{#compare parameters.tool "tracepath"}}selected{{/compare}}>tracepath</option>
-                                <option value="traceroute" {{#compare parameters.tool "traceroute"}}selected{{/compare}}>traceroute</option>
-                                <option value="paris-traceroute" {{#compare parameters.tool "paris-traceroute"}}selected{{/compare}}>paris-traceroute</option>
-                            </select>
-                    </div>
-                        {{/if}}
-
 
                 </div>  <!-- end row -->
 
@@ -247,6 +235,15 @@
                             <small class="error">Positive integer required</small>
                         </div>
                     </div> <!-- end row -->
+                    <div class="row">
+                        <div class="medium-6 columns" id="toolsContainer">
+                            <!-- add options programmatically in TestConfigComponent.js -->
+                            <label for="tools_selector">Tool(s), in order of preference</label>
+                            <select id="tools_selector" multiple="multiple" required>
+                            </select>
+                            <small class="error">At least one tool is required</small>
+                        </div>
+                    </div> <!-- end row -->
 
 		</div> <!-- end advanced_params div -->
 
@@ -289,10 +286,10 @@
                             <input type="text" id="omit_interval" value="{{parameters.omit_interval}}" pattern="nonnegative_integer" />
                             <small class="error">Must be an integer of 0 or greater</small>
                         </div>
-                        <div class="medium-6 columns" id="TPtoolsContainer">
+                        <div class="medium-6 columns" id="toolsContainer">
                             <!-- add options programmatically in TestConfigComponent.js -->
-                            <label for="TPtools">Tool(s), in order of preference</label>
-                            <select id="TPtools" multiple="multiple" required>
+                            <label for="tools_selector">Tool(s), in order of preference</label>
+                            <select id="tools_selector" multiple="multiple" required>
                             </select>
                             <small class="error">At least one tool is required</small>
                         </div>

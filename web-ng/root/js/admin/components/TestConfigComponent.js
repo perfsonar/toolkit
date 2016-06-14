@@ -647,16 +647,30 @@ TestConfigComponent._drawConfigForm = function( ) {
         e.preventDefault();
     });
 
-    // Add options to the throughput test's Tools selector, taking the order from the defaults file or 
-    // the existing test's config file. Then, when it's turned into a select2, setting the val will show 
-    // the pre-selected tools in the correct order. 
-    // Add any selected options followed by any unselected options!
-    var tpSel = $("#TPtools");
-    var all_options = ['iperf3','iperf'];
+    // Add options to the throughput or traceroute test's Tools selector - first values from the existing test's 
+    // config file, then adding any others from the defaults file. Then, when it's turned into a select2, setting the 
+    // val will show  the pre-selected tools in the correct order 
+    // (select2 orders the selections in the order they are in the options list). 
+    var all_options;
+    var max_num_selectable;
+    if ( testConfig.type == "bwctl/throughput") {
+        all_options = ['iperf3','iperf'];  
+        max_num_selectable = 2;
+    }
+    if ( testConfig.type == "traceroute") {
+        all_options = ['tracepath', 'traceroute', 'paris-traceroute'];  
+        max_num_selectable = 3;
+    }
 
-    if (testConfig.parameters !== undefined) {
-        tpSel.empty();
-        var selectedToolsArray = testConfig.parameters.tool.split(",");
+    if (testConfig.type == "bwctl/throughput" || testConfig.type == "traceroute")  {
+        $('#tools_selector').empty();
+        var selectedToolsArray = [];
+        // testConfig.parameters has values for this test from the defaults file, 
+        // the reg. testing config file's defaults, values saved previously for a specific test, or those previously
+        // entered by the user and saved in memory by clicking on OK (before clicking SAVE).
+        if (testConfig.parameters.tool) {   // to be doubly sure not to get an error
+            selectedToolsArray = testConfig.parameters.tool.split(",");
+        }
         var options_union = selectedToolsArray.concat(all_options);
         var data = [];
         for(var i in options_union) { 
@@ -665,34 +679,33 @@ TestConfigComponent._drawConfigForm = function( ) {
             row.id   = options_union[i];
             if (!array_contains(data,row.text)) {
                 data.push(row);
-                tpSel.append( $("<option></option>")
+                $('#tools_selector').append( $("<option></option>")
                     .attr("value", row.id)
                     .text(row.text) );
             }
         }
-        // make it a select2 object
-        $("#TPtools").select2({
-            maximumSelectionLength: 2,
+
+        // make the select into a select2 object
+        $('#tools_selector').select2({
+            maximumSelectionLength: max_num_selectable,
             width: "100%"
         });
-        $("#TPtools").select2('val',selectedToolsArray);
-    } else {
-        // when adding a new test; haven't selected test type yet.
-        $("#TPtools").select2({
-            maximumSelectionLength: 2,
-            width: "100%"
+
+        // pre-select the options that are in selectedToolsArray, ie, in testConfig.parameters
+        $('#tools_selector').select2('val',selectedToolsArray);
+
+        // make it so selected values can be dragged to reorder. Uses jquery-ui's sortable.
+        $('#toolsContainer ul.select2-selection__rendered').sortable({ containment: 'parent' });
+        // make options clicked on by the user show up in that order 
+        $('#toolsContainer select').on("select2:select", function (evt) {
+            var element = evt.params.data.element;
+            var $element = $(element);
+            $element.detach();
+            $(this).append($element);
+            $(this).trigger("change");
         });
-    }
-    // make it so selected values can be dragged to reorder. Uses jquery-ui's sortable.
-    $("#TPtoolsContainer ul.select2-selection__rendered").sortable({ containment: 'parent' });
-    // make options clicked on by the user show up in that order 
-    $("#TPtoolsContainer select").on("select2:select", function (evt) {
-        var element = evt.params.data.element;
-        var $element = $(element);
-        $element.detach();
-        $(this).append($element);
-        $(this).trigger("change");
-    });
+
+    } // end if doing throughput or traceroute 
 
 };
 
@@ -947,8 +960,13 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
             settings.test_interval = test_interval;
 
-            var tool = $('#toolSel').val();
-            settings.tool = tool;
+            // use the DOM to get the tool values in the order shown in the UI, in case they were dragged
+            var tool_vals = [];
+            $('li.select2-selection__choice').each(function(index) {
+                var item = $( this ).attr('title');
+                tool_vals.push(item);
+            });
+            settings.tool = tool_vals.toString();
 
             var packet_size = $('#sizeOfTestPackets').val();
             settings.packet_size = packet_size;
