@@ -1142,11 +1142,19 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
   overflow-wrap: break-word;
   color:#a9b1b5;
 }
+.sidebar-list__parameter.communities {
+  width: 100%;
+  padding: 0 0 .3em 0;
+}
 
 .sidebar-list__value {
   float: left;
   width: 50%;
   overflow-wrap: break-word;
+}
+.sidebar-list__value.communities {
+  width: 100%;
+  padding: 0;
 }
 
 /*
