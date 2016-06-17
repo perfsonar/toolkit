@@ -234,6 +234,7 @@ TestConfigStore.addTest = function ( test ) {
 
 };
 
+// save user-entered settings to test.parameters
 TestConfigStore.setTestSettings = function ( testID, settings ) {
 
     var test = TestConfigStore.getTestByID( testID );
@@ -275,7 +276,26 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             } else {
                 test.parameters.tos_bits = 0;
             }
-
+            if ( settings.streams ) {
+                test.parameters.streams = settings.streams;
+            } else {
+                delete test.parameters.streams;
+            }
+            if ( settings.omit_interval ) {
+                test.parameters.omit_interval = settings.omit_interval;
+            } else {
+                delete test.parameters.omit_interval;
+            }
+            if ( settings.send_only ) {
+                test.parameters.send_only = settings.send_only;
+            } else {
+                delete test.parameters.send_only;
+            }
+            if ( settings.receive_only ) {
+                test.parameters.receive_only = settings.receive_only;
+            } else {
+                delete test.parameters.receive_only;
+            }
             if ( settings.window_size && !settings.autotuning ) {
                 test.parameters.window_size = settings.window_size;
             } else {
@@ -291,12 +311,11 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             } else {
                 test.parameters.duration = 20; // TODO: change to use configured default
             }
-
-            if ( typeof test.parameters.tool == 'undefined' ) {
+            if ( typeof settings.tool == 'undefined' ) {
                 test.parameters.tool = 'iperf3,iperf';
+            } else {
+                test.parameters.tool = settings.tool;
             }
-
-
             break;
         case 'owamp':
             if ( typeof settings.packet_rate != 'undefined' && settings.packet_rate > 0 ) {
@@ -318,10 +337,10 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             delete test.parameters.packet_size;
             break;
         case 'traceroute':
-            if (typeof settings.tool != 'undefined' && settings.tool != '') {
-                test.parameters.tool = settings.tool;
+            if ( typeof settings.tool == 'undefined' ) {
+                test.parameters.tool = 'tracepath,traceroute';
             } else {
-                delete test.parameters.tool;
+                test.parameters.tool = settings.tool;
             }
             if ( typeof settings.packet_size != 'undefined' && settings.packet_size > 0 ) {
                 test.parameters.packet_size = settings.packet_size;
