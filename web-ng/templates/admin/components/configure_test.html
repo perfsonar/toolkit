@@ -24,7 +24,7 @@
             <a href="#" id="testConfigCancelButton" style="margin: 0 3em;" class="testConfigCancelButton">Cancel</a>
             <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton"{{#unless editable}} disabled{{/unless}}>OK</button>
         </div>
-    </div>
+    </div> <!-- end row --> 
 
     {{#unless editable}}
     <div class="row">
@@ -41,12 +41,12 @@
 
         </div>
 
-    </div>
+    </div>  <!-- end row -->
     {{/unless}}
     <div class="row">
         <div class="medium-12 columns">
                         <h2 class="module-header__title font-bold">Test parameters</h2>
-                <!-- Begin common fields -->
+<!-- Begin common fields -->
 
                 <div class="row new_test_only" id="testTypeRow">
                     <div class="medium-6 columns">
@@ -61,7 +61,7 @@
                     </div>
                     <div class="medium-6 columns">
                     </div>
-                </div>
+                </div> <!-- end row -->
 <div class="existing_test_type_only">
                 <div class="row">
                     <div class="medium-6 columns">
@@ -82,7 +82,7 @@
 
                         </div>
                     </div>
-                </div>
+                </div>  <!-- end row -->
                 <div class="row">
                     <div class="medium-6 columns">
                         <label for="interfaceSelector">Interface</label>
@@ -106,44 +106,14 @@
                         <input type="text" id="udpBandwidth" value="{{#if parameters.udp_bandwidth_mb}}{{parameters.udp_bandwidth_mb}}{{else}}0{{/if}}" />
                     </div>
                         {{/if}}
-                        {{#if showTracerouteParameters}}
-                    <div class="medium-6 columns">
-                            <label for="toolSel">Tool</label>
-                            <select id="toolSel">
-                                <option value="">Default</option>
-                                <option value="tracepath" {{#compare parameters.tool "tracepath"}}selected{{/compare}}>tracepath</option>
-                                <option value="traceroute" {{#compare parameters.tool "traceroute"}}selected{{/compare}}>traceroute</option>
-                                <option value="paris-traceroute" {{#compare parameters.tool "paris-traceroute"}}selected{{/compare}}>paris-traceroute</option>
-                            </select>
-                    </div>
-                        {{/if}}
 
-
-                </div>
+                </div>  <!-- end row -->
 
 <!-- End common fields -->
 
-{{#if showOWAMPParameters}}
-                <div class="row">
 
-                    <div class="medium-6 columns">
-                        <label for="packetRateSel">Packet Rate (packets per second)</label>
-                        <select id="packetRateSel">
-                            <option value="10" {{#compare parameters.packet_rate 10}}selected="selected"{{/compare}}>10 (default)</option>
-                            <option value="50" {{#compare parameters.packet_rate 50}}selected="selected"{{/compare}}>50</option>
-                            <option value="100" {{#compare parameters.packet_rate 100}}selected="selected"{{/compare}}>100</option>
-                            <option value="250" {{#compare parameters.packet_rate 250}}selected="selected"{{/compare}}>250</option>
-                            <option value="500" {{#compare parameters.packet_rate 500}}selected="selected"{{/compare}}>500</option>
-                            <option value="1000" {{#compare parameters.packet_rate 1000}}selected="selected"{{/compare}}>1000</option>
-                        </select>
-                    </div>
-                    <div class="medium-6 columns">
-                        <label for="packetSize">Packet Size (bytes)</label>
-                        <input type="text" id="packetSize" value="{{#if parameters.packet_size}}{{parameters.packet_size}}{{/if}}" pattern="positive_integer" />
-                        <small class="error">Positive integer required</small>
-                    </div>
-                </div> <!-- end div class="row" -->
-{{else}}
+<!-- 'Time between tests' and params on the same line -->
+{{#unless showOWAMPParameters}}
                 <div class="row">
                     {{#if showTestInterval}}
                     <div class="medium-3 columns">
@@ -195,70 +165,148 @@
                             </div>
                         {{/if}}
                 </div> <!-- end div class="row" -->
+{{/unless}}
+
+<!-- OWAMPP Advanced Params -->
+{{#if showOWAMPParameters}}
+
+                <a href="#" id="advanced_owamp_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
+                <div id="advOwampDiv" class="advanced_params">
+
+                    <div class="row">
+                        <div class="medium-6 columns">
+                            <label for="packetRateSel">Packet Rate (packets per second)</label>
+                            <select id="packetRateSel">
+                                <option value="10" {{#compare parameters.packet_rate 10}}selected="selected"{{/compare}}>10 (default)</option>
+                                <option value="50" {{#compare parameters.packet_rate 50}}selected="selected"{{/compare}}>50</option>
+                                <option value="100" {{#compare parameters.packet_rate 100}}selected="selected"{{/compare}}>100</option>
+                                <option value="250" {{#compare parameters.packet_rate 250}}selected="selected"{{/compare}}>250</option>
+                                <option value="500" {{#compare parameters.packet_rate 500}}selected="selected"{{/compare}}>500</option>
+                                <option value="1000" {{#compare parameters.packet_rate 1000}}selected="selected"{{/compare}}>1000</option>
+                            </select>
+                        </div>
+                        <div class="medium-6 columns">
+                            <label for="packetSize">Packet Size (bytes)</label>
+                            <input type="text" id="packetSize" value="{{#if parameters.packet_size}}{{parameters.packet_size}}{{/if}}" pattern="positive_integer" />
+                            <small class="error">Positive integer required</small>
+                        </div>
+                    </div> <!-- end div class="row" -->
+
 {{/if}}
 
+<!-- PING Advanced Params -->
 {{#if showPingParameters}}
 
-                <div class="row">
-                    <div class="medium-6 columns">
+                <a href="#" id="advanced_ping_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
+                <div id="advPingDiv" class="advanced_params">
+
+                    <div class="row">
+                        <div class="medium-6 columns">
                                 <label for="timeBetweenPackets">Time between packets (seconds)</label>
                                 <input type="text" id="timeBetweenPackets" value="{{parameters.packet_interval}}" pattern="positive_integer">
                                 <small class="error">Positive integer required</small>
-                    </div>
-                    <div class="medium-6 columns">
-                        <label for="sizeOfTestPackets">Packet Size (bytes)</label>
-                        <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}" pattern="positive_integer">
-                        <small class="error">Positive integer required</small>
-                    </div>
-                </div>
+                        </div>
+                        <div class="medium-6 columns">
+                            <label for="sizeOfTestPackets">Packet Size (bytes)</label>
+                            <input type="text" id="sizeOfTestPackets" value="{{parameters.packet_size}}" pattern="positive_integer">
+                            <small class="error">Positive integer required</small>
+                        </div>
+                    </div> <!-- end row -->
+
 {{/if}}
 
+<!-- TRACEROUTE Advanced Params -->
 {{#if showTracerouteParameters}}
-<!--
-<a href="#" onclick="$('#advancedParamsTraceroute').toggle(); return false;" class="add_panel_heading"><i class="fa fa-plus"></i> Advanced parameters</a>
--->
-<div id="advancedParamsTraceroute">
-                <div class="row">
-                    <div class="medium-6 columns">
-                        <label for="firstTTL">First hop to report (blank means don't skip any)</label>
-                        <input type="text" id="firstTTL" value="{{parameters.first_ttl}}" pattern="positive_integer" />
-                        <small class="error">Positive integer required</small>
-                    </div>
-                    <div class="medium-6 columns">
-                        <label for="maxTTL">Maximum number of hops (blank means no limit)</label>
-                        <input type="text" id="maxTTL" value="{{parameters.max_ttl}}" pattern="positive_integer" />
-                        <small class="error">Positive integer required</small>
-                    </div>
-                </div>
-</div>
+
+                <a href="#" id="advanced_traceroute_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
+                <div id="advTracerouteDiv" class="advanced_params">
+
+                    <div class="row">
+                        <div class="medium-6 columns">
+                            <label for="firstTTL">First hop to report (blank means don't skip any)</label>
+                            <input type="text" id="firstTTL" value="{{parameters.first_ttl}}" pattern="positive_integer" />
+                            <small class="error">Positive integer required</small>
+                        </div>
+                        <div class="medium-6 columns">
+                            <label for="maxTTL">Maximum number of hops (blank means no limit)</label>
+                            <input type="text" id="maxTTL" value="{{parameters.max_ttl}}" pattern="positive_integer" />
+                            <small class="error">Positive integer required</small>
+                        </div>
+                    </div> <!-- end row -->
+                    <div class="row">
+                        <div class="medium-6 columns" id="toolsContainer">
+                            <!-- add options programmatically in TestConfigComponent.js -->
+                            <label for="tools_selector">Tool(s), in order of preference</label>
+                            <select id="tools_selector" multiple="multiple" required>
+                            </select>
+                            <small class="error">At least one tool is required</small>
+                        </div>
+                    </div> <!-- end row -->
 
 {{/if}}
 
+<!-- THROUGHTPUT Advanced Params -->
 {{#if showThroughputParameters}}
 
-                <div class="row">
-                    <div class="medium-3 columns">
-                                <label for="useAutotuning" class="space">Use Autotuning</label>
-                                <div class="switch round small">
-                                    <input id="useAutotuningSwitch" type="checkbox" {{#unless showWindowSize}} checked{{/unless}}>
-                                    <label for="useAutotuningSwitch"></label>
-                                    <span for="useAutotuningSwitch" class="switch_label">{{#if showWindowSize}}Disabled{{else}}Enabled{{/if}}</span>
-                                </div>
+                <a href="#" id="advanced_throughput_button"><i class="fa fa-plus"></i> Advanced Parameters</a>
+                <div id="advThroughputDiv" class="advanced_params">
 
+                    <div class="row">
+                        <!-- for send_only and receive_only -->
+                        <div class="medium-3 columns">
+                            <label for="send_receive">Direction</label>
+                            <select id="send_receive">
+                                <option value="">Send and Receive</option>
+                                <option value="send_only" {{#compare parameters.send_only "1"}}selected="selected"{{/compare}} >Send Only</option>
+                                <option value="receive_only" {{#compare parameters.receive_only "1"}}selected="selected"{{/compare}} >Receive Only</option>
+                            </select>
+                        </div>
+                        <div class="medium-3 columns">
+                            <label for="tosBits" class="space">TOS bits</label>
+                            <input type="text" id="tosBits" pattern="nonnegative_integer" value="{{parameters.tos_bits}}">
+                            <small class="error">Must be an integer of 0 or greater</small>
+                        </div>
+                        <div class="medium-3 columns">
+                            <label for="useAutotuning" class="space">Use Autotuning</label>
+                            <div class="switch round small">
+                                <input id="useAutotuningSwitch" type="checkbox" {{#unless showWindowSize}} checked{{/unless}}>
+                                <label for="useAutotuningSwitch"></label>
+                                <span for="useAutotuningSwitch" class="switch_label">{{#if showWindowSize}}Disabled{{else}}Enabled{{/if}}</span>
                             </div>
-                            <div class="medium-3 columns">
-                                    <label for="windowSize" class="space window_size{{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
-                                    <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}" {{#if showWindowSize}} pattern="positive_integer" required{{/if}}>
-                                <small class="error">Must be a positive integer</small>
-                            </div>
-                            <div class="medium-6 columns">
-                                <label for="tosBits" class="space">TOS bits</label>
-                                <input type="text" id="tosBits" pattern="nonnegative_integer" value="{{parameters.tos_bits}}">
-                                <small class="error">Must be an integer of 0 or greater</small>
-                            </div>
-                    </div>
-                </div>
+                        </div>
+                        <div class="medium-3 columns">
+                            <label for="windowSize" id="windowSizeLabel" class="space window_size {{#if showWindowSize}} active{{/if}}">Window Size (MB)</label>
+                            <input type="text" id="windowSize" class="window_size {{#if showWindowSize}} active{{/if}}" value="{{parameters.window_size}}" {{#if showWindowSize}} pattern="positive_integer" required{{/if}}>
+                            <small class="error">Must be a positive integer</small>
+                        </div>
+                    </div>  <!-- end row -->
+                    <div class="row">
+                        <div class="medium-3 columns">
+                            <label for="streams">Number of Parallel Streams</label>
+                            <input type="text" id="streams" value="{{parameters.streams}}" pattern="positive_integer" />
+                            <small class="error">Must be an integer of 1 or greater</small>
+                        </div>
+                        <div class="medium-3 columns">
+                            <label for="omit_interval">Omit Interval (sec)</label>
+                            <input type="text" id="omit_interval" value="{{parameters.omit_interval}}" pattern="nonnegative_integer" />
+                            <small class="error">Must be an integer of 0 or greater</small>
+                        </div>
+                        <div class="medium-6 columns" id="toolsContainer">
+                            <!-- add options programmatically in TestConfigComponent.js -->
+                            <label for="tools_selector">Tool(s), in order of preference</label>
+                            <select id="tools_selector" multiple="multiple" required>
+                            </select>
+                            <small class="error">At least one tool is required</small>
+                        </div>
+                    </div>  <!-- end row -->
+
 {{/if}}
+
+<!-- Common Advanced Params (none right now) -->
+                    <div class="row">
+                    </div>  <!-- end row -->
+
+                </div> <!-- end whichever advanced_params div we're using -->
 
 </div>      <!-- ends div with existing_test_type_only class -->
 
@@ -320,18 +368,18 @@
                         </fieldset>
                     </div>
                     <div id="testConfigAddHostByCommunityContainer"></div>
-                </div>
+                </div>  <!-- end addTestMemberPanel div -->
 
                 <div class="row">
                     <div class="medium-12 columns text-right">
                         <a href="#" id="testConfigCancelButton" style="margin: 0 3em;" class="testConfigCancelButton">Cancel</a>
                         <button class="button-primary testConfigOKButton" style="margin: 0 1em 0 0;" id="testConfigOKButton"{{#unless editable}} disabled{{/unless}}>OK</button>
                     </div>
-                </div>
+                </div>  <!-- end row -->
 
-            </div>
-        </div>
-    </div>
+            </div> <!-- end existing_test_type_only div -->
+        </div> <!-- end medium 12-columns div -->
+    </div>  <!-- end row div -->
 
 
 </form>

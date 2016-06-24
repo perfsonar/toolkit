@@ -53,23 +53,27 @@
                             </div> 
         </div>
     </li>
+
     {{#if registered}}
     <li class="sidebar-list__item">        
         <div class="sidebar-list__parameter">Globally Registered</div>
         <div class="sidebar-list__value {{registered_classes}}">{{registered}}</div>
     </li>
     {{/if}}
+
     <li class="sidebar-list__item">        
         <div class="sidebar-list__parameter">NTP Synced</div>
         <div class="sidebar-list__value {{ntp_classes}}"><span id="sidebar_ntp_synced_value">{{ntp_synced}}</span> &nbsp; &nbsp; 
         <div id="sidebar-ntp-popover-container"></div>
     </li>
+
     {{#if role_text}}
     <li class="sidebar-list__item">        
         <div class="sidebar-list__parameter">Node Role</div>
         <div class="sidebar-list__value">{{role_text}}</div>
     </li>
     {{/if}}
+
     {{#if show_access_policy}}
     <li class="sidebar-list__item">        
         <div class="sidebar-list__parameter">Access Policy</div>
@@ -94,12 +98,27 @@
         </div>
     </li>
     {{/if}}
+
     {{#each status_values}}
     <li class="sidebar-list__item"{{#if id}} id="{{id}}"{{/if}}>
         <div class="sidebar-list__parameter">{{label}}</div>
         <div class="sidebar-list__value {{classes}}">{{value}}</div>
     </li>
     {{/each}}  
+
+    {{#if communities}}
+    <li class="sidebar-list__item">        
+        <div class="sidebar-list__parameter communities">Communities</div>
+        <div class="sidebar-list__value communities">
+           <ul>
+              {{#each communities}}
+               <li>{{this}}</li>
+              {{/each}}
+           </ul>
+        </div>
+    </li>
+    {{/if}}
+	
 </ul>
 </script>
 
