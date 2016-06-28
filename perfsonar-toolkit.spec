@@ -566,6 +566,7 @@ fi
 %exclude %{config_base}/default_system_firewall_settings.conf
 %exclude %{config_base}/old_firewall_settings.conf
 %exclude %{config_base}/perfsonar_firewall_settings.conf
+%exclude %{config_base}/perfsonar_firewalld_settings.conf
 %exclude %{config_base}/ntp_known_servers
 %exclude %{config_base}/servicewatcher.conf
 %exclude %{config_base}/servicewatcher-logger.conf
