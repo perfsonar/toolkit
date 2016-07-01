@@ -145,12 +145,13 @@ if [ "$DATA" ]; then
         echo "Unable to snapshot cassandra database"
         exit 1
     fi
-    for dir in $(ls /var/lib/cassandra/data/esmond); do
-        mkdir $TEMP_BAK_DIR/cassandra_data/$dir
-        cp -a /var/lib/cassandra/data/esmond/$dir/snapshots/esmond_snapshot \
-              $TEMP_BAK_DIR/cassandra_data/$dir/
+    for SNAPSHOT in /var/lib/cassandra/data/esmond/*/snapshots/esmond_snapshot; do
+        TABLE=${SNAPSHOT%/snapshots/*}
+        TABLE=${TABLE#*/esmond/}
+        mkdir $TEMP_BAK_DIR/cassandra_data/$TABLE
+        cp -a $SNAPSHOT $TEMP_BAK_DIR/cassandra_data/$TABLE/
         if [ "$?" != "0" ]; then
-            echo "Unable to copy $dir snapshot"
+            echo "Unable to copy $TABLE snapshot"
             exit 1
         fi
     done
