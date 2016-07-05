@@ -1,11 +1,13 @@
 // Make sure jquery loads first
 // assues Dispatcher has already been declared (so load that first as well)
 
+// the default timeperiod (actually "timeperiod,summary_window") is 1-week,1day.
 var TestStore = {
     testList: null,
     tests: null,
     ma_url: 'http://localhost/esmond/perfsonar/archive/',
     ma_url_enc: null,
+    timeperiod: "604800,86400",
     testSummary: {}
 };
 
@@ -33,9 +35,19 @@ TestStore.initialize = function() {
     TestStore.testSummary.summarySet = false;
 };
 
+TestStore.reloadTestResults = function(options) {
+    // to reload test list and average values if a different timeperiod is chosen
+    if (options.timeperiod) {
+        TestStore.timeperiod = options.timeperiod;
+    }
+    TestStore._retrieveList(); 
+    TestStore._retrieveTests();
+};
+
 TestStore._retrieveList = function() {
         $.ajax({
-            url: "/perfsonar-graphs/graphData.cgi?action=test_list&url=" + TestStore.ma_url_enc,
+            url: "/perfsonar-graphs/graphData.cgi?action=test_list&timeperiod=" + TestStore.timeperiod 
+                + "&url=" + TestStore.ma_url_enc,
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
@@ -53,7 +65,8 @@ TestStore._retrieveList = function() {
 
 TestStore._retrieveTests = function() {
     $.ajax({
-            url: "/perfsonar-graphs/graphData.cgi?action=tests&url=" + TestStore.ma_url_enc,
+            url: "/perfsonar-graphs/graphData.cgi?action=tests&timeperiod=" + TestStore.timeperiod
+                + "&url=" + TestStore.ma_url_enc,
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
@@ -112,6 +125,9 @@ TestStore.getHostSummary = function() {
 };
 TestStore.getMAURL = function() {
     return TestStore.ma_url;
+};
+TestStore.getTimeperiod = function() {
+    return TestStore.timeperiod;
 };
 
 TestStore.initialize();

@@ -27,6 +27,21 @@
     <table class="test_results" id="testResultsTable">
         <thead>
             <tr>
+                <td colspan=2> </td>
+                <td colspan=2>
+                    <label for="summary_timeperiod">Timeperiod for summary averages</label>
+                     <!-- // values are "timeperiod,summary_window" -->
+                    <select id="summary_timeperiod">
+                        <option value="3600,0" selected>1 hour</option>
+                        <option value="86400,3600" selected>1 day</option>
+                        <option value="604800,86400" selected>1 week</option>
+                        <option value="1209600,86400" selected>2 weeks</option>
+                        <option value="1814400,86400" selected>3 weeks</option>
+                        <option value="2592000,86400" selected>30 days</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <th>Source</th>
                 <th>Destination</th>
                 <th>Throughput</th>

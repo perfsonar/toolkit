@@ -127,15 +127,32 @@ TestResultsComponent._setTestList = function( ) {
     var template = Handlebars.compile(test_results_template);
     data.summaryDataError = TestResultsComponent.testsDataError;
     var test_results = template(data);
+    // put the list of tests on the page
     $("#test_results").html(test_results);
+
+    // add traceroute links
     for (var i in data.test_results) {
         var row = data.test_results[i];
         var container_id = "trace_" + TestResultsComponent.ipToID(row.source_ip) + "_"
             + TestResultsComponent.ipToID(row.destination_ip);
         TestResultsComponent.setTracerouteLink(row.source_ip, row.destination_ip, container_id);
     }
+
+    // select the proper value in the timeperiod dropdown
+    $('#summary_timeperiod').val(TestStore.getTimeperiod());  
+
+    // now get & add the avg values to the table
     TestResultsComponent._setTestData();
+
+    // if the user chooses a new timeperiod, start over
+    $('#summary_timeperiod').change(function(){
+        var options = {
+            timeperiod : $('#summary_timeperiod').val()
+        };
+        TestStore.reloadTestResults( options );  // func. in TestStore.js
+    });
 };
+
 
 function SortBySrcDst(a, b){
     var aHost = a.source_host + '0' + a.destination_host;
@@ -275,8 +292,6 @@ TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_
             console.log(errorThrown);
         }
     });
-
-
 
 };
 
