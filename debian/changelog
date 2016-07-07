@@ -1,8 +1,14 @@
-perfsonar-toolkit (3.5.1.3-1~bpo70+1) perfsonar-wheezy-release; urgency=low
+perfsonar-toolkit (3.5.1.4-1~bpo70+1) perfsonar-wheezy-release; urgency=high
 
-  * Backport to Wheezy.
+  * New upstream version.
 
- -- Antoine Delvaux <adelvaux@man.poznan.pl>  Mon, 28 Mar 2016 19:46:08 +0000
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Thu, 07 Jul 2016 16:28:12 +0000
+
+perfsonar-toolkit (3.5.1.4-1) perfsonar-jessie-release; urgency=high
+
+  * New upstream version.
+
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Thu, 07 Jul 2016 16:24:14 +0000
 
 perfsonar-toolkit (3.5.1.3-1) perfsonar-jessie-release; urgency=low
 
