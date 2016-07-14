@@ -8,7 +8,8 @@ var TestStore = {
     ma_url: 'http://localhost/esmond/perfsonar/archive/',
     ma_url_enc: null,
     timeperiod: "604800,86400",
-    testSummary: {}
+    testSummary: {},
+    existingTestResults: null
 };
 
 // TODO: move $.urlParam to a common utility library
@@ -23,31 +24,71 @@ $.urlParam = function(name){
 };
 
 TestStore.initialize = function() {
+    // just get the list of tests. Rest will follow automatically.
     var ma_url = $.urlParam('url') || TestStore.ma_url;
     TestStore.ma_url = ma_url;
     TestStore.ma_url_enc = encodeURIComponent(ma_url);
     TestStore._retrieveList();
-    TestStore._retrieveTests();
-    TestStore._createSummaryTopic();
+
+    //this seems to have been redundant?? : TestStore._createSummaryTopic();
     TestStore.testSummary.data = {};
     TestStore.testSummary.listSet = false;
     TestStore.testSummary.testsSet = false;
     TestStore.testSummary.summarySet = false;
 };
 
-TestStore.reloadTestResults = function(options) {
-    // to reload test list and average values if a different timeperiod is chosen
-    if (options.timeperiod) {
-        TestStore.timeperiod = options.timeperiod;
+
+TestStore.reloadTestTable = function( timeperiod ) {
+    // Reload list of tests if a different timeperiod is chosen.
+    // New results will follow automatically.
+    TestStore.testList = null;
+    TestStore.tests = null;
+    if (timeperiod) {
+        TestStore.timeperiod = timeperiod;
     }
     TestStore._retrieveList(); 
-    TestStore._retrieveTests();
+};
+
+TestStore.retrieveNeededTestAvgs = function(sources, destinations) {
+    // Get test results for given sources and destinations, but only those we need to. 
+    // See if we have results for some tests already in TestStore.tests.
+    var sourcesToDo = [];
+    var destsToDo = [];
+    if (TestStore.tests) {
+        TestStore.existingTestResults = TestStore.tests;
+        for (var i=0; i<sources.length; i++) {
+            var alreadyDone = 0;
+            for (var e=0; e<TestStore.existingTestResults.length; e++) {
+                var existingSource = TestStore.existingTestResults[e].source_ip;
+                var existingDest = TestStore.existingTestResults[e].destination_ip;
+                if ( sources[i] == existingSource && destinations[i] == existingDest ) { 
+                    alreadyDone = 1;
+                    break;
+                }
+            }
+            if (! alreadyDone) {
+                sourcesToDo.push(sources[i]);
+                destsToDo.push(destinations[i]);
+            }
+        }
+    } else {
+        // there are no existing test results
+        sourcesToDo = sources;
+        destsToDo = destinations;
+    }
+
+    if (sourcesToDo.length > 0) {
+        // don't retrieveTests if there are no sources and destinations or it'll get ALL test results.
+        TestStore._retrieveTests(sourcesToDo, destsToDo);
+        // now TestStore.tests contains the latest test results merged with the previous results.
+    }
 };
 
 TestStore._retrieveList = function() {
+        var the_url = "/perfsonar-graphs/graphData.cgi?action=test_list&timeperiod=" + TestStore.timeperiod 
+                + "&url=" + TestStore.ma_url_enc;
         $.ajax({
-            url: "/perfsonar-graphs/graphData.cgi?action=test_list&timeperiod=" + TestStore.timeperiod 
-                + "&url=" + TestStore.ma_url_enc,
+            url: the_url,
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
@@ -63,15 +104,25 @@ TestStore._retrieveList = function() {
         });
 };
 
-TestStore._retrieveTests = function() {
+TestStore._retrieveTests = function(sources, destinations) {
+    var the_url = "/perfsonar-graphs/graphData.cgi?action=tests&timeperiod=" + TestStore.timeperiod
+                + "&url=" + TestStore.ma_url_enc;
+    for (var i=0; i<sources.length; i++) {
+        the_url += '&src='+sources[i]+';dest='+destinations[i];
+    }
+console.log("GETTING RESULTS FOR "+the_url);
     $.ajax({
-            url: "/perfsonar-graphs/graphData.cgi?action=tests&timeperiod=" + TestStore.timeperiod
-                + "&url=" + TestStore.ma_url_enc,
+            url: the_url,
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
             success: function (data) {
                 TestStore.tests = data;
+                // if we're getting additional test data, add the old results back in.
+                if (TestStore.existingTestResults) {
+                    TestStore.tests = TestStore.existingTestResults.concat(TestStore.tests);
+                    TestStore.existingTestResults = null;
+                }
                 Dispatcher.publish('store.change.tests');
             },
             error: function (jqXHR, textStatus, errorThrown) {

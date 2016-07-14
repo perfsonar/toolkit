@@ -32,21 +32,113 @@ TestResultsComponent.initialize = function() {
     var ma_url = TestStore.getMAURL();
     TestResultsComponent.ma_url = ma_url;
     TestResultsComponent._registerHelpers();
-    Dispatcher.subscribe(TestResultsComponent.tests_topic, TestResultsComponent._handleTestData);
-    Dispatcher.subscribe(TestResultsComponent.tests_error_topic, TestResultsComponent._setTestDataError);
     Dispatcher.subscribe(TestResultsComponent.test_list_topic, TestResultsComponent._setTestList);
+    Dispatcher.subscribe(TestResultsComponent.tests_error_topic, TestResultsComponent._setTestDataError);
+    Dispatcher.subscribe(TestResultsComponent.tests_topic, TestResultsComponent._handleTestData);
     Dispatcher.subscribe(TestResultsComponent.test_list_error_topic, TestResultsComponent._setTestListError);
 };
 
+// When the test list has been obtained by TestStore, put it in the table, then have TestStore get the test results.
+TestResultsComponent._setTestList = function( ) {
+    //$('#test-loading-modal').foundation('reveal', 'close');
+    $('#test-loading-modal').hide();
+    if ($('#num_test_results').length == 0 || $('#num_test_results_holder').length == 0 || $("#test_results").length == 0) {
+        console.log("didn't find the template or holder");
+        return;
+    }
+    var data = TestResultsComponent.data; // empty right now
+
+    // get test list from TestStore
+    data.test_results = TestStore.getTestList();
+    TestResultsComponent.testListSet = true;
+    for(var i=0; i<data.test_results.length; i++) {
+        data.test_results[i].rowID = i;
+    }
+    data.test_results.sort(SortBySrcDst);
+
+    data.ma_url = encodeURIComponent(TestResultsComponent.ma_url);
+
+    data.num_test_results = data.test_results.length || 'No';
+    $('#num_test_results').html(data.num_test_results);
+    $('#num_test_results_holder').show();
+
+    var test_results_template = $("#test-results-template").html();
+    var template = Handlebars.compile(test_results_template);
+    data.summaryDataError = TestResultsComponent.testsDataError;
+    var test_results = template(data);
+    // put the list of tests on the page
+    $("#test_results").html(test_results);
+
+    // select the proper value in the timeperiod dropdown
+    $('#summary_timeperiod').val(TestStore.getTimeperiod());  
+
+
+    // make existing table into a DataTable (gets cell values from DOM)
+    // This adds pagination, sorting, and searching.
+    var testResultsDataTable = $('#testResultsTable').DataTable( {
+        stateSave:  true,
+        columnDefs: [
+            { "targets": [2,3,4], searchable: false },
+            { "targets": [2,3,4], orderable: false }
+        ]
+    } );
+
+    // ask TestStore to get averages for those tests on the current current pg
+    // When it's finished, _handleTestData/_setTestData will be executed.
+    TestResultsComponent._askForTestData();
+
+    // add traceroute links (ask for test data first, so ajax can get started)
+    for (var i in data.test_results) {
+        var row = data.test_results[i];
+        var container_id = "trace_" + TestResultsComponent.ipToID(row.source_ip) + "_"
+            + TestResultsComponent.ipToID(row.destination_ip);
+        TestResultsComponent.setTracerouteLink(row.source_ip, row.destination_ip, container_id);
+    }
+
+    // After a change of the table page, sorting, or search, additional test data may need to be obtained
+    $('#testResultsTable').on( 'draw.dt', function() {
+        TestResultsComponent._askForTestData();
+    } );
+
+    // If the timeperiod selection changes, start over
+    $('#summary_timeperiod').change( function() {
+        // put data cells back to "loading values..."
+        var rows_el = $("#testResultsTable tr");
+        rows_el.addClass('no_data');
+        rows_el.removeClass('data');
+        // reload the list of tests (and their averages)
+        var timeperiod = $('#summary_timeperiod').val();
+        TestStore.reloadTestTable( timeperiod );  
+    } );
+
+};
+
+// Ask TestStore to get test results/averages for those tests on the currently showing pg. 
+TestResultsComponent._askForTestData = function() {
+    var sources = []; 
+    var destinations = [];
+    // Source IP's are assumed to be in the first table column, in div with class=host_ip, destinations in the 2nd col.
+    $('#testResultsTable').find('tr').each( function() {
+        var IP = $(this).find("td").eq(0).find("div.host_ip").html();
+        if (IP) {
+            sources.push(IP);
+        }
+        IP = $(this).find("td").eq(1).find("div.host_ip").html();
+        if (IP) {
+            destinations.push(IP);
+        }
+    } );
+    TestStore.retrieveNeededTestAvgs(sources, destinations);
+}
+
+// When avg values have been obtained by TestStore, put them in the table.
 TestResultsComponent._handleTestData = function( ) {
     var data = TestResultsComponent.data;
     var test_data = TestStore.getTests();
     data.test_data = test_data;
     TestResultsComponent.testDataSet = true;
     TestResultsComponent._setTestData();
-
 };
-
 TestResultsComponent._setTestData = function( ) {
     // We only want to set the test summary data if we already have the listing
     if ( !TestResultsComponent.testListSet || !TestResultsComponent.testDataSet ) {
@@ -100,57 +192,6 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
         //console.log("multiple test data found, this should not happen");
     }
 
-
-};
-
-TestResultsComponent._setTestList = function( ) {
-    //$('#test-loading-modal').foundation('reveal', 'close');
-    $('#test-loading-modal').hide();
-    if ($('#num_test_results').length == 0 || $('#num_test_results_holder').length == 0 || $("#test_results").length == 0) {
-        console.log("didn't find the template or holder");
-        return;
-    }
-    var data = TestResultsComponent.data;
-    data.test_results = TestStore.getTestList();
-    TestResultsComponent.testListSet = true;
-    for(var i=0; i<data.test_results.length; i++) {
-        data.test_results[i].rowID = i;
-    }
-    data.test_results.sort(SortBySrcDst);
-
-
-    data.ma_url = encodeURIComponent(TestResultsComponent.ma_url);
-    data.num_test_results = data.test_results.length || 'No';
-    $('#num_test_results').html(data.num_test_results);
-    $('#num_test_results_holder').show();
-    var test_results_template = $("#test-results-template").html();
-    var template = Handlebars.compile(test_results_template);
-    data.summaryDataError = TestResultsComponent.testsDataError;
-    var test_results = template(data);
-    // put the list of tests on the page
-    $("#test_results").html(test_results);
-
-    // add traceroute links
-    for (var i in data.test_results) {
-        var row = data.test_results[i];
-        var container_id = "trace_" + TestResultsComponent.ipToID(row.source_ip) + "_"
-            + TestResultsComponent.ipToID(row.destination_ip);
-        TestResultsComponent.setTracerouteLink(row.source_ip, row.destination_ip, container_id);
-    }
-
-    // select the proper value in the timeperiod dropdown
-    $('#summary_timeperiod').val(TestStore.getTimeperiod());  
-
-    // now get & add the avg values to the table
-    TestResultsComponent._setTestData();
-
-    // if the user chooses a new timeperiod, start over
-    $('#summary_timeperiod').change(function(){
-        var options = {
-            timeperiod : $('#summary_timeperiod').val()
-        };
-        TestStore.reloadTestResults( options );  // func. in TestStore.js
-    });
 };
 
 
