@@ -72,15 +72,18 @@ TestResultsComponent._setTestList = function( ) {
     // select the proper value in the timeperiod dropdown
     $('#summary_timeperiod').val(TestStore.getTimeperiod());  
 
-
     // make existing table into a DataTable (gets cell values from DOM)
     // This adds pagination, sorting, and searching.
+    // (dom says where to place the filter, table, length of page selector, page selector, and page info)
+    // (lengthMenu are options for how many results per page)
     var testResultsDataTable = $('#testResultsTable').DataTable( {
         stateSave:  true,
         columnDefs: [
             { "targets": [2,3,4], searchable: false },
             { "targets": [2,3,4], orderable: false }
-        ]
+                    ],
+        dom:  '<"left"f>t<"left"l><"right"p><"right"i>',
+        lengthMenu: [ [10, 25, 50], [10, 25, "50 (may be slow)"] ]
     } );
 
     // ask TestStore to get averages for those tests on the current current pg
