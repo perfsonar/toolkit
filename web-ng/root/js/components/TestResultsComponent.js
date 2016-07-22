@@ -83,7 +83,7 @@ TestResultsComponent._setTestList = function( ) {
             { "targets": [2,3,4], orderable: false }
                     ],
         dom:  '<"left"f>t<"left"l><"right"p><"right"i>',
-        lengthMenu: [ [10, 25, 50], [10, 25, "50 (may be slow)"] ]
+        lengthMenu: [ [10, 25, 50], [10, 25, 50] ]
     } );
 
     // ask TestStore to get averages for those tests on the current current pg
@@ -153,9 +153,6 @@ TestResultsComponent._setTestData = function( ) {
 
     var table_sel = "#testResultsTable";
     var table_el = $( table_sel );
-    var rows_el = $("#testResultsTable tr.no_data");
-    rows_el.addClass('data');
-    rows_el.removeClass('no_data');
 
     var test_data_template = $("#test-data-value-template").html();
     var template = Handlebars.compile(test_data_template);
@@ -187,6 +184,8 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
             result.type = type;
             var test_data_template = template(result);
             $("tr#test_row_" + test.rowID + " td.test-values." + type).html(test_data_template);
+            $("tr#test_row_" + test.rowID).removeClass('no_data');
+            $("tr#test_row_" + test.rowID).addClass('data');
         }
 
     } else {

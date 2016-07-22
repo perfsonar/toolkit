@@ -8,8 +8,7 @@ var TestStore = {
     ma_url: 'http://localhost/esmond/perfsonar/archive/',
     ma_url_enc: null,
     timeperiod: "604800,86400",
-    testSummary: {},
-    existingTestResults: null
+    testSummary: {}
 };
 
 // TODO: move $.urlParam to a common utility library
@@ -51,16 +50,15 @@ TestStore.reloadTestTable = function( timeperiod ) {
 
 TestStore.retrieveNeededTestAvgs = function(sources, destinations) {
     // Get test results for given sources and destinations, but only those we need to. 
-    // See if we have results for some tests already in TestStore.tests.
+    // Add to tests already in TestStore.tests.
     var sourcesToDo = [];
     var destsToDo = [];
     if (TestStore.tests) {
-        TestStore.existingTestResults = TestStore.tests;
         for (var i=0; i<sources.length; i++) {
             var alreadyDone = 0;
-            for (var e=0; e<TestStore.existingTestResults.length; e++) {
-                var existingSource = TestStore.existingTestResults[e].source_ip;
-                var existingDest = TestStore.existingTestResults[e].destination_ip;
+            for (var e=0; e<TestStore.tests.length; e++) {
+                var existingSource = TestStore.tests[e].source_ip;
+                var existingDest = TestStore.tests[e].destination_ip;
                 if ( sources[i] == existingSource && destinations[i] == existingDest ) { 
                     alreadyDone = 1;
                     break;
@@ -77,14 +75,28 @@ TestStore.retrieveNeededTestAvgs = function(sources, destinations) {
         destsToDo = destinations;
     }
 
-    if (sourcesToDo.length > 0) {
-        // don't retrieveTests if there are no sources and destinations or it'll get ALL test results.
-        TestStore._retrieveTests(sourcesToDo, destsToDo);
-        // now TestStore.tests contains the latest test results merged with the previous results.
+/* 
+    // Get/show test results in batches 
+    // (Be sure not to retrieveTests if there are no sources and destinations or it'll get ALL test results)
+    var batchSize = 10;  // no. of tests per batch
+    var batchSrcs = [];
+    var batchDests = [];
+    for (var i=0; i<sourcesToDo.length; i+=batchSize) {
+        batchSrcs = sourcesToDo.slice(i,i+batchSize);
+        batchDests = destsToDo.slice(i,i+batchSize);
+        TestStore._retrieveTests( batchSrcs, batchDests );
+        // (after each batch, TestStore.tests contains those test results merged with the previous results.)
+        batchSrcs = [];
+        batchDests = [];
     }
+*/
+// all in one request (seems to be faster!)
+        TestStore._retrieveTests( sourcesToDo, destsToDo );
+
 };
 
 TestStore._retrieveList = function() {
+        // get all test sources and destinations, etc.
         var the_url = "/perfsonar-graphs/graphData.cgi?action=test_list&timeperiod=" + TestStore.timeperiod 
                 + "&url=" + TestStore.ma_url_enc;
         $.ajax({
@@ -105,31 +117,33 @@ TestStore._retrieveList = function() {
 };
 
 TestStore._retrieveTests = function(sources, destinations) {
+    // get test results for those tests in the parameter arrays
     var the_url = "/perfsonar-graphs/graphData.cgi?action=tests&timeperiod=" + TestStore.timeperiod
                 + "&url=" + TestStore.ma_url_enc;
     for (var i=0; i<sources.length; i++) {
         the_url += '&src='+sources[i]+';dest='+destinations[i];
     }
-console.log("GETTING RESULTS FOR "+the_url);
     $.ajax({
             url: the_url,
             type: 'GET',
             contentType: "application/json",
             dataType: "json",
             success: function (data) {
-                TestStore.tests = data;
-                // if we're getting additional test data, add the old results back in.
-                if (TestStore.existingTestResults) {
-                    TestStore.tests = TestStore.existingTestResults.concat(TestStore.tests);
-                    TestStore.existingTestResults = null;
+                var latestTestResults = data;
+                // add these test results to whatever exists already at this point.
+                if (TestStore.tests) {
+                    TestStore.tests = latestTestResults.concat(TestStore.tests);
+                } else {
+                    TestStore.tests = latestTestResults;
                 }
                 Dispatcher.publish('store.change.tests');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log( " Error retrieving test data: " + errorThrown);
+                console.log( " Error retrieving test data: " + errorThrown + " \n url: " + the_url);
                 Dispatcher.publish('store.change.tests_error', errorThrown);
+                
             },
-            //timeout: 3000, // sets timeout to 3 seconds
+            //timeout: 70000,  // 70 seconds (I think this includes time waiting to execute the request)
         });
 };
 
