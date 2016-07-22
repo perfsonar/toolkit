@@ -3,13 +3,29 @@
 TEMP_BAK_NAME=ps-toolkit-migrate-backup
 TEMP_BAK_DIR="/tmp/$TEMP_BAK_NAME"
 
+#Check parameters
+TEMP=$(getopt -o d --long data -n $0 -- "$@")
+if [ $? != 0 ]; then
+    echo "Usage: $0 [-d|--data] <tgz-file>"
+    echo "Unable to parse command line"
+    exit 1
+fi
+eval set -- "$TEMP"
+
+while true; do
+   case "$1" in
+       -d|--data) DATA=1 ; shift ;;
+       --) shift ; break ;;
+       *) echo "Internal error!" ; exit 1 ;;
+   esac
+done
+
 #Check options
 if [ -z "$1" ]; then
-    echo "Usage: $0 <tar-file>"
+    echo "Usage: $0 [-d|--data] <tgz-file>"
     echo "Missing path to tar file in options list"
     exit 1
 fi
-
 
 #Create temp directory
 rm -rf $TEMP_BAK_DIR
@@ -20,15 +36,9 @@ if [ "$?" != "0" ]; then
 fi
 
 #create directory structure
-mkdir $TEMP_BAK_DIR/etc
-mkdir -p $TEMP_BAK_DIR/etc/maddash-server/maddash
-mkdir -p $TEMP_BAK_DIR/etc/owampd
-mkdir -p $TEMP_BAK_DIR/etc/bwctld
-mkdir -p $TEMP_BAK_DIR/opt/perfsonar_ps/toolkit/etc
-mkdir -p $TEMP_BAK_DIR/opt/perfsonar_ps/perfsonarbuoy_ma/etc
-mkdir -p $TEMP_BAK_DIR/opt/perfsonar_ps/mesh_config/etc
-mkdir -p $TEMP_BAK_DIR/mysql_data
-mkdir -p $TEMP_BAK_DIR/var/lib
+mkdir -p $TEMP_BAK_DIR/etc
+mkdir -p $TEMP_BAK_DIR/cassandra_data
+mkdir -p $TEMP_BAK_DIR/postgresql_data
 
 #get users and groups
 printf "Backing-up users..."
@@ -76,62 +86,31 @@ else
     echo ""
 fi
 
-#get administrative info
-printf "Backing-up administrative info..."
-grep -v "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrative_info > $TEMP_BAK_DIR/opt/perfsonar_ps/toolkit/etc/administrative_info
+#get perfsonar files
+printf "Backing-up toolkit configuration..."
+cp -a /etc/perfsonar $TEMP_BAK_DIR/etc
 if [ "$?" != "0" ]; then
-    echo "Unable to copy /opt/perfsonar_ps/toolkit/etc/administrative_info"
+    echo "Unable to copy /etc/perfsonar"
     exit 1
 fi
 printf "[SUCCESS]"
 echo ""
 
 #get bwctl files
-printf "Backing-up bwctld configuration..."
-cp /etc/bwctld/bwctld.conf $TEMP_BAK_DIR/etc/bwctld/bwctld.conf 
+printf "Backing-up bwctl-server configuration..."
+cp -a /etc/bwctl-server $TEMP_BAK_DIR/etc
 if [ "$?" != "0" ]; then
-    echo "Unable to copy /etc/bwctld/bwctld.conf"
+    echo "Unable to copy /etc/bwctl-server"
     exit 1
 fi
-
-cp /etc/bwctld/bwctld.limits $TEMP_BAK_DIR/etc/bwctld/bwctld.limits 
-if [ "$?" != "0" ]; then
-    echo "Unable to copy /etc/bwctld/bwctld.limits"
-    exit 1
-fi
-
-if [ -f "/etc/bwctld/bwctld.keys" ]; then
-    cp /etc/bwctld/bwctld.keys $TEMP_BAK_DIR/etc/bwctld/bwctld.keys 
-    if [ "$?" != "0" ]; then
-        echo "Unable to copy /etc/bwctld/bwctld.keys"
-        exit 1
-    fi
-fi
-
 printf "[SUCCESS]"
 echo ""
 
 #get owamp files
-printf "Backing-up owampd configuration..."
-cp /etc/owampd/owampd.conf $TEMP_BAK_DIR/etc/owampd/owampd.conf 
+printf "Backing-up owamp-server configuration..."
+cp -a /etc/owamp-server $TEMP_BAK_DIR/etc
 if [ "$?" != "0" ]; then
-    echo "Unable to copy /etc/owampd/owampd.conf"
-    exit 1
-fi
-
-cp /etc/owampd/owampd.limits $TEMP_BAK_DIR/etc/owampd/owampd.limits 
-if [ "$?" != "0" ]; then
-    echo "Unable to copy /etc/owampd/owampd.limits"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
-
-#get enabled services
-printf "Backing-up enabled services..."
-cp /opt/perfsonar_ps/toolkit/etc/enabled_services $TEMP_BAK_DIR/opt/perfsonar_ps/toolkit/etc/enabled_services
-if [ "$?" != "0" ]; then
-    echo "Unable to copy /opt/perfsonar_ps/toolkit/etc/enabled_services"
+    echo "Unable to copy /etc/owamp-server"
     exit 1
 fi
 printf "[SUCCESS]"
@@ -139,13 +118,7 @@ echo ""
 
 #get NTP config
 printf "Backing-up NTP configuration..."
-cp /opt/perfsonar_ps/toolkit/etc/ntp_known_servers $TEMP_BAK_DIR/opt/perfsonar_ps/toolkit/etc/ntp_known_servers
-if [ "$?" != "0" ]; then
-    echo "Unable to copy /opt/perfsonar_ps/toolkit/etc/ntp_known_servers"
-    exit 1
-fi
-
-cp /etc/ntp.conf  $TEMP_BAK_DIR/etc/ntp.conf 
+cp /etc/ntp.conf  $TEMP_BAK_DIR/etc/ntp.conf
 if [ "$?" != "0" ]; then
     echo "Unable to copy /etc/ntp.conf"
     exit 1
@@ -153,49 +126,12 @@ fi
 printf "[SUCCESS]"
 echo ""
 
-#get cacti data
-printf "Backing-up cacti..."
-cp -r /var/lib/cacti $TEMP_BAK_DIR/var/lib/cacti
-if [ "$?" != "0" ]; then
-    echo "Unable to copy /var/lib/cacti"
-    exit 1
-fi
-#dump rrd data so we can support 32-bit to 64-bit conversions
-for i in `find $TEMP_BAK_DIR/var/lib/cacti -name \*.rrd`; do rrdtool dump $i > $i.xml; rm -f $i; done
-if [ "$?" != "0" ]; then
-    echo "WARN: No cacti databases backed-up."
-fi
-printf "[SUCCESS]"
-echo ""
-
-#get owmesh
-printf "Backing-up scheduled tests..."
-cp /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf $TEMP_BAK_DIR/opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf
-if [ "$?" != "0" ]; then
-    echo "Unable to copy /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
-
-#get mesh config if exists
-if [ -f "/opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf" ]; then
-    printf "Backing-up mesh configuration..."
-    cp /opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf $TEMP_BAK_DIR/opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf
-    if [ "$?" != "0" ]; then
-        echo "Unable to copy /opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf"
-        exit 1
-    fi
-    printf "[SUCCESS]"
-    echo ""
-fi
-
 #get maddash if exists
 if [ -f "/etc/maddash/maddash-server/maddash.yaml" ]; then
     printf "Backing-up MaDDash configuration..."
-    cp /etc/maddash/maddash-server/maddash.yaml $TEMP_BAK_DIR/etc/maddash/maddash-server/maddash.yaml
+    cp -a /etc/maddash $TEMP_BAK_DIR/etc
     if [ "$?" != "0" ]; then
-        echo "Unable to copy /etc/maddash/maddash-server/maddash.yaml"
+        echo "Unable to copy /etc/maddash"
         exit 1
     fi
     printf "[SUCCESS]"
@@ -203,50 +139,37 @@ if [ -f "/etc/maddash/maddash-server/maddash.yaml" ]; then
 fi
 
 #backup databases
-printf "Backing-up bwctl results..."
-mysqldump --skip-lock-tables bwctl > $TEMP_BAK_DIR/mysql_data/bwctl.sql
-if [ "$?" != "0" ]; then
-    echo "Unable to backup bwctl MySQL databse"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
+if [ "$DATA" ]; then
+    printf "Backing-up cassandra data..."
+    if ! nodetool snapshot esmond -t esmond_snapshot &>/dev/null; then
+        echo "Unable to snapshot cassandra database"
+        exit 1
+    fi
+    for SNAPSHOT in /var/lib/cassandra/data/esmond/*/snapshots/esmond_snapshot; do
+        TABLE=${SNAPSHOT%/snapshots/*}
+        TABLE=${TABLE#*/esmond/}
+        mkdir $TEMP_BAK_DIR/cassandra_data/$TABLE
+        cp -a $SNAPSHOT $TEMP_BAK_DIR/cassandra_data/$TABLE/
+        if [ "$?" != "0" ]; then
+            echo "Unable to copy $TABLE snapshot"
+            exit 1
+        fi
+    done
+    printf "[SUCCESS]"
+    echo ""
 
-printf "Backing-up owamp results..."
-mysqldump --skip-lock-tables owamp > $TEMP_BAK_DIR/mysql_data/owamp.sql
-if [ "$?" != "0" ]; then
-    echo "Unable to backup owamp MySQL databse"
-    exit 1
+    printf "Backing-up postgresql data..."
+    export PGUSER=$(sed -n -e 's/sql_db_user = //p' /etc/esmond/esmond.conf)
+    export PGPASSWORD=$(sed -n -e 's/sql_db_password = //p' /etc/esmond/esmond.conf)
+    export PGDATABASE=$(sed -n -e 's/sql_db_name = //p' /etc/esmond/esmond.conf)
+    pg_dump --no-password > $TEMP_BAK_DIR/postgresql_data/esmond.dump 2>/dev/null
+    if [ "$?" != "0" ]; then
+        echo "Unable to dump esmond database"
+        exit 1
+    fi
+    printf "[SUCCESS]"
+    echo ""
 fi
-printf "[SUCCESS]"
-echo ""
-
-printf "Backing-up traceroute results..."
-mysqldump --skip-lock-tables traceroute_ma > $TEMP_BAK_DIR/mysql_data/traceroute_ma.sql
-if [ "$?" != "0" ]; then
-    echo "Unable to backup traceroute_ma MySQL databse"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
-
-printf "Backing-up pinger results..."
-mysqldump --skip-lock-tables pingerMA > $TEMP_BAK_DIR/mysql_data/pingerMA.sql
-if [ "$?" != "0" ]; then
-    echo "Unable to backup pingerMA MySQL databse"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
-
-printf "Backing-up cacti results..."
-mysqldump --skip-lock-tables cacti > $TEMP_BAK_DIR/mysql_data/cacti.sql
-if [ "$?" != "0" ]; then
-    echo "Unable to backup cacti MySQL databse"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
 
 #create tar
 printf "Creating backup file..."

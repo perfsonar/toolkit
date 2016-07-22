@@ -13,6 +13,7 @@ OWAMPDEFAULTS=("8760:9960")
 BWCTLFILE="/etc/bwctl-server/bwctl-server.conf"
 OWAMPFILE="/etc/owamp-server/owamp-server.conf"
 FIREWALL_RULES="/etc/perfsonar/toolkit/perfsonar_firewall_settings.conf"
+FIREWALLD_RULES="/etc/perfsonar/toolkit/perfsonar_firewalld_settings.conf"
 OLD_FIREWALL_RULES="/etc/perfsonar/toolkit/old_firewall_settings.conf"
 
 if [ ! -f $FIREWALL_RULES ]; then
@@ -28,13 +29,18 @@ main() {
         saveFirewallRules
     elif [ "${COMMAND}" == "uninstall" ]; then
         deleteFirewallRules
+        saveFirewallRules
     fi
 }
 
 saveFirewallRules() {
-    for iptables_cmd in "iptables" "ip6tables"; do
-        service $iptables_cmd save
-    done
+    if type firewall-cmd &>/dev/null; then
+        firewall-cmd --quiet --runtime-to-permanent
+    else
+        for iptables_cmd in "iptables" "ip6tables"; do
+            service $iptables_cmd save
+        done
+    fi
 }
 
 deleteOldFirewallRules(){
@@ -65,7 +71,35 @@ deleteFirewallRules(){
     done
 }
 
+addFirewalldRules(){
+        # The BWCTL and OWAMP rules come first for performance reasons
+        p=`echo ${BWCTLPARAMS[@]}`;
+        d=`echo ${BWCTLDEFAULTS[@]}`
+        addPortRuleFromFile "$iptables_cmd" "$BWCTLFILE" "$p" "$d";
+        p=`echo ${OWAMPPARAMS[@]}`;
+        d=`echo ${OWAMPDEFAULTS[@]}`
+        addPortRuleFromFile "$iptables_cmd" "$OWAMPFILE" "$p" "$d";
+
+        # Then all the rules from the static file
+        readarray firewalld_rules < ${FIREWALLD_RULES}
+        for rule in "${firewalld_rules[@]}"; do
+            case ${rule} in
+                "--add-"*)
+                    firewall-cmd --quiet $rule &> /dev/null
+                    ;;
+                "--remove-"*)
+                    firewall-cmd --quiet $rule &> /dev/null
+                    ;;
+            esac
+        done
+}
+
 addFirewallRules(){
+    if type firewall-cmd &>/dev/null; then
+        addFirewalldRules
+        return
+    fi
+
     for iptables_cmd in "iptables" "ip6tables"; do
         # Create the chain if it doesn't currently exit
         $iptables_cmd -n -L $CHAIN &> /dev/null
@@ -143,42 +177,49 @@ addFirewallRules(){
 }
 
 addPortRuleFromFile(){
-	iptables_cmd=$1
-	file=$2
-	local params=( `echo "$3"` )
-	local defaults=( `echo "$4"` )
+    iptables_cmd=$1
+    file=$2
+    local params=( `echo "$3"` )
+    local defaults=( `echo "$4"` )
 
-	total=${#params[*]}
-	for (( i=0; i<=$(( $total - 1 )); i++ ))
-	do
-		param_name="${params[$i]}"
-		param_default="${defaults[$i]}"
-		portrange=`awk -v search="^$param_name" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
+    total=${#params[*]}
+    for (( i=0; i<=$(( $total - 1 )); i++ ))
+    do
+        param_name="${params[$i]}"
+        param_default="${defaults[$i]}"
+        portrange=`awk -v search="^$param_name" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
 
-		if [ -z "$portrange" ]; then
-			portrange=$param_default
-			echo "Unable to find definition for \"$param_name\" in \"$file\" for \"$iptables_cmd\", using default of \"$portrange\""
-		fi
+        if [ -z "$portrange" ]; then
+            portrange=$param_default
+            echo "Unable to find definition for \"$param_name\" in \"$file\" for \"$iptables_cmd\", using default of \"$portrange\""
+        fi
 
-		if [ ! -z "$portrange" ]; then
-			$iptables_cmd -A $CHAIN -m udp -p udp --dport $portrange -j ACCEPT
-			$iptables_cmd -A $CHAIN -m state --state NEW -m tcp -p tcp --dport $portrange -j ACCEPT
-		fi
-	done 
+        if [ ! -z "$portrange" ]; then
+            if type firewall-cmd &>/dev/null; then
+                portrange=${portrange/:/-}
+                portrange=${portrange// /}
+                firewall-cmd --quiet --add-port=$portrange/udp
+                firewall-cmd --quiet --add-port=$portrange/tcp
+            else
+                $iptables_cmd -A $CHAIN -m udp -p udp --dport $portrange -j ACCEPT
+                $iptables_cmd -A $CHAIN -m state --state NEW -m tcp -p tcp --dport $portrange -j ACCEPT
+            fi
+        fi
+    done
 }
 
 deletePortRuleFromFile(){
-	iptables_cmd=$1
-	file=$2
-	local params=( `echo "$3"` )
-	for i in "${params[@]}"
-	do
-		portrange=`awk -v search="^$i" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
-		if [ ! -z "$portrange" ]; then
-			$iptables_cmd -D INPUT -m udp -p udp --dport $portrange -j ACCEPT &> /dev/null
-			$iptables_cmd -D INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT &> /dev/null
-		fi
-	done 
+    iptables_cmd=$1
+    file=$2
+    local params=( `echo "$3"` )
+    for i in "${params[@]}"
+    do
+        portrange=`awk -v search="^$i" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
+        if [ ! -z "$portrange" ]; then
+            $iptables_cmd -D INPUT -m udp -p udp --dport $portrange -j ACCEPT &> /dev/null
+            $iptables_cmd -D INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport $portrange -j ACCEPT &> /dev/null
+        fi
+    done
 }
 
 main

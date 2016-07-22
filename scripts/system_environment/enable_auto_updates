@@ -8,8 +8,12 @@ PREV_VERSION=${2:-99.99}
 #Need to activate if new install or if they were previously running 3.3.2 or older
 if [ "$1" == "new" -o `echo "${PREV_VERSION:0:3} < 3.4" | bc` -eq 1 ]; then
     echo "Enabling Automatic Updates"
-    chkconfig --add yum-cron
-    chkconfig yum-cron on
+    if type systemctl &>/dev/null; then
+        systemctl enable yum-cron
+    else
+        chkconfig --add yum-cron
+        chkconfig yum-cron on
+    fi
 fi
 
 #Handle updating configs here
