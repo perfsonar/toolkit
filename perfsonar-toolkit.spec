@@ -37,7 +37,6 @@ Requires:		perl(CGI::Ajax)
 Requires:		perl(CGI::Carp)
 Requires:		perl(CGI::Session)
 Requires:		perl(Class::Accessor)
-Requires:		perl(Class::Fields)
 Requires:		perl(Config::General)
 Requires:		perl(Cwd)
 Requires:		perl(Data::Dumper)
@@ -54,7 +53,6 @@ Requires:		perl(File::Spec)
 Requires:		perl(FindBin)
 Requires:		perl(Getopt::Long)
 Requires:		perl(IO::File)
-Requires:		perl(IO::Interface)
 Requires:		perl(IO::Socket)
 Requires:		perl(JSON::XS)
 Requires:		perl(LWP::Simple)
@@ -109,16 +107,21 @@ Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
 
 # Misc performance/performance-related tools
-Requires:		ndt
 Requires:		tcptrace
 Requires:		xplot-tcptrace
 Requires:		coreutils
 Requires:		httpd
-Requires:		mod_auth_shadow
 Requires:		mod_ssl
 Requires:		nagios-plugins-all
 Requires:		nscd
 Requires:		yum-cron
+%if 0%{?el7}
+BuildRequires: systemd
+%{?systemd_requires: %systemd_requires}
+%else
+Requires:		ndt
+Requires:		mod_auth_shadow
+%endif
 
 Obsoletes:		perl-perfSONAR_PS-TopologyService
 Obsoletes:		perl-perfSONAR_PS-Toolkit
@@ -136,14 +139,17 @@ Requires(post):	perfsonar-common
 Requires(post):	esmond          >= 2.0
 Requires(post):	bwctl-client    >= 1.6.0
 Requires(post):	bwctl-server    >= 1.6.0
-Requires(post):	ndt
 Requires(post):	owamp-client    >= 3.5.0
 Requires(post):	owamp-server    >= 3.5.0
+%if 0%{?el7}
+%else
+Requires(post):	ndt
+Requires(post):	mod_auth_shadow
+%endif
 
 Requires(post):	coreutils
 Requires(post):	httpd
 Requires(post):	iperf
-Requires(post):	mod_auth_shadow
 Requires(post):	mod_ssl
 Requires(post):	nscd
 
@@ -166,19 +172,22 @@ Requires(post):	bwctl-server    >= 1.6.0
 Requires(post):	owamp-server    >= 3.5.0
 Requires(post):	acpid
 Requires(post):	avahi
-Requires(post):	bluez-utils
 Requires(post):	chkconfig
-Requires(post): cpuspeed
 Requires(post):	cups
-Requires(post):	hal
 Requires(post):	httpd
 Requires(post):	irda-utils
 Requires(post):	irqbalance
 Requires(post):	mdadm
 Requires(post):	nfs-utils
 Requires(post):	pcsc-lite
-Requires(post):	readahead
 Requires(post):	rootfiles
+%if 0%{?el7}
+%else
+Requires(post):	hal
+Requires(post):	readahead
+Requires(post):	bluez-utils
+Requires(post): cpuspeed
+%endif
 Requires(pre):	rpm
 Requires(post):	rsyslog
 Requires(post):	setup
@@ -216,20 +225,24 @@ Installs install scripts
 Summary:                perfSONAR Toolkit IPTables configuration
 Group:                  Development/Tools
 Requires:               coreutils
+%if 0%{?el7}
+Requires:               firewalld
+%else
 Requires:               iptables
 Requires:               iptables-ipv6
+Requires(post):         iptables
+Requires(post):         iptables-ipv6
+Requires(post):         chkconfig
+%endif
 Requires:               fail2ban
 Requires:               perfsonar-common
 Requires(pre):          rpm
 Requires(post):         perfsonar-common
 Requires(post):         coreutils
 Requires(post):         system-config-firewall-base
-Requires(post):         chkconfig
 Requires(post):         kernel-devel
 Requires(post):         kernel
 Requires(post):         kernel-headers
-Requires(post):         iptables
-Requires(post):         iptables-ipv6
 Requires(post):         module-init-tools
 Obsoletes:              perl-perfSONAR_PS-Toolkit-security
 Provides:               perl-perfSONAR_PS-Toolkit-security
@@ -327,10 +340,18 @@ install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 
+%if 0%{?el7}
+install -D -m 0644 init_scripts/%{init_script_1}.service %{buildroot}/%{_unitdir}/%{init_script_1}.service
+%else
 install -D -m 0755 init_scripts/%{init_script_1} %{buildroot}/etc/init.d/%{init_script_1}
+%endif
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
 install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_script_4}
+
+mkdir -p %{buildroot}/usr/lib/firewalld/services/
+mv etc/firewalld/services/* %{buildroot}/usr/lib/firewalld/services/
+rm -rf etc/firewalld
 
 mv etc/* %{buildroot}/%{config_base}
 
@@ -346,7 +367,13 @@ rm -rf %{buildroot}
 
 %post
 # Add a group of users who can login to the web ui
+%if 0%{?el7}
+touch /etc/perfsonar/toolkit/psadmin.htpasswd
+chgrp apache /etc/perfsonar/toolkit/psadmin.htpasswd
+chmod 0640 /etc/perfsonar/toolkit/psadmin.htpasswd
+%else
 /usr/sbin/groupadd psadmin 2> /dev/null || :
+%endif
 /usr/sbin/groupadd pssudo 2> /dev/null || :
 
 mkdir -p /var/log/perfsonar/web_admin
@@ -414,12 +441,19 @@ chmod o+r /etc/bwctl-server/bwctl-server.keys 2> /dev/null
 chmod o+r /etc/owamp-server/owamp-server.limits 2> /dev/null
 chmod o+r /etc/owamp-server/owamp-server.pfs 2> /dev/null
 
+%if 0%{?el7}
+%else
 chkconfig --add %{init_script_1}
+%endif
 chkconfig --add %{init_script_2}
 chkconfig --add %{init_script_3}
 chkconfig --add %{init_script_4}
 
+%if 0%{?el7}
+systemctl --quiet enable %{init_script_1}
+%else
 chkconfig %{init_script_1} on
+%endif
 chkconfig %{init_script_2} on
 chkconfig %{init_script_3} on
 chkconfig %{init_script_4} on
@@ -433,7 +467,11 @@ chkconfig cassandra on
 chkconfig postgresql on
 
 #Restart config_daemon and fix nic parameters
+%if 0%{?el7}
+systemctl restart %{init_script_1} &>/dev/null || :
+%else
 /etc/init.d/%{init_script_1} restart &>/dev/null || :
+%endif
 /etc/init.d/%{init_script_3} start &>/dev/null || :
 
 %post systemenv
@@ -495,9 +533,14 @@ echo "Running: configure_firewall install"
 %{install_base}/scripts/configure_firewall install
 
 #enabling services
+%if 0%{?el7}
+systemctl enable firewalld
+systemctl enable fail2ban
+%else
 chkconfig iptables on
 chkconfig ip6tables on
 chkconfig fail2ban on
+%endif
 
 %post sysctl
 
@@ -520,6 +563,14 @@ fi
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
 %config(noreplace) %{config_base}/*
+%exclude %{config_base}/default_system_firewall_settings.conf
+%exclude %{config_base}/old_firewall_settings.conf
+%exclude %{config_base}/perfsonar_firewall_settings.conf
+%exclude %{config_base}/perfsonar_firewalld_settings.conf
+%exclude %{config_base}/ntp_known_servers
+%exclude %{config_base}/servicewatcher.conf
+%exclude %{config_base}/servicewatcher-logger.conf
+%exclude %{config_base}/templates/ntp_conf.tmpl
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web/*
 %{install_base}/web-ng/*
@@ -554,7 +605,11 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
+%if 0%{?el7}
+%attr(0644,root,root) %{_unitdir}/%{init_script_1}.service
+%else
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_1}
+%endif
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}
@@ -578,7 +633,9 @@ fi
 %config %{config_base}/default_system_firewall_settings.conf
 %config %{config_base}/old_firewall_settings.conf
 %config %{config_base}/perfsonar_firewall_settings.conf
+%config %{config_base}/perfsonar_firewalld_settings.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_firewall
+/usr/lib/firewalld/services/*.xml
 
 %files install
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
@@ -595,6 +652,7 @@ fi
 
 %files library
 %{install_base}/lib/perfSONAR_PS/*
+%{install_base}/lib/OWP/*
 %{install_base}/python_lib/*
 %doc %{install_base}/doc/*
 

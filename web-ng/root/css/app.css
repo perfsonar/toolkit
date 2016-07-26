@@ -102,6 +102,20 @@
   display: inline-block !important;
 }
 
+/* Margin utilities */
+
+.no-margin {
+    margin: 0;
+}
+
+.no-margin-top {
+    margin-top: 0;
+}
+
+.no-margin-bottom {
+    margin-bottom: 0;
+}
+
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 /**
  * 1. Set default font family to sans-serif.
@@ -991,11 +1005,20 @@ ul.list-grid-thirds li {
   }
 }
 /* Dropdowns */
-li.nav-dropdown {
+
+/* These selectors are very specific makes them less reusable
+ * with any kind of variation in the markup (on the graphs
+ * for instance). I added a less specific versio of each
+ * selector, just in case, but I would say the super specific
+ * ones could be removed.
+*/
+li.nav-dropdown,
+.nav-dropdown {
   position: relative;
 }
 
-li.nav-dropdown ul.nav-dropdown-menu {
+li.nav-dropdown ul.nav-dropdown-menu,
+.nav-dropdown-menu {
   display: none;
   position: absolute;
   min-width: 250px;
@@ -1008,12 +1031,13 @@ li.nav-dropdown ul.nav-dropdown-menu {
   -ms-border-radius: 4px;
   -o-border-radius: 4px;
   border-radius: 4px;
-  -webkit-box-shadow: 0px 2px 2px #ccc;
-  -moz-box-shadow: 0px 2px 2px #ccc;
-  -o-box-shadow: 0px 2px 2px #ccc;
-  box-shadow: 0px 2px 2px #ccc;
+  -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, .13);
+  -moz-box-shadow: 0px 0px 5px rgba(0, 0, 0, .13);
+  -o-box-shadow: 0px 0px 5px rgba(0, 0, 0, .13);
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, .13);
 }
-li.nav-dropdown ul.nav-dropdown-menu:before {
+li.nav-dropdown ul.nav-dropdown-menu:before,
+.nav-dropdown-menu:before {
   content: "";
   display: block;
   width: 0;
@@ -1026,12 +1050,14 @@ li.nav-dropdown ul.nav-dropdown-menu:before {
   right: 25px;
   z-index: 99;
 }
-li.nav-dropdown ul.nav-dropdown-menu li {
+li.nav-dropdown ul.nav-dropdown-menu li,
+.nav-dropdown .nav-dropdown-menu li {
   display: block;
   margin: 0;
   text-align: left;
 }
-li.nav-dropdown ul.nav-dropdown-menu li a {
+li.nav-dropdown ul.nav-dropdown-menu li a,
+.nav-dropdown .nav-dropdown-menu li a {
   display: block;
   margin: 0;
   padding: 8px 10px;
@@ -1039,7 +1065,8 @@ li.nav-dropdown ul.nav-dropdown-menu li a {
   border-radius: 0;
   color: #4d565b;
 }
-li.nav-dropdown ul.nav-dropdown-menu li a:hover {
+li.nav-dropdown ul.nav-dropdown-menu li a:hover,
+.nav-dropdown .nav-dropdown-menu li a:hover {
   background-color: #ddd;
   color: #0089ff;
   border-top-right-radius: 4px;
@@ -1048,6 +1075,12 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
 
 .nav-dropdown-menu.visible {
   display: block !important;
+}
+
+.nav-dropdown-menu__heading {
+    font-weight: 700;
+    padding: 8px 10px;
+    border-bottom: 1px solid #ccc;
 }
 
 /*------------------------------------------------------------------------------
@@ -1174,6 +1207,10 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover {
   min-width: 95%;
 }
 
+.sidebar-popover--overview {
+    top: 5.75em;
+}
+
 .sidebar-popover :after {
   content: "";
   clear: both;
@@ -1295,7 +1332,8 @@ table thead {
   background-color: transparent;
 }
 
-table thead tr th {
+table thead tr th,
+.sub-heading {
   font-weight: 400;
   color: #a9b1b5;
   text-transform: uppercase;
@@ -1310,7 +1348,7 @@ table tr.even, table tr.alt, table tr:nth-of-type(even) {
     background-color: #eee;
 }
 
-table tr.odd { 
+table tr.odd {
     background-color:#fff;
 }
 
@@ -1735,6 +1773,20 @@ input.button-alternate--small {
 }
 
 /*
+ * Button modifiers
+*/
+
+
+/*
+ * This class will make a button take up the full width
+ * of it's parent container.
+*/
+.button--full-width {
+    display: block;
+    width: 100%
+}
+
+/*
 **  Overide Foundation dropdown buttons
 */
 
@@ -1821,6 +1873,11 @@ input[type='button']:disabled.button-primary--hollow:hover {
   -o-border-radius: 4px;
   border-radius: 4px;
   border: 1px solid #dedede;
+}
+
+.overview--no-pad {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .overview--list {
@@ -2320,7 +2377,7 @@ to put the stuff inside. */
 .communities__add,
 .servers__add {
   display: inline-block;
-  margin: 1em 0; 
+  margin: 1em 0;
 }
 */
 
@@ -2412,9 +2469,21 @@ to put the stuff inside. */
 }
 
 /* Modals */
-.reveal-modal {
-  text-align: center;
-}
+
+/*
+ * Getting rid of this centered text rule because it is cause weird issues
+ * inside the modals on some stuff (like graphs) where elements are set to
+ * display: inline-block but the text should not be centere.
+ *
+ * Use Foundation's .text-center utility class instead on the modals that
+ * need to have the text centered.
+
+ .reveal-modal {
+   text-align: center;
+ }
+
+
+*/
 
 .reveal-modal.loading {
   position: fixed;
@@ -2422,7 +2491,7 @@ to put the stuff inside. */
   /* top: 50px !important; */
   top:30% !important;  /* previous value */
   left:20% !important;
-  height:150px; 
+  height:150px;
   width:300px;
   /*bottom: 50% !important; */
   transform:translate(-40%, 0);
@@ -2432,7 +2501,7 @@ to put the stuff inside. */
 .reveal-modal.large {
   position: fixed;
   overflow: scroll;
-  top: 50px !important; 
+  top: 50px !important;
   /* top:50% !important; */ /* previous value */
   left:50% !important;
   bottom: 50px !important;
@@ -2444,7 +2513,7 @@ to put the stuff inside. */
   /*width: 95%;*/
   position: fixed;
   overflow: scroll;
-  top: 30px !important; 
+  top: 30px !important;
 /*  left:95% !important;
   transform:translate(-97%, 0);
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>NPAD</short>
+  <description>NPAD test and control ports.</description>
+  <port protocol="tcp" port="8001-8020"/> <!-- NPAD Test (Incoming) -->
+  <port protocol="tcp" port="8000"/> <!-- NPAD Control (Incoming) -->
+</service>

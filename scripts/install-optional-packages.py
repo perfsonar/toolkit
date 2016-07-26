@@ -4,12 +4,24 @@
 #
 # Author: Sowmya Balasubramanian
 
-import yum 
+import os
 import sys
+
+bindir = os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])))
+libdir = os.path.join(bindir, "..", "python_lib")
+
+sys.path.append(libdir)
+
+import yum
 import Internet2Lib
 import Internet2Consts
 
-optionalPackages=['perl-perfSONAR_PS-Toolkit-ntp','perl-perfSONAR_PS-Toolkit-security','perl-perfSONAR_PS-Toolkit-service-watcher','perl-perfSONAR_PS-Toolkit-sysctl']
+optionalPackages=[
+    'perfsonar-toolkit-ntp',
+    'perfsonar-toolkit-security',
+    'perfsonar-toolkit-servicewatcher',
+    'perfsonar-toolkit-sysctl'
+]
 
 def installPackages(yumHandle, packageNames):
     userChoice=[]
