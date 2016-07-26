@@ -4,39 +4,47 @@
 # Dependent on running in an 'upgrade' or 'new install' context.
 #######################
 
+function disable_service() {
+    if type systemctl &>/dev/null; then
+        systemctl disable $1 2>/dev/null
+    else
+        /sbin/chkconfig $1 off 2>/dev/null
+    fi
+}
+
 if [ "$1" == "new" ]; then
-	/sbin/chkconfig apmd off 2> /dev/null || :
-	/sbin/chkconfig acpid off 2> /dev/null || :
-	/sbin/chkconfig autofs off 2> /dev/null || :
-	/sbin/chkconfig avahi-daemon off 2> /dev/null || :
-	/sbin/chkconfig avahi-dnsconfd off 2> /dev/null || :
-	/sbin/chkconfig bluetooth off 2> /dev/null || :
-	/sbin/chkconfig cpuspeed off 2> /dev/null || :
-	/sbin/chkconfig cups off 2> /dev/null || :
-	/sbin/chkconfig firstboot off 2> /dev/null || :
-	/sbin/chkconfig gpm off 2> /dev/null || :
-	/sbin/chkconfig hidd off 2> /dev/null || :
-	/sbin/chkconfig irda off 2> /dev/null || :
-	/sbin/chkconfig iscsi off 2> /dev/null || :
-	/sbin/chkconfig iscsid off 2> /dev/null || :
-	/sbin/chkconfig kudzu off 2> /dev/null || :
-	/sbin/chkconfig mdmonitor off 2> /dev/null || :
-	/sbin/chkconfig mdmpd off 2> /dev/null || :
-	/sbin/chkconfig ndt off 2> /dev/null || :
-	/sbin/chkconfig netfs off 2> /dev/null || :
-	/sbin/chkconfig nfs off 2> /dev/null || :
-	/sbin/chkconfig nfslock off 2> /dev/null || :
-	/sbin/chkconfig npad off 2> /dev/null || :
-	/sbin/chkconfig pcscd off 2> /dev/null || :
-	/sbin/chkconfig portmap off 2> /dev/null || :
-	/sbin/chkconfig psacct off 2> /dev/null || :
-	/sbin/chkconfig readahead_early off 2> /dev/null || :
-	/sbin/chkconfig readahead_later off 2> /dev/null || :
-        /sbin/chkconfig rpcbind off 2> /dev/null || :
-	/sbin/chkconfig rpcgssd off 2> /dev/null || :
-	/sbin/chkconfig rpcidmapd off 2> /dev/null || :
-	/sbin/chkconfig rpcsvcgssd off 2> /dev/null || :
-	/sbin/chkconfig smartd off 2> /dev/null || :
-	/sbin/chkconfig ypbind off 2> /dev/null || :
-	/sbin/chkconfig yum-updatesd off 2> /dev/null || :
+    disable_service apmd
+    disable_service acpid
+    disable_service autofs
+    disable_service avahi-daemon
+    disable_service avahi-dnsconfd
+    disable_service bluetooth
+    disable_service cpuspeed
+    disable_service cups
+    disable_service firstboot
+    disable_service gpm
+    disable_service hidd
+    disable_service irda
+    disable_service iscsi
+    disable_service iscsid
+    disable_service kudzu
+    disable_service mdmonitor
+    disable_service mdmpd
+    disable_service ndt
+    disable_service netfs
+    disable_service nfs
+    disable_service nfslock
+    disable_service npad
+    disable_service pcscd
+    disable_service portmap
+    disable_service psacct
+    disable_service readahead_early
+    disable_service readahead_later
+    disable_service rpcbind
+    disable_service rpcgssd
+    disable_service rpcidmapd
+    disable_service rpcsvcgssd
+    disable_service smartd
+    disable_service ypbind
+    disable_service yum-updatesd
 fi

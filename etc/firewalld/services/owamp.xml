@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>OWAMP</short>
+  <description>OWAMP test service.</description>
+  <port protocol="tcp" port="861"/> <!-- OWAMP Control (Incoming) -->
+</service>

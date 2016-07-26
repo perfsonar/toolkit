@@ -364,17 +364,21 @@ TestConfigComponent._showAddHostByCommunity = function( containerID ) {
 
 TestConfigComponent._setAllCommunities = function( ) {
     /* Sets the global communities in the format {name: selected} */
-    //TestConfigComponent.communities.all = {};
-    var communities = CommunityAllStore.getAllCommunities().keywords;
 
     var sorted = [];
-    var keys = Object.keys(communities).sort();
-    for(var i in keys) {
-        var row = {};
-        row.id = i;
-        row.text = keys[i];
-        //row.selected = combined[ keys[i] ];
-        sorted.push( row );
+
+    if ( CommunityAllStore.getAllCommunities() !== null && CommunityAllStore.getAllCommunities().keywords !== null ) {
+
+        var communities = CommunityAllStore.getAllCommunities().keywords;
+
+        var keys = Object.keys(communities).sort();
+        for(var i in keys) {
+            var row = {};
+            row.id = i;
+            row.text = keys[i];
+            //row.selected = combined[ keys[i] ];
+            sorted.push( row );
+        }
     }
 
     TestConfigComponent._selectCommunities( sorted );
@@ -383,10 +387,19 @@ TestConfigComponent._setAllCommunities = function( ) {
 
 TestConfigComponent._selectCommunities = function( communities ) {
     var sel = $('#testAddHostByCommunitySel');
+    sel.show();
 
     sel.empty(); // remove old options, if any
 
     sel.append( $("<option></option>") );
+    if ( communities.length == 0 ) {
+        $('#testCommunitySelError').text('No communities found');
+        sel.hide();
+        $('#testCommunitySelError').show();
+        return;
+
+    }
+    $('#testCommunitySelError').hide();
     $.each(communities, function(i, val) {
         sel.append( $("<option></option>")
                         .attr("value", val.text)
