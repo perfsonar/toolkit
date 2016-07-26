@@ -10,56 +10,55 @@
  #Old GUI
  Alias /toolkit-old /usr/lib/perfsonar/web/root
  <Directory "/usr/lib/perfsonar/web/root">
-@@ -23,9 +26,11 @@
-     Order allow,deny
-     Allow from all
- 
--    AuthShadow on
-     AuthType Basic
-     AuthName "Password Required"
-+    AuthBasicProvider external
-+    AuthExternal pwauth
-+    AuthzUnixgroup on
-     Require group psadmin
+@@ -37,9 +40,11 @@
+       Require valid-user
+     </IfVersion>
+     <IfVersion < 2.4>
+-      AuthShadow on
+       AuthType Basic
+       AuthName "Password Required"
++      AuthBasicProvider external
++      AuthExternal pwauth
++      AuthzUnixgroup on
+       Require group psadmin
+     </IfVersion>
  </Directory>
- 
-@@ -37,9 +42,11 @@
-     Order allow,deny
-     Allow from all
- 
--    AuthShadow on
-     AuthType Basic
-     AuthName "Password Required"
-+    AuthBasicProvider external
-+    AuthExternal pwauth
-+    AuthzUnixgroup on
-     Require group psadmin
+@@ -61,9 +66,11 @@
+       Require valid-user
+     </IfVersion>
+     <IfVersion < 2.4>
+-      AuthShadow on
+       AuthType Basic
+       AuthName "Password Required"
++      AuthBasicProvider external
++      AuthExternal pwauth
++      AuthzUnixgroup on
+       Require group psadmin
+     </IfVersion>
  </Directory>
- 
-@@ -117,9 +124,12 @@
-     AddHandler cgi-script .cgi
-     Order allow,deny
-     Allow from all
--    AuthShadow on
-+
-     AuthType Basic
-     AuthName "Password Required"
-+    AuthBasicProvider external
-+    AuthExternal pwauth
-+    AuthzUnixgroup on
-     Require group psadmin
+@@ -163,9 +170,11 @@
+       Require valid-user
+     </IfVersion>
+     <IfVersion < 2.4>
+-      AuthShadow on
+       AuthType Basic
+       AuthName "Password Required"
++      AuthBasicProvider external
++      AuthExternal pwauth
++      AuthzUnixgroup on
+       Require group psadmin
+     </IfVersion>
  </Location>
- 
-@@ -137,9 +147,11 @@
-     Order allow,deny
-     Allow from all
- 
--    AuthShadow on
-     AuthType Basic
-     AuthName "Password Required"
-+    AuthBasicProvider external
-+    AuthExternal pwauth
-+    AuthzUnixgroup on
-     Require group psadmin
+@@ -193,9 +202,11 @@
+       Require valid-user
+     </IfVersion>
+     <IfVersion < 2.4>
+-      AuthShadow on
+       AuthType Basic
+       AuthName "Password Required"
++      AuthBasicProvider external
++      AuthExternal pwauth
++      AuthzUnixgroup on
+       Require group psadmin
+     </IfVersion>
  </Directory>
- 

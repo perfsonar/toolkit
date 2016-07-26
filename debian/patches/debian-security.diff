@@ -1,11 +1,11 @@
 --- a/scripts/configure_firewall
 +++ b/scripts/configure_firewall
-@@ -32,7 +32,7 @@
- }
- 
- saveFirewallRules() {
--    for iptables_cmd in "iptables" "ip6tables"; do
-+    for iptables_cmd in "iptables-persistent"; do
-         service $iptables_cmd save
-     done
- }
+@@ -37,7 +37,7 @@
+     if type firewall-cmd &>/dev/null; then
+         firewall-cmd --quiet --runtime-to-permanent
+     else
+-        for iptables_cmd in "iptables" "ip6tables"; do
++        for iptables_cmd in "iptables-persistent"; do
+             service $iptables_cmd save
+         done
+     fi
