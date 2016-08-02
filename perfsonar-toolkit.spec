@@ -17,10 +17,10 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  2 
+%define relnum  0.1.a1 
 
 Name:			perfsonar-toolkit
-Version:		3.5.1.3
+Version:		4.0
 Release:		%{relnum}%{?dist}
 Summary:		perfSONAR Toolkit
 License:		Distributable, see LICENSE
@@ -105,6 +105,35 @@ Requires:       libperfsonar-sls-perl
 Requires:       libperfsonar-toolkit-perl
 Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
+Requires:       esmond >= 2.1
+Requires:       esmond-database-postgresql95
+Requires:       perfsonar-database-init 
+Requires:       httpd-wsgi-socket
+Requires:       pscheduler-api-server
+Requires:       pscheduler-archiver-bitbucket
+Requires:       pscheduler-archiver-esmond
+Requires:       pscheduler-archiver-failer
+Requires:       pscheduler-archiver-syslog
+Requires:       pscheduler-core
+Requires:       pscheduler-database
+Requires:       pscheduler-server
+Requires:       pscheduler-test-idle
+Requires:       pscheduler-test-latency
+Requires:       pscheduler-test-rtt
+Requires:       pscheduler-test-simplestream
+Requires:       pscheduler-test-throughput
+Requires:       pscheduler-test-trace
+Requires:       pscheduler-tool-iperf
+Requires:       pscheduler-tool-owping
+Requires:       pscheduler-tool-paris-traceroute
+Requires:       pscheduler-tool-ping
+Requires:       pscheduler-tool-simplestreamer
+Requires:       pscheduler-tool-sleep
+Requires:       pscheduler-tool-snooze
+Requires:       pscheduler-tool-tracepath
+Requires:       pscheduler-tool-traceroute
+
+
 
 # Misc performance/performance-related tools
 Requires:		tcptrace
@@ -136,7 +165,8 @@ Requires(post):	perfsonar-graphs
 Requires(post):	perfsonar-regulartesting
 
 Requires(post):	perfsonar-common
-Requires(post):	esmond          >= 2.0
+Requires(post):	esmond          >= 2.1
+Requires(post):	esmond-database-postgresql95
 Requires(post):	bwctl-client    >= 1.6.0
 Requires(post):	bwctl-server    >= 1.6.0
 Requires(post):	owamp-client    >= 3.5.0
@@ -199,6 +229,16 @@ Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 %description systemenv
 Tunes and configures the system according to performance and security best
 practices.
+
+%package compat-database
+Summary:		perfSONAR Database Migration
+Group:			Development/Tools
+Requires:		esmond-database-postgresql95
+Provides:		pscheduler-database-init
+
+%description compat-database
+Provides necessary bridge to 4.0 that ensures old esmond data is migrated prior to the
+initialization of the postgresql 9.5 data directory by pScheduler. 
 
 %package library
 Summary:                perfSONAR Toolkit library
@@ -464,7 +504,7 @@ chkconfig --level 2345 httpd on
 #adding cassandra and postgres for esmond
 chkconfig --add cassandra
 chkconfig cassandra on
-chkconfig postgresql on
+chkconfig postgresql-9.5 on
 
 #Restart config_daemon and fix nic parameters
 %if 0%{?el7}
@@ -661,6 +701,8 @@ fi
 %config(noreplace) %{config_base}/servicewatcher-logger.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
+
+%files compat-database
 
 %changelog
 * Thu Mar 4 2015 sowmya@es.net
