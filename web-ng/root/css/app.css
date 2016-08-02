@@ -1243,17 +1243,28 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover,
   width: 55%;
 }
 
-.sidebar-popover__param { width: 45%; }
-
 .sidebar-popover__param {
   float: left;
   color: #ccc;
+  width: 45%; 
 }
 
 .sidebar-popover__value {
   float: right;
   text-align: right;
   line-height: 1.2;
+}
+
+.sidebar-popover__param_wide {
+  float: left;
+  color: #ccc;
+  width: 100%; 
+}
+
+.sidebar-popover__value_wide {
+  float: left;
+  line-height: 1.2;
+  width: 100%;
 }
 
 .sidebar-popover-toggle:focus {

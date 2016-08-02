@@ -48,6 +48,34 @@
                                             <span class="sidebar-popover__value">{{mtu}}</span>
                                         </li>
                                         {{/if}}
+                                        {{#if counters}}
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param">TX packets:</span>
+                                            <span class="sidebar-popover__value"> {{counters.txpcks}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param">RX packets:</span>
+                                            <span class="sidebar-popover__value"> {{counters.rxpcks}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param_wide">
+                                                TX compr, errs, drops, fifo, colls, carr:
+                                            </span>
+                                            <span class="sidebar-popover__value_wide">
+                                                {{counters.txcompr}}, {{counters.txerrs}}, {{counters.txdrop}}, 
+                                                {{counters.txfifo}}, {{counters.txcolls}}, {{counters.txcarr}}
+                                           </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param_wide">
+                                                RX compr, errs, drops, fifo, frame, multi:
+                                            </span>
+                                            <span class="sidebar-popover__value_wide">
+                                                {{counters.rxcompr}}, {{counters.rxerrs}}, {{counters.rxdrop}}, 
+                                                {{counters.rxfifo}}, {{counters.rxframe}}, {{counters.rxmulti}}
+                                           </span>
+                                        </li>
+                                        {{/if}}
                                     </ul>
                                 {{/each}}
                             </div> 
