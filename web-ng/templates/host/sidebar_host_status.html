@@ -49,31 +49,46 @@
                                         </li>
                                         {{/if}}
                                         {{#if counters}}
+                                    </ul>
+                                    <ul class="sidebar-popover__list onright">
                                         <li class="sidebar-popover__item">
-                                            <span class="sidebar-popover__param">TX packets:</span>
-                                            <span class="sidebar-popover__value"> {{counters.txpcks}} </span>
+                                            <span class="sidebar-popover__param-3col"> &nbsp;  </span>
+                                            <span class="sidebar-popover__param-3col right">transmitted</span>
+                                            <span class="sidebar-popover__param-3col right">received</span>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">packets:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txpcks}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxpcks}} </span>
                                         </li>
                                         <li class="sidebar-popover__item">
-                                            <span class="sidebar-popover__param">RX packets:</span>
-                                            <span class="sidebar-popover__value"> {{counters.rxpcks}} </span>
+                                            <span class="sidebar-popover__param-3col">compr:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txcompr}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxcompr}} </span>
                                         </li>
                                         <li class="sidebar-popover__item">
-                                            <span class="sidebar-popover__param_wide">
-                                                TX compr, errs, drops, fifo, colls, carr:
-                                            </span>
-                                            <span class="sidebar-popover__value_wide">
-                                                {{counters.txcompr}}, {{counters.txerrs}}, {{counters.txdrop}}, 
-                                                {{counters.txfifo}}, {{counters.txcolls}}, {{counters.txcarr}}
-                                           </span>
+                                            <span class="sidebar-popover__param-3col">errors:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txerrs}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxerrs}} </span>
                                         </li>
                                         <li class="sidebar-popover__item">
-                                            <span class="sidebar-popover__param_wide">
-                                                RX compr, errs, drops, fifo, frame, multi:
-                                            </span>
-                                            <span class="sidebar-popover__value_wide">
-                                                {{counters.rxcompr}}, {{counters.rxerrs}}, {{counters.rxdrop}}, 
-                                                {{counters.rxfifo}}, {{counters.rxframe}}, {{counters.rxmulti}}
-                                           </span>
+                                            <span class="sidebar-popover__param-3col">drops:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txdrop}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxdrop}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">fifo:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txfifo}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxfifo}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">colls/frames:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txcolls}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxframe}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">carr/multi:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txcarr}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxmulti}} </span>
                                         </li>
                                         {{/if}}
                                     </ul>
