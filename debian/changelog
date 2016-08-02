@@ -1,3 +1,9 @@
+perfsonar-toolkit (3.5.1.7-1) perfsonar-jessie-release; urgency=high
+
+  * New upstream version.
+
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 02 Aug 2016 14:44:20 +0000
+
 perfsonar-toolkit (3.5.1.4-1) perfsonar-jessie-release; urgency=high
 
   * New upstream version.
