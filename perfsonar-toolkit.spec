@@ -98,6 +98,7 @@ Requires:		perfsonar-lscachedaemon
 Requires:		perfsonar-graphs
 Requires:		perfsonar-traceroute-viewer
 Requires:		perfsonar-meshconfig-jsonbuilder
+Requires:       perfsonar-toolkit-compat-database
 Requires:       libperfsonar-esmond-perl
 Requires:       libperfsonar-perl
 Requires:       libperfsonar-regulartesting-perl
@@ -107,7 +108,6 @@ Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
 Requires:       esmond >= 2.1
 Requires:       esmond-database-postgresql95
-Requires:       perfsonar-database-init 
 Requires:       httpd-wsgi-socket
 Requires:       pscheduler-api-server
 Requires:       pscheduler-archiver-bitbucket
@@ -234,6 +234,7 @@ practices.
 Summary:		perfSONAR Database Migration
 Group:			Development/Tools
 Requires:		esmond-database-postgresql95
+Requires(post):		esmond-database-postgresql95
 Provides:		pscheduler-database-init
 
 %description compat-database
@@ -548,6 +549,21 @@ EOF
 # Apache if the administrator has shut it down for some reason
 #########################################################################
 service httpd reload || :
+
+%post compat-database
+
+if [ $1 -eq 1 ] ; then
+    #make sure the auth type is something pscheduler can use
+    sed -i -e s/md5$/trust/g /var/lib/pgsql/9.5/data/pg_hba.conf
+    
+    #disable old postgresql
+    /sbin/service postgresql stop || :
+    chkconfig postgresql off
+    
+    #enable new postgresql
+    /sbin/service postgresql-9.5 restart || :
+    chkconfig postgresql-9.5 on
+fi
 
 %post ntp
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
