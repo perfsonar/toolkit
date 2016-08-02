@@ -1,7 +1,7 @@
 PACKAGE=perfsonar-toolkit
 ROOTPATH=/usr/lib/perfsonar
 CONFIGPATH=/etc/perfsonar/toolkit
-VERSION=3.5.1.6
+VERSION=3.5.1.7
 RELEASE=1
 
 default:
