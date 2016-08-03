@@ -167,7 +167,6 @@ Requires(post):	perfsonar-regulartesting
 Requires(post):	perfsonar-common
 Requires(post):	esmond          >= 2.1
 Requires(post):	esmond-database-postgresql95
-Requires(post):	random-string
 Requires(post):	bwctl-client    >= 1.6.0
 Requires(post):	bwctl-server    >= 1.6.0
 Requires(post):	owamp-client    >= 3.5.0
