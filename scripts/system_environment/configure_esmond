@@ -15,12 +15,21 @@ if [ $? -ne 0 ]; then
     /sbin/service ${PG_SERVICE_NAME} restart 
     if [ $? -ne 0 ]; then
         echo "Unable to start ${PG_SERVICE_NAME}. Your esmond database may not be initialized"
+        exit 1
     fi
 fi
 
 #create user if not exists or is an old user
-USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='esmond'")
-OLD_USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_authid WHERE rolpassword='md5' || md5('7hc4m1' || rolname)")
+USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='esmond'" 2> /dev/null)
+if [ $? -ne 0 ]; then
+    echo "Unable to connect to postgresql to check user. Your esmond database may not be initialized"
+    exit 1
+fi
+OLD_USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_authid WHERE rolpassword='md5' || md5('7hc4m1' || rolname)" 2> /dev/null)
+if [ $? -ne 0 ]; then
+    echo "Unable to connect to postgresql to check for old users. Your esmond database may not be initialized"
+    exit 1
+fi
 if [ "$USER_EXISTS" != "1" ] || [ "$OLD_USER_EXISTS" == "1" ]; then
     DB_PASSWORD=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c32;echo;)
     if [ "$USER_EXISTS" == "1" ]; then
@@ -46,7 +55,7 @@ host      esmond          esmond     ::1/128                md5
 EOF
     /sbin/service ${PG_SERVICE_NAME} restart 
     if [ $? -ne 0 ]; then
-        echo "Unable to start ${PG_SERVICE_NAME}. Your esmond database may not be initialized"
+        echo "Unable to restart ${PG_SERVICE_NAME}. Your esmond database may not be initialized"
     fi
 fi
 
