@@ -167,6 +167,7 @@ Requires(post):	perfsonar-regulartesting
 Requires(post):	perfsonar-common
 Requires(post):	esmond          >= 2.1
 Requires(post):	esmond-database-postgresql95
+Requires(post):	random-string
 Requires(post):	bwctl-client    >= 1.6.0
 Requires(post):	bwctl-server    >= 1.6.0
 Requires(post):	owamp-client    >= 3.5.0
@@ -507,6 +508,22 @@ chkconfig --level 2345 httpd on
 chkconfig --add cassandra
 chkconfig cassandra on
 chkconfig postgresql-9.5 on
+
+#Restart pscheduler daemons to make sure they got all tests, tools, and archivers
+#Restart config_daemon and fix nic parameters
+%if 0%{?el7}
+systemctl restart httpd &>/dev/null || :
+systemctl restart pscheduler-archiver &>/dev/null || :
+systemctl restart pscheduler-runner &>/dev/null || :
+systemctl restart pscheduler-scheduler &>/dev/null || :
+systemctl restart pscheduler-ticker &>/dev/null || :
+%else
+/sbin/service httpd restart &>/dev/null || :
+/sbin/service pscheduler-archiver restart &>/dev/null || :
+/sbin/service pscheduler-runner restart &>/dev/null || :
+/sbin/service pscheduler-scheduler restart &>/dev/null || :
+/sbin/service pscheduler-ticker restart &>/dev/null || :
+%endif
 
 #Restart config_daemon and fix nic parameters
 %if 0%{?el7}
