@@ -211,6 +211,7 @@ Requires(post):	mdadm
 Requires(post):	nfs-utils
 Requires(post):	pcsc-lite
 Requires(post):	rootfiles
+Requires(post):	drop-in
 %if 0%{?el7}
 %else
 Requires(post):	hal
@@ -554,7 +555,7 @@ service httpd reload || :
 
 if [ $1 -eq 1 ] ; then
     #make sure the auth type is something pscheduler can use
-    sed -i -e s/md5$/trust/g /var/lib/pgsql/9.5/data/pg_hba.conf
+    cp -f /etc/perfsonar/toolkit/default_service_configs/pg_hba.conf /var/lib/pgsql/9.5/data/pg_hba.conf
     
     #disable old postgresql
     /sbin/service postgresql stop || :
@@ -627,6 +628,7 @@ fi
 %exclude %{config_base}/servicewatcher.conf
 %exclude %{config_base}/servicewatcher-logger.conf
 %exclude %{config_base}/templates/ntp_conf.tmpl
+%exclude %{config_base}/default_service_configs/pg_hba.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web/*
 %{install_base}/web-ng/*
@@ -719,6 +721,7 @@ fi
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
 %files compat-database
+%attr(0644,root,root) %{config_base}/default_service_configs/pg_hba.conf
 
 %changelog
 * Thu Mar 4 2015 sowmya@es.net
