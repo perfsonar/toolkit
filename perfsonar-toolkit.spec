@@ -212,6 +212,8 @@ Requires(post):	nfs-utils
 Requires(post):	pcsc-lite
 Requires(post):	rootfiles
 Requires(post):	drop-in
+Requires(post): perfsonar-toolkit-compat-database
+
 %if 0%{?el7}
 %else
 Requires(post):	hal
@@ -235,7 +237,8 @@ practices.
 Summary:		perfSONAR Database Migration
 Group:			Development/Tools
 Requires:		esmond-database-postgresql95
-Requires(post):		esmond-database-postgresql95
+Requires:		drop-in
+Requires(post):	esmond-database-postgresql95
 Provides:		pscheduler-database-init
 
 %description compat-database
@@ -509,7 +512,6 @@ chkconfig cassandra on
 chkconfig postgresql-9.5 on
 
 #Restart pscheduler daemons to make sure they got all tests, tools, and archivers
-#Restart config_daemon and fix nic parameters
 %if 0%{?el7}
 systemctl restart httpd &>/dev/null || :
 systemctl restart pscheduler-archiver &>/dev/null || :
@@ -702,6 +704,7 @@ fi
 
 %files systemenv
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
+%exclude %{install_base}/scripts/system_environment/configure_esmond 
 
 %files security
 %config %{config_base}/default_system_firewall_settings.conf
@@ -738,6 +741,7 @@ fi
 
 %files compat-database
 %attr(0644,root,root) %{config_base}/default_service_configs/pg_hba.conf
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_esmond 
 
 %changelog
 * Thu Mar 4 2015 sowmya@es.net
