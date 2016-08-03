@@ -4,6 +4,14 @@ PG_BINDIR=/usr/pgsql-${PG_VERSION}/bin
 PG_DATADIR=/var/lib/pgsql/${PG_VERSION}/data
 PG_SERVICE_NAME="postgresql-${PG_VERSION}"
 
+#disable JMX in cassandra so will start even if /etc/sysconfig/network HOSTNAME does not resolve
+sed -i '/^JVM_OPTS="\$JVM_OPTS -Dcom.sun.management.jmx/ s/^/#/' /etc/cassandra/conf/cassandra-env.sh
+#fire-up cassandra
+/sbin/service cassandra restart 
+if [ $? -ne 0 ]; then
+    echo "Unable to start cassandra. Proceeding with rest of esmond configuration"
+fi
+
 #init postgres - we shouldn't ever have to do this
 if [ -z "$(ls -A ${PG_DATADIR})" ]; then
     su -l postgres -c "${NEW_BINDIR}/initdb  --locale='C' --encoding='sql_ascii' --pgdata='${PG_DATADIR}' --auth='trust'"
@@ -58,9 +66,6 @@ EOF
         echo "Unable to restart ${PG_SERVICE_NAME}. Your esmond database may not be initialized"
     fi
 fi
-
-#disable JMX in cassandra so will start even if /etc/sysconfig/network HOSTNAME does not resolve
-sed -i '/^JVM_OPTS="\$JVM_OPTS -Dcom.sun.management.jmx/ s/^/#/' /etc/cassandra/conf/cassandra-env.sh
 
 #set esmond env variables
 export ESMOND_ROOT=/usr/lib/esmond
