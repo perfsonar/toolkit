@@ -18,11 +18,11 @@ if [ $? -ne 0 ]; then
     fi
 fi
 
-#create user  if auth fails
-psql -U esmond -c "\c esmond" &> /dev/null
-if [ $? -ne 0 ]; then
+#create user if not exists or is an old user
+USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='esmond'")
+OLD_USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_authid WHERE rolpassword='md5' || md5('7hc4m1' || rolname)")
+if [ "$USER_EXISTS" != "1" ] || [ "$OLD_USER_EXISTS" == "1" ]; then
     DB_PASSWORD=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c32;echo;)
-    USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='esmond'")
     if [ "$USER_EXISTS" == "1" ]; then
         sudo -u postgres psql -c "ALTER ROLE esmond WITH PASSWORD '${DB_PASSWORD}'" &> /dev/null
     else
