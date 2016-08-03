@@ -21,7 +21,7 @@ fi
 #create user  if auth fails
 psql -U esmond -c "\c esmond" &> /dev/null
 if [ $? -ne 0 ]; then
-    DB_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-32};echo;)
+    DB_PASSWORD=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c32;echo;)
     USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='esmond'")
     if [ "$USER_EXISTS" == "1" ]; then
         sudo -u postgres psql -c "ALTER ROLE esmond WITH PASSWORD '${DB_PASSWORD}'" &> /dev/null
