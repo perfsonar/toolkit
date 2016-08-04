@@ -33,20 +33,27 @@ parser.add_option("-a", "--auto", action="store_true", dest="auto", default=Fals
 
 (options, args) = parser.parse_args()
 
+htpasswd = "/etc/perfsonar/toolkit/psadmin.htpasswd"
+htpasswd_exists = os.path.isfile(htpasswd)
+
 if options.auto:
-    # Check if there are already members of the group
-    try:
-        psadmin_grp = getgrnam("psadmin")
-    except:
-        sys.exit(0)
+    if htpasswd_exists:
+        if os.path.getsize(htpasswd) > 0:
+            sys.exit(0)
+    else:
+        # Check if there are already members of the group
+        try:
+            psadmin_grp = getgrnam("psadmin")
+        except:
+            sys.exit(0)
 
-    non_root_user = False
-    for user in psadmin_grp[3]:
-        if user != "root":
-            non_root_user = True
+        non_root_user = False
+        for user in psadmin_grp[3]:
+            if user != "root":
+                non_root_user = True
 
-    if non_root_user:
-        sys.exit(0)
+        if non_root_user:
+            sys.exit(0)
 
     print Internet2Consts.YELLOW + "There isn't a perfSONAR Website Administrator defined." + Internet2Consts.NORMAL
 
@@ -55,6 +62,13 @@ if not ans:
     sys.exit(1)
 
 user = ans
+
+if htpasswd_exists:
+    cmd = "htpasswd " + htpasswd + " " + user
+    retVal = os.system(cmd)
+    if (retVal != 0):
+        print Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL
+    sys.exit(retVal)
 
 ans = raw_input("Should this user be able to login via SSH? [no] ").strip().upper()
 if not ans:

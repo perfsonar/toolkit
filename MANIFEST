@@ -10,13 +10,20 @@ etc/administrative_info
 etc/clean_esmond_db.conf
 etc/configdaemon-logger.conf
 etc/configdaemon.conf
-etc/default_service_configs/jail.local
 etc/default_service_configs/pg_hba.conf
+etc/default_service_configs/jail.local
 etc/default_service_configs/regulartesting.conf
 etc/default_system_firewall_settings.conf
+etc/firewalld/services/bwctl.xml
+etc/firewalld/services/ndt.xml
+etc/firewalld/services/npad.xml
+etc/firewalld/services/oppd.xml
+etc/firewalld/services/owamp.xml
+etc/firewalld/services/traceroute.xml
 etc/ntp_known_servers
 etc/old_firewall_settings.conf
 etc/perfsonar_firewall_settings.conf
+etc/perfsonar_firewalld_settings.conf
 etc/perfsonar_sudo
 etc/servicewatcher-logger.conf
 etc/servicewatcher.conf
@@ -25,6 +32,7 @@ etc/templates/motd.tmpl
 etc/templates/ntp_conf.tmpl
 etc/templates/tcpbw100_html.tmpl
 init_scripts/perfsonar-configdaemon
+init_scripts/perfsonar-configdaemon.service
 init_scripts/perfsonar-configure_nic_parameters
 init_scripts/perfsonar-generate_motd
 init_scripts/perfsonar-psb_to_esmond
@@ -69,6 +77,7 @@ scripts/system_environment/configure_esmond
 scripts/system_environment/configure_fail2ban
 scripts/system_environment/configure_regular_testing
 scripts/system_environment/configure_syslog_local5_location
+scripts/system_environment/disable_configdaemon_unsafe
 scripts/system_environment/disable_http_trace
 scripts/system_environment/disable_mysql_network_access
 scripts/system_environment/disable_php_advertising

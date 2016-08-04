@@ -4,4 +4,8 @@
 # an 'upgrade' or 'new install' context.
 #######################
 
-/sbin/chkconfig nscd on
+if type systemctl &>/dev/null; then
+    systemctl enable nscd
+else
+    /sbin/chkconfig nscd on
+fi

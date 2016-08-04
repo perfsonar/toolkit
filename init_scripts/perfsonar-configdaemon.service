@@ -1,0 +1,11 @@
+[Unit]
+Description=perfSONAR Toolkit Configuration Daemon
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/configdaemon.pid
+ExecStart=/usr/lib/perfsonar/bin/config_daemon.pl --config=/etc/perfsonar/toolkit/configdaemon.conf --pidfile=/var/run/configdaemon.pid --logger=/etc/perfsonar/toolkit/configdaemon-logger.conf --user=perfsonar --group=perfsonar
+
+[Install]
+WantedBy=multi-user.target

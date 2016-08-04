@@ -17,13 +17,29 @@ TEMP_BAK_NAME=ps-toolkit-migrate-backup
 TEMP_RST_NAME=ps-toolkit-migrate-restore
 TEMP_RST_DIR="/tmp/$TEMP_RST_NAME"
 
+#Check parameters
+TEMP=$(getopt -o d --long data -n $0 -- "$@")
+if [ $? != 0 ]; then
+    echo "Usage: $0 [-d|--data] <tgz-file>"
+    echo "Unable to parse command line"
+    exit 1
+fi
+eval set -- "$TEMP"
+
+while true; do
+   case "$1" in
+       -d|--data) DATA=1 ; shift ;;
+       --) shift ; break ;;
+       *) echo "Internal error!" ; exit 1 ;;
+   esac
+done
+
 #Check options
 if [ -z "$1" ]; then
-    echo "Usage: $0 <tar-file>"
+    echo "Usage: $0 <tgz-file>"
     echo "Missing path to tar file in options list"
     exit 1
 fi
-
 
 #Create temp directory
 rm -rf $TEMP_RST_DIR
@@ -53,7 +69,7 @@ else
             echo "Unable to restore /etc/passwd"
             exit 1
         fi
-        awk -F: '{ print $6 }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd | xargs mkdir
+        awk -F: '{ print $6 }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd | xargs --no-run-if-empty mkdir
     fi
     printf "[SUCCESS]"
     echo ""
@@ -112,95 +128,30 @@ else
 fi
 
 #get administrative info
-printf "Restoring administrative info..."
-#maintain version information
-SITE_PROJ_TK_VERS=`grep "site_project=pS-NPToolkit-" /opt/perfsonar_ps/toolkit/etc/administrative_info`
-if [ -n "$SITE_PROJ_TK_VERS" ]; then
-    echo $SITE_PROJ_TK_VERS >> $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/toolkit/etc/administrative_info
-fi
-cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/toolkit/etc/administrative_info /opt/perfsonar_ps/toolkit/etc/administrative_info 
+printf "Restoring toolkit configuration..."
+cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/perfsonar/* /etc/perfsonar
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /opt/perfsonar_ps/toolkit/etc/administrative_info"
+    echo "Unable to restore /etc/perfsonar"
     exit 1
 fi
 printf "[SUCCESS]"
 echo ""
 
 #get bwctl files
-printf "Restoring bwctld files..."
-cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.conf  /etc/bwctld/bwctld.conf
+printf "Restoring bwctl-server configuration..."
+cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctl-server/*  /etc/bwctl-server
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /etc/bwctld/bwctld.conf"
+    echo "Unable to restore /etc/bwctl-server"
     exit 1
 fi
-#set iperf ports to defaults in firewall doc if not already set
-BWCTLD_IPERFPORTS=`egrep -i "^iperf_port" /etc/bwctld/bwctld.conf`
-if [ -z "$BWCTLD_IPERFPORTS" ]; then
-    echo "" >> /etc/bwctld/bwctld.conf
-    echo "iperf_port 5001-5200" >> /etc/bwctld/bwctld.conf
-fi
-#set iperf ports to defaults in firewall doc if not already set
-#BWCTLD_THRULAYPORTS=`egrep -i "^thrulay_port" /etc/bwctld/bwctld.conf`
-#if [ -z "$BWCTLD_THRULAYPORTS" ]; then
-#    echo "" >> /etc/bwctld/bwctld.conf
-#    echo "thrulay_port 5201-5400" >> /etc/bwctld/bwctld.conf
-#fi
-#set iperf ports to defaults in firewall doc if not already set
-BWCTLD_NUTTCPPORTS=`egrep -i "^nuttcp_port" /etc/bwctld/bwctld.conf`
-if [ -z "$BWCTLD_NUTTCPPORTS" ]; then
-    echo "" >> /etc/bwctld/bwctld.conf
-    echo "nuttcp_port 5401-5600" >> /etc/bwctld/bwctld.conf
-fi
-#set iperf ports to defaults in firewall doc if not already set
-BWCTLD_PEERPORTS=`egrep -i "^peer_port" /etc/bwctld/bwctld.conf`
-if [ -z "$BWCTLD_PEERPORTS" ]; then
-    echo "" >> /etc/bwctld/bwctld.conf
-    echo "peer_port 6001-6200" >> /etc/bwctld/bwctld.conf
-fi
-cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.limits /etc/bwctld/bwctld.limits  
-if [ "$?" != "0" ]; then
-    echo "Unable to restore /etc/bwctld/bwctld.limits"
-    exit 1
-fi
-
-if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.keys" ]; then
-    cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctld/bwctld.keys /etc/bwctld/bwctld.keys  
-    if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/bwctld/bwctld.keys"
-        exit 1
-    fi
-fi
-
 printf "[SUCCESS]"
 echo ""
 
 #get owamp files
-printf "Restoring owampd files..."
-cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/owampd/owampd.conf /etc/owampd/owampd.conf 
+printf "Restoring owamp-server configuration..."
+cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/owamp-server/* /etc/owamp-server
 if [ "$?" != "0" ]; then
-    echo "Unable to restore /etc/owampd/owampd.conf"
-    exit 1
-fi
-# set testports to defaults defined in firewall doc if not already set
-OWAMPD_OWP_TESTPORTS=`egrep -i "^testports" /etc/owampd/owampd.conf`
-if [ -z "$OWAMPD_OWP_TESTPORTS" ]; then
-    echo "" >> /etc/owampd/owampd.conf
-    echo "testports 8760-8960" >> /etc/owampd/owampd.conf
-fi
-
-cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/owampd/owampd.limits  /etc/owampd/owampd.limits 
-if [ "$?" != "0" ]; then
-    echo "Unable to restore /etc/owampd/owampd.limits"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
-
-#get enabled services
-printf "Restoring enabled services..."
-cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/toolkit/etc/enabled_services /opt/perfsonar_ps/toolkit/etc/enabled_services 
-if [ "$?" != "0" ]; then
-    echo "Unable to restore /opt/perfsonar_ps/toolkit/etc/enabled_services"
+    echo "Unable to restore /etc/owamp-server"
     exit 1
 fi
 printf "[SUCCESS]"
@@ -208,12 +159,6 @@ echo ""
 
 #get NTP config
 printf "Restoring NTP configuration..."
-cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/toolkit/etc/ntp_known_servers /opt/perfsonar_ps/toolkit/etc/ntp_known_servers
-if [ "$?" != "0" ]; then
-    echo "Unable to restore /opt/perfsonar_ps/toolkit/etc/ntp_known_servers"
-    exit 1
-fi
-
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/ntp.conf /etc/ntp.conf 
 if [ "$?" != "0" ]; then
     echo "Unable to restore /etc/ntp.conf"
@@ -222,56 +167,12 @@ fi
 printf "[SUCCESS]"
 echo ""
 
-#get cacti data
-printf "Restoring cacti..."
-rm -rf /var/lib/cacti
-cp -r $TEMP_RST_DIR/$TEMP_BAK_NAME/var/lib/cacti /var/lib/cacti 
-if [ "$?" != "0" ]; then
-    echo "Unable to restore /var/lib/cacti"
-    exit 1
-fi
-for i in `find /var/lib/cacti -name \*.xml`; do rrdtool restore $i `echo $i |sed s/.xml//g`; rm $i; done
-if [ "$?" != "0" ]; then
-    echo "WARN: No cacti databases restored."
-fi
-chown -R apache:apache /var/lib/cacti/*
-printf "[SUCCESS]"
-echo ""
-
-#get owmesh
-printf "Restoring scheduled tests..."
-cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf
-if [ "$?" != "0" ]; then
-    echo "Unable to restore /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf"
-    exit 1
-fi
-# set OWPTestPorts to defaults defined in firewall doc if not already set
-OWMESH_OWP_TESTPORTS=`grep -i "OWPTestPorts" /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf`
-if [ -z "$OWMESH_OWP_TESTPORTS" ]; then
-    echo "OWPTestPorts     8760-8960" >> /opt/perfsonar_ps/perfsonarbuoy_ma/etc/owmesh.conf
-fi
-printf "[SUCCESS]"
-echo ""
-
-#get mesh config if exists
-if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf" ]; then
-    printf "Restoring mesh configuration..."
-    cp $TEMP_RST_DIR/$TEMP_BAK_NAME/opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf /opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf
-    if [ "$?" != "0" ]; then
-        echo "Unable to restore /opt/perfsonar_ps/mesh_config/etc/agent_configuration.conf"
-        exit 1
-    fi
-    printf "[SUCCESS]"
-    echo ""
-fi
-
 #get maddash if exists
 if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/maddash/maddash-server/maddash.yaml" ]; then
     printf "Restoring MaDDash configuration..."
-    mkdir -p /etc/maddash/maddash-server/
-    cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/maddash/maddash-server/maddash.yaml /etc/maddash/maddash-server/maddash.yaml
+    cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/maddash/* /etc/maddash
     if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/maddash/maddash-server/maddash.yaml"
+        echo "Unable to restore /etc/maddash"
         exit 1
     fi
     printf "[SUCCESS]"
@@ -279,50 +180,50 @@ if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/maddash/maddash-server/maddash.yaml" ]
 fi
 
 #restore databases
-printf "Restoring bwctl results..."
-mysql -u root bwctl < $TEMP_RST_DIR/$TEMP_BAK_NAME/mysql_data/bwctl.sql
-if [ "$?" != "0" ]; then
-    echo "Unable to restore bwctl MySQL databse"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
+if [ "$DATA" ]; then
+    printf "Restoring cassandra data..."
+    if ! /sbin/service cassandra stop &>/dev/null; then
+        echo "Unable to stop cassandra"
+        exit 1
+    fi
 
-printf "Restoring owamp results..."
-mysql -u root owamp < $TEMP_RST_DIR/$TEMP_BAK_NAME/mysql_data/owamp.sql
-if [ "$?" != "0" ]; then
-    echo "Unable to restore owamp MySQL databse"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
+    rm -f /var/lib/cassandra/commitlog/*.log /var/lib/cassandra/data/esmond/*/*.db
+    for table in $(ls $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data); do
+        cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data/$table/esmond_snapshot/* \
+              /var/lib/cassandra/data/esmond/$table/
+        if [ "$?" != "0" ]; then
+            echo "Unable to restore /var/lib/cassandra/data/esmond/$table"
+            exit 1
+        fi
+    done
 
-printf "Restoring traceroute results..."
-mysql -u root traceroute_ma < $TEMP_RST_DIR/$TEMP_BAK_NAME/mysql_data/traceroute_ma.sql
-if [ "$?" != "0" ]; then
-    echo "Unable to restore traceroute_ma MySQL databse"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
+    if ! /sbin/service cassandra start &>/dev/null; then
+        echo "Unable to start cassandra"
+        exit 1
+    fi
+    for i in {1..10}; do
+        nodetool status &>/dev/null && break
+        sleep 1
+    done
+    if ! nodetool repair &>/dev/null; then
+        echo "Unable to repair cassandra"
+        exit 1
+    fi
+    printf "[SUCCESS]"
+    echo ""
 
-printf "Restoring pinger results..."
-mysql -u root pingerMA < $TEMP_RST_DIR/$TEMP_BAK_NAME/mysql_data/pingerMA.sql
-if [ "$?" != "0" ]; then
-    echo "Unable to restore pingerMA MySQL databse"
-    exit 1
+    printf "Restoring postgresql data..."
+    export PGUSER=$(sed -n -e 's/sql_db_user = //p' /etc/esmond/esmond.conf)
+    export PGPASSWORD=$(sed -n -e 's/sql_db_password = //p' /etc/esmond/esmond.conf)
+    export PGDATABASE=$(sed -n -e 's/sql_db_name = //p' /etc/esmond/esmond.conf)
+    psql --no-password < $TEMP_RST_DIR/$TEMP_BAK_NAME/postgresql_data/esmond.dump &>/dev/null
+    if [ "$?" != "0" ]; then
+        echo "Unable to restore esmond database"
+        exit 1
+    fi
+    printf "[SUCCESS]"
+    echo ""
 fi
-printf "[SUCCESS]"
-echo ""
-
-printf "Restoring cacti results..."
-mysql -u root cacti < $TEMP_RST_DIR/$TEMP_BAK_NAME/mysql_data/cacti.sql
-if [ "$?" != "0" ]; then
-    echo "Unable to restore cacti MySQL databse"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
 
 #Clean up temp directory
 rm -rf $TEMP_RST_DIR
