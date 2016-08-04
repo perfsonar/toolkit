@@ -17,7 +17,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.2.a1 
+%define relnum  0.3.a1 
 
 Name:			perfsonar-toolkit
 Version:		4.0
@@ -226,6 +226,7 @@ Requires(post):	rsyslog
 Requires(post):	setup
 Requires(post):	smartmontools
 Requires(post):	sudo
+Obsoletes:              perfsonar-toolkit-systemenv < 4.0
 Obsoletes:		perl-perfSONAR_PS-Toolkit-SystemEnvironment
 Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 
@@ -240,6 +241,7 @@ Requires:		esmond-database-postgresql95
 Requires:		drop-in
 Requires(post):	esmond-database-postgresql95
 Provides:		pscheduler-database-init
+Obsoletes:              perfsonar-toolkit-systemenv < 4.0
 
 %description compat-database
 Provides necessary bridge to 4.0 that ensures old esmond data is migrated prior to the
