@@ -1300,6 +1300,7 @@ table thead tr th {
   color: #919ca1;
   text-transform: uppercase;
   letter-spacing: .07em;
+  background-color:#eee;
 }
 
 /*
@@ -1307,11 +1308,11 @@ table thead tr th {
 */
 
 table tr.even, table tr.alt, table tr:nth-of-type(even) {
-    background-color: #fff;
+    background-color:#eee;
 }
 
-table tr.odd { 
-    background-color:#eee;
+table tr.odd, table tr:nth-of-type(odd) { 
+    background-color: #fff;
 }
 
 .services {
