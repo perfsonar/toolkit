@@ -71,14 +71,19 @@ do
     restart)
     	$0 stop; echo "waiting..."; sleep 10; $0 start;
 	;;
+    status)
+	echo $STATUS
+	[ $RUNNING -eq 0 ] && ERROR=3
+	;;
     *)
-	echo "usage: $0 (start|stop|restart|help)"
+	echo "usage: $0 (start|stop|restart|status|help)"
 	cat <<EOF
 
 start      - start perfSONAR Toolkit Config Daemon
 stop       - stop perfSONAR Toolkit Config Daemon
 restart    - restart perfSONAR Toolkit Config Daemon if running by sending a SIGHUP or start if 
              not running
+status     - Indicates if the service is running
 help       - this screen
 
 EOF

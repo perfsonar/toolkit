@@ -13,7 +13,7 @@
 }
 
 .color-light, .test_results .host_ip {
-  color: #a9b1b5 !important;
+  color: #919ca1 !important;
 }
 
 .color-medium {
@@ -37,7 +37,7 @@
 }
 
 .color-disabled {
-  color: #a9b1b5 !important;
+  color: #919ca1 !important;
 }
 
 .color-red, #host_services .off {
@@ -1093,7 +1093,7 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover,
   padding: 2em;
   margin-top: 5em;
   text-align: right;
-  color: #a9b1b5;
+  color: #919ca1;
   border-top: 1px solid #ddd;
 }
 
@@ -1173,7 +1173,7 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover,
   width: 50%;
   float: left;
   overflow-wrap: break-word;
-  color:#a9b1b5;
+  color:#919ca1;
 }
 .sidebar-list__parameter.communities {
   width: 100%;
@@ -1289,7 +1289,7 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover,
   content: "/";
   display: inline-block;
   margin: 0 10px;
-  color: #a9b1b5;
+  color: #919ca1;
 }
 .nav--breadcrumbs li:last-child:after {
   content: "";
@@ -1297,7 +1297,7 @@ li.nav-dropdown ul.nav-dropdown-menu li a:hover,
 
 .nav--breadcrumbs li a,
 .nav--breadcrumbs li a i {
-  color: #a9b1b5;
+  color: #919ca1;
 }
 
 .nav--breadcrumbs li a:hover,
@@ -1335,9 +1335,10 @@ table thead {
 table thead tr th,
 .sub-heading {
   font-weight: 400;
-  color: #a9b1b5;
+  color: #919ca1;
   text-transform: uppercase;
   letter-spacing: .07em;
+  background-color:#eee;
 }
 
 /*
@@ -1345,11 +1346,11 @@ table thead tr th,
 */
 
 table tr.even, table tr.alt, table tr:nth-of-type(even) {
-    background-color: #eee;
+    background-color:#eee;
 }
 
-table tr.odd {
-    background-color:#fff;
+table tr.odd, table tr:nth-of-type(odd) { 
+    background-color: #fff;
 }
 
 .services {
@@ -1359,7 +1360,7 @@ table tr.odd {
 }
 
 .services--title {
-  /*color: #a9b1b5;*/
+  /*color: #919ca1;*/
   /* color:##383F44; */
   color: #0089FF;
   display: block;
@@ -1373,7 +1374,7 @@ table tr.odd {
   text-decoration: none;
 }
 .services--title-link i {
-  color: #a9b1b5;
+  color: #919ca1;
 }
 
 .services--list {
@@ -1393,7 +1394,7 @@ table tr.odd {
 }
 
 /* Test results */
-.test-results:after {
+.#999test-results:after {
   content: "";
   clear: both;
   display: block;
@@ -1416,7 +1417,7 @@ table.test_results tr {
 /* Pay special attention here. For some reason, this fontawesome override doesn't work with .test-results, only .test_results. */
 .test_results i.fa {
   font-size: 10px;
-  color: #a9b1b5;
+  color: #919ca1;
 }
 
 .test_results i.fa-external-link {
@@ -1431,10 +1432,41 @@ i.fa.disabled, tr.disabled td, tr.disabled td i.fa {
 td.test-values {
   font-weight:bold;
 }
+td.test-values.loss {
+    white-space: nowrap;
+}
 
 .test-results--warnings {
   list-style-type: none;
   margin: 0;
+}
+
+.timeperiod-div {
+    width: 170px;
+    float: right;
+    position: relative;
+    z-index: 101;
+    }
+#testResultsTable_filter label input {
+    height: 19px;
+    margin-left: 0px;
+    display: block !important;
+}
+#testResultsTable_length label {
+    color: #999;
+}
+#testResultsTable_length select {
+    padding: 0 8 1 8;
+    height: 30;
+}
+#testResultsTable_info {
+    margin: 0 30px 0 30px;
+}
+#testResultsTable thead .sorting, #testResultsTable thead .sorting_asc, #testResultsTable thead .sorting_desc, #testResultsTable thead .sorting_asc_disabled, #testResultsTable thead .sorting_desc_disabled {
+    background-position: center left;
+}
+#testResultsTable thead > tr > th.sorting_asc, #testResultsTable thead > tr > th.sorting_desc, #testResultsTable thead > tr > th.sorting, #testResultsTable thead > tr > td.sorting_asc, #testResultsTable thead > tr > td.sorting_desc, #testResultsTable thead > tr > td.sorting {
+    padding-left: 1.5em;
 }
 
 @media screen and (max-width: 580px) {
@@ -1527,7 +1559,7 @@ select {
 }
 
 .alert-disabled {
-  color: #a9b1b5;
+  color: #919ca1;
 }
 
 .alert-message--bg {
@@ -1729,7 +1761,7 @@ input.button-alternate--small:hover {
 input.button-quiet,
 input.button-quiet--small {
   background-color: transparent;
-  border: 1px solid #a9b1b5;
+  border: 1px solid #919ca1;
   color: #4d565b;
 }
 .button-quiet:hover,
@@ -2040,13 +2072,13 @@ input[type='button']:disabled.button-primary--hollow:hover {
 }
 .aside--nav-list li a {
   text-decoration: none;
-  color: #a9b1b5;
+  color: #919ca1;
 }
 .aside--nav-list li a:hover {
   text-decoration: underline;
 }
 .aside--nav-list li a i {
-  color: #a9b1b5;
+  color: #919ca1;
 }
 
 /*------------------------------------------------------------------------------
@@ -2124,7 +2156,8 @@ input[type='button']:disabled.button-primary--hollow:hover {
 /* ** Get rid of this thing once you figure out a better place
 to put the stuff inside. */
 .module {
-  margin: 2em 0;
+ // margin: 2em 0;
+ margin: 2em 0 1em 0;
 }
 
 .module--config-table {
@@ -2187,7 +2220,7 @@ to put the stuff inside. */
 }
 /* Key for icons */
 .key {
-  color: #a9b1b5;
+  color: #919ca1;
   margin-top: 1.5em;
 }
 
@@ -2441,7 +2474,7 @@ to put the stuff inside. */
 
 .ntp-list__description {
   font-style: italic;
-  color: #a9b1b5;
+  color: #919ca1;
 }
 
 .ntp-list__delete {

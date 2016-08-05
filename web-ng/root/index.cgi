@@ -42,7 +42,8 @@ my $tt = Template->new({
 
 
 my $page = 'components/dashboard.html';
-my $css = [ $include_prefix . 'css/toolkit.css' ];
+my $css = [ $include_prefix . 'css/toolkit.css' ,
+            $include_prefix . 'js/datatables_plugin/DataTables-1.10.12/css/dataTables.foundation.css' ];
 my $js_files = [ 
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
@@ -51,6 +52,8 @@ my $js_files = [
     $include_prefix . 'js/stores/HostDetailsStore.js', 
     $include_prefix . 'js/stores/HostServicesStore.js', 
     $include_prefix . 'js/stores/HostMetadataStore.js', 
+    $include_prefix . 'js/datatables_plugin/DataTables-1.10.12/js/jquery.dataTables.min.js',
+    $include_prefix . 'js/datatables_plugin/DataTables-1.10.12/js/dataTables.foundation.min.js',
 ];
 
 if ($authenticated) {
