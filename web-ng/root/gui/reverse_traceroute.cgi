@@ -1,4 +1,4 @@
-#!/usr/bin/perl -wT
+#!/usr/bin/perl -w
 ###############################################################################
 use strict;
 $ENV{PATH}='/bin:/usr/bin:/sbin:/usr/local/bin:/usr/local/etc:/usr/sbin:/usr/local/sbin';#For untainting
@@ -34,24 +34,13 @@ if ($0 =~ /nph-/) {
 }
 #Get this out first so can get out error messages
 print $msg."Content-type: text/html\n\n";
-#my $version="6.0, 10/5/2012, Les Cottrell";
-# Added meta tag to reduce robots visting the page and end up producing
-# a measurement as a result (and cache the results for all time in the process)
-#my $version="6.1, 2/15/2013, Les Cottrell";
-#Added link to Fixed orbits to find AS's on route between 2 hosts
-#my $version="6.2, 2/27/2013, Les Cottrell";
-# Improved the final execution to add timing and various alarm durations.
-#my $version="6.3, 5/2/2013, Les Cottrell";
-# Added ability provide extra options, such as ASN or number of hops info.
-# Only for the intrepid.  Example:
-# http://www-wanmon.slac.stanford.edu/cgi-bin/traceroute.pl?options=-m 5 -A
-#my $version="6.4, 8/29/2013, Jason Zurawski, Les Cottrell";
-#Enabled jumbo frames.
-#my $version="6.5, 6/27/2014, Les Cottrell";
-my $version="6.51, 9/15/2014, Les Cottrell";#Notified perfronar.
-#Improved too many processes error message.
-# When making a significant change, please notify: i2-perfsonar@internet2.edu
-################################################################################
+my $version="7.0, 7/30/2016, Les Cottrell";
+# Print server user name (e.g. apache) if max_processes exceeded
+# Increase to 2 the debug value to exceed if we are to  print the process list 
+# following max_processes exceeded.  It caused confusion since it looked
+# like instead of traceroute ps was being executed.
+# Released to perfSONAR
+###############################################################################
 #Understand the local environment
 use Cwd;
 my $AF_INET=2;
@@ -105,7 +94,7 @@ if($site eq "slac") {
     $Sy ="/afs/slac/package/pinger/old/synack/i386_linux22/synack";
     @Tropts = qw(-m 30 -q 1 -w 3 -A);#options for SLAC traceroute, comment if uncertain
   }
-  $to="cottrell\@slac.stanford.edu,jlarson\@slac.stanford.edu";
+  $to="cottrell\@slac.stanford.edu,ben.calvert\@slac.stanford.edu";
 }
 else {$Sy=$Tr;} #Only support synack at SLAC
 #######################################################################
@@ -116,14 +105,14 @@ my $errtail="</font></i></b>";
 my $warn="";
 my $addr = $ENV{'REMOTE_ADDR'}; $addr=~s/\s+//g;
 my $host = $addr;
-#################################################################################
+###############################################################################
 # if we're being accessed via a proxy that passes the client's address:
 # For more on this see: http://www.zope.org/Members/TWilson/GettingVisitorsIP
 # Note if using ssl and going through a firewall/NAT then,
 # because of encryption, it may not be
 # possible for the firewall/NAT to add the http header for HTTP_X_FORWARDED_FOR
+my $oldaddr=$addr;
 if (defined $ENV{'HTTP_X_FORWARDED_FOR'}) {
-  my $oldaddr=$addr;
   $addr = $ENV{'HTTP_X_FORWARDED_FOR'};
   $addr =~ s/,.*$//;  # if address1, address2, ... keep only address1
   #if($addr=~/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) {
@@ -266,7 +255,7 @@ elsif($function =~ /synack/) {
 #########################################################################
 # Build the executable function for tracepath
 elsif($function eq "tracepath") {
-  $Tr="tracepath";
+  $Tr="/bin/tracepath";
   @Tropts="";
 }
 #########################################################################
@@ -377,15 +366,18 @@ if($debug>0) {
 #Added "198.30.132.8" no name, > 790 requests 5/20/06 Cottrell
 #Added "198.30.132.6" no name, > 4580 requests 6/5/06 Cottrell
 #Added "211.28.103.29 c211-28-103-29.eburwd4.vic.optusnet.com.au" > 3800 requests 9/28/06 Cottrell
-my @denies=("63.231.133.192","203.51.137.39","63.203.98.156","68.205.16.194","24.106.79.234",
-            "68.44.148.52",  "81.20.6.18",   "203.162.3.153","203.162.3.147","198.30.132.8",
-            "198.30.132.6", "211.28.103.29");
-if($addr ne "") {
-  my @remote=split(/\./,$addr);
+#Added "200.94.128.219 static-200-94-128-219.alestra.net.mx" 12 requests/min 3/3/2016 Cottrell
+my @denies=("63.231.133.192","203.51.137.39","63.203.98.156", "68.205.16.194","24.106.79.234",
+            "68.44.148.52",  "81.20.6.18",   "203.162.3.153", "203.162.3.147","198.30.132.8",
+            "198.30.132.6", "211.28.103.29", "200.94.128.219","200.94.128.220");
+#if($addr ne "") {
+if(defined($ENV{'REMOTE_ADDR'}) && $ENV{'REMOTE_ADDR'} ne "") {
+  #my @remote=split(/\./,$addr);
   foreach my $deny (@denies) {
-    if(uc($deny) eq uc($addr) || uc($deny) eq uc($host)) {
-      print "Deny access from $host($deny) due to large number of requests,".
-            " contact cottrell\@slac.stanford.edu to re-enable 4/26/06.\n";
+    #if(uc($deny) eq uc($addr) || uc($deny) eq uc($host)) {
+    if(uc($deny) eq uc($ENV{'REMOTE_ADDR'}) || uc($deny) eq uc($host)) {
+      print "Deny request from $host($deny) due to large number of requests,".
+            " contact cottrell\@slac.stanford.edu to re-enable.\n";
       exit 3;
     }
   }
@@ -567,13 +559,16 @@ if (($ipv6 ne "1") && ($addr =~ /\.(0|255)$/)) {
 # processes running. This is to try and avoid a denial of service
 # attack. If there are too many then send email warning, unless we already
 # sent an email warning less than an hour ago.
-my $processes=grep(/$function/, `ps -o comm -u $>`);
-if($processes > $max_processes) {
-  $err.="$function server busy at the moment with $processes "
-      . "processes exceeds max of $max_processes for $>. "
-      . "Please try again later.<br>\n";
-  if ($debug>=0) {
-    $err.="List of processes for $>:<br>\n";
+my @processes=grep(/$function/, `ps -o comm -u $>`);
+if(scalar(@processes) > $max_processes) {
+  $err.="$function server busy at the moment with "
+      . scalar(@processes)
+      . " processes that exceeds max of $max_processes for UID=$>("
+      . getpwuid($>)
+      . "). Please try again later.<br>\n";
+  if ($debug>0) {
+    $err.="(debug=$debug)List of traceroute processes for UID=$> ("
+        . getpwuid($>)."):<br>\n";
     my @ans=`ps -ef -u $>`;
     for my $ans (@ans) {$err.="$ans<br>\n";}
   }
@@ -583,10 +578,22 @@ if($processes > $max_processes) {
       my $time=scalar localtime;
       open(MAIL, "| $mail -s 'Warning $function".".pl busy at $time on $hostname.' $to")
         or die "Unable to send mail to $to warning $function busy at $time: $!";
-      $msg="$time $ENV{'HTTP_REFERER'} found $processes running $function " .
-           "processes in $ENV{'SERVER_NAME'} when doing $function to $addr " .
-           "for $host. Request was received from $ENV{REMOTE_ADDR} " .
-           "($ENV{REMOTE_HOST})\n";
+      $msg="$time HTTP_REFERER = $ENV{'HTTP_REFERER'} found "
+         . scalar(@processes)." running "
+         . "$function processes in "
+         . "SERVER_NAME = $ENV{'SERVER_NAME'} = $uid\@$hostname($ipaddr) "
+         . "when doing $function to address=$addr "
+         . "host=$host. Request was received from " 
+         . "REMOTE_ADDR = $ENV{REMOTE_ADDR}"
+         . "(REMOTE_HOST = $ENV{REMOTE_HOST})";
+      if(valid_ip($ENV{REMOTE_ADDR}) eq '4') {
+        my @tokens=gethostbyaddr(pack('C4',split(/\./,$ENV{REMOTE_ADDR})),$AF_INET);
+        $msg.="(name=$tokens[0])";
+      }
+      if (defined $ENV{'HTTP_X_FORWARDED_FOR'}) {#Prob won't work for encrypted
+        $msg.=" FORWARDED_FOR=$ENV{'HTTP_X_FORWARDED_FOR'}.";
+      }
+      $msg.=".\n";
       $msg.=`cat $mail_help`;
       print MAIL $msg;
       close(MAIL);
@@ -608,7 +615,7 @@ print "<pre>\n";
 if($debug > 0)  {
   if($function ne "ping" or $archname ne "solaris")  {
     if($function eq "tracepath")  {
-      $temp = "$Tr $addr";
+      $temp = "$Tr @Tropts $addr";
     }
     else {
       $temp = "$Tr @Tropts $addr";
@@ -623,8 +630,9 @@ if($debug > 0)  {
         " to execute: $temp\n".
         " with path=$ENV{'PATH'}\n".
         " from cwd=".cwd()." under shell $ENV{'SHELL'}\n".
-        " for REMOTE_ADDR=$ENV{'REMOTE_ADDR'}\n";
-  system('which ping');
+        " for REMOTE_ADDR=$ENV{'REMOTE_ADDR'}\n"." function=$function\n";
+  $function=untaint($function);
+  my @ans=`which $function`; print "Found $function at @ans";
 }
 #################################################################
 # Note that the following exec avoids shell expansions so we do not
@@ -648,7 +656,7 @@ if($function eq "traceroute" and $archname ne "solaris") {
   &exec(@args);
 }
 elsif($function eq "tracepath") {
-  my @args=($Tr, $addr);
+  my @args=($Tr, @Tropts, $addr);
   alarm(45);
   &exec(@args);
 }
@@ -693,8 +701,21 @@ sub exec {
   else {
      die "Other error code seen --- Can't system(@args): $?"
   }
-  print "@args took ".(time()-$t0)."secs. Total time=".(time()-$t00)."secs.\n";
+  my $username = getpwuid( $< );
+  print "@args took ".(time()-$t0)."secs. Total time=".(time()-$t00)."secs. user=$username\n";
   return;
+}
+##############################################################################
+## Untaint will check for a vaild Unix file name and untaint it.
+## Example:
+##   $fn = untaint($fn)
+##------------------------------------------------------------------------------
+sub untaint {
+  my $file = $_[0];
+  unless ($file =~ /(^[\w\.\-\+\d\/]*$)/) { #Taint check
+    die "$0 encountered tainted file name $file.";
+  }
+  return $1;
 }
 ######################################################
 sub private {
@@ -804,7 +825,8 @@ http://www.slac.stanford.edu/cgi-bin/traceroute.pl?target=ipv6.google.com&functi
 #--------------------------------------------------------------#
 #Copyright (c) 1995, 1996, 1997, 1998, 1999, 2000, 2001,
 #              2002, 2003, 2004, 2005, 2006, 2007, 2008,
-#              2009, 2010, 2011, 2012
+#              2009, 2010, 2011, 2012, 2013, 2014, 2015
+#              1026
 #  The Board of Trustees of the Leland
 #  Stanford Junior University. All Rights Reserved.
 
@@ -1064,6 +1086,38 @@ http://www.slac.stanford.edu/cgi-bin/traceroute.pl?target=ipv6.google.com&functi
 #$version="5.8, 5/12/2012, Les Cottrell";
 # Added option to force IPv6, made fix to private proxy address
 
-#$verson="5.9, 6/4/2012, Les Cottrell";
+#$version="5.9, 6/4/2012, Les Cottrell";
 # Attempted to support ipv6 on Solaris, unable to test.
-
+#my $version="6.0, 10/5/2012, Les Cottrell";
+#  Added meta tag to reduce robots visting the page and end up producing
+#  a measurement as a result (and cache the results for all time in the process)
+#my $version="6.1, 2/15/2013, Les Cottrell";
+#  Added link to Fixed orbits to find AS's on route between 2 hosts
+#  my $version="6.2, 2/27/2013, Les Cottrell";
+#  Improved the final execution to add timing and various alarm durations.
+#my $version="6.3, 5/2/2013, Les Cottrell";
+#  Added ability provide extra options, such as ASN or number of hops info.
+#  Only for the intrepid.  Example:
+#  http://www-wanmon.slac.stanford.edu/cgi-bin/traceroute.pl?options=-m 5 -A
+#my $version="6.4, 8/29/2013, Jason Zurawski, Les Cottrell";
+#  Enabled jumbo frames.
+#my $version="6.5, 6/27/2014, Les Cottrell";
+#my $version="6.51, 9/15/2014, Les Cottrell";#Notified perfsonar.
+#   Improved too many processes error message.
+#my $version="6.52, 6/24/2015, Les Cottrell";
+#   Added extra debug to report the function, enabled options for tracepath
+#When making a significant change, please notify: i2-perfsonar@internet2.edu
+#my $version="6.62, 2/8/2016, Les Cottrell";
+#   Reports HTTP_X_FORWARDED_FOR if exists,
+#   name of requesting host if too many requests,
+#   only print process list for $debug>=1;
+#my $version="7.0, 7/30/2016, Les Cottrell";
+#   Print server user name (e.g. apache) if max_processes exceeded
+#   Increase to 2 the debug value to exceed if we print the process list
+#   following max_processes exceeded.  It caused confusion sinced it looked
+#   like instead of traceroute ps was being executed.
+#   Coupled with the reverse traceroute server name potentially starting 
+#   with ps this looked like it was possible to execute  commands other 
+#   than the intended traceroute based on the host name (which would be 
+#   a security problem).   
+#   Rolf Seuster <seuster@uvic.ca> pointed this out with some useful examples. 
