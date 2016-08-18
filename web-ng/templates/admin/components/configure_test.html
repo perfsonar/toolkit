@@ -89,9 +89,9 @@
                         <select id="interfaceSelector">
                             <option value="" {{#unless parameters.local_interface}}selected{{/unless}}>Default</option>
                         {{#each interfaces}}
-                            <option value="{{iface}}" {{#compare iface ../parameters.local_interface}}selected{{/compare}}>{{iface}}</option>
+                            <option value="{{iface}}" {{#compare iface ../parameters.local_interface}}selected{{/compare}}>{{iface}} - {{hostname_or_ip hostnames ipv4_address ipv6_address}}</option>
                         {{/each}}
-                        </select>
+                         </select>
                     </div>
                         {{#if showThroughputParameters}}
                     <div class="medium-3 columns">
