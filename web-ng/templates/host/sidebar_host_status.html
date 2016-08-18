@@ -9,11 +9,11 @@
     <li class="sidebar-list__item">
         <div class="sidebar-list__parameter">Interfaces</div>
         <div class="sidebar-list__value"><a href="#" class="sidebar-popover-toggle js-sidebar-popover-toggle" id="sidebar_interface_details_link">Details <i class="fa fa-angle-down"></i></a>
-       <div class="sidebar-popover" style="display: none;">
+       <div class="sidebar-popover double" style="display: none;">
                                 <a class="sidebar-popover__close js-sidebar-popover-close">Close &nbsp;<i class="fa fa-close"></i></a>
                                 {{#each interfaces}}
                                     <h4 class="sidebar-popover__heading">{{iface}}</h4>
-                                    <ul class="sidebar-popover__list">
+                                    <ul class="sidebar-popover-double__list">
                                         {{#if speed}}
                                         <li class="sidebar-popover__item">
                                             <span class="sidebar-popover__param">Speed:</span>
@@ -24,7 +24,10 @@
                                         <li class="sidebar-popover__item">
                                             <span class="sidebar-popover__param">ipv4 addresses:</span>
                                             {{#each ipv4_address}}
-                                            <span class="sidebar-popover__value">{{this}}</span>
+                                                <span class="sidebar-popover__value">{{this}}</span>
+                                                {{#each (hostnames_of_ip  ../hostnames this) }}
+                                                    <span class="sidebar-popover__subvalue_wide">{{this}}</span>
+                                                {{/each}}
                                             {{/each}}
                                         </li>
                                         {{/if}}
@@ -32,7 +35,10 @@
                                         <li class="sidebar-popover__item">
                                             <span class="sidebar-popover__param">ipv6 address:</span>
                                             {{#each ipv6_address}}
-                                            <span class="sidebar-popover__value">{{this}}</span>
+                                                <span class="sidebar-popover__value">{{this}}</span>
+                                                {{#each (hostnames_of_ip  ../hostnames this) }}
+                                                    <span class="sidebar-popover__subvalue_wide">{{this}}</span>
+                                                {{/each}}
                                             {{/each}}
                                         </li>
                                         {{/if}}
@@ -50,7 +56,7 @@
                                         {{/if}}
                                         {{#if counters}}
                                     </ul>
-                                    <ul class="sidebar-popover__list onright">
+                                    <ul class="sidebar-popover-double__list onright">
                                         <li class="sidebar-popover__item">
                                             <span class="sidebar-popover__param-3col"> &nbsp;  </span>
                                             <span class="sidebar-popover__param-3col right">transmitted</span>
