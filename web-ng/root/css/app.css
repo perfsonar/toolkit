@@ -1394,7 +1394,7 @@ table tr.odd, table tr:nth-of-type(odd) {
 }
 
 /* Test results */
-.#999test-results:after {
+.test-results:after {
   content: "";
   clear: both;
   display: block;
@@ -2156,8 +2156,7 @@ input[type='button']:disabled.button-primary--hollow:hover {
 /* ** Get rid of this thing once you figure out a better place
 to put the stuff inside. */
 .module {
- // margin: 2em 0;
- margin: 2em 0 1em 0;
+  margin: 2em 0 1em 0;
 }
 
 .module--config-table {
