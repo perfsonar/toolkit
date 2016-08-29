@@ -231,13 +231,29 @@ HostStatusSidebarComponent._registerHelpers = function() {
         }
         return ret;
     });
+
+    Handlebars.registerHelper('is_equal', function(a, b) {
+        if ( a == b ) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    Handlebars.registerHelper('hostnames_of_ip', function(hostnames, ip, options) {
+        if (hostnames[ip]) {
+            return hostnames[ip];
+        } else {
+            return [];
+        }
+    });
 };
 
 HostStatusSidebarComponent._getHealthVariables = function(data) {
     var health_values = [];
 
     // Use an ID prefix to better scope these elements in the DOM
-    var id_prefix = HostStatusSidebarComponent.id_prefix;
+   var id_prefix = HostStatusSidebarComponent.id_prefix;
 
     var cpu_util = data.cpu_util;
     if (typeof cpu_util != "undefined") {
