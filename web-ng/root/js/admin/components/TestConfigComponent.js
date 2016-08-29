@@ -57,6 +57,25 @@ TestConfigComponent.initialize = function() {
         return ret;
     });
 
+    Handlebars.registerHelper('hostname_or_ip', function(hostnames, ipv4_addresses, ipv6_addresses, options) {
+        var ret = [];
+        for(var a=0; a<ipv4_addresses.length; a+=1) {
+            if (hostnames[ipv4_addresses[a]]) {
+                ret = ret.concat(hostnames[ipv4_addresses[a]]);
+            } else {
+                ret.push(ipv4_addresses[a]);
+            }
+        }
+        for(var a=0; a<ipv6_addresses.length; a+=1) {
+            if (hostnames[ipv6_addresses[a]]) {
+                ret = ret.concat(hostnames[ipv6_addresses[a]]);
+            } else {
+                ret.push(ipv6_addresses[a]);
+            }
+        }
+        return ret.join(", ");
+    });
+
     // Hide subrows on load
     $(".js-subrow").hide();
 

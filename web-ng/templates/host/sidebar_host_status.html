@@ -1,4 +1,4 @@
-<h3 class="sidebar__heading"><i class="fa fa-bar-chart"></i> &nbsp; Host Details &nbsp;
+<h3 class="sidebar__heading"><i class="fa fa-bar-chart"></i> &nbsp; Host Information &nbsp;
     [% IF !authenticated %]
     <span style="font-weight:normal;">(<a href="/toolkit/auth/">Log in</a> for more info)</span>
     [% END %]
@@ -9,11 +9,11 @@
     <li class="sidebar-list__item">
         <div class="sidebar-list__parameter">Interfaces</div>
         <div class="sidebar-list__value"><a href="#" class="sidebar-popover-toggle js-sidebar-popover-toggle" id="sidebar_interface_details_link">Details <i class="fa fa-angle-down"></i></a>
-       <div class="sidebar-popover" style="display: none;">
+       <div class="sidebar-popover double" style="display: none;">
                                 <a class="sidebar-popover__close js-sidebar-popover-close">Close &nbsp;<i class="fa fa-close"></i></a>
                                 {{#each interfaces}}
                                     <h4 class="sidebar-popover__heading">{{iface}}</h4>
-                                    <ul class="sidebar-popover__list">
+                                    <ul class="sidebar-popover-double__list">
                                         {{#if speed}}
                                         <li class="sidebar-popover__item">
                                             <span class="sidebar-popover__param">Speed:</span>
@@ -24,7 +24,10 @@
                                         <li class="sidebar-popover__item">
                                             <span class="sidebar-popover__param">ipv4 addresses:</span>
                                             {{#each ipv4_address}}
-                                            <span class="sidebar-popover__value">{{this}}</span>
+                                                <span class="sidebar-popover__value">{{this}}</span>
+                                                {{#each (hostnames_of_ip  ../hostnames this) }}
+                                                    <span class="sidebar-popover__subvalue_wide">{{this}}</span>
+                                                {{/each}}
                                             {{/each}}
                                         </li>
                                         {{/if}}
@@ -32,7 +35,10 @@
                                         <li class="sidebar-popover__item">
                                             <span class="sidebar-popover__param">ipv6 address:</span>
                                             {{#each ipv6_address}}
-                                            <span class="sidebar-popover__value">{{this}}</span>
+                                                <span class="sidebar-popover__value">{{this}}</span>
+                                                {{#each (hostnames_of_ip  ../hostnames this) }}
+                                                    <span class="sidebar-popover__subvalue_wide">{{this}}</span>
+                                                {{/each}}
                                             {{/each}}
                                         </li>
                                         {{/if}}
@@ -48,16 +54,59 @@
                                             <span class="sidebar-popover__value">{{mtu}}</span>
                                         </li>
                                         {{/if}}
+                                        {{#if counters}}
+                                    </ul>
+                                    <ul class="sidebar-popover-double__list onright">
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col"> &nbsp;  </span>
+                                            <span class="sidebar-popover__param-3col right">transmitted</span>
+                                            <span class="sidebar-popover__param-3col right">received</span>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">packets:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txpcks}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxpcks}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">compr:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txcompr}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxcompr}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">errors:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txerrs}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxerrs}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">drops:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txdrop}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxdrop}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">fifo:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txfifo}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxfifo}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">colls/frames:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txcolls}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxframe}} </span>
+                                        </li>
+                                        <li class="sidebar-popover__item">
+                                            <span class="sidebar-popover__param-3col">carr/multi:</span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.txcarr}} </span>
+                                            <span class="sidebar-popover__value-3col"> {{counters.rxmulti}} </span>
+                                        </li>
+                                        {{/if}}
                                     </ul>
                                 {{/each}}
                             </div> 
         </div>
     </li>
 
-    {{#if registered}}
+    {{#if primary_interface}}
     <li class="sidebar-list__item">        
-        <div class="sidebar-list__parameter">Globally Registered</div>
-        <div class="sidebar-list__value {{registered_classes}}">{{registered}}</div>
+        <div class="sidebar-list__parameter">Primary Interface</div>
+        <div class="sidebar-list__value">{{primary_interface}}</div>
     </li>
     {{/if}}
 
@@ -66,6 +115,13 @@
         <div class="sidebar-list__value {{ntp_classes}}"><span id="sidebar_ntp_synced_value">{{ntp_synced}}</span> &nbsp; &nbsp; 
         <div id="sidebar-ntp-popover-container"></div>
     </li>
+
+    {{#if registered}}
+    <li class="sidebar-list__item">        
+        <div class="sidebar-list__parameter">Globally Registered</div>
+        <div class="sidebar-list__value {{registered_classes}}">{{registered}}</div>
+    </li>
+    {{/if}}
 
     {{#if role_text}}
     <li class="sidebar-list__item">        
@@ -105,6 +161,22 @@
         <div class="sidebar-list__value {{classes}}">{{value}}</div>
     </li>
     {{/each}}  
+
+    <li class="sidebar-list__item">
+        <div class="sidebar-list__parameter">More Info</div>
+        <div class="sidebar-list__value"><a href="#" class="sidebar-popover-toggle js-sidebar-popover-toggle" id="sidebar_host_details_link">Details <i class="fa fa-angle-down"></i></a>
+       <div class="sidebar-popover" style="display: none;">
+           <a class="sidebar-popover__close js-sidebar-popover-close">Close &nbsp;<i class="fa fa-close"></i></a>
+            <h4 class="sidebar-popover__heading">Host Details </h4>
+            <ul class="sidebar-popover__list">
+            {{#each status_more_values}}
+                <li class="sidebar-popover__item"{{#if id}} id="{{id}}"{{/if}}>
+                    <div class="sidebar-popover__param">{{label}}</div>
+                    <div class="sidebar-popover__value">{{value}}</div>
+                </li>
+            {{/each}}  
+            </ul>
+    </li>
 
     {{#if communities}}
     <li class="sidebar-list__item">        
