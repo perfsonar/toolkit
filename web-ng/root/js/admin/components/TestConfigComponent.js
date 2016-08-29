@@ -57,6 +57,25 @@ TestConfigComponent.initialize = function() {
         return ret;
     });
 
+    Handlebars.registerHelper('hostname_or_ip', function(hostnames, ipv4_addresses, ipv6_addresses, options) {
+        var ret = [];
+        for(var a=0; a<ipv4_addresses.length; a+=1) {
+            if (hostnames[ipv4_addresses[a]]) {
+                ret = ret.concat(hostnames[ipv4_addresses[a]]);
+            } else {
+                ret.push(ipv4_addresses[a]);
+            }
+        }
+        for(var a=0; a<ipv6_addresses.length; a+=1) {
+            if (hostnames[ipv6_addresses[a]]) {
+                ret = ret.concat(hostnames[ipv6_addresses[a]]);
+            } else {
+                ret.push(ipv6_addresses[a]);
+            }
+        }
+        return ret.join(", ");
+    });
+
     // Hide subrows on load
     $(".js-subrow").hide();
 
@@ -108,7 +127,6 @@ TestConfigComponent.initialize = function() {
 
 TestConfigComponent.save = function(e) {
     Dispatcher.publish(TestConfigComponent.formSubmitTopic);
-    //SharedUIFunctions._showSaveBar();
     TestConfigAdminStore.save(TestConfigStore.data);
 };
 
@@ -213,8 +231,6 @@ TestConfigComponent._setHostData = function() {
 
 TestConfigComponent._showConfig = function( topic ) {
     TestConfigComponent._destroyTable();
-
-    //SharedUIFunctions._showSaveBar();
 
     // ** Test config tables **
     TestConfigComponent._buildTable( );
@@ -367,17 +383,21 @@ TestConfigComponent._showAddHostByCommunity = function( containerID ) {
 
 TestConfigComponent._setAllCommunities = function( ) {
     /* Sets the global communities in the format {name: selected} */
-    //TestConfigComponent.communities.all = {};
-    var communities = CommunityAllStore.getAllCommunities().keywords;
 
     var sorted = [];
-    var keys = Object.keys(communities).sort();
-    for(var i in keys) {
-        var row = {};
-        row.id = i;
-        row.text = keys[i];
-        //row.selected = combined[ keys[i] ];
-        sorted.push( row );
+
+    if ( CommunityAllStore.getAllCommunities() !== null && CommunityAllStore.getAllCommunities().keywords !== null ) {
+
+        var communities = CommunityAllStore.getAllCommunities().keywords;
+
+        var keys = Object.keys(communities).sort();
+        for(var i in keys) {
+            var row = {};
+            row.id = i;
+            row.text = keys[i];
+            //row.selected = combined[ keys[i] ];
+            sorted.push( row );
+        }
     }
 
     TestConfigComponent._selectCommunities( sorted );
@@ -386,10 +406,19 @@ TestConfigComponent._setAllCommunities = function( ) {
 
 TestConfigComponent._selectCommunities = function( communities ) {
     var sel = $('#testAddHostByCommunitySel');
+    sel.show();
 
     sel.empty(); // remove old options, if any
 
     sel.append( $("<option></option>") );
+    if ( communities.length == 0 ) {
+        $('#testCommunitySelError').text('No communities found');
+        sel.hide();
+        $('#testCommunitySelError').show();
+        return;
+
+    }
+    $('#testCommunitySelError').hide();
     $.each(communities, function(i, val) {
         sel.append( $("<option></option>")
                         .attr("value", val.text)
@@ -526,11 +555,6 @@ TestConfigComponent._drawConfigForm = function( ) {
 
     if ( testConfig.type ) {
         testConfig.defaults = $.extend( true, {}, TestConfigStore.data.defaults.type[ testConfig.type ] );
-/*
-        if ( ( typeof testConfig.parameters == "undefined" 
-                || $.isEmptyObject(testConfig.parameters) )
-                && newTest ) {
-*/
         if ( testConfig.newTest ) {
             testConfig.parameters = $.extend( true, {}, testConfig.defaults );
         } else {
@@ -593,10 +617,12 @@ TestConfigComponent._drawConfigForm = function( ) {
             $('#windowSize').hide();
             $('#windowSize').removeAttr('required');
             $('#windowSize').removeAttr('pattern');
+            $('#windowSizeLabel').hide();
         } else {
             $('#windowSize').show();
-            $('#windowSize').removeAttr('required');
+            $('#windowSize').attr('required');
             $('#windowSize').attr('pattern', 'positive_integer');
+            $('#windowSizeLabel').show();
         }
     });
 
@@ -608,10 +634,25 @@ TestConfigComponent._drawConfigForm = function( ) {
         $('#addHostManually').hide();
     });
 
+    $('#advanced_traceroute_button').click( function( e ) {
+        TestConfigComponent.toggle_advTraceroute(e);
+    });
+
+    $('#advanced_throughput_button').click( function( e ) {
+        TestConfigComponent.toggle_advThroughput(e);
+    });
+
+    $('#advanced_ping_button').click( function( e ) {
+        TestConfigComponent.toggle_advPing(e);
+    });
+
+    $('#advanced_owamp_button').click( function( e ) {
+        TestConfigComponent.toggle_advOwamp(e);
+    });
+
     $('#member_add_button').click( function( e ) {
         TestConfigComponent.addTestMember(e);
     });
-
 
     this.testConfig = testConfig;
     var self = this;
@@ -623,22 +664,90 @@ TestConfigComponent._drawConfigForm = function( ) {
         }
         $('form#configureTestForm').submit();
     });
+
     $('#configureTestForm a.testConfigCancelButton').click( function( e ) {
         e.preventDefault();
         $('#configure-test-modal').foundation('reveal', 'close');
     });
+
     $('form#configureTestForm input').change(SharedUIFunctions._showSaveBar);
+
     $('form#configureTestForm select').change(SharedUIFunctions._showSaveBar);
 
 
     $('form#configureTestForm').submit(function( e ) {
         e.preventDefault();
-        //TestConfigComponent.submitTestConfigForm( self.testConfig );
-
     });
 
+    // Add options to the throughput or traceroute test's Tools selector - first values from the existing test's 
+    // config file, then adding any others from the defaults file. Then, when it's turned into a select2, setting the 
+    // val will show  the pre-selected tools in the correct order 
+    // (select2 orders the selections in the order they are in the options list). 
+    var all_options;
+    var max_num_selectable;
+    if ( testConfig.type == "bwctl/throughput") {
+        all_options = ['iperf3','iperf'];  
+        max_num_selectable = 2;
+    }
+    if ( testConfig.type == "traceroute") {
+        all_options = ['tracepath', 'traceroute', 'paris-traceroute'];  
+        max_num_selectable = 3;
+    }
 
-    //$(document).foundation('abide', 'events');
+    if (testConfig.type == "bwctl/throughput" || testConfig.type == "traceroute")  {
+        $('#tools_selector').empty();
+        var selectedToolsArray = [];
+        // testConfig.parameters has values for this test from the defaults file, 
+        // the reg. testing config file's defaults, values saved previously for a specific test, or those previously
+        // entered by the user and saved in memory by clicking on OK (before clicking SAVE).
+        if (testConfig.parameters.tool) {   // to be doubly sure not to get an error
+            selectedToolsArray = testConfig.parameters.tool.split(",");
+        }
+        var options_union = selectedToolsArray.concat(all_options);
+        var data = [];
+        for(var i in options_union) { 
+            var row = {};
+            row.text = options_union[i];
+            row.id   = options_union[i];
+            if (!array_contains(data,row.text)) {
+                data.push(row);
+                $('#tools_selector').append( $("<option></option>")
+                    .attr("value", row.id)
+                    .text(row.text) );
+            }
+        }
+
+        // make the select into a select2 object
+        $('#tools_selector').select2({
+            maximumSelectionLength: max_num_selectable,
+            width: "100%"
+        });
+
+        // pre-select the options that are in selectedToolsArray, ie, in testConfig.parameters
+        $('#tools_selector').select2('val',selectedToolsArray);
+
+        // make it so selected values can be dragged to reorder. Uses jquery-ui's sortable.
+        $('#toolsContainer ul.select2-selection__rendered').sortable({ containment: 'parent' });
+        // make options clicked on by the user show up in that order 
+        $('#toolsContainer select').on("select2:select", function (evt) {
+            var element = evt.params.data.element;
+            var $element = $(element);
+            $element.detach();
+            $(this).append($element);
+            $(this).trigger("change");
+        });
+
+    } // end if doing throughput or traceroute 
+
+};
+
+array_contains = function(data,val) {
+    for(var i in data) {
+        if( data[i].text == val ) {
+            return true;
+        }
+    }
+   return false;
 };
 
 TestConfigComponent._setValidationEvents = function() {
@@ -657,7 +766,8 @@ TestConfigComponent._setValidationEvents = function() {
             if(e.namespace != 'abide.fndtn') {
                 return;
             }
-            //StickySaveBar.showValidationError();
+	        // if there are errors in any advanced params, be sure the div is visible 
+            TestConfigComponent._invalid_in_advanced();
         });
 
 };
@@ -814,6 +924,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
     settings.interface = interface;
 
     switch ( test.type ) {
+
         case 'bwctl/throughput':
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
@@ -823,6 +934,12 @@ TestConfigComponent._getUserValues = function( testConfig ) {
 
             var tos_bits = $('#tosBits').val();
             settings.tos_bits = tos_bits;
+
+            var streams  = $('#streams').val();
+            settings.streams = streams;
+
+            var omit_interval = $('#omit_interval').val();
+            settings.omit_interval = omit_interval;
 
             var window_size = $('#windowSize').val();
             settings.window_size = window_size;
@@ -841,7 +958,24 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var duration = TestConfigComponent._getDateValue( 'test-duration' );
             settings.duration = duration;
 
+            // use the DOM to get the tool values in the order shown in the UI, in case they were dragged
+            var tool_vals = [];
+            $('li.select2-selection__choice').each(function(index) {
+                var item = $( this ).attr('title');
+                tool_vals.push(item);
+            });
+            settings.tool = tool_vals.toString();
+
+            // set send_only and receive_only depending on value of send_receive
+            var send_receive = $('#send_receive').val();
+            if (send_receive == "send_only") {
+                settings.send_only = 1;
+            } else if (send_receive == "receive_only") {
+                settings.receive_only = 1;
+            }
+
             break;
+
         case 'owamp':
             var packet_rate = $('#packetRateSel').val();
             settings.packet_rate = packet_rate;
@@ -850,6 +984,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             settings.packet_size = packet_size;
 
             break;
+
         case 'pinger':
             var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
             settings.test_interval = test_interval;
@@ -864,12 +999,18 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             settings.packet_size = packet_size;
 
             break;
+
         case 'traceroute':
             var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
             settings.test_interval = test_interval;
 
-            var tool = $('#toolSel').val();
-            settings.tool = tool;
+            // use the DOM to get the tool values in the order shown in the UI, in case they were dragged
+            var tool_vals = [];
+            $('li.select2-selection__choice').each(function(index) {
+                var item = $( this ).attr('title');
+                tool_vals.push(item);
+            });
+            settings.tool = tool_vals.toString();
 
             var packet_size = $('#sizeOfTestPackets').val();
             settings.packet_size = packet_size;
@@ -989,6 +1130,49 @@ TestConfigComponent.addTestMember = function(e) {
     $('#new-host-description').val('');
 
     return false;
+};
+
+TestConfigComponent._invalid_in_advanced = function(e) {
+    // See if there are any errors in Advanced Parameter values.
+    // If there are, be sure the Advanced Parameters div is visible.
+    var invalid_fields = $('#configureTestForm').find('[data-invalid]');
+    var invalid_in_advanced = 0;
+    for (var i = 0; i < invalid_fields.length; i++) {
+        var adv_div = $("#"+invalid_fields[i].id).parents('div.advanced_params');
+        var adv_id = adv_div.attr('id');
+        if (adv_id !== undefined) {
+            adv_div.show();
+            return true;
+        }
+    }
+    return false;
+};
+
+// If there are errors, _invalid_in_advanced() will open the Advanced Params div.
+// Allow it to be toggled (closed) only if there are no invalid entries.
+TestConfigComponent.toggle_advTraceroute = function(e) {
+    e.preventDefault(); 
+    if (!TestConfigComponent._invalid_in_advanced()) {
+        $('#advTracerouteDiv').toggle();
+    }
+};
+TestConfigComponent.toggle_advThroughput = function(e) {
+    e.preventDefault(); 
+    if (!TestConfigComponent._invalid_in_advanced()) {
+        $('#advThroughputDiv').toggle();
+    }
+};
+TestConfigComponent.toggle_advPing = function(e) {
+    e.preventDefault(); 
+    if (!TestConfigComponent._invalid_in_advanced()) {
+        $('#advPingDiv').toggle();
+    }
+};
+TestConfigComponent.toggle_advOwamp = function(e) {
+    e.preventDefault(); 
+    if (!TestConfigComponent._invalid_in_advanced()) {
+        $('#advOwampDiv').toggle();
+    }
 };
 
 TestConfigComponent._cancel = function() {

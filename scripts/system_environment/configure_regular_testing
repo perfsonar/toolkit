@@ -7,8 +7,10 @@ export DJANGO_SETTINGS_MODULE=esmond.settings
 
 #initialize python
 cd $ESMOND_ROOT
-source /opt/rh/python27/enable
-/opt/rh/python27/root/usr/bin/virtualenv --prompt="(esmond)" .
+if [ -e /opt/rh/python27/enable ]; then
+    source /opt/rh/python27/enable
+    /opt/rh/python27/root/usr/bin/virtualenv --prompt="(esmond)" .
+fi
 . bin/activate
 
 #build esmond tables
@@ -22,7 +24,7 @@ if [ -n "$KEY" ]; then
     grep -q 'esmond/latency' /etc/perfsonar/regulartesting.conf
     if [ $? != 0 ]; then
         mv /etc/perfsonar/regulartesting.conf /etc/perfsonar/regulartesting.conf.install.back
-        cp -f /etc/perfsonar/toolkit/default_service_configs/regular_testing.conf /etc/perfsonar/regulartesting.conf 
+        cp -f /etc/perfsonar/toolkit/default_service_configs/regulartesting.conf /etc/perfsonar/regulartesting.conf 
     fi
 
     grep -q ESMOND_API_KEY /etc/perfsonar/regulartesting.conf

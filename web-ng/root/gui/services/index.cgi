@@ -8,7 +8,6 @@ use Template;
 use POSIX;
 use Data::Dumper;
 use JSON::XS;
-use Sys::MemInfo qw(totalmem);
 use FindBin qw($RealBin);
 
 my $basedir = "$RealBin/../../..";
@@ -18,7 +17,7 @@ use lib "$RealBin/../../../../lib";
 use perfSONAR_PS::NPToolkit::Config::Version;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
 
-use perfSONAR_PS::Utils::Host qw( discover_primary_address );
+use perfSONAR_PS::Utils::Host qw( discover_primary_address get_health_info );
 use perfSONAR_PS::Utils::LookupService qw( is_host_registered );
 
 use perfSONAR_PS::NPToolkit::Services::ServicesMap qw(get_service_object);
@@ -230,7 +229,7 @@ if ($format eq "json") {
         },
         meshes => get_meshes(),
         globally_registered => $is_registered,
-        host_memory => int((&totalmem()/(1024*1024*1024) + .5)) #round to nearest GB
+        host_memory => int(get_health_info()->{memstats}->{memtotal}/(1024*1024) + .5), #round to nearest GB
     );
 
     print $cgi->header(-type=>'application/json', -charset=>'utf-8');
@@ -257,7 +256,7 @@ else {
     $vars{mtu}     = $external_address_mtu;
     $vars{ntp_sync_status}     = $ntp->is_synced();
     $vars{global_reg} 		= $is_registered;
-    $vars{memory} = int((&totalmem()/(1024*1024*1024) + .5)); #round to nearest GB
+    $vars{memory} = int(get_health_info()->{memstats}->{memtotal}/(1024*1024) + .5); #round to nearest GB
     set_sidebar_vars( { vars => \%vars } );
 
     print $cgi->header;

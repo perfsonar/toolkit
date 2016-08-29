@@ -1,26 +1,71 @@
 #!/bin/bash
-
-#init postgres
-if [ -z "$(ls -A /var/lib/pgsql/data)" ]; then
-    /sbin/service postgresql initdb
-    /sbin/service postgresql start
-    echo "Waiting for postgresql to complete startup"
-    sleep 20
-    sudo -u postgres psql -c "CREATE USER esmond WITH PASSWORD '7hc4m1'"
-    sudo -u postgres psql -c "CREATE DATABASE esmond"
-    sudo -u postgres psql -c "GRANT ALL ON DATABASE esmond to esmond"
-    cp -f /etc/perfsonar/toolkit/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
-    /sbin/service postgresql restart
-    sed -i "s/sql_db_name = .*/sql_db_name = esmond/g" /etc/esmond/esmond.conf
-    sed -i "s/sql_db_user = .*/sql_db_user = esmond/g" /etc/esmond/esmond.conf
-    sed -i "s/sql_db_password = .*/sql_db_password = 7hc4m1/g" /etc/esmond/esmond.conf
-fi
-
-#install esmond config
-cp -f /etc/perfsonar/toolkit/default_service_configs/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
+PG_VERSION=9.5
+PG_BINDIR=/usr/pgsql-${PG_VERSION}/bin
+PG_DATADIR=/var/lib/pgsql/${PG_VERSION}/data
+PG_SERVICE_NAME="postgresql-${PG_VERSION}"
 
 #disable JMX in cassandra so will start even if /etc/sysconfig/network HOSTNAME does not resolve
 sed -i '/^JVM_OPTS="\$JVM_OPTS -Dcom.sun.management.jmx/ s/^/#/' /etc/cassandra/conf/cassandra-env.sh
+#fire-up cassandra
+/sbin/service cassandra restart 
+if [ $? -ne 0 ]; then
+    echo "Unable to start cassandra. Proceeding with rest of esmond configuration"
+fi
+
+#init postgres - we shouldn't ever have to do this
+if [ -z "$(ls -A ${PG_DATADIR})" ]; then
+    su -l postgres -c "${NEW_BINDIR}/initdb  --locale='C' --encoding='sql_ascii' --pgdata='${PG_DATADIR}' --auth='trust'"
+fi
+
+#make sure postgresql is running
+/sbin/service ${PG_SERVICE_NAME} status &> /dev/null
+if [ $? -ne 0 ]; then
+    /sbin/service ${PG_SERVICE_NAME} restart 
+    if [ $? -ne 0 ]; then
+        echo "Unable to start ${PG_SERVICE_NAME}. Your esmond database may not be initialized"
+        exit 1
+    fi
+fi
+
+#create user if not exists or is an old user
+USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='esmond'" 2> /dev/null)
+if [ $? -ne 0 ]; then
+    echo "Unable to connect to postgresql to check user. Your esmond database may not be initialized"
+    exit 1
+fi
+OLD_USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_authid WHERE rolpassword='md5' || md5('7hc4m1' || rolname)" 2> /dev/null)
+if [ $? -ne 0 ]; then
+    echo "Unable to connect to postgresql to check for old users. Your esmond database may not be initialized"
+    exit 1
+fi
+if [ "$USER_EXISTS" != "1" ] || [ "$OLD_USER_EXISTS" == "1" ]; then
+    DB_PASSWORD=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c32;echo;)
+    if [ "$USER_EXISTS" == "1" ]; then
+        sudo -u postgres psql -c "ALTER ROLE esmond WITH PASSWORD '${DB_PASSWORD}'" &> /dev/null
+    else
+        sudo -u postgres psql -c "CREATE USER esmond WITH PASSWORD '${DB_PASSWORD}'" &> /dev/null
+        sudo -u postgres psql -c "CREATE DATABASE esmond" &> /dev/null
+        sudo -u postgres psql -c "GRANT ALL ON DATABASE esmond to esmond" &> /dev/null
+    fi
+    sed -i "s/sql_db_name = .*/sql_db_name = esmond/g" /etc/esmond/esmond.conf
+    sed -i "s/sql_db_user = .*/sql_db_user = esmond/g" /etc/esmond/esmond.conf
+    sed -i "s/sql_db_password = .*/sql_db_password = ${DB_PASSWORD}/g" /etc/esmond/esmond.conf
+    drop-in -n -t esmond - ${PG_DATADIR}/pg_hba.conf <<EOF
+#
+# esmond
+#
+# This user should never need to access the database from anywhere
+# other than locally.
+#
+local     esmond          esmond                            md5
+host      esmond          esmond     127.0.0.1/32           md5
+host      esmond          esmond     ::1/128                md5
+EOF
+    /sbin/service ${PG_SERVICE_NAME} restart 
+    if [ $? -ne 0 ]; then
+        echo "Unable to restart ${PG_SERVICE_NAME}. Your esmond database may not be initialized"
+    fi
+fi
 
 #set esmond env variables
 export ESMOND_ROOT=/usr/lib/esmond
@@ -29,8 +74,10 @@ export DJANGO_SETTINGS_MODULE=esmond.settings
 
 #initialize python
 cd $ESMOND_ROOT
-source /opt/rh/python27/enable
-/opt/rh/python27/root/usr/bin/virtualenv --prompt="(esmond)" .
+if [ -e /opt/rh/python27/enable ]; then
+    source /opt/rh/python27/enable
+    /opt/rh/python27/root/usr/bin/virtualenv --prompt="(esmond)" .
+fi
 . bin/activate
 
 #build esmond tables
@@ -38,3 +85,16 @@ python esmond/manage.py syncdb --noinput &> /dev/null
 
 #create api key
 KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
+
+#TODO: Switch on md5 auth
+if [ -n "$KEY" ] && [ ! -f "/etc/perfsonar/psc-archiver-esmond.json" ]; then
+cat >/etc/perfsonar/psc-archiver-esmond.json <<EOF
+{
+    "archiver": "esmond",
+    "data": {
+        "url": "http://localhost/esmond/perfsonar/archive/",
+        "auth-token": "${KEY}"
+    }
+}
+EOF
+fi
