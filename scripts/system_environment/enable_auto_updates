@@ -1,12 +1,19 @@
 #!/bin/bash
 
 # Enables automatic updates by default
+#
+# This script can be given 0, 1 or 2 args:
+# $1: installation type (i.e. new or upgrade)
+# $2: version upgrading from (if installation type is upgrade)
 
-#set arbitrarily high version 99.99 if no version provided
+# Set arbitrarily high version 99.99 if no version provided
 PREV_VERSION=${2:-99.99}
+MAJOR=${PREV_VERSION%%\.*}
+REST=${PREV_VERSION/${MAJOR}\.}
+MINOR=${REST%%\.*}
 
-#Need to activate if new install or if they were previously running 3.3.2 or older
-if [ "$1" == "new" -o `echo "${PREV_VERSION:0:3} < 3.4" | bc` -eq 1 ]; then
+# Need to activate if new install or if they were previously running 3.3.2 or older
+if [[ "$1" == "new" || $MAJOR -lt 3 || ( $MAJOR -eq 3 && $MINOR -lt 4 ) ]]; then
     echo "Enabling Automatic Updates"
     if type systemctl &>/dev/null; then
         systemctl enable yum-cron
@@ -16,7 +23,7 @@ if [ "$1" == "new" -o `echo "${PREV_VERSION:0:3} < 3.4" | bc` -eq 1 ]; then
     fi
 fi
 
-#Handle updating configs here
+# Handle updating configs here
 grep "<service yum_cron>" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
 if [ $? != 0 ]; then
     sed -i '/<access>/a \\t<service yum_cron> \

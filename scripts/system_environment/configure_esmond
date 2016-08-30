@@ -93,7 +93,7 @@ cat >/etc/perfsonar/psc-archiver-esmond.json <<EOF
     "archiver": "esmond",
     "data": {
         "url": "http://localhost/esmond/perfsonar/archive/",
-        "auth-token": "${KEY}"
+        "_auth-token": "${KEY}"
     }
 }
 EOF
