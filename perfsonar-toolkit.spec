@@ -17,7 +17,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.3.a1 
+%define relnum  0.4.rc1 
 
 Name:			perfsonar-toolkit
 Version:		4.0
@@ -108,32 +108,6 @@ Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
 Requires:       esmond >= 2.1
 Requires:       esmond-database-postgresql95
-Requires:       httpd-wsgi-socket
-Requires:       pscheduler-api-server
-Requires:       pscheduler-archiver-bitbucket
-Requires:       pscheduler-archiver-esmond
-Requires:       pscheduler-archiver-failer
-Requires:       pscheduler-archiver-syslog
-Requires:       pscheduler-core
-Requires:       pscheduler-database
-Requires:       pscheduler-server
-Requires:       pscheduler-test-idle
-Requires:       pscheduler-test-latency
-Requires:       pscheduler-test-rtt
-Requires:       pscheduler-test-simplestream
-Requires:       pscheduler-test-throughput
-Requires:       pscheduler-test-trace
-Requires:       pscheduler-tool-iperf
-Requires:       pscheduler-tool-owping
-Requires:       pscheduler-tool-paris-traceroute
-Requires:       pscheduler-tool-ping
-Requires:       pscheduler-tool-simplestreamer
-Requires:       pscheduler-tool-sleep
-Requires:       pscheduler-tool-snooze
-Requires:       pscheduler-tool-tracepath
-Requires:       pscheduler-tool-traceroute
-
-
 
 # Misc performance/performance-related tools
 Requires:		tcptrace
@@ -162,7 +136,7 @@ Requires(post):	perl
 Requires(post):	perfsonar-lscachedaemon
 Requires(post):	perfsonar-lsregistrationdaemon
 Requires(post):	perfsonar-graphs
-Requires(post):	perfsonar-regulartesting
+Requires(post):	perfsonar-meshconfig-agent
 
 Requires(post):	perfsonar-common
 Requires(post):	esmond          >= 2.1
