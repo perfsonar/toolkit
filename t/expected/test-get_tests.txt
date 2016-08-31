@@ -1,0 +1,194 @@
+# Hand-verified Dumper output of DataService::RegularTesting::get_test_configuration(/etc/regulartesting.conf) 
+# with things not expected to match (eg, id's) removed
+
+$expected = {
+          'test_defaults' => {},
+          'status' => {
+                        'hosts_file_matches_dns' => undef,
+                        'owamp_ports' => {},
+                        'bwctl_port_range' => undef,
+                        'network_percent_used' => '5',
+                        'bwctl_ports' => {},
+                        'owamp_port_range' => undef,
+                        'owamp_port_usage' => 4,
+                        'owamp_tests' => 1,
+                        'traceroute_tests' => 1,
+                        'bwctl_port_usage' => 12,
+                        'throughput_tests' => 2,
+                        'pinger_tests' => 1
+                      },
+          'test_configuration' => [
+                                    {
+                                      'description' => 'Owamp Test AAAA',
+                                      'disabled' => undef,
+                                      'added_by_mesh' => undef,
+                                      'type' => 'owamp',
+                                      'members' => [
+                                                     {
+                                                       'receiver' => 1,
+                                                       'test_ipv6' => 0,
+                                                       'test_ipv4' => 1,
+                                                       'name' => undef,
+                                                       'description' => 'ps-test-owamp',
+                                                       'port' => undef,
+                                                       'sender' => 1,
+                                                       'address' => 'ps-test-owamp.bldc.iu.edu'
+                                                     }
+                                                   ],
+                                      'parameters' => {
+                                                        'local_interface' => 'eth0',
+                                                        'packet_padding' => '5',
+                                                        'sample_count' => '3000',
+                                                        'packet_interval' => '0.02'
+                                                      },
+                                    },
+                                    {
+                                      'description' => 'Ping Test',
+                                      'disabled' => undef,
+                                      'added_by_mesh' => undef,
+                                      'type' => 'pinger',
+                                      'members' => [
+                                                     {
+                                                       'receiver' => 1,
+                                                       'test_ipv6' => 0,
+                                                       'test_ipv4' => 1,
+                                                       'name' => undef,
+                                                       'description' => 'perfsonar-dev',
+                                                       'port' => undef,
+                                                       'sender' => 1,
+                                                       'address' => 'perfsonar-dev.grnoc.iu.edu'
+                                                     }
+                                                   ],
+                                      'parameters' => {
+                                                        'test_offset' => undef,
+                                                        'ttl' => '255',
+                                                        'packet_interval' => '10',
+                                                        'local_interface' => undef,
+                                                        'test_schedule' => undef,
+                                                        'packet_size' => 1000,
+                                                        'test_interval' => '864000',
+                                                        'packet_count' => '15'
+                                                      },
+                                    },
+                                    {
+                                      'description' => 'Throughput Test 2',
+                                      'disabled' => 1,
+                                      'added_by_mesh' => undef,
+                                      'type' => 'bwctl/throughput',
+                                      'members' => [
+                                                     {
+                                                       'receiver' => 1,
+                                                       'test_ipv6' => 0,
+                                                       'test_ipv4' => 1,
+                                                       'name' => undef,
+                                                       'description' => 'Michael\'s dev host',
+                                                       'port' => undef,
+                                                       'sender' => 1,
+                                                       'address' => 'perfsonar-dev.grnoc.iu.edu'
+                                                     }
+                                                   ],
+                                      'parameters' => {
+                                                        'protocol' => 'tcp',
+                                                        'tool' => 'iperf3,iperf',
+                                                        'streams' => 100,
+                                                        'duration' => '20',
+                                                        'window_size' => 0,
+                                                        'test_interval' => '21600',
+                                                        'tos_bits' => '0'
+                                                      },
+                                    },
+                                    {
+                                      'description' => 'perfSONAR Toolkit Default Traceroute Test',
+                                      'disabled' => undef,
+                                      'added_by_mesh' => undef,
+                                      'type' => 'traceroute',
+                                      'members' => [
+                                                     {
+                                                       'receiver' => 1,
+                                                       'test_ipv6' => 0,
+                                                       'test_ipv4' => 1,
+                                                       'name' => undef,
+                                                       'description' => 'Black Hills State University, Spearfish, SD, USAAA',
+                                                       'port' => undef,
+                                                       'sender' => 1,
+                                                       'address' => '206.176.26.174'
+                                                     },
+                                                     {
+                                                       'receiver' => 1,
+                                                       'test_ipv6' => 1,
+                                                       'test_ipv4' => 0,
+                                                       'name' => undef,
+                                                       'description' => 'NDSU, Fargo, ND, US',
+                                                       'port' => undef,
+                                                       'sender' => 1,
+                                                       'address' => '2001:4930:95::299999'
+                                                     },
+                                                     {
+                                                       'receiver' => 1,
+                                                       'test_ipv6' => 0,
+                                                       'test_ipv4' => 1,
+                                                       'name' => undef,
+                                                       'description' => 'ps-test-owamp',
+                                                       'port' => undef,
+                                                       'sender' => 1,
+                                                       'address' => 'ps-test-owamp.bldc.iu.edu'
+                                                     },
+                                                     {
+                                                       'receiver' => 1,
+                                                       'test_ipv6' => 0,
+                                                       'test_ipv4' => 1,
+                                                       'name' => undef,
+                                                       'description' => 'perfsonar-dev',
+                                                       'port' => undef,
+                                                       'sender' => 1,
+                                                       'address' => 'perfsonar-dev.grnoc.iu.edu'
+                                                     }
+                                                   ],
+                                      'parameters' => {
+                                                        'test_interval' => 600
+                                                      },
+                                    },
+                                    {
+                                      'description' => 'throughput test 1',
+                                      'disabled' => 1,
+                                      'added_by_mesh' => undef,
+                                      'type' => 'bwctl/throughput',
+                                      'members' => [
+                                                     {
+                                                       'receiver' => 1,
+                                                       'test_ipv6' => 0,
+                                                       'test_ipv4' => 1,
+                                                       'name' => undef,
+                                                       'description' => 'Black Hills State University, Spearfish, SD, US',
+                                                       'port' => undef,
+                                                       'sender' => 1,
+                                                       'address' => '206.176.26.174'
+                                                     },
+                                                     {
+                                                       'receiver' => 1,
+                                                       'test_ipv6' => 1,
+                                                       'test_ipv4' => 0,
+                                                       'name' => undef,
+                                                       'description' => 'NDSU, Fargo, ND, US',
+                                                       'port' => undef,
+                                                       'sender' => 1,
+                                                       'address' => '2001:4930:95::2'
+                                                     }
+                                                   ],
+                                      'parameters' => {
+                                                        'protocol' => 'udp',
+                                                        'udp_bandwidth' => '1000000',
+                                                        'omit_interval' => '5',
+                                                        'duration' => '120',
+                                                        'send_only' => '1',
+                                                        'tos_bits' => '5',
+                                                        'local_interface' => 'eth0',
+                                                        'tool' => 'iperf3',
+                                                        'streams' => '2',
+                                                        'test_interval' => '10800',
+                                                        'window_size' => '2'
+                                                      },
+                                    }
+                                  ]
+        };
+

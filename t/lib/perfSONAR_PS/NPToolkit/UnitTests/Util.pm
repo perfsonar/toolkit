@@ -22,7 +22,7 @@ use Params::Validate qw(:all);
 use Scalar::Util qw(looks_like_number);
 use Data::Dumper;
 
-our @EXPORT_OK = qw( test_health positive_number nonnegative_number test_result hash_to_parameters );
+our @EXPORT_OK = qw( test_health positive_number nonnegative_number test_result hash_to_parameters compare_PStests );
 
 sub test_health {
     my $values = @_;
@@ -71,4 +71,65 @@ sub hash_to_parameters {
     return $parameters;
 }
 
+# Compares hashes for perfSonar tests to expected hashes, not expecting the order of elements to match. 
+# Inputs should be array-references (arrays of tests from $data->{'test_configuration'}).
+# All the expected tests and their parameters need to be present in the data with matching values.
+# Any values that are not expected to match should be removed, along with their keys, from the $expected_tests hash.
+# Any extra info in the test data won't cause a fail.
+sub compare_PStests {
+    my ( $tests, $expected_tests ) = @_;
+    
+    foreach my $expected_test (@$expected_tests) {
+
+        # identify tests by their descriptions
+        my $expected_desc = $expected_test->{'description'};
+
+        # find the current expected test in the data
+        my $found = 0;
+        foreach my $test (@$tests) {
+            if ($test->{'description'} eq $expected_desc ) {
+                $found = 1;
+
+                while (my ($key, $expected_value) = each %$expected_test ) {
+                    next if (ref($expected_value));
+                    is($test->{$key}, $expected_value, "$key - in Test <$expected_desc>");
+                }
+
+                # check for expected test parameters
+                my $expected_params = $expected_test->{'parameters'};
+                my $params = $test->{'parameters'};
+
+                while (my ($key, $expected_value) = each %$expected_params) {
+                    ##warn ("comparing ".$key.": ".$params->{$key}." = ".$expected_value."        ");
+                    is($params->{$key}, $expected_value, "$key - in Test <$expected_desc>");
+                }
+
+                # check for expected test members
+                my $expected_members = $expected_test->{'members'};
+                my $members = $test->{'members'};
+
+                foreach my $expected_member (@$expected_members) {
+                    # find this expected member
+                    my $mfound = 0;
+                    foreach my $member (@$members) {
+                        my $expected_mem_desc = $expected_member->{'description'};
+                        if ($member->{'description'} eq $expected_mem_desc) {
+                            $mfound = 1;
+                            # check the member info
+                            while (my ($key, $expected_value) = each %$expected_member) {
+                                ##warn ('comparing member '.$key.': '.$member->{$key}." = ".$expected_value."        ");
+                                is($member->{$key}, $expected_value, "$key - in Member <$expected_mem_desc>");
+                            }
+                        }
+                    }
+                    is($mfound, 1, "Find Member <$expected_member->{'description'}> in Test <$expected_desc>");
+                }
+                # go to next expected test
+                last;
+            }
+        }
+        is($found, 1, "Find Test <$expected_desc>");
+    }
+
+}
 1;
