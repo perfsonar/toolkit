@@ -9,8 +9,8 @@ use lib "$Bin/../lib";
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init( {level => 'OFF'} );
 
-# we don't know how many tests there will be, so no plan here
-use Test::More;
+# note that if a test or member is not found, it will say you didn't run the no. of tests planned.
+use Test::More tests => 126;
 
 use Data::Dumper;
 
@@ -38,15 +38,14 @@ my $results = $service->get_test_configuration();
 #warn "----------\n\n";
 
 # check things in $results->{'status'} 
-test_result($results->{'status'}->{'traceroute_tests'}, $expected->{'status'}->{'traceroute_tests'}, 
-     'No. of traceroute tests');
-test_result($results->{'status'}->{'owamp_tests'},      $expected->{'status'}->{'owamp_tests'}, 
-    'No. of owamp tests');
-test_result($results->{'status'}->{'throughput_tests'}, $expected->{'status'}->{'throughput_tests'}, 
-    'No. of throughput tests');
-test_result($results->{'status'}->{'pinger_tests'},     $expected->{'status'}->{'pinger_tests'}, 
-    'No. of pinger tests');
-#                         'network_percent_used' => '5',
+my $status = $results->{'status'};
+my $expected_status = $expected->{'status'};
+is( $status->{'traceroute_tests'}, $expected_status->{'traceroute_tests'}, 'No. of traceroute tests' );
+is( $status->{'owamp_tests'},      $expected_status->{'owamp_tests'},      'No. of owamp tests' );
+is( $status->{'throughput_tests'}, $expected_status->{'throughput_tests'}, 'No. of throughput tests' );
+is( $status->{'pinger_tests'},     $expected_status->{'pinger_tests'},     'No. of pinger tests' );
+is( $status->{'network_percent_used'}, $expected_status->{'network_percent_used'}, 'Network percent used' );
+# check these?
 #                         'hosts_file_matches_dns' => undef,
 #                         'bwctl_ports' => {},
 #                         'bwctl_port_range' => undef,
@@ -55,12 +54,8 @@ test_result($results->{'status'}->{'pinger_tests'},     $expected->{'status'}->{
 #                         'owamp_port_range' => undef,
 #                         'owamp_port_usage' => 0,
 
-# Test data from the method
+# check Test configurations, disregarding order in hashes and arrays
 my $tests = $results->{'test_configuration'};  
-# Test data expected 
 my $expected_tests = $expected->{'test_configuration'};  # array-ref
+compare_PStests( $tests, $expected_tests );
 
-# compare Tests, disregarding order in hashes and arrays
-compare_PStests($tests, $expected_tests);
-
-done_testing();
