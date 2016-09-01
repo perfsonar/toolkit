@@ -488,18 +488,21 @@ chkconfig cassandra on
 chkconfig postgresql-9.5 on
 
 #Restart pscheduler daemons to make sure they got all tests, tools, and archivers
+#also meshconfig-agent because it needs pscheduler
 %if 0%{?el7}
 systemctl restart httpd &>/dev/null || :
 systemctl restart pscheduler-archiver &>/dev/null || :
 systemctl restart pscheduler-runner &>/dev/null || :
 systemctl restart pscheduler-scheduler &>/dev/null || :
 systemctl restart pscheduler-ticker &>/dev/null || :
+systemctl restart perfsonar-meshconfig-agent &>/dev/null || :
 %else
 /sbin/service httpd restart &>/dev/null || :
 /sbin/service pscheduler-archiver restart &>/dev/null || :
 /sbin/service pscheduler-runner restart &>/dev/null || :
 /sbin/service pscheduler-scheduler restart &>/dev/null || :
 /sbin/service pscheduler-ticker restart &>/dev/null || :
+/sbin/service perfsonar-meshconfig-agent restart &>/dev/null || :
 %endif
 
 #Restart config_daemon and fix nic parameters
