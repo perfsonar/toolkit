@@ -81,8 +81,9 @@ my @services = (
     get_service_object("bwctl"),
     get_service_object("npad"),
     get_service_object("ndt"),
-    get_service_object("regular_testing"),
-    get_service_object("ls_registration_daemon"),
+    get_service_object("meshconfig_agent"),
+    get_service_object("lsregistration"),
+    get_service_object("pscheduler"),
     get_service_object("ls_cache_daemon"),
     get_service_object("config_daemon"),
 );
