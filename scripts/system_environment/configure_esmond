@@ -86,9 +86,18 @@ python esmond/manage.py syncdb --noinput &> /dev/null
 #create api key
 KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
 
-#TODO: Switch on md5 auth
-if [ -n "$KEY" ] && [ ! -f "/etc/perfsonar/psc-archiver-esmond.json" ]; then
-cat >/etc/perfsonar/psc-archiver-esmond.json <<EOF
+#set API Key in meshconfig-agent-tasks.conf
+if [ -n "$KEY" ]; then
+    grep -q ESMOND_API_KEY /etc/perfsonar/meshconfig-agent-tasks.conf
+    if [ $? == 0 ]; then
+        sed -i "s/ESMOND_API_KEY/$KEY/g" /etc/perfsonar/meshconfig-agent-tasks.conf
+    fi
+fi
+
+#Create archiver file for easy access
+mkdir -p /usr/share/pscheduler
+if [ -n "$KEY" ] && [ ! -f "/usr/share/pscheduler/psc-archiver-esmond.json" ]; then
+cat >/usr/share/pscheduler/psc-archiver-esmond.json <<EOF
 {
     "archiver": "esmond",
     "data": {
