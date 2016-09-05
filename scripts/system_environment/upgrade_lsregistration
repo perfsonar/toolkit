@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#Add pscheduler service if missing
+#match on host> because some old files are <site host>
+grep -q pscheduler /etc/perfsonar/lsregistrationdaemon.conf
+if [ $? != 0 ]; then
+
+sed -i '/host>/ a \
+    <service>\
+        inherits local_web_service\
+        type pscheduler\
+        http_port 80\
+        https_port 443\
+        url_path /pscheduler\
+        service_version pscheduler-1.0\
+        autodiscover_tests 1\
+        autodiscover_tools 1\
+    </service>' /etc/perfsonar/lsregistrationdaemon.conf
+
+fi

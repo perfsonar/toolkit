@@ -31,42 +31,7 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
     var data = HostDetailsStore.getHostDetails();
     HostStatusSidebarComponent.status = data;
 
-    var status_values = [];
-   
-    var host_memory = data.host_memory;
-    if (typeof host_memory != "undefined") {   
-        var memVal = {};
-        if (host_memory < HostStatusSidebarComponent.recommended_ram) {
-            memVal.classes = "color-red";
-        }
-        host_memory += " GB";
-        memVal.id    = "ram_details";
-        memVal.label = "RAM";
-        memVal.value = host_memory;
-        status_values.push( memVal );
-    }
-
-    var cpu_cores = data.cpu_cores;
-    if (typeof cpu_cores != "undefined") {   
-        status_values.push( {label: "CPU Cores", value: cpu_cores} );
-    }
-
-    var cpus = data.cpus;
-    if (typeof cpus != "undefined") {   
-        status_values.push( {label: "CPUs", value: cpus} );
-    }
-
-    var cpu_speed = Math.round(data.cpu_speed);
-    if (typeof cpu_speed != "undefined") {  
-        cpu_speed += " MHz"; 
-        status_values.push( {label: "CPU Speed", value: cpu_speed} );
-    }
-
-    var primary_interface = data.external_address.iface;
-    if (typeof primary_interface != "undefined") {  
-        status_values.push( {label: "Primary Interface", value: primary_interface} );
-    }
-
+    // will print out individually
     data.ntp_synced = (data.ntp.synchronized == 1 ? "Yes" : "No");
     if (data.ntp.synchronized == 1 ) {
         data.ntp_classes = 'color-green';
@@ -81,29 +46,100 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
         data.registered_classes = 'color-red';
     }
 
-    var toolkit_version = data.toolkit_version;
-    if (toolkit_version !== null) {  
-        status_values.push( {label: "Toolkit version", value: toolkit_version} );
+    var primary_interface = data.external_address.iface;
+    if (typeof primary_interface != "undefined") {  
+        data.primary_interface = primary_interface;
     }
 
-    var rpm_version = data.toolkit_rpm_version;
-    if (typeof rpm_version != "undefined") {  
-        status_values.push( {label: "Toolkit RPM version", value: rpm_version} );
-    }
-
-    var kernel = data.kernel_version;
-    if (typeof kernel != "undefined") {
-        status_values.push( {label: "Kernel version", value: kernel} );
-    }
-
+    // will loop to print out (in order)
+    var status_values = [];
+   
     var auto_updates = data.auto_updates;
-    if(typeof auto_updates != "undefined"){
+    if (typeof auto_updates != "undefined") {
         var auto_updates_value = (auto_updates == 1 ? "ON" : "OFF");
         var auto_updates_class = (auto_updates == 1 ? "color-green" : "color-red");
         status_values.push({label:"Auto Updates", value: auto_updates_value, classes: auto_updates_class });
     }
 
+    var is_vm = data.is_vm;
+    if (is_vm == 1) {
+        status_values.push( {label: "Virtual Machine", value: "Yes"} );
+    } else {
+        status_values.push( {label: "Virtual Machine", value: "No"} ); // actually 0 could mean unknown also
+    }
+
+    // (will be hidden in Status section if shown in Health section)
+    var host_memory = data.host_memory;
+    if (typeof host_memory != "undefined") {   
+        var memVal = {};
+        if (host_memory < HostStatusSidebarComponent.recommended_ram) {
+            memVal.classes = "color-red";
+        }
+        host_memory += " GB";
+        memVal.id    = "ram_details";  
+        memVal.label = "RAM";
+        memVal.value = host_memory;
+        status_values.push( memVal );
+    }
+
+    // for More Host Details popup
+    var status_more_values = [];
+
+    if (typeof data.sys_vendor != "undefined") {
+        status_more_values.push( {label: "Vendor", value: data.sys_vendor} );
+    }
+    if (typeof data.product_name != "undefined") {
+        if (is_vm == 1) {
+            status_more_values.push( {label: "VM Host", value: data.product_name} );
+        } else {
+            status_more_values.push( {label: "Model", value: data.product_name} );
+        }
+    }
+        
+    var cpu_val;
+    var cpus = data.cpus;
+    if (typeof cpus != "undefined") {   
+       cpu_val = cpus; 
+    } else {
+        cpu_val = "?";
+    }
+    var cpu_cores = data.cpu_cores;
+    if (typeof cpu_cores != "undefined") {   
+        cpu_val = cpu_val + " / " + cpu_cores;
+    } else {
+        cpu_val = cpu_val + " / ?";
+    }
+    status_more_values.push( {label: "CPUs / Cores", value: cpu_val} );
+
+
+    var cpu_speed = Math.round(data.cpu_speed);
+    if (typeof cpu_speed != "undefined") {  
+        cpu_speed += " MHz"; 
+        status_more_values.push( {label: "CPU Speed", value: cpu_speed} );
+    }
+
+    var os_info = data.distribution;
+    if (typeof os_info != "undefined") {
+        status_more_values.push( {label: "OS", value: os_info} );
+    }
+
+    var kernel = data.kernel_version;
+    if (typeof kernel != "undefined") {
+        status_more_values.push( {label: "Kernel version", value: kernel} );
+    }
+
+    var toolkit_version = data.toolkit_version;
+    if (toolkit_version !== null) {  
+        status_more_values.push( {label: "Toolkit version", value: toolkit_version} );
+    }
+
+    var rpm_version = data.toolkit_rpm_version;
+    if (typeof rpm_version != "undefined") {  
+        status_more_values.push( {label: "Toolkit RPM version", value: rpm_version} );
+    }
+
     data.status_values = status_values;
+    data.status_more_values = status_more_values;
     
     HostStatusSidebarComponent.details = data;
 
@@ -195,13 +231,29 @@ HostStatusSidebarComponent._registerHelpers = function() {
         }
         return ret;
     });
+
+    Handlebars.registerHelper('is_equal', function(a, b) {
+        if ( a == b ) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    Handlebars.registerHelper('hostnames_of_ip', function(hostnames, ip, options) {
+        if (hostnames[ip]) {
+            return hostnames[ip];
+        } else {
+            return [];
+        }
+    });
 };
 
 HostStatusSidebarComponent._getHealthVariables = function(data) {
     var health_values = [];
 
     // Use an ID prefix to better scope these elements in the DOM
-    var id_prefix = HostStatusSidebarComponent.id_prefix;
+   var id_prefix = HostStatusSidebarComponent.id_prefix;
 
     var cpu_util = data.cpu_util;
     if (typeof cpu_util != "undefined") {
