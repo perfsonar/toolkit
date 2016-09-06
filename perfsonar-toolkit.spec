@@ -122,7 +122,6 @@ Requires:		yum-cron
 BuildRequires: systemd
 %{?systemd_requires: %systemd_requires}
 %else
-Requires:		ndt
 Requires:		mod_auth_shadow
 %endif
 
@@ -147,7 +146,6 @@ Requires(post):	owamp-client    >= 3.5.0
 Requires(post):	owamp-server    >= 3.5.0
 %if 0%{?el7}
 %else
-Requires(post):	ndt
 Requires(post):	mod_auth_shadow
 %endif
 
