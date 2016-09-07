@@ -1,42 +1,16 @@
 --- a/scripts/apache-toolkit_web_gui.conf
 +++ b/scripts/apache-toolkit_web_gui.conf
-@@ -4,6 +4,9 @@
- RewriteRule ^/toolkit-old/admin/(cacti.*) https://%{SERVER_NAME}/$1 [R,L]
- RewriteRule ^/toolkit-old/gui/(cacti.*) https://%{SERVER_NAME}/$1 [R,L]
+@@ -17,6 +17,9 @@
+ # Redirect from /toolkit/admin/* to /toolkit/auth/admin/*
+ RewriteRule ^/toolkit/admin/(.*) https://%{SERVER_NAME}/toolkit/auth/admin/$1 [R,L]
  
 +AddExternalAuth pwauth /usr/sbin/pwauth
 +SetExternalAuthMethod pwauth pipe
 +
- #Old GUI
- Alias /toolkit-old /usr/lib/perfsonar/web/root
- <Directory "/usr/lib/perfsonar/web/root">
-@@ -37,9 +40,11 @@
-       Require valid-user
-     </IfVersion>
-     <IfVersion < 2.4>
--      AuthShadow on
-       AuthType Basic
-       AuthName "Password Required"
-+      AuthBasicProvider external
-+      AuthExternal pwauth
-+      AuthzUnixgroup on
-       Require group psadmin
-     </IfVersion>
- </Directory>
-@@ -61,9 +66,11 @@
-       Require valid-user
-     </IfVersion>
-     <IfVersion < 2.4>
--      AuthShadow on
-       AuthType Basic
-       AuthName "Password Required"
-+      AuthBasicProvider external
-+      AuthExternal pwauth
-+      AuthzUnixgroup on
-       Require group psadmin
-     </IfVersion>
- </Directory>
-@@ -163,9 +170,11 @@
+ # Set the base directory to not require auth by default
+ <Directory "/usr/lib/perfsonar/web-ng/root">
+     Options +FollowSymLinks -MultiViews +ExecCGI
+@@ -95,9 +98,11 @@
        Require valid-user
      </IfVersion>
      <IfVersion < 2.4>
@@ -49,7 +23,7 @@
        Require group psadmin
      </IfVersion>
  </Location>
-@@ -193,9 +202,11 @@
+@@ -125,9 +130,11 @@
        Require valid-user
      </IfVersion>
      <IfVersion < 2.4>
