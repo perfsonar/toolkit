@@ -2,10 +2,11 @@
 // assues Dispatcher has already been declared (so load that first as well)
 
 // the default timeperiod (actually "timeperiod,summary_window") is 1-week,1day.
+var origin = location.origin;
 var TestStore = {
     testList: null,
     tests: null,
-    ma_url: 'http://localhost/esmond/perfsonar/archive/',
+    ma_url: origin + '/esmond/perfsonar/archive/',
     ma_url_enc: null,
     timeperiod: "604800,86400",
     testSummary: {}
@@ -97,7 +98,7 @@ TestStore.retrieveNeededTestAvgs = function(sources, destinations) {
 
 TestStore._retrieveList = function() {
         // get all test sources and destinations, etc.
-        var the_url = "/perfsonar-graphs/graphData.cgi?action=test_list&timeperiod=" + TestStore.timeperiod 
+        var the_url = "/perfsonar-graphs/cgi-bin/graphData.cgi?action=test_list&timeperiod=" + TestStore.timeperiod 
                 + "&url=" + TestStore.ma_url_enc;
         $.ajax({
             url: the_url,
@@ -118,7 +119,7 @@ TestStore._retrieveList = function() {
 
 TestStore._retrieveTests = function(sources, destinations) {
     // get test results for those tests in the parameter arrays
-    var the_url = "/perfsonar-graphs/graphData.cgi?action=tests&timeperiod=" + TestStore.timeperiod
+    var the_url = "/perfsonar-graphs/cgi-bin/graphData.cgi?action=tests&timeperiod=" + TestStore.timeperiod
                 + "&url=" + TestStore.ma_url_enc;
     for (var i=0; i<sources.length; i++) {
         the_url += '&src='+sources[i]+';dest='+destinations[i];
