@@ -53,7 +53,7 @@ my $js_files = [
     $include_prefix . 'js/pubsub/jquery.pubsub.js', 
     $include_prefix . 'js/actions/Dispatcher.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
-    '/perfsonar-graphs/JS/d3.min.js', # TODO: fix to better relative URL
+    '/perfsonar-graphs/js/d3.min.js', # TODO: fix to better relative URL
     #$include_prefix . 'js/admin/components/ServicesUpdateComponent.js', 
     $include_prefix . 'js/stores/HostDetailsStore.js', 
     $include_prefix . 'js/stores/HostServicesStore.js', 
