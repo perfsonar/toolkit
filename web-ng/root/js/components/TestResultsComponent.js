@@ -1,6 +1,7 @@
 /* Requires: TestStore, d3
  * 
 */
+var origin = location.origin;
 var TestResultsComponent = {
     test_list: null,
     test_list_topic: 'store.change.test_list',
@@ -8,7 +9,7 @@ var TestResultsComponent = {
     tests_error_topic: 'store.change.tests_error',
     test_list_error_topic: 'store.change.test_list_error',
     inactive_threshold: (new Date() / 1000) - 86400 * 7, // now minus 7 days
-    ma_url: 'http://localhost/esmond/perfsonar/archive/',
+    ma_url: origin + '/esmond/perfsonar/archive/',
     testListSet: false,
     testListError: false,
     testDataSet: false,
@@ -265,7 +266,7 @@ TestResultsComponent.showResultsGraph = function(container, src, dst, ma_url, ro
     // first, clear the URL of the existing iframe
 //$("#test-results-graph-iframe").attr('src', '');
     TestResultsComponent.clearContainer(container);
-    var url = "/perfsonar-graphs/graphWidget.cgi?source=" + src;
+    var url = "/perfsonar-graphs/?source=" + src;
     url += "&dest=" + dst + "&url=" + ma_url;
 
      $('<iframe />', {
@@ -279,8 +280,8 @@ TestResultsComponent.showResultsGraph = function(container, src, dst, ma_url, ro
 
      var close_link = '<a class="close-reveal-modal" aria-label="Close" onclick="TestResultsComponent.closeFrame(\'#test-results-graph-iframe-' + rowID + '\')">&#215;</a>';
      $(close_link).appendTo(container);
-    
-    return false; 
+
+    return false;
 };
 
 TestResultsComponent.closeFrame = function(iframe) {
@@ -290,7 +291,7 @@ TestResultsComponent.closeFrame = function(iframe) {
 TestResultsComponent.clearContainer = function(container) {
     if ( $(container).length > 0) {
         $(container).empty();
-    } 
+    }
 };
 
 TestResultsComponent.clearFrame = function(iframe) {
@@ -305,7 +306,7 @@ TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_
     var ma_url = TestResultsComponent.ma_url;
     var container = $('#' + container_id);
     var link = $('#' + container_id + ' a.traceroute_link');
-    var tr_url = '/perfsonar-graphs/graphData.cgi?action=has_traceroute_data&url=' + ma_url
+    var tr_url = '/perfsonar-graphs/cgi-bin/graphData.cgi?action=has_traceroute_data&url=' + ma_url
             + '&source=' + source_ip + '&dest=' + dest_ip;
     $.ajax({
         url: tr_url,
