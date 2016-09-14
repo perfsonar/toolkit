@@ -64,8 +64,8 @@ if ($authenticated) {
 
 push @$js_files, (
     $include_prefix . 'js/stores/TestStore.js', 
-    '/perfsonar-graphs/JS/d3.min.js', # TODO: fix to better relative URL
-    '/perfsonar-graphs/JS/TestResultUtils.js', # TODO: fix to better relative URL
+    '/perfsonar-graphs/js/d3.min.js', # TODO: fix to better relative URL
+    '/perfsonar-graphs/js/TestResultUtils.js', # TODO: fix to better relative URL
     $include_prefix . 'js/components/HostInfoComponent.js', 
     $include_prefix . 'js/components/HostStatusSidebarComponent.js', 
     $include_prefix . 'js/components/HostServicesComponent.js', 

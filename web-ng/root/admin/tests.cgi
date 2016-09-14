@@ -58,8 +58,8 @@ my $js_files = [
     $include_prefix . 'js/stores/TestConfigAdminStore.js', 
     $include_prefix . 'js/stores/HostDetailsStore.js', 
     $include_prefix . 'js/handlebars/handlebars.js', 
-    '/perfsonar-graphs/JS/d3.min.js', # TODO: fix to better relative URL
-    '/perfsonar-graphs/JS/TestResultUtils.js', # TODO: fix to better relative URL
+    '/perfsonar-graphs/js/d3.min.js', # TODO: fix to better relative URL
+    '/perfsonar-graphs/js/TestResultUtils.js', # TODO: fix to better relative URL
     $include_prefix . 'js/shared/SharedUIFunctions.js', 
     $include_prefix . 'js/admin/components/StickySaveBar.js', 
     $include_prefix . 'js/components/PageHeader.js', 

@@ -17,7 +17,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.4.rc1 
+%define relnum  0.5.rc1 
 
 Name:			perfsonar-toolkit
 Version:		4.0
@@ -519,10 +519,12 @@ done
 sed -i "/add_psadmin_user/d" /root/.bashrc
 sed -i "/add_pssudo_user/d" /root/.bashrc
 cat >> /root/.bashrc <<EOF
+if [ -t 0 -a -t 1 -a -t 2 ]; then
 # Run the add_psadmin_user script to ensure that a psadmin user has been created
 %{install_base}/scripts/add_psadmin_user --auto
 # Run the add_pssudo_user script to encourage disabling root ssh
 %{install_base}/scripts/add_pssudo_user --auto
+fi
 EOF
 
 
