@@ -10,7 +10,7 @@ Vcs-Browser: https://github.com/perfsonar/toolkit
 
 Package: perfsonar-toolkit
 Architecture: all
-Depends: libperfsonar-perl, apache2-mpm-worker | httpd,
+Depends: libperfsonar-perl, apache2-mpm-worker | httpd, ssl-cert,
  libapache2-mod-authnz-external, libapache2-mod-authz-unixgroup,
  pwauth, perl, libxml-simple-perl, libsys-meminfo-perl,
  libsys-statistics-linux-perl, libperfsonar-sls-perl,
