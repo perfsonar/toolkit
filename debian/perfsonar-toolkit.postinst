@@ -44,15 +44,17 @@ case "$1" in
 	mkdir -p /var/lib/perfsonar/log_view/owamp
 
         # apache setup
-        a2enmod -q rewrite
-        a2enmod -q proxy_http
-        a2enmod -q authnz_external
-        a2enmod -q authz_unixgroup
+        a2enmod rewrite
+        a2enmod proxy_http
+        a2enmod authnz_external
+        a2enmod authz_unixgroup
+        a2enmod ssl
+        a2ensite default-ssl
 
         if which invoke-rc.d > /dev/null; then
-            invoke-rc.d apache2 reload
+            invoke-rc.d apache2 restart
         else
-            /etc/init.d/apache2 reload
+            /etc/init.d/apache2 restart
         fi
     ;;
 
