@@ -16,7 +16,7 @@ Depends: libperfsonar-perl, apache2-mpm-worker | httpd, ssl-cert,
  libsys-statistics-linux-perl, libperfsonar-sls-perl,
  perfsonar-toolkit-library, liblog-dispatch-filerotate-perl,
  libcgi-ajax-perl, libcgi-session-perl,
- perfsonar-common, chkconfig, cron-apt,
+ perfsonar-common, chkconfig, cron-apt, ntp,
  libperfsonar-toolkit-perl, perfsonar-lsregistrationdaemon,
  perfsonar-toolkit-config-daemon,
  perfsonar-toolkit-graphs, ${misc:Depends}
