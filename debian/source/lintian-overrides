@@ -1,0 +1,4 @@
+# Uncorrect JS detection by lintian, already reported to lintian devs.
+# see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=744972
+# and https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=808756
+perfsonar-toolkit source: source-is-missing web-ng/root/js/*
