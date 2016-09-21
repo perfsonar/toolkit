@@ -1,0 +1,38 @@
+--- a/scripts/apache-toolkit_web_gui.conf
++++ b/scripts/apache-toolkit_web_gui.conf
+@@ -17,6 +17,9 @@
+ # Redirect from /toolkit/admin/* to /toolkit/auth/admin/*
+ RewriteRule ^/toolkit/admin/(.*) https://%{SERVER_NAME}/toolkit/auth/admin/$1 [R,L]
+ 
++AddExternalAuth pwauth /usr/sbin/pwauth
++SetExternalAuthMethod pwauth pipe
++
+ # Set the base directory to not require auth by default
+ <Directory "/usr/lib/perfsonar/web-ng/root">
+     Options +FollowSymLinks -MultiViews +ExecCGI
+@@ -95,9 +98,11 @@
+       Require valid-user
+     </IfVersion>
+     <IfVersion < 2.4>
+-      AuthShadow on
+       AuthType Basic
+       AuthName "Password Required"
++      AuthBasicProvider external
++      AuthExternal pwauth
++      AuthzUnixgroup on
+       Require group psadmin
+     </IfVersion>
+ </Location>
+@@ -125,9 +130,11 @@
+       Require valid-user
+     </IfVersion>
+     <IfVersion < 2.4>
+-      AuthShadow on
+       AuthType Basic
+       AuthName "Password Required"
++      AuthBasicProvider external
++      AuthExternal pwauth
++      AuthzUnixgroup on
+       Require group psadmin
+     </IfVersion>
+ </Directory>
