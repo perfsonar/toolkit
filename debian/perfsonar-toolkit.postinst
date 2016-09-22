@@ -43,6 +43,10 @@ case "$1" in
         mkdir -p /var/lib/perfsonar/log_view/ndt
         mkdir -p /var/lib/perfsonar/log_view/owamp
 
+        touch /etc/perfsonar/toolkit/psadmin.htpasswd
+        chmod 640 /etc/perfsonar/toolkit/psadmin.htpasswd
+        chown root:www-data /etc/perfsonar/toolkit/psadmin.htpasswd
+
         # apache setup
         a2enmod rewrite
         a2enmod proxy_http
