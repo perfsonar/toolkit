@@ -50,6 +50,7 @@ case "$1" in
         a2enmod authz_unixgroup
         a2enmod ssl
         a2ensite default-ssl
+        a2enconf apache-toolkit_web_gui
 
         if which invoke-rc.d > /dev/null; then
             invoke-rc.d apache2 restart
