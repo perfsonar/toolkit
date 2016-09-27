@@ -1,10 +1,10 @@
-perfsonar-toolkit (4.0~5.rc1-1~bpo70+1) UNRELEASED; urgency=low
+perfsonar-toolkit (4.0~5.rc1-1~bpo70+1) perfsonar-wheezy-staging; urgency=low
 
   * Backport to Wheeezy.
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Wed, 21 Sep 2016 15:08:55 +0000
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 27 Sep 2016 10:50:35 +0000
 
-perfsonar-toolkit (4.0~5.rc1-1) UNRELEASED; urgency=low
+perfsonar-toolkit (4.0~5.rc1-1) perfsonar-jessie-staging; urgency=low
 
   * Adding dependencies: ssl-cert, ntp, libperfsonar-toolkit-perl,
     perfsonar-lsregistrationdaemon, perfsonar-toolkit-config-daemon
@@ -13,7 +13,7 @@ perfsonar-toolkit (4.0~5.rc1-1) UNRELEASED; urgency=low
   * Enabling apache ssl module.
   * Adding a lintian-overrides for incorrect JS library detection.
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Wed, 21 Sep 2016 15:05:07 +0000
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 27 Sep 2016 10:48:53 +0000
 
 perfsonar-toolkit (3.5.1.3-1) perfsonar-jessie-release; urgency=low
 
