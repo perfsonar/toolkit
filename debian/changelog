@@ -1,13 +1,15 @@
-perfsonar-toolkit (4.0~5.rc1-1~bpo70+1) perfsonar-wheezy-staging; urgency=low
+perfsonar-toolkit (4.0~5.rc1-2~bpo70+1) perfsonar-wheezy-staging; urgency=low
 
-  * Backport to Wheeezy.
+  * Backport to Wheezy.
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 27 Sep 2016 10:50:35 +0000
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 27 Sep 2016 10:48:53 +0000
 
-perfsonar-toolkit (4.0~5.rc1-1) perfsonar-jessie-staging; urgency=low
+perfsonar-toolkit (4.0~5.rc1-2) perfsonar-jessie-staging; urgency=low
 
   * Adding dependencies: ssl-cert, ntp, libperfsonar-toolkit-perl,
-    perfsonar-lsregistrationdaemon, perfsonar-toolkit-config-daemon
+    perfsonar-lsregistrationdaemon, perfsonar-toolkit-config-daemon,
+    perfsonar-core, perfsonar-lscachedaemon, perfsonar-traceroute-viewer,
+    perfsonar-meshconfig-jsonbuilder
   * Renaming configdaemon.pl to perfsonar-toolkit-config-daemon and improving
     startup script.
   * Enabling apache ssl module.
