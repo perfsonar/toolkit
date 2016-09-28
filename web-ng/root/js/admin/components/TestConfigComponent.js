@@ -932,6 +932,9 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var autotuning = $('#useAutotuningSwitch').prop('checked');
             settings.autotuning = autotuning;
 
+            var window_size = $('#windowSize').val();
+            settings.window_size = window_size;
+
             var tos_bits = $('#tosBits').val();
             settings.tos_bits = tos_bits;
 
@@ -941,8 +944,8 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var omit_interval = $('#omit_interval').val();
             settings.omit_interval = omit_interval;
 
-            var window_size = $('#windowSize').val();
-            settings.window_size = window_size;
+            var zero_copy  = $('#useZeroCopySwitch').prop('checked');
+            settings.zero_copy = zero_copy;
 
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
