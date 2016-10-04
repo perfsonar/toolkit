@@ -17,6 +17,14 @@ if [ -z "$(ls -A ${PG_DATADIR})" ]; then
     su -l postgres -c "${NEW_BINDIR}/initdb  --locale='C' --encoding='sql_ascii' --pgdata='${PG_DATADIR}' --auth='trust'"
 fi
 
+#fix update error in pg_hba.conf - can remove after 4.0rcs have been out for awhile
+if [ -f "${PG_DATADIR}/pg_hba.conf" ]; then
+    # Remove #BEGIN-xxx that got jammed up onto previous lines
+    sed -i -e 's/\(.\)\(#BEGIN-\)/\1\n\2/' "${PG_DATADIR}/pg_hba.conf"
+    # Remove stock pg_hba line that got jammed up on an #END
+    sed -i -e 's/#END-esmondlocal/#END-esmond\nlocal/g' "${PG_DATADIR}/pg_hba.conf"
+fi
+
 #make sure postgresql is running
 /sbin/service ${PG_SERVICE_NAME} status &> /dev/null
 if [ $? -ne 0 ]; then
