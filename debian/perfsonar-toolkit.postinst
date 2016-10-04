@@ -48,18 +48,15 @@ case "$1" in
         chown root:www-data /etc/perfsonar/toolkit/psadmin.htpasswd
 
         # apache setup
-        a2enmod rewrite
-        a2enmod proxy_http
-        a2enmod authnz_external
-        a2enmod authz_unixgroup
-        a2enmod ssl
-        a2ensite default-ssl
-        a2enconf apache-toolkit_web_gui
-
-        if which invoke-rc.d > /dev/null; then
-            invoke-rc.d apache2 restart
-        else
-            /etc/init.d/apache2 restart
+        if [ -e /usr/share/apache2/apache2-maintscript-helper ]; then
+            . /usr/share/apache2/apache2-maintscript-helper
+            apache2_invoke enmod rewrite
+            apache2_invoke enmod proxy_http
+            apache2_invoke enmod authnz_external
+            apache2_invoke enmod authz_unixgroup
+            apache2_invoke enmod ssl
+            apache2_invoke ensite default-ssl
+            apache2_invoke enconf apache-toolkit_web_gui
         fi
     ;;
 

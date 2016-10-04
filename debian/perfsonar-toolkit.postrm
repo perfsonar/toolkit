@@ -41,13 +41,6 @@ case "$1" in
         rm -rf /var/lib/perfsonar/log_view/owamp
 
         rm -f /etc/perfsonar/toolkit/psadmin.htpasswd
-
-        # reload apache
-        if which invoke-rc.d > /dev/null; then
-            invoke-rc.d apache2 reload
-        else
-            /etc/init.d/apache2 reload
-        fi
     ;;
 
     remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
