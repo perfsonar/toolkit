@@ -4,12 +4,13 @@ PG_BINDIR=/usr/pgsql-${PG_VERSION}/bin
 PG_DATADIR=/var/lib/pgsql/${PG_VERSION}/data
 PG_SERVICE_NAME="postgresql-${PG_VERSION}"
 
-#disable JMX in cassandra so will start even if /etc/sysconfig/network HOSTNAME does not resolve
-sed -i '/^JVM_OPTS="\$JVM_OPTS -Dcom.sun.management.jmx/ s/^/#/' /etc/cassandra/conf/cassandra-env.sh
-#fire-up cassandra
-/sbin/service cassandra restart 
+#fire-up cassandra if needed
+/sbin/service cassandra status &> /dev/null
 if [ $? -ne 0 ]; then
-    echo "Unable to start cassandra. Proceeding with rest of esmond configuration"
+    /sbin/service cassandra restart 
+    if [ $? -ne 0 ]; then
+        echo "Unable to start cassandra. Proceeding with rest of esmond configuration"
+    fi
 fi
 
 #init postgres - we shouldn't ever have to do this
@@ -36,12 +37,12 @@ if [ $? -ne 0 ]; then
 fi
 
 #create user if not exists or is an old user
-USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='esmond'" 2> /dev/null)
+USER_EXISTS=$(su -l postgres -c "psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='esmond'\"" 2> /dev/null)
 if [ $? -ne 0 ]; then
     echo "Unable to connect to postgresql to check user. Your esmond database may not be initialized"
     exit 1
 fi
-OLD_USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_authid WHERE rolpassword='md5' || md5('7hc4m1' || rolname)" 2> /dev/null)
+OLD_USER_EXISTS=$(su -l postgres -c "psql -tAc \"SELECT 1 FROM pg_authid WHERE rolpassword='md5' || md5('7hc4m1' || rolname)\"" 2> /dev/null)
 if [ $? -ne 0 ]; then
     echo "Unable to connect to postgresql to check for old users. Your esmond database may not be initialized"
     exit 1
@@ -49,11 +50,11 @@ fi
 if [ "$USER_EXISTS" != "1" ] || [ "$OLD_USER_EXISTS" == "1" ]; then
     DB_PASSWORD=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c32;echo;)
     if [ "$USER_EXISTS" == "1" ]; then
-        sudo -u postgres psql -c "ALTER ROLE esmond WITH PASSWORD '${DB_PASSWORD}'" &> /dev/null
+        su -l postgres -c "psql -c \"ALTER ROLE esmond WITH PASSWORD '${DB_PASSWORD}'\"" &> /dev/null
     else
-        sudo -u postgres psql -c "CREATE USER esmond WITH PASSWORD '${DB_PASSWORD}'" &> /dev/null
-        sudo -u postgres psql -c "CREATE DATABASE esmond" &> /dev/null
-        sudo -u postgres psql -c "GRANT ALL ON DATABASE esmond to esmond" &> /dev/null
+        su -l postgres -c "psql -c \"CREATE USER esmond WITH PASSWORD '${DB_PASSWORD}'\"" &> /dev/null
+        su -l postgres -c "psql -c \"CREATE DATABASE esmond\"" &> /dev/null
+        su -l postgres -c "psql -c \"GRANT ALL ON DATABASE esmond to esmond\"" &> /dev/null
     fi
     sed -i "s/sql_db_name = .*/sql_db_name = esmond/g" /etc/esmond/esmond.conf
     sed -i "s/sql_db_user = .*/sql_db_user = esmond/g" /etc/esmond/esmond.conf
