@@ -116,6 +116,20 @@ fi
 printf "[SUCCESS]"
 echo ""
 
+#get pscheduler if exists
+if [ -d "/etc/pscheduler" ]; then
+    printf "Backing-up pScheduler configuration..."
+    cp -a /etc/pscheduler $TEMP_BAK_DIR/etc
+    if [ "$?" != "0" ]; then
+        echo "Unable to copy /etc/pscheduler"
+        exit 1
+    fi
+    #don't copy over db passwords
+    rm -rf $TEMP_BAK_DIR/etc/pscheduler/database
+    printf "[SUCCESS]"
+    echo ""
+fi
+
 #get NTP config
 printf "Backing-up NTP configuration..."
 cp /etc/ntp.conf  $TEMP_BAK_DIR/etc/ntp.conf
