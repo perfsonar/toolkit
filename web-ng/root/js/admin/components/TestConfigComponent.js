@@ -60,14 +60,14 @@ TestConfigComponent.initialize = function() {
     Handlebars.registerHelper('hostname_or_ip', function(hostnames, ipv4_addresses, ipv6_addresses, options) {
         var ret = [];
         for(var a=0; a<ipv4_addresses.length; a+=1) {
-            if (hostnames[ipv4_addresses[a]]) {
+            if (typeof hostnames != "undefined" && hostnames[ipv4_addresses[a]]) {
                 ret = ret.concat(hostnames[ipv4_addresses[a]]);
             } else {
                 ret.push(ipv4_addresses[a]);
             }
         }
         for(var a=0; a<ipv6_addresses.length; a+=1) {
-            if (hostnames[ipv6_addresses[a]]) {
+            if (typeof hostnames != "undefined" && hostnames[ipv6_addresses[a]]) {
                 ret = ret.concat(hostnames[ipv6_addresses[a]]);
             } else {
                 ret.push(ipv6_addresses[a]);
@@ -932,6 +932,9 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var autotuning = $('#useAutotuningSwitch').prop('checked');
             settings.autotuning = autotuning;
 
+            var window_size = $('#windowSize').val();
+            settings.window_size = window_size;
+
             var tos_bits = $('#tosBits').val();
             settings.tos_bits = tos_bits;
 
@@ -941,8 +944,8 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var omit_interval = $('#omit_interval').val();
             settings.omit_interval = omit_interval;
 
-            var window_size = $('#windowSize').val();
-            settings.window_size = window_size;
+            var zero_copy  = $('#useZeroCopySwitch').prop('checked');
+            settings.zero_copy = zero_copy;
 
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
