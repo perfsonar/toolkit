@@ -22,9 +22,6 @@ case "$1" in
         if [ -e /usr/share/apache2/apache2-maintscript-helper ]; then
             . /usr/share/apache2/apache2-maintscript-helper
             apache2_invoke disconf apache-toolkit_web_gui
-            apache2_invoke dismod proxy_http
-            apache2_invoke dismod authnz_external
-            apache2_invoke dismod authz_unixgroup
         fi
     ;;
 
