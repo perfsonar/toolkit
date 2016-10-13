@@ -157,6 +157,18 @@ fi
 printf "[SUCCESS]"
 echo ""
 
+#get pscheduler if exists
+if [ -d "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/pscheduler" ]; then
+    printf "Restoring pScheduler configuration..."
+    cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/pscheduler/* /etc/pscheduler
+    if [ "$?" != "0" ]; then
+        echo "Unable to restore /etc/pscheduler"
+        exit 1
+    fi
+    printf "[SUCCESS]"
+    echo ""
+fi
+
 #get NTP config
 printf "Restoring NTP configuration..."
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/ntp.conf /etc/ntp.conf 
