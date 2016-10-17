@@ -613,6 +613,7 @@ fi
 %exclude %{config_base}/servicewatcher-logger.conf
 %exclude %{config_base}/templates/ntp_conf.tmpl
 %exclude %{config_base}/default_service_configs/pg_hba.conf
+%exclude %{config_base}/default_service_configs/pscheduler_limits.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web-ng/*
 /etc/httpd/conf.d/*
@@ -671,6 +672,7 @@ fi
 %files install
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
+%attr(0644,root,root) %{config_base}/default_service_configs/pscheduler_limits.conf
 
 %files sysctl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_sysctl
