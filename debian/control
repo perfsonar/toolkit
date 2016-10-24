@@ -16,7 +16,7 @@ Depends: libperfsonar-perl, apache2, ssl-cert,
  libsys-statistics-linux-perl, libperfsonar-sls-perl,
  perfsonar-toolkit-library, liblog-dispatch-filerotate-perl,
  libcgi-ajax-perl, libcgi-session-perl,
- perfsonar-common, chkconfig, cron-apt, ntp,
+ perfsonar-common, cron-apt, ntp,
  libperfsonar-toolkit-perl, perfsonar-lsregistrationdaemon,
  perfsonar-toolkit-config-daemon, perfsonar-core,
  perfsonar-lscachedaemon, perfsonar-traceroute-viewer,
@@ -45,7 +45,7 @@ Description: pS-Performance Toolkit sysctl configuration
 
 Package: perfsonar-toolkit-service-watcher
 Architecture: all
-Depends: perfsonar-toolkit-ntp, chkconfig, ${misc:Depends}
+Depends: perfsonar-toolkit-ntp, ${misc:Depends}
 Description: pS-Performance Toolkit service watcher
  Installs the service-watcher cron job.
 
