@@ -33,7 +33,7 @@ Description: pS-Performance Toolkit library
 
 Package: perfsonar-toolkit-security
 Architecture: all
-Depends: netfilter-persistent, fail2ban, ${misc:Depends}
+Depends: iptables-persistent, fail2ban, ${misc:Depends}
 Description: pS-Performance Toolkit firewall configuration
  Configures IPTables rules and installs fail2ban for perfSONAR Toolkit.
 
