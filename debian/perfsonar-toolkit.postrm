@@ -40,11 +40,15 @@ case "$1" in
 	rm -rf /var/lib/perfsonar/log_view/ndt        
 	rm -rf /var/lib/perfsonar/log_view/owamp
 
-        # reload apache
-        if which invoke-rc.d > /dev/null; then
-            invoke-rc.d apache2 reload
-        else
-            /etc/init.d/apache2 reload
+        # apache setup
+        if ! [ -e /usr/share/apache2/apache2-maintscript-helper ]; then
+            rm -f /etc/apache2/conf.d/apache-toolkit_web_gui.conf
+
+            if which invoke-rc.d > /dev/null; then
+                invoke-rc.d apache2 reload
+            else
+                /etc/init.d/apache2 reload
+            fi
         fi
     ;;
 
