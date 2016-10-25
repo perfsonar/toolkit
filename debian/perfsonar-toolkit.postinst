@@ -50,6 +50,8 @@ case "$1" in
         # apache setup
         if [ -e /usr/share/apache2/apache2-maintscript-helper ]; then
             . /usr/share/apache2/apache2-maintscript-helper
+
+            apache2_invoke enmod cgi
             apache2_invoke enmod rewrite
             apache2_invoke enmod proxy_http
             apache2_invoke enmod authnz_external
