@@ -21,6 +21,3 @@ export DH_OPTIONS
 	dh $@ 
 
 override_dh_auto_install:
-
-override_dh_install:
-	dh_install
