@@ -1,2 +1,2 @@
-Depends: @, curl
+Depends: perfsonar-toolkit, curl
 Tests: web
