@@ -57,8 +57,9 @@ TestConfigComponent.initialize = function() {
         return ret;
     });
 
-    Handlebars.registerHelper('hostname_or_ip', function(hostnames, ipv4_addresses, ipv6_addresses, options) {
-    // For one interface, which may have multiple ip's (and each ip may have multiple hostnames),
+    Handlebars.registerHelper('hostname_or_ip', function(ifname, hostnames, ipv4_addresses, ipv6_addresses, options) {
+    // Get all the hostnames (or ip's if no reverse DNS) for an interface. 
+    // (Each interface may have multiple ip's and each ip may have multiple hostnames)
     // hostnames[ip] = array of hostnames for that ip,  ipv4/6_addresses = array of all v4/v6 ip's. 
         var ret = [];
         for(var a=0; a<ipv4_addresses.length; a+=1) {
@@ -80,7 +81,14 @@ TestConfigComponent.initialize = function() {
             return arr.indexOf(el) === i;
         });
 
-        return deduped.join(", ");
+        var hostnames_string = deduped.join(", ");
+
+        // look for loopbacks and add a note about them
+        if ( ifname == "lo" || ifname.startsWith("lo:") ) {
+            hostnames_string += "  [note: loopbacks are not normally used in tests]";
+        }    
+
+        return hostnames_string;
     });
 
     // Hide subrows on load
