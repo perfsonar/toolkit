@@ -58,22 +58,29 @@ TestConfigComponent.initialize = function() {
     });
 
     Handlebars.registerHelper('hostname_or_ip', function(hostnames, ipv4_addresses, ipv6_addresses, options) {
+    // For one interface, which may have multiple ip's (and each ip may have multiple hostnames),
+    // hostnames[ip] = array of hostnames for that ip,  ipv4/6_addresses = array of all v4/v6 ip's. 
         var ret = [];
         for(var a=0; a<ipv4_addresses.length; a+=1) {
-            if (typeof hostnames != "undefined" && hostnames[ipv4_addresses[a]]) {
-                ret = ret.concat(hostnames[ipv4_addresses[a]]);
+            if (typeof hostnames != "undefined" && hostnames[ipv4_addresses[a]].length>0) {
+                ret = ret.concat(hostnames[ipv4_addresses[a]]); // join ret and array of hostnames
             } else {
-                ret.push(ipv4_addresses[a]);
+                ret.push(ipv4_addresses[a]); // append ip
             }
         }
         for(var a=0; a<ipv6_addresses.length; a+=1) {
-            if (typeof hostnames != "undefined" && hostnames[ipv6_addresses[a]]) {
+            if (typeof hostnames != "undefined" && hostnames[ipv6_addresses[a]].length>0) {
                 ret = ret.concat(hostnames[ipv6_addresses[a]]);
             } else {
                 ret.push(ipv6_addresses[a]);
             }
         }
-        return ret.join(", ");
+        // this removes duplicate hostnames and ip's
+        var deduped = ret.filter( function (el, i, arr) {
+            return arr.indexOf(el) === i;
+        });
+
+        return deduped.join(", ");
     });
 
     // Hide subrows on load
