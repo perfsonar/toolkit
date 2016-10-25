@@ -32,16 +32,16 @@ case "$1" in
         mkdir -p /var/log/perfsonar/web_admin
         chown www-data:perfsonar /var/log/perfsonar/web_admin
 
-	mkdir -p /var/lib/perfsonar/db_backups/bwctl
-	chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/bwctl
-	mkdir -p /var/lib/perfsonar/db_backups/owamp
-	chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/owamp
-	mkdir -p /var/lib/perfsonar/db_backups/traceroute
-	chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/traceroute
+        mkdir -p /var/lib/perfsonar/db_backups/bwctl
+        chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/bwctl
+        mkdir -p /var/lib/perfsonar/db_backups/owamp
+        chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/owamp
+        mkdir -p /var/lib/perfsonar/db_backups/traceroute
+        chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/traceroute
 
-	mkdir -p /var/lib/perfsonar/log_view/bwctl
-	mkdir -p /var/lib/perfsonar/log_view/ndt        
-	mkdir -p /var/lib/perfsonar/log_view/owamp
+        mkdir -p /var/lib/perfsonar/log_view/bwctl
+        mkdir -p /var/lib/perfsonar/log_view/ndt
+        mkdir -p /var/lib/perfsonar/log_view/owamp
 
         # apache setup
         if [ -e /usr/share/apache2/apache2-maintscript-helper ]; then

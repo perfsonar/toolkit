@@ -32,13 +32,13 @@ case "$1" in
         # directory setup
         rm -rf /var/log/perfsonar/web_admin
 
-	rm -rf /var/lib/perfsonar/db_backups/bwctl
-	rm -rf /var/lib/perfsonar/db_backups/owamp
-	rm -rf /var/lib/perfsonar/db_backups/traceroute
+        rm -rf /var/lib/perfsonar/db_backups/bwctl
+        rm -rf /var/lib/perfsonar/db_backups/owamp
+        rm -rf /var/lib/perfsonar/db_backups/traceroute
 
-	rm -rf /var/lib/perfsonar/log_view/bwctl
-	rm -rf /var/lib/perfsonar/log_view/ndt        
-	rm -rf /var/lib/perfsonar/log_view/owamp
+        rm -rf /var/lib/perfsonar/log_view/bwctl
+        rm -rf /var/lib/perfsonar/log_view/ndt
+        rm -rf /var/lib/perfsonar/log_view/owamp
 
         # apache setup
         if ! [ -e /usr/share/apache2/apache2-maintscript-helper ]; then
