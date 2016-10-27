@@ -40,6 +40,8 @@ case "$1" in
         rm -rf /var/lib/perfsonar/log_view/ndt
         rm -rf /var/lib/perfsonar/log_view/owamp
 
+        rm -f /etc/perfsonar/toolkit/psadmin.htpasswd
+
         # apache setup
         if ! [ -e /usr/share/apache2/apache2-maintscript-helper ]; then
             rm -f /etc/apache2/conf.d/apache-toolkit_web_gui.conf
