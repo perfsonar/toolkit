@@ -54,8 +54,6 @@ case "$1" in
             apache2_invoke enmod cgi
             apache2_invoke enmod rewrite
             apache2_invoke enmod proxy_http
-            apache2_invoke enmod authnz_external
-            apache2_invoke enmod authz_unixgroup
             apache2_invoke enmod ssl
             apache2_invoke ensite default-ssl
             apache2_invoke enconf apache-toolkit_web_gui
@@ -64,8 +62,6 @@ case "$1" in
             a2enmod cgi
             a2enmod rewrite
             a2enmod proxy_http
-            a2enmod authnz_external
-            a2enmod authz_unixgroup
             a2enmod ssl
             a2ensite default-ssl
 
