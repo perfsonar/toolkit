@@ -252,6 +252,13 @@
                 <div id="advThroughputDiv" class="advanced_params">
 
                     <div class="row">
+                        <div class="medium-3 columns" id="toolsContainer">
+                            <!-- add options programmatically in TestConfigComponent.js -->
+                            <label for="tools_selector">Tool(s), in order of preference</label>
+                            <select id="tools_selector" multiple="multiple" required>
+                            </select>
+                            <small class="error">At least one tool is required</small>
+                        </div>
                         <!-- for send_only and receive_only -->
                         <div class="medium-3 columns">
                             <label for="send_receive">Direction</label>
@@ -262,14 +269,9 @@
                             </select>
                         </div>
                         <div class="medium-3 columns">
-                            <label for="tosBits" class="space">TOS bits</label>
-                            <input type="text" id="tosBits" pattern="nonnegative_integer" value="{{parameters.tos_bits}}">
-                            <small class="error">Must be an integer of 0 or greater</small>
-                        </div>
-                        <div class="medium-3 columns">
                             <label for="useAutotuning" class="space">Use Autotuning</label>
                             <div class="switch round small">
-                                <input id="useAutotuningSwitch" type="checkbox" {{#unless showWindowSize}} checked{{/unless}}>
+                                <input id="useAutotuningSwitch" type="checkbox" {{#unless showWindowSize}}checked{{/unless}}>
                                 <label for="useAutotuningSwitch"></label>
                                 <span for="useAutotuningSwitch" class="switch_label">{{#if showWindowSize}}Disabled{{else}}Enabled{{/if}}</span>
                             </div>
@@ -291,12 +293,20 @@
                             <input type="text" id="omit_interval" value="{{parameters.omit_interval}}" pattern="nonnegative_integer" />
                             <small class="error">Must be an integer of 0 or greater</small>
                         </div>
-                        <div class="medium-6 columns" id="toolsContainer">
-                            <!-- add options programmatically in TestConfigComponent.js -->
-                            <label for="tools_selector">Tool(s), in order of preference</label>
-                            <select id="tools_selector" multiple="multiple" required>
-                            </select>
-                            <small class="error">At least one tool is required</small>
+                        <div class="medium-3 columns">
+                            <label for="zeroCopy_enabled" class="space">Use Zero Copy</label>
+                            <div id="zeroCopy_enabled" class="switch round small">
+                                <input  id="useZeroCopySwitch" type="checkbox" {{#if parameters.zero_copy}}checked{{/if}} />
+                                <label for="useZeroCopySwitch" class="space"> </label>
+                                <span id="ZeroCopyLabel" for="useZeroCopySwitch" class="switch_label">
+                                    {{#if parameters.zero_copy}}Enabled{{else}}Disabled{{/if}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="medium-3 columns">
+                            <label for="tosBits" class="space">TOS bits</label>
+                            <input type="text" id="tosBits" pattern="nonnegative_integer" value="{{parameters.tos_bits}}">
+                            <small class="error">Must be an integer of 0 or greater</small>
                         </div>
                     </div>  <!-- end row -->
 

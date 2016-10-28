@@ -17,7 +17,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.5.rc1 
+%define relnum  0.9.rc1 
 
 Name:			perfsonar-toolkit
 Version:		4.0
@@ -518,6 +518,7 @@ done
 # Clear out old references first to fix bug where these got repeated
 sed -i "/add_psadmin_user/d" /root/.bashrc
 sed -i "/add_pssudo_user/d" /root/.bashrc
+sed -i '/^if \[ -t 0 -a -t 1 -a -t 2 \];/,/^fi/d' /root/.bashrc 
 cat >> /root/.bashrc <<EOF
 if [ -t 0 -a -t 1 -a -t 2 ]; then
 # Run the add_psadmin_user script to ensure that a psadmin user has been created
@@ -613,6 +614,7 @@ fi
 %exclude %{config_base}/servicewatcher-logger.conf
 %exclude %{config_base}/templates/ntp_conf.tmpl
 %exclude %{config_base}/default_service_configs/pg_hba.conf
+%exclude %{config_base}/default_service_configs/pscheduler_limits.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web-ng/*
 /etc/httpd/conf.d/*
@@ -671,6 +673,7 @@ fi
 %files install
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
+%attr(0644,root,root) %{config_base}/default_service_configs/pscheduler_limits.conf
 
 %files sysctl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_sysctl
