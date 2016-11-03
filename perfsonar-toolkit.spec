@@ -17,7 +17,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.9.rc1 
+%define relnum  0.10.rc2 
 
 Name:			perfsonar-toolkit
 Version:		4.0
@@ -518,6 +518,7 @@ done
 # Clear out old references first to fix bug where these got repeated
 sed -i "/add_psadmin_user/d" /root/.bashrc
 sed -i "/add_pssudo_user/d" /root/.bashrc
+sed -i '/^if \[ -t 0 -a -t 1 -a -t 2 \];/,/^fi/d' /root/.bashrc 
 cat >> /root/.bashrc <<EOF
 if [ -t 0 -a -t 1 -a -t 2 ]; then
 # Run the add_psadmin_user script to ensure that a psadmin user has been created
