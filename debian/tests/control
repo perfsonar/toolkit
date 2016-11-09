@@ -1,2 +1,3 @@
-Depends: perfsonar-toolkit, curl
-Tests: web
+Tests: web, webauth, pssudo
+Depends: perfsonar-toolkit, curl, sudo
+Restrictions: needs-root

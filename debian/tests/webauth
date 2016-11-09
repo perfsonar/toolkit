@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+USERNAME=autopkgtest
+PASSWORD=autopass
+
+htpasswd -b /etc/perfsonar/toolkit/psadmin.htpasswd $USERNAME $PASSWORD
+
+curl -s -k https://localhost/toolkit/auth/ --basic --user $USERNAME:$PASSWORD \
+| grep -C 10  'perfSONAR Toolkit'
