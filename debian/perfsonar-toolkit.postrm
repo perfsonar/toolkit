@@ -22,9 +22,6 @@ set -e
 case "$1" in
     purge)
         # group setup
-        if getent group psadmin >/dev/null; then
-            delgroup psadmin
-        fi
         if getent group pssudo >/dev/null; then
             delgroup pssudo
         fi
