@@ -28,7 +28,7 @@
  
 --- a/scripts/system_environment/enable_auto_updates
 +++ b/scripts/system_environment/enable_auto_updates
-@@ -15,20 +15,5 @@
+@@ -15,20 +15,7 @@
  # Need to activate if new install or if they were previously running 3.3.2 or older
  if [[ "$1" == "new" || $MAJOR -lt 3 || ( $MAJOR -eq 3 && $MINOR -lt 4 ) ]]; then
      echo "Enabling Automatic Updates"
@@ -48,7 +48,9 @@
 -		\t\tstart \t\t 1 \
 -		\t\tstop \t\t 1 \
 -	\t</service>' /etc/perfsonar/toolkit/configdaemon.conf
-+    echo 'Unattended-Upgrade::Origins-Pattern:: "origin=perfSONAR";' > /etc/apt/apt.conf.d/60unattended-upgrades-perfsonar
++    echo 'APT::Periodic::Update-Package-Lists "1";' > /etc/apt/apt.conf.d/60unattended-upgrades-perfsonar
++    echo 'APT::Periodic::Unattended-Upgrade "1";' >> /etc/apt/apt.conf.d/60unattended-upgrades-perfsonar
++    echo 'Unattended-Upgrade::Origins-Pattern:: "origin=perfSONAR";' >> /etc/apt/apt.conf.d/60unattended-upgrades-perfsonar
  fi
 --- a/scripts/system_environment/enable_nscd
 +++ b/scripts/system_environment/enable_nscd
