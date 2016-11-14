@@ -48,7 +48,7 @@
 -		\t\tstart \t\t 1 \
 -		\t\tstop \t\t 1 \
 -	\t</service>' /etc/perfsonar/toolkit/configdaemon.conf
-+    echo "-q -q dist-upgrade" > /etc/cron-apt/action.d/5-upgrade
++    echo 'Unattended-Upgrade::Origins-Pattern:: "origin=perfSONAR";' > /etc/apt/apt.conf.d/60unattended-upgrades-perfsonar
  fi
 --- a/scripts/system_environment/enable_nscd
 +++ b/scripts/system_environment/enable_nscd
