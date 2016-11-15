@@ -144,7 +144,13 @@
 
     {{#compare type "loss"}}
         <i class="fa fa-arrow-right"></i>  {{formatValue loss_src_average "loss_src"}}<br />
-        <i class="fa fa-arrow-left"></i> {{formatValue loss_dst_average "loss_dst"}}                    
+        <i class="fa fa-arrow-left"></i> {{formatValue loss_dst_average "loss_dst"}}
+
+    {{/compare}}
+
+    {{#compare type "na"}}
+        <i class="fa fa-arrow-right"></i> n/a<br />
+        <i class="fa fa-arrow-left"></i> n/a
 
     {{/compare}}
 

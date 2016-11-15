@@ -169,17 +169,26 @@ TestResultsComponent._setTestData = function( ) {
 TestResultsComponent._setSingleTestData = function ( test, test_data, template ) {
     var source = test.source;
     var dest = test.destination;
-    var result = $.grep(test_data, function(e){ 
-        return ( (e.source_ip == source && e.destination_ip == dest) || ( e.source_ip == dest && e.destination_ip == source) );
+    console.log("source", source, "dest", dest);
+    console.log("_setSingleTestData test", test, "test_data", test_data);
+    var result = $.grep(test_data, function( single_test ){ 
+        return ( (single_test.source_ip == source && single_test.destination_ip == dest) || ( single_test.source_ip == dest && single_test.destination_ip == source) );
     });
+
+    var types = [ "throughput", "latency", "loss"  ];
 
     if (result.length == 0) {
         // not found
-        // there isn't much we can do in this case
+        // there isn't much we can do in this case, but we still need to hide the loading indicator
+        console.log("test result not found");
+        for(var i in types) {
+            $("tr#test_row_" + test.rowID).removeClass('no_data');
+            $("tr#test_row_" + test.rowID).addClass('data');
+        }
     } else if (result.length == 1) {
         // access the first (and only) element 
+        console.log("result", result);
         result = result[0];
-        var types = [ "throughput", "latency", "loss"  ];
         for(var i in types) {
             var type = types[i];
             result.type = type;
@@ -192,8 +201,26 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
     } else {
         // multiple items found
         // this shouldn't happen
-        //console.log("multiple test data found, this should not happen");
+        console.log("multiple test data found, this should not happen");
     }
+
+    // For rows where we didn't find any data, we still need to render a blank template
+    var empty = {
+        type: "na"
+    };
+    var empty_template = template( empty );
+
+    // Find all td.test-values cells
+    $("#testResultsTable tr.data td.test-values").filter( function() {
+        // If the td is empty, we know there's no data
+        if ( $(this).text().trim() == "" ) {
+            return true;
+        // If there is a holder for values but no values in that, we also consider it empty
+        } else if ( $(this).find( "div.test-values:empty" ).length > 0 ) {
+            return true;
+
+        }
+    }).html( empty_template );
 
 };
 
