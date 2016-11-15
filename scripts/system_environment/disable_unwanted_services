@@ -19,6 +19,7 @@ if [ "$1" == "new" ]; then
     disable_service avahi-daemon
     disable_service avahi-dnsconfd
     disable_service bluetooth
+    disable_service chronyd
     disable_service cpuspeed
     disable_service cups
     disable_service firstboot
