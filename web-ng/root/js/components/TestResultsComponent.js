@@ -165,30 +165,69 @@ TestResultsComponent._setTestData = function( ) {
 
 };
 
+// Helper function that reverses values
+TestResultsComponent._reverseValues = function( row ) {
+    var out = {};
+    for(var inKey in row) {
+        var key = inKey;
+        var val = row[inKey];
+
+        // replace source_field with destination_field and vice versa
+        var sourceRe = /^source_/;
+        var destRe = /^destination_/;
+        var sourceValRe = /^\w+_src_/;
+        var destValRe = /^\w+_dst_/;
+
+        if ( sourceRe.test( key ) ) {
+            key = key.replace(/^source_/, "destination_" );
+        } else if ( destRe.test( key ) ) {
+            key = key.replace(/^destination_/, "source_" );
+        } else if ( sourceValRe.test( key ) ) {
+            // replace test_src_value with test_dst_value and vice versa
+            key = key.replace(/_src_/, "_dst_" );
+        } else if ( destValRe.test( key ) ) {
+            key = key.replace(/_dst_/, "_src_" );
+        }
+        out[key] = val;
+
+    }
+    return out;
+
+}
+
 // Helper function that sets the stats data for ONE test
 TestResultsComponent._setSingleTestData = function ( test, test_data, template ) {
     var source = test.source;
     var dest = test.destination;
-    console.log("source", source, "dest", dest);
-    console.log("_setSingleTestData test", test, "test_data", test_data);
-    var result = $.grep(test_data, function( single_test ){ 
+    var results = $.grep(test_data, function( single_test ) {
         return ( (single_test.source_ip == source && single_test.destination_ip == dest) || ( single_test.source_ip == dest && single_test.destination_ip == source) );
     });
 
-    var types = [ "throughput", "latency", "loss"  ];
+    // Reverse source/dest for reverse direction results
+    for(var i in results) {
+        var row = results[i];
+        if ( row.source_ip == dest ) {
+            row = TestResultsComponent._reverseValues( row );
+            results[i] = row;
+        }
+    }
 
-    if (result.length == 0) {
+    var types = [ "throughput", "latency", "loss" ];
+    var directions = [ "src", "dst" ];
+
+    if (results.length == 0) {
         // not found
         // there isn't much we can do in this case, but we still need to hide the loading indicator
-        console.log("test result not found");
+        console.log("test results not found");
         for(var i in types) {
             $("tr#test_row_" + test.rowID).removeClass('no_data');
             $("tr#test_row_" + test.rowID).addClass('data');
         }
-    } else if (result.length == 1) {
+    }
+   /* 
+    else if (results.length == 1) {
         // access the first (and only) element 
-        console.log("result", result);
-        result = result[0];
+        var result = results[0];
         for(var i in types) {
             var type = types[i];
             result.type = type;
@@ -197,11 +236,67 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
             $("tr#test_row_" + test.rowID).removeClass('no_data');
             $("tr#test_row_" + test.rowID).addClass('data');
         }
-
-    } else {
+    }
+*/
+     else {
         // multiple items found
-        // this shouldn't happen
-        console.log("multiple test data found, this should not happen");
+        // we average them
+        console.log("multiple test data found!!!1!");
+        var values = {}; // to store ALL the values ( to later average )
+        for( var i in results ) {
+            var result = results[i];
+            KEY: for( var key in result ) {
+                var val = result[key];
+                //console.log("key", key, "val", val);
+                // If the key does not matche the form type_src_value (or dst),
+                // it's not a value we care about
+                var formatPattern = "^\\w+_(src|dst)_\\w+$";
+                var formatRe = new RegExp( formatPattern );
+                if ( !formatRe.test( key ) ) {
+                    //console.log("key does not match format: ", key);
+                    continue KEY;
+                } else {
+                    //console.log("key DOES match format: ", key);
+                }
+                if ( typeof val != "undefined" && val !== null ) {
+                    if ( ! ( key in values ) ) {
+                        values[key] = [];
+                    }
+                    values[key].push(val);
+                    console.log("added val", values);
+
+                }
+            }
+
+        }
+
+        // Display the results we found
+
+        var averages = {};
+        // calculate the average for each key and store the result in 'averages'
+        for(var key in values) {
+            var row = values[key];
+            var sum = 0;
+            for(var i in row) {
+                var val = row[i];
+                sum += val;
+            }
+            var count = row.length;
+            var avg = sum /count;
+            averages[key] = avg;
+            console.log("updated averages: ", averages);
+        }
+
+        for(var i in types) {
+            var type = types[i];
+            averages.type = type;
+            console.log("multiple result", averages);
+            var test_data_template = template(averages);
+            $("tr#test_row_" + test.rowID + " td.test-values." + type).html(test_data_template);
+            $("tr#test_row_" + test.rowID).removeClass('no_data');
+            $("tr#test_row_" + test.rowID).addClass('data');
+        }
+
     }
 
     // For rows where we didn't find any data, we still need to render a blank template
