@@ -1276,6 +1276,7 @@ span.timerange_holder {
   padding: .75em;
   border-radius: 4px;
   min-width: 95%;
+  font-size:95%;
 }
 
 .sidebar-popover.double {
@@ -1297,7 +1298,7 @@ span.timerange_holder {
   font-size: 1.2em;
   color: #fff;
   padding: 1em 0 .5em 0;
-}
+  clear: left;}
 
 .sidebar-popover__heading:first-of-type {
   /*padding-top: 0;*/
