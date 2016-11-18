@@ -197,6 +197,8 @@ TestResultsComponent._reverseValues = function( row ) {
 
 // Helper function that sets the stats data for ONE test
 TestResultsComponent._setSingleTestData = function ( test, test_data, template ) {
+    console.log("setting single test ...", test);
+    console.log("test_data ...", test_data);
     var source = test.source;
     var dest = test.destination;
     var results = $.grep(test_data, function( single_test ) {
@@ -223,30 +225,20 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
             $("tr#test_row_" + test.rowID).removeClass('no_data');
             $("tr#test_row_" + test.rowID).addClass('data');
         }
-    }
-   /* 
-    else if (results.length == 1) {
-        // access the first (and only) element 
-        var result = results[0];
-        for(var i in types) {
-            var type = types[i];
-            result.type = type;
-            var test_data_template = template(result);
-            $("tr#test_row_" + test.rowID + " td.test-values." + type).html(test_data_template);
-            $("tr#test_row_" + test.rowID).removeClass('no_data');
-            $("tr#test_row_" + test.rowID).addClass('data');
-        }
-    }
-*/
-     else {
-        // multiple items found
+    } else {
+        // one or more items found
         // we average them
-        console.log("multiple test data found!!!1!");
+        if ( results.length == 1 ) {
+            console.log("single test data found");
+        } else {
+            console.log("multiple test data found: " + results.length);
+        }
         var values = {}; // to store ALL the values ( to later average )
         for( var i in results ) {
             var result = results[i];
             KEY: for( var key in result ) {
                 var val = result[key];
+                var rowID = test.rowID;
                 //console.log("key", key, "val", val);
                 // If the key does not matche the form type_src_value (or dst),
                 // it's not a value we care about
@@ -259,10 +251,13 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
                     //console.log("key DOES match format: ", key);
                 }
                 if ( typeof val != "undefined" && val !== null ) {
+
                     if ( ! ( key in values ) ) {
-                        values[key] = [];
+                        values[key] = {};
                     }
-                    values[key].push(val);
+
+                    values[key][rowID] = val;
+                    //values[key].push(valObj);
                     console.log("added val", values);
 
                 }
@@ -277,11 +272,13 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
         for(var key in values) {
             var row = values[key];
             var sum = 0;
-            for(var i in row) {
-                var val = row[i];
-                sum += val;
-            }
-            var count = row.length;
+            //for(var i in row) {
+                for(var rowID in row ) {
+                    var val = row[rowID];
+                    sum += val;
+                }
+            //}
+            var count = Object.keys( row ).length;
             var avg = sum /count;
             averages[key] = avg;
             console.log("updated averages: ", averages);
