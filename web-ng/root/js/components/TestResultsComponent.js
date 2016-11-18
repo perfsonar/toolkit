@@ -197,8 +197,6 @@ TestResultsComponent._reverseValues = function( row ) {
 
 // Helper function that sets the stats data for ONE test
 TestResultsComponent._setSingleTestData = function ( test, test_data, template ) {
-    console.log("setting single test ...", test);
-    console.log("test_data ...", test_data);
     var source = test.source;
     var dest = test.destination;
     var results = $.grep(test_data, function( single_test ) {
@@ -220,46 +218,32 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
     if (results.length == 0) {
         // not found
         // there isn't much we can do in this case, but we still need to hide the loading indicator
-        console.log("test results not found");
         for(var i in types) {
             $("tr#test_row_" + test.rowID).removeClass('no_data');
             $("tr#test_row_" + test.rowID).addClass('data');
         }
     } else {
         // one or more items found
-        // we average them
-        if ( results.length == 1 ) {
-            console.log("single test data found");
-        } else {
-            console.log("multiple test data found: " + results.length);
-        }
+        // typically there will only be one value but we need to
+        // handle multiple values; we average them
         var values = {}; // to store ALL the values ( to later average )
         for( var i in results ) {
             var result = results[i];
             KEY: for( var key in result ) {
                 var val = result[key];
                 var rowID = test.rowID;
-                //console.log("key", key, "val", val);
                 // If the key does not matche the form type_src_value (or dst),
                 // it's not a value we care about
                 var formatPattern = "^\\w+_(src|dst)_\\w+$";
                 var formatRe = new RegExp( formatPattern );
                 if ( !formatRe.test( key ) ) {
-                    //console.log("key does not match format: ", key);
                     continue KEY;
-                } else {
-                    //console.log("key DOES match format: ", key);
                 }
                 if ( typeof val != "undefined" && val !== null ) {
-
                     if ( ! ( key in values ) ) {
                         values[key] = {};
                     }
-
                     values[key][rowID] = val;
-                    //values[key].push(valObj);
-                    console.log("added val", values);
-
                 }
             }
 
@@ -267,27 +251,23 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
 
         // Display the results we found
 
-        var averages = {};
         // calculate the average for each key and store the result in 'averages'
+        var averages = {};
         for(var key in values) {
             var row = values[key];
             var sum = 0;
-            //for(var i in row) {
-                for(var rowID in row ) {
-                    var val = row[rowID];
-                    sum += val;
-                }
-            //}
+            for(var rowID in row ) {
+                var val = row[rowID];
+                sum += val;
+            }
             var count = Object.keys( row ).length;
             var avg = sum /count;
             averages[key] = avg;
-            console.log("updated averages: ", averages);
         }
 
         for(var i in types) {
             var type = types[i];
             averages.type = type;
-            console.log("multiple result", averages);
             var test_data_template = template(averages);
             $("tr#test_row_" + test.rowID + " td.test-values." + type).html(test_data_template);
             $("tr#test_row_" + test.rowID).removeClass('no_data');
