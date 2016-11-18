@@ -1,7 +1,7 @@
  <div class="module test-results">
      <header class="module-header">
      <h2 class="module-header__title color-bg-accent">Test Results &nbsp; <span class="color-light" id="num_test_results_holder" style="display:none;">(<span id="num_test_results"></span> Results)</span></h2>
-         <a class="module-header__action" href="/toolkit/admin/tests.cgi">Configure tests &nbsp; <i class="fa fa-cog"></i></a>
+         <a class="module-header__action" href="/toolkit/auth/admin/tests.cgi">Configure tests &nbsp; <i class="fa fa-cog"></i></a>
      </header>
 </div>
 
@@ -144,7 +144,13 @@
 
     {{#compare type "loss"}}
         <i class="fa fa-arrow-right"></i>  {{formatValue loss_src_average "loss_src"}}<br />
-        <i class="fa fa-arrow-left"></i> {{formatValue loss_dst_average "loss_dst"}}                    
+        <i class="fa fa-arrow-left"></i> {{formatValue loss_dst_average "loss_dst"}}
+
+    {{/compare}}
+
+    {{#compare type "na"}}
+        <i class="fa fa-arrow-right"></i> n/a<br />
+        <i class="fa fa-arrow-left"></i> n/a
 
     {{/compare}}
 

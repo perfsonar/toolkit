@@ -60,7 +60,7 @@ TestStore.retrieveNeededTestAvgs = function(sources, destinations) {
             for (var e=0; e<TestStore.tests.length; e++) {
                 var existingSource = TestStore.tests[e].source_ip;
                 var existingDest = TestStore.tests[e].destination_ip;
-                if ( sources[i] == existingSource && destinations[i] == existingDest ) { 
+                if ( sources[i] == existingSource && destinations[i] == existingDest ) {
                     alreadyDone = 1;
                     break;
                 }
@@ -76,23 +76,8 @@ TestStore.retrieveNeededTestAvgs = function(sources, destinations) {
         destsToDo = destinations;
     }
 
-/* 
-    // Get/show test results in batches 
-    // (Be sure not to retrieveTests if there are no sources and destinations or it'll get ALL test results)
-    var batchSize = 10;  // no. of tests per batch
-    var batchSrcs = [];
-    var batchDests = [];
-    for (var i=0; i<sourcesToDo.length; i+=batchSize) {
-        batchSrcs = sourcesToDo.slice(i,i+batchSize);
-        batchDests = destsToDo.slice(i,i+batchSize);
-        TestStore._retrieveTests( batchSrcs, batchDests );
-        // (after each batch, TestStore.tests contains those test results merged with the previous results.)
-        batchSrcs = [];
-        batchDests = [];
-    }
-*/
-// all in one request (seems to be faster!)
-        TestStore._retrieveTests( sourcesToDo, destsToDo );
+    // retrieve, all in one request (seems to be faster!)
+    TestStore._retrieveTests( sourcesToDo, destsToDo );
 
 };
 
