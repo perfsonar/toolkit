@@ -25,6 +25,9 @@ if [ -z "$1" ]; then
     echo "Usage: $0 [-d|--data] <tgz-file>"
     echo "Missing path to tar file in options list"
     exit 1
+elif [ -e "$1" ]; then
+    echo "Backup file already exists: $1"
+    exit 1
 fi
 
 #Create temp directory
