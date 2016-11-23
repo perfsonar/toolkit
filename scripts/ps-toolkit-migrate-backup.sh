@@ -157,23 +157,27 @@ fi
 
 #backup databases
 if [ "$DATA" ]; then
-    printf "Backing-up cassandra data..."
-    if ! nodetool snapshot esmond -t esmond_snapshot &>/dev/null; then
-        echo "Unable to snapshot cassandra database"
-        exit 1
-    fi
-    for SNAPSHOT in /var/lib/cassandra/data/esmond/*/snapshots/esmond_snapshot; do
-        TABLE=${SNAPSHOT%/snapshots/*}
-        TABLE=${TABLE#*/esmond/}
-        mkdir $TEMP_BAK_DIR/cassandra_data/$TABLE
-        cp -a $SNAPSHOT $TEMP_BAK_DIR/cassandra_data/$TABLE/
-        if [ "$?" != "0" ]; then
-            echo "Unable to copy $TABLE snapshot"
+    if [ -d /var/lib/cassandra/data/esmond ]; then
+        printf "Backing-up cassandra data for esmond..."
+        nodetool clearsnapshot esmond -t esmond_snapshot &>/dev/null
+        if ! nodetool snapshot esmond -t esmond_snapshot &>/dev/null; then
+            echo "Unable to snapshot cassandra database"
             exit 1
         fi
-    done
-    printf "[SUCCESS]"
-    echo ""
+        for SNAPSHOT in /var/lib/cassandra/data/esmond/*/snapshots/esmond_snapshot; do
+            TABLE=${SNAPSHOT%/snapshots/*}
+            TABLE=${TABLE#*/esmond/}
+            mkdir $TEMP_BAK_DIR/cassandra_data/$TABLE
+            cp -a $SNAPSHOT $TEMP_BAK_DIR/cassandra_data/$TABLE/
+            if [ "$?" != "0" ]; then
+                echo "Unable to copy $TABLE snapshot"
+                exit 1
+            fi
+        done
+        nodetool clearsnapshot esmond -t esmond_snapshot &>/dev/null
+        printf "[SUCCESS]"
+        echo ""
+    fi
 
     printf "Backing-up postgresql data..."
     export PGUSER=$(sed -n -e 's/sql_db_user = //p' /etc/esmond/esmond.conf)

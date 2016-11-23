@@ -193,36 +193,38 @@ fi
 
 #restore databases
 if [ "$DATA" ]; then
-    printf "Restoring cassandra data..."
-    if ! /sbin/service cassandra stop &>/dev/null; then
-        echo "Unable to stop cassandra"
-        exit 1
-    fi
-
-    rm -f /var/lib/cassandra/commitlog/*.log /var/lib/cassandra/data/esmond/*/*.db
-    for table in $(ls $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data); do
-        cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data/$table/esmond_snapshot/* \
-              /var/lib/cassandra/data/esmond/$table/
-        if [ "$?" != "0" ]; then
-            echo "Unable to restore /var/lib/cassandra/data/esmond/$table"
+    if [ -d /var/lib/cassandra/data/esmond ]; then
+        printf "Restoring cassandra data for esmond..."
+        if ! /sbin/service cassandra stop &>/dev/null; then
+            echo "Unable to stop cassandra"
             exit 1
         fi
-    done
 
-    if ! /sbin/service cassandra start &>/dev/null; then
-        echo "Unable to start cassandra"
-        exit 1
+        rm -f /var/lib/cassandra/commitlog/*.log /var/lib/cassandra/data/esmond/*/*.db
+        for table in $(ls $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data); do
+            cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data/$table/esmond_snapshot/* \
+                  /var/lib/cassandra/data/esmond/$table/
+            if [ "$?" != "0" ]; then
+                echo "Unable to restore /var/lib/cassandra/data/esmond/$table"
+                exit 1
+            fi
+        done
+
+        if ! /sbin/service cassandra start &>/dev/null; then
+            echo "Unable to start cassandra"
+            exit 1
+        fi
+        for i in {1..10}; do
+            nodetool status &>/dev/null && break
+            sleep 1
+        done
+        if ! nodetool repair &>/dev/null; then
+            echo "Unable to repair cassandra"
+            exit 1
+        fi
+        printf "[SUCCESS]"
+        echo ""
     fi
-    for i in {1..10}; do
-        nodetool status &>/dev/null && break
-        sleep 1
-    done
-    if ! nodetool repair &>/dev/null; then
-        echo "Unable to repair cassandra"
-        exit 1
-    fi
-    printf "[SUCCESS]"
-    echo ""
 
     printf "Restoring postgresql data..."
     export PGUSER=$(sed -n -e 's/sql_db_user = //p' /etc/esmond/esmond.conf)
