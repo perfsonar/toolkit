@@ -226,7 +226,7 @@ if [ "$DATA" ]; then
         echo ""
     fi
 
-    printf "Restoring postgresql data..."
+    printf "Restoring postgresql data for esmond..."
     export PGUSER=$(sed -n -e 's/sql_db_user = //p' /etc/esmond/esmond.conf)
     export PGPASSWORD=$(sed -n -e 's/sql_db_password = //p' /etc/esmond/esmond.conf)
     export PGDATABASE=$(sed -n -e 's/sql_db_name = //p' /etc/esmond/esmond.conf)
@@ -235,6 +235,20 @@ if [ "$DATA" ]; then
         echo "Unable to restore esmond database"
         exit 1
     fi
+    unset PGUSER PGPASSWORD PGDATABASE
+    printf "[SUCCESS]"
+    echo ""
+
+    printf "Restoring postgresql data for pscheduler..."
+    export PGUSER=$(sed -n -e 's/.*user=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    export PGPASSWORD=$(sed -n -e 's/.*password=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    export PGDATABASE=$(sed -n -e 's/.*dbname=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    psql --no-password < $TEMP_RST_DIR/$TEMP_BAK_NAME/postgresql_data/pscheduler.dump &>/dev/null
+    if [ "$?" != "0" ]; then
+        echo "Unable to restore pscheduler database"
+        exit 1
+    fi
+    unset PGUSER PGPASSWORD PGDATABASE
     printf "[SUCCESS]"
     echo ""
 fi

@@ -179,15 +179,32 @@ if [ "$DATA" ]; then
         echo ""
     fi
 
-    printf "Backing-up postgresql data..."
+    PG_DUMP=pg_dump
+    [ -x /usr/pgsql-9.5/bin/pg_dump ] && PG_DUMP=/usr/pgsql-9.5/bin/pg_dump
+
+    printf "Backing-up postgresql data for esmond..."
     export PGUSER=$(sed -n -e 's/sql_db_user = //p' /etc/esmond/esmond.conf)
     export PGPASSWORD=$(sed -n -e 's/sql_db_password = //p' /etc/esmond/esmond.conf)
     export PGDATABASE=$(sed -n -e 's/sql_db_name = //p' /etc/esmond/esmond.conf)
-    pg_dump --no-password > $TEMP_BAK_DIR/postgresql_data/esmond.dump 2>/dev/null
+    $PG_DUMP --no-password > $TEMP_BAK_DIR/postgresql_data/esmond.dump 2>/dev/null
     if [ "$?" != "0" ]; then
         echo "Unable to dump esmond database"
         exit 1
     fi
+    unset PGUSER PGPASSWORD PGDATABASE
+    printf "[SUCCESS]"
+    echo ""
+
+    printf "Backing-up postgresql data for pscheduler..."
+    export PGUSER=$(sed -n -e 's/.*user=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    export PGPASSWORD=$(sed -n -e 's/.*password=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    export PGDATABASE=$(sed -n -e 's/.*dbname=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    $PG_DUMP --no-password > $TEMP_BAK_DIR/postgresql_data/pscheduler.dump 2>/dev/null
+    if [ "$?" != "0" ]; then
+        echo "Unable to dump pscheduler database"
+        exit 1
+    fi
+    unset PGUSER PGPASSWORD PGDATABASE
     printf "[SUCCESS]"
     echo ""
 fi
