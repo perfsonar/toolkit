@@ -36,7 +36,7 @@ done
 
 #Check options
 if [ -z "$1" ]; then
-    echo "Usage: $0 <tgz-file>"
+    echo "Usage: $0 [-d|--data] <tgz-file>"
     echo "Missing path to tar file in options list"
     exit 1
 fi
