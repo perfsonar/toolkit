@@ -32,7 +32,7 @@ fi
 
 #Create temp directory
 rm -rf $TEMP_BAK_DIR
-mkdir $TEMP_BAK_DIR
+mkdir -m 700 $TEMP_BAK_DIR
 if [ "$?" != "0" ]; then
     echo "Unable to create temp directory"
     exit 1

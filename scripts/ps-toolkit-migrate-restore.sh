@@ -43,7 +43,7 @@ fi
 
 #Create temp directory
 rm -rf $TEMP_RST_DIR
-mkdir $TEMP_RST_DIR
+mkdir -m 700 $TEMP_RST_DIR
 if [ "$?" != "0" ]; then
     echo "Unable to create temp directory"
     exit 1
