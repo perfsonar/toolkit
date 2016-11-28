@@ -42,7 +42,7 @@ Depends: ${misc:Depends}
 Description: perfSONAR Toolkit sysctl configuration
  Configures sysctl settings for perfSONAR Toolkit.
 
-Package: perfsonar-toolkit-service-watcher
+Package: perfsonar-toolkit-servicewatcher
 Architecture: all
 Depends: perfsonar-toolkit-ntp, ${misc:Depends}
 Description: perfSONAR Toolkit service watcher
