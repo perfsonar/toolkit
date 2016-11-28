@@ -5,3 +5,7 @@ Restrictions: needs-root
 Tests: config-daemon
 Depends: perfsonar-toolkit-config-daemon
 Restrictions: needs-root
+
+Tests: servicewatcher
+Depends: perfsonar-toolkit-servicewatcher
+Restrictions: needs-root
