@@ -44,7 +44,8 @@ Description: perfSONAR Toolkit sysctl configuration
 
 Package: perfsonar-toolkit-servicewatcher
 Architecture: all
-Depends: perfsonar-toolkit-ntp, ${misc:Depends}
+Depends: libperfsonar-toolkit-perl, perfsonar-common,
+ ${misc:Depends}
 Description: perfSONAR Toolkit service watcher
  Installs the service-watcher cron job.
 
