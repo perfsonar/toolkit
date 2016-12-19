@@ -9,3 +9,7 @@ Restrictions: needs-root
 Tests: servicewatcher
 Depends: perfsonar-toolkit-servicewatcher
 Restrictions: needs-root
+
+Tests: ntp
+Depends: perfsonar-toolkit-ntp
+Restrictions: needs-root

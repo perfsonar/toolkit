@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+/usr/lib/perfsonar/scripts/configure_ntpd
+/usr/lib/perfsonar/scripts/autoselect_ntp_servers
+
+grep -A 10 'at least 4 NTP servers' /etc/ntp.conf
