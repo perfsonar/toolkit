@@ -51,7 +51,8 @@ Description: perfSONAR Toolkit service watcher
 
 Package: perfsonar-toolkit-ntp
 Architecture: all
-Depends: ntp, perfsonar-toolkit-library, ${misc:Depends}
+Depends: ntp, perfsonar-toolkit-library,
+ libperfsonar-toolkit-perl, ${misc:Depends}
 Description: perfSONAR Toolkit ntp configuration
  Configures ntp servers for perfSONAR Toolkit.
 
