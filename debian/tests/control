@@ -17,3 +17,7 @@ Restrictions: needs-root
 Tests: security
 Depends: perfsonar-toolkit-security
 Restrictions: needs-root
+
+Tests: sysctl
+Depends: perfsonar-toolkit-sysctl
+Restrictions: needs-root

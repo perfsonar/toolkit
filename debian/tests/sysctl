@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set -e
+
+BACKLOG=$(cat /proc/sys/net/core/netdev_max_backlog)
+echo "netdev_max_backlog=$BACKLOG"
+[ "$BACKLOG" -eq 30000 ] || exit 1
