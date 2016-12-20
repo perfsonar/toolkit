@@ -13,3 +13,7 @@ Restrictions: needs-root
 Tests: ntp
 Depends: perfsonar-toolkit-ntp
 Restrictions: needs-root
+
+Tests: security
+Depends: perfsonar-toolkit-security
+Restrictions: needs-root
