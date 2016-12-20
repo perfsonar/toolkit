@@ -21,7 +21,9 @@ set -e
 case "$1" in
     configure)
         # load sysctl settings
-        if [ -x "/etc/init.d/procps" ]; then
+        if [ -x /lib/systemd/systemd-sysctl ]; then
+            /lib/systemd/systemd-sysctl perfsonar-toolkit-sysctl.conf
+        elif [ -x /etc/init.d/procps ]; then
             invoke-rc.d procps start
         fi
     ;;
