@@ -27,11 +27,14 @@ net.core.rmem_max = 67108864
 net.core.wmem_max = 67108864
 net.ipv4.tcp_rmem = 4096 87380 33554432
 net.ipv4.tcp_wmem = 4096 87380 33554432
-net.core.netdev_max_backlog = 30000
+# this no longer is needed in CentOS7/Debian 8
+#net.core.netdev_max_backlog = 30000
 net.ipv4.tcp_no_metrics_save = 1
 net.ipv4.tcp_congestion_control = htcp
 net.ipv4.conf.all.arp_ignore=1
 net.ipv4.conf.all.arp_announce=2
 net.ipv4.conf.default.arp_filter=1
 net.ipv4.conf.all.arp_filter=1
+# this helps a lot in CentOS7/Debian 8, and is needed required to kernel level pacing
+net.core.default_qdisc = fq
 EOF
