@@ -1,4 +1,4 @@
-debian-config-daemon
+debian-config-daemon.diff
 debian-security.diff
 debian-ntp.diff
 debian-toolkit.diff
