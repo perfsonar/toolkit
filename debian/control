@@ -63,3 +63,9 @@ Depends: perfsonar-toolkit-library, perfsonar-common,
  liblog-dispatch-filerotate-perl, ${misc:Depends}
 Description: perfSONAR Toolkit configuration daemon
  Manages configuration file and services for perfSONAR Toolkit.
+
+Package: perfsonar-toolkit-install
+Architecture: all
+Depends: perfsonar-toolkit-library
+Description: perfSONAR Toolkit core scripts
+ Contains Toolkit installation scripts.
