@@ -1,0 +1,41 @@
+--- a/scripts/nptoolkit-configure.py
++++ b/scripts/nptoolkit-configure.py
+@@ -83,23 +83,23 @@
+ def initialize():
+ 
+     known_items = [
+-                    {
+-                         "description": "Configure drive to hold data/customizations",
+-                         "command": "/usr/lib/perfsonar/scripts/create_backing_store",
+-                         "isConfiguredFunction": storeConfigured,
+-                         "required": True,
+-                         "requiresReboot": True,
+-                    },
+-                    {
+-                         "description": "Configure Networking",
+-                         "command": "/usr/sbin/system-config-network-tui",
+-                         "isConfiguredFunction": None,
+-                         "required": False,
+-                         "requiresReboot": True,
+-                    },
++#                    {
++#                         "description": "Configure drive to hold data/customizations",
++#                         "command": "/usr/lib/perfsonar/scripts/create_backing_store",
++#                         "isConfiguredFunction": storeConfigured,
++#                         "required": True,
++#                         "requiresReboot": True,
++#                    },
++#                    {
++#                         "description": "Configure Networking",
++#                         "command": "/usr/sbin/system-config-network-tui",
++#                         "isConfiguredFunction": None,
++#                         "required": False,
++#                         "requiresReboot": True,
++#                    },
+                     {
+                          "description": "Change Timezone",
+-                         "command": "/usr/bin/tzselect",
++                         "command": "/usr/sbin/dpkg-reconfigure tzdata",
+                          "isConfiguredFunction": None,
+                          "required": False,
+                          "requiresReboot": True,
