@@ -1,7 +1,7 @@
 web-ng usr/lib/perfsonar
 etc/administrative_info etc/perfsonar/toolkit
 etc/clean_esmond_db.conf etc/perfsonar/toolkit
-etc/default_service_configs etc/perfsonar/toolkit
+etc/default_service_configs/jail.local etc/perfsonar/toolkit/default_service_configs/
 etc/perfsonar_sudo etc/sudoers.d
 scripts/apache-toolkit_web_gui.conf etc/apache2/conf-available/
 scripts/add_psadmin_user usr/lib/perfsonar/scripts/
