@@ -39,3 +39,12 @@
                           "isConfiguredFunction": None,
                           "required": False,
                           "requiresReboot": True,
+@@ -130,7 +130,7 @@
+ 
+     for item in known_items:
+         # Skip the item if it's associated command isn't available.
+-        if (not os.path.exists(item["command"])):
++        if (not os.path.exists(item["command"].split(" ")[0])):
+             continue
+ 
+         item = toolkitItem(item["description"], item["command"], item["isConfiguredFunction"], item["required"], item["requiresReboot"])
