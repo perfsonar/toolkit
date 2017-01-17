@@ -66,6 +66,6 @@ Description: perfSONAR Toolkit configuration daemon
 
 Package: perfsonar-toolkit-install
 Architecture: all
-Depends: perfsonar-toolkit-library
+Depends: perfsonar-toolkit-library, python-apt
 Description: perfSONAR Toolkit core scripts
  Contains Toolkit installation scripts.
