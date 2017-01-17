@@ -20,12 +20,7 @@
          item = toolkitItem(item["description"], item["command"], item["isConfiguredFunction"], item["required"], item["requiresReboot"])
 --- a/scripts/install-optional-packages.py
 +++ b/scripts/install-optional-packages.py
-@@ -1,4 +1,3 @@
--#!/usr/bin/python
- #
- # This script should be called after installing the testpoint bundle.
- #
-@@ -12,7 +11,7 @@
+@@ -12,7 +12,7 @@
  
  sys.path.append(libdir)
  
@@ -34,7 +29,7 @@
  import Internet2Lib
  import Internet2Consts
  
-@@ -23,47 +22,49 @@
+@@ -23,47 +23,49 @@
      'perfsonar-toolkit-sysctl'
  ]
  
