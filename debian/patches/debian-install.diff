@@ -1,37 +1,7 @@
 --- a/scripts/nptoolkit-configure.py
 +++ b/scripts/nptoolkit-configure.py
-@@ -83,23 +83,23 @@
- def initialize():
- 
-     known_items = [
--                    {
--                         "description": "Configure drive to hold data/customizations",
--                         "command": "/usr/lib/perfsonar/scripts/create_backing_store",
--                         "isConfiguredFunction": storeConfigured,
--                         "required": True,
--                         "requiresReboot": True,
--                    },
--                    {
--                         "description": "Configure Networking",
--                         "command": "/usr/sbin/system-config-network-tui",
--                         "isConfiguredFunction": None,
--                         "required": False,
--                         "requiresReboot": True,
--                    },
-+#                    {
-+#                         "description": "Configure drive to hold data/customizations",
-+#                         "command": "/usr/lib/perfsonar/scripts/create_backing_store",
-+#                         "isConfiguredFunction": storeConfigured,
-+#                         "required": True,
-+#                         "requiresReboot": True,
-+#                    },
-+#                    {
-+#                         "description": "Configure Networking",
-+#                         "command": "/usr/sbin/system-config-network-tui",
-+#                         "isConfiguredFunction": None,
-+#                         "required": False,
-+#                         "requiresReboot": True,
-+#                    },
+@@ -99,7 +99,7 @@
+                     },
                      {
                           "description": "Change Timezone",
 -                         "command": "/usr/bin/tzselect",
@@ -48,3 +18,84 @@
              continue
  
          item = toolkitItem(item["description"], item["command"], item["isConfiguredFunction"], item["required"], item["requiresReboot"])
+--- a/scripts/install-optional-packages.py
++++ b/scripts/install-optional-packages.py
+@@ -1,4 +1,3 @@
+-#!/usr/bin/python
+ #
+ # This script should be called after installing the testpoint bundle.
+ #
+@@ -12,7 +11,7 @@
+ 
+ sys.path.append(libdir)
+ 
+-import yum
++import apt
+ import Internet2Lib
+ import Internet2Consts
+ 
+@@ -23,47 +22,49 @@
+     'perfsonar-toolkit-sysctl'
+ ]
+ 
+-def installPackages(yumHandle, packageNames):
++def installPackages(apt_cache, packageNames):
+     userChoice=[]
+     for package in packageNames:
+         print "\nWould you like to install "+package+"?"
+         choice = raw_input("\nEnter y|N: ")
+         if(choice == 'y' or choice == 'Y'):
+             userChoice.append(package)
+-    
++
+     for package in userChoice:
+         print "Installing "+package
+-        try:
+-            yumHandle.install(name=package)
+-        except yum.Errors.InstallError, err:
+-            print "Error installing package"+str(err)
++        apt_cache[package].mark_install()
+ 
+     if userChoice:
+-        yumHandle.resolveDeps()
+-        yumHandle.processTransaction()
++        try:
++            apt_cache.commit()
++        except Exception, err:
++            print "Error installing package: "+str(err)
++
+         print "\n Installed the following packages: \n"
+         for package in userChoice:
+             print package
+ 
+-def findInstalledPackages(yumHandle, packageNames):
++def findInstalledPackages(apt_cache, packageNames):
+     toInstall = []
+     for package in packageNames:
+-        if not yumHandle.rpmdb.searchNevra(name=package):
++        if not apt_cache[package].is_installed:
+             toInstall.append(package)
+             print package
+     return toInstall
+-    
+-###MAIN 
+-yHandle = yum.YumBase();
++
++###MAIN
+ if not Internet2Lib.isRoot():
+     print Internet2Consts.YELLOW + "You must run the perfSONAR install-optional-packages script as root." + Internet2Consts.NORMAL
+     sys.exit(1)
+ 
++apt_cache = apt.cache.Cache()
++apt_cache.update()
++
+ #find what packages need to be installed
+-packagesToInstall = findInstalledPackages(yHandle, optionalPackages)
++packagesToInstall = findInstalledPackages(apt_cache, optionalPackages)
+ 
+ if packagesToInstall:
+-    installPackages(yHandle, packagesToInstall)
++    installPackages(apt_cache, packagesToInstall)
+ else:
+     print "All optional packages have been installed \n"
+     for package in optionalPackages:
