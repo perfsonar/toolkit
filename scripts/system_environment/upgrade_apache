@@ -1,9 +1,0 @@
-#!/bin/bash
-
-#######################
-# Upgrade apache from the previous version (e.g. to make sure 'psadmin' stuff
-# is in there and whatnot.
-#######################
-if [ "$1" == "upgrade" ]; then
-    /usr/lib/perfsonar/scripts/upgrade/upgrade_apache_admin
-fi
