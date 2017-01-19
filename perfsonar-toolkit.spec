@@ -409,10 +409,7 @@ mkdir -p /var/lib/perfsonar/log_view/bwctl
 mkdir -p /var/lib/perfsonar/log_view/ndt	
 mkdir -p /var/lib/perfsonar/log_view/owamp
 
-#Make sure root is in the wheel group for fresh install. If upgrade, keep user settings
 if [ $1 -eq 1 ] ; then
-    /usr/sbin/usermod -a -Gwheel root
-    
     #3.5.1 fixes
     #make sure web_admin.conf points to the right lscache directory
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web-ng/etc/web_admin.conf
@@ -656,7 +653,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade/*
 
 %files systemenv
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*

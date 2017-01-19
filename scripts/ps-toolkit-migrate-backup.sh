@@ -78,17 +78,6 @@ else
     echo ""
 fi
 
-printf "Backing up administrative users..."
-awk -F: '($1 == "wheel") {print $4}' /etc/group | sed s"/,/ /g" > $TEMP_BAK_DIR/etc/wheel_users
-if [ "$?" != "0" ]; then
-    printf "[SUCCESS]"
-    echo ""
-    echo " - Note: No user administrators found to be migrated."
-else
-    printf "[SUCCESS]"
-    echo ""
-fi
-
 #get perfsonar files
 printf "Backing-up toolkit configuration..."
 cp -a /etc/perfsonar $TEMP_BAK_DIR/etc

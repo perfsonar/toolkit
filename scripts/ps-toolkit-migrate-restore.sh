@@ -100,31 +100,6 @@ else
     fi
     printf "[SUCCESS]"
     echo ""
-
-    #restore administrator users
-    printf "Restoring administrative users..."
-    ADMIN_USER_ERROR=""
-    if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/wheel_users" ]; then
-        ADMIN_USERS=`cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/wheel_users`
-        if [ -n "$ADMIN_USERS" ]; then
-            ADMIN_USERS_ARR=($ADMIN_USERS)
-            for admin_user in "${ADMIN_USERS_ARR[@]}"
-            do
-                /usr/sbin/usermod -a -Gwheel $admin_user
-                if [ "$?" != "0" ]; then
-                    ADMIN_USER_ERROR="${ADMIN_USER_ERROR}Unable to add user $admin_user to wheel. "
-                fi
-            done
-        fi
-    fi
-    if [ -z "$ADMIN_USER_ERROR" ]; then
-        printf "[SUCCESS]"
-        echo ""
-    else
-        printf "[WARN]"
-        echo ""
-        echo " - $ADMIN_USER_ERROR"
-    fi
 fi
 
 #get administrative info
