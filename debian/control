@@ -38,7 +38,7 @@ Description: perfSONAR Toolkit firewall configuration
 
 Package: perfsonar-toolkit-sysctl
 Architecture: all
-Depends: ${misc:Depends}
+Depends: libperfsonar-perl, ${misc:Depends}
 Description: perfSONAR Toolkit sysctl configuration
  Configures sysctl settings for perfSONAR Toolkit.
 
