@@ -1,1 +1,1 @@
-debian/perfsonar-toolkit-sysctl.conf etc/sysctl.d
+scripts/configure_sysctl usr/lib/perfsonar/scripts

@@ -1,0 +1,20 @@
+--- a/scripts/configure_sysctl
++++ b/scripts/configure_sysctl
+@@ -70,7 +70,6 @@
+             #set if centos 6 and 10Gbps or higher
+             $default_sysctl_settings{'net.core.netdev_max_backlog'} = 250000 if($max_speed >= 10000000000);
+         }
+-        
+     }elsif($os_info->{'distribution_name'} =~ /^Debian/){
+         #debian
+         if($os_info->{'distribution_version'} =~ /^8/){
+@@ -81,7 +80,8 @@
+ }
+ 
+ #output params
+-open(my $SYSCTL, ">>", "/etc/sysctl.conf") or die "Unable to open /etc/sysctl.conf: $!";
++my $SYSCTL_CONF = "/etc/sysctl.d/perfsonar-toolkit-sysctl.conf";
++open(my $SYSCTL, ">", $SYSCTL_CONF) or die "Unable to open $SYSCTL_CONF: $!";
+ print $SYSCTL "####################################\n";
+ print $SYSCTL "#Default perfSONAR sysctl settings\n";
+ print $SYSCTL "####################################\n";
