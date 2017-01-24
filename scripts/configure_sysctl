@@ -81,7 +81,7 @@ if($os_info->{'distribution_name'} && $os_info->{'distribution_version'}){
 }
 
 #output params
-open(my $SYSCTL, ">>", "/tmp/sysctl.conf") or die "Unable to open /etc/sysctl.conf: $!";
+open(my $SYSCTL, ">>", "/etc/sysctl.conf") or die "Unable to open /etc/sysctl.conf: $!";
 print $SYSCTL "####################################\n";
 print $SYSCTL "#Default perfSONAR sysctl settings\n";
 print $SYSCTL "####################################\n";
