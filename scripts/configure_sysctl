@@ -1,40 +1,90 @@
-#!/bin/bash
+#!/usr/bin/perl
 
-COMMAND=$1
+use FindBin qw($RealBin);
+use lib "$RealBin/../lib";
 
-if [ "${COMMAND}" != "new" ]; then
-    exit 0
-fi
+use perfSONAR_PS::Utils::Host qw( get_operating_system_info get_ethernet_interfaces get_interface_speed get_interface_mtu);
 
-cat >> /etc/sysctl.conf <<EOF
-####################################
-# Default perfSONAR sysctl settings
-####################################
-# net.core.rmem_max = 67108864
-# net.core.wmem_max = 67108864
-# net.ipv4.tcp_rmem = 4096 87380 33554432
-# net.ipv4.tcp_wmem = 4096 87380 33554432
-# net.core.netdev_max_backlog = 30000
-# net.ipv4.tcp_no_metrics_save = 1
-# net.ipv4.tcp_congestion_control = htcp
-# net.ipv4.conf.all.arp_ignore=1
-# net.ipv4.conf.all.arp_announce=2
-# net.ipv4.conf.default.arp_filter=1
-# net.ipv4.conf.all.arp_filter=1
-####################################
+#only run this on new installs
+if($ARGV[0] ne "new"){
+    exit 0;
+}
 
-net.core.rmem_max = 67108864
-net.core.wmem_max = 67108864
-net.ipv4.tcp_rmem = 4096 87380 33554432
-net.ipv4.tcp_wmem = 4096 87380 33554432
-# this no longer is needed in CentOS7/Debian 8
-#net.core.netdev_max_backlog = 30000
-net.ipv4.tcp_no_metrics_save = 1
-net.ipv4.tcp_congestion_control = htcp
-net.ipv4.conf.all.arp_ignore=1
-net.ipv4.conf.all.arp_announce=2
-net.ipv4.conf.default.arp_filter=1
-net.ipv4.conf.all.arp_filter=1
-# this helps a lot in CentOS7/Debian 8, and is needed required to kernel level pacing
-net.core.default_qdisc = fq
-EOF
+#default settings
+my %default_sysctl_settings = (
+    'net.core.rmem_max' => 67108864,
+    'net.core.wmem_max' => 67108864,
+    'net.ipv4.tcp_rmem' => '4096 87380 33554432',
+    'net.ipv4.tcp_wmem' => '4096 65536 33554432',
+    'net.ipv4.tcp_no_metrics_save' => 1,
+    'net.ipv4.tcp_congestion_control' => 'htcp',
+    'net.ipv4.conf.all.arp_ignore' => 1,
+    'net.ipv4.conf.all.arp_announce' => 2,
+    'net.ipv4.conf.default.arp_filter' => 1,
+    'net.ipv4.conf.all.arp_filter' => 1,
+);
+
+#set interface speed and mtu specific information
+my @interfaces = get_ethernet_interfaces();
+my $max_speed = 0;
+my $max_mtu = 0;
+foreach my $interface(@interfaces){
+    next if $interface eq 'lo';
+    my $iface_speed = get_interface_speed(interface_name => $interface);
+    if($iface_speed ne 'unknown' && $iface_speed > $max_speed){
+        $max_speed = $iface_speed;
+    }
+    my $iface_mtu = int(get_interface_mtu(interface_name => $interface));
+    if($iface_mtu > $max_mtu){
+        $max_mtu = $iface_mtu;
+    }
+}
+if($max_speed >= 40000000000){
+    #40G and higher
+    $default_sysctl_settings{'net.core.rmem_max'} = 536870912;
+    $default_sysctl_settings{'net.core.wmem_max'} = 536870912;
+    $default_sysctl_settings{'net.ipv4.tcp_rmem'} = '4096 87380 268435456';
+    $default_sysctl_settings{'net.ipv4.tcp_wmem'} = '4096 65536 268435456';
+}elsif($max_speed >= 10000000000){
+    #10G and higher
+    $default_sysctl_settings{'net.core.rmem_max'} = 268435456;
+    $default_sysctl_settings{'net.core.wmem_max'} = 268435456;
+    $default_sysctl_settings{'net.ipv4.tcp_rmem'} = '4096 87380 134217728';
+    $default_sysctl_settings{'net.ipv4.tcp_wmem'} = '4096 65536 134217728';
+}
+
+if($max_mtu > 8000){
+    #Jumbo frames
+    $default_sysctl_settings{'net.ipv4.tcp_mtu_probing'} = 1;
+}
+
+#set OS specific information
+my $os_info = get_operating_system_info();
+if($os_info->{'distribution_name'} && $os_info->{'distribution_version'}){
+    if($os_info->{'distribution_name'} =~ /^CentOS/){
+        #centos
+        if($os_info->{'distribution_version'} =~ /^7/){
+            #centos 7
+            $default_sysctl_settings{'net.core.default_qdisc'} = 'fq';
+        }elsif($os_info->{'distribution_version'} =~ /^6/){
+            #set if centos 6 and 10Gbps or higher
+            $default_sysctl_settings{'net.core.netdev_max_backlog'} = 250000 if($max_speed >= 10000000000);
+        }
+        
+    }elsif($os_info->{'distribution_name'} =~ /^Debian/){
+        #debian
+        if($os_info->{'distribution_version'} =~ /^8/){
+            #debian 8
+            $default_sysctl_settings{'net.core.default_qdisc'} = 'fq';
+        }
+    }
+}
+
+#output params
+open(my $SYSCTL, ">>", "/tmp/sysctl.conf") or die "Unable to open /etc/sysctl.conf: $!";
+print $SYSCTL "####################################\n";
+print $SYSCTL "#Default perfSONAR sysctl settings\n";
+print $SYSCTL "####################################\n";
+foreach my $sysctl_param(sort keys %default_sysctl_settings){
+    print $SYSCTL "$sysctl_param = " . $default_sysctl_settings{$sysctl_param} . "\n";
+}

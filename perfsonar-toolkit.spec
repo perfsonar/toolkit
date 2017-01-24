@@ -274,10 +274,12 @@ Summary:                perfSONAR Toolkit sysctl configuration
 Group:                  Development/Tools
 Requires:               coreutils
 Requires:               perfsonar-common
+Requires:               libperfsonar-perl
 Requires:               initscripts
 Requires(pre):          rpm
 Requires(post):         coreutils
 Requires(post):         perfsonar-common
+Requires(post):         libperfsonar-perl
 Requires(post):         initscripts
 Obsoletes:              perl-perfSONAR_PS-Toolkit-sysctl
 Provides:               perl-perfSONAR_PS-Toolkit-sysctl
