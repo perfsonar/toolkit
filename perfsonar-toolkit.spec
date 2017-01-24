@@ -17,7 +17,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.10.rc2 
+%define relnum  0.11.rc2 
 
 Name:			perfsonar-toolkit
 Version:		4.0
@@ -274,10 +274,12 @@ Summary:                perfSONAR Toolkit sysctl configuration
 Group:                  Development/Tools
 Requires:               coreutils
 Requires:               perfsonar-common
+Requires:               libperfsonar-perl
 Requires:               initscripts
 Requires(pre):          rpm
 Requires(post):         coreutils
 Requires(post):         perfsonar-common
+Requires(post):         libperfsonar-perl
 Requires(post):         initscripts
 Obsoletes:              perl-perfSONAR_PS-Toolkit-sysctl
 Provides:               perl-perfSONAR_PS-Toolkit-sysctl
@@ -409,10 +411,7 @@ mkdir -p /var/lib/perfsonar/log_view/bwctl
 mkdir -p /var/lib/perfsonar/log_view/ndt	
 mkdir -p /var/lib/perfsonar/log_view/owamp
 
-#Make sure root is in the wheel group for fresh install. If upgrade, keep user settings
 if [ $1 -eq 1 ] ; then
-    /usr/sbin/usermod -a -Gwheel root
-    
     #3.5.1 fixes
     #make sure web_admin.conf points to the right lscache directory
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web-ng/etc/web_admin.conf
@@ -656,7 +655,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade/*
 
 %files systemenv
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
