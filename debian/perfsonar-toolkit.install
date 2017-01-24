@@ -14,4 +14,3 @@ scripts/ps-toolkit-migrate-backup.sh usr/lib/perfsonar/scripts/
 scripts/ps-toolkit-migrate-restore.sh usr/lib/perfsonar/scripts/
 scripts/psb_to_esmond.pl usr/lib/perfsonar/scripts/
 scripts/remove_home_partition usr/lib/perfsonar/scripts/
-scripts/upgrade/* usr/lib/perfsonar/scripts/upgrade/
