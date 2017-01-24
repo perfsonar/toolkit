@@ -1,0 +1,34 @@
+scripts/system_environment/add_sbin_path usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/add_toolkit_dirs_path usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/bwctl_port_verify usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/configure_bwctld_log_location usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/configure_esmond usr/lib/perfsonar/scripts/system_environment/
+# ssh already enabled in debian
+#scripts/system_environment/configure_fail2ban usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/configure_owamp_testports usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/configure_syslog_local5_location usr/lib/perfsonar/scripts/system_environment/
+# trace already disabled in debian
+#scripts/system_environment/disable_http_trace usr/lib/perfsonar/scripts/system_environment/
+# network already disabled in debian
+#scripts/system_environment/disable_mysql_network_access usr/lib/perfsonar/scripts/system_environment/
+# php already disabled in debian
+#scripts/system_environment/disable_php_advertising usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/disable_unwanted_services usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/disable_weak_ssl_ciphers usr/lib/perfsonar/scripts/system_environment/
+# no zeroconf in debian
+#scripts/system_environment/disable_zeroconf usr/lib/perfsonar/scripts/system_environment/
+# redirect works by default in debian
+#scripts/system_environment/enable_apache_redirect usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/enable_auto_updates usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/enable_nscd usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/enable_ntp_restarts usr/lib/perfsonar/scripts/system_environment/
+# web100 kernel does not exist for debian
+#scripts/system_environment/enable_web100_kernel_repository usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/increase_owamp_limits usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/increase_owamp_port_range usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/migrate_admininfo usr/lib/perfsonar/scripts/system_environment/
+# admin upgrade not needed in debian
+#scripts/system_environment/upgrade_apache usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/upgrade_configdaemon usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/upgrade_fix_permissions usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/upgrade_lsregistration usr/lib/perfsonar/scripts/system_environment/
