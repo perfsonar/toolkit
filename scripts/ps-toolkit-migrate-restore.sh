@@ -36,14 +36,14 @@ done
 
 #Check options
 if [ -z "$1" ]; then
-    echo "Usage: $0 <tgz-file>"
+    echo "Usage: $0 [-d|--data] <tgz-file>"
     echo "Missing path to tar file in options list"
     exit 1
 fi
 
 #Create temp directory
 rm -rf $TEMP_RST_DIR
-mkdir $TEMP_RST_DIR
+mkdir -m 700 $TEMP_RST_DIR
 if [ "$?" != "0" ]; then
     echo "Unable to create temp directory"
     exit 1
@@ -100,31 +100,6 @@ else
     fi
     printf "[SUCCESS]"
     echo ""
-
-    #restore administrator users
-    printf "Restoring administrative users..."
-    ADMIN_USER_ERROR=""
-    if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/wheel_users" ]; then
-        ADMIN_USERS=`cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/wheel_users`
-        if [ -n "$ADMIN_USERS" ]; then
-            ADMIN_USERS_ARR=($ADMIN_USERS)
-            for admin_user in "${ADMIN_USERS_ARR[@]}"
-            do
-                /usr/sbin/usermod -a -Gwheel $admin_user
-                if [ "$?" != "0" ]; then
-                    ADMIN_USER_ERROR="${ADMIN_USER_ERROR}Unable to add user $admin_user to wheel. "
-                fi
-            done
-        fi
-    fi
-    if [ -z "$ADMIN_USER_ERROR" ]; then
-        printf "[SUCCESS]"
-        echo ""
-    else
-        printf "[WARN]"
-        echo ""
-        echo " - $ADMIN_USER_ERROR"
-    fi
 fi
 
 #get administrative info
@@ -193,38 +168,40 @@ fi
 
 #restore databases
 if [ "$DATA" ]; then
-    printf "Restoring cassandra data..."
-    if ! /sbin/service cassandra stop &>/dev/null; then
-        echo "Unable to stop cassandra"
-        exit 1
-    fi
-
-    rm -f /var/lib/cassandra/commitlog/*.log /var/lib/cassandra/data/esmond/*/*.db
-    for table in $(ls $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data); do
-        cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data/$table/esmond_snapshot/* \
-              /var/lib/cassandra/data/esmond/$table/
-        if [ "$?" != "0" ]; then
-            echo "Unable to restore /var/lib/cassandra/data/esmond/$table"
+    if [ -d /var/lib/cassandra/data/esmond ]; then
+        printf "Restoring cassandra data for esmond..."
+        if ! /sbin/service cassandra stop &>/dev/null; then
+            echo "Unable to stop cassandra"
             exit 1
         fi
-    done
 
-    if ! /sbin/service cassandra start &>/dev/null; then
-        echo "Unable to start cassandra"
-        exit 1
-    fi
-    for i in {1..10}; do
-        nodetool status &>/dev/null && break
-        sleep 1
-    done
-    if ! nodetool repair &>/dev/null; then
-        echo "Unable to repair cassandra"
-        exit 1
-    fi
-    printf "[SUCCESS]"
-    echo ""
+        rm -f /var/lib/cassandra/commitlog/*.log /var/lib/cassandra/data/esmond/*/*.db
+        for table in $(ls $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data); do
+            cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data/$table/esmond_snapshot/* \
+                  /var/lib/cassandra/data/esmond/$table/
+            if [ "$?" != "0" ]; then
+                echo "Unable to restore /var/lib/cassandra/data/esmond/$table"
+                exit 1
+            fi
+        done
 
-    printf "Restoring postgresql data..."
+        if ! /sbin/service cassandra start &>/dev/null; then
+            echo "Unable to start cassandra"
+            exit 1
+        fi
+        for i in {1..10}; do
+            nodetool status &>/dev/null && break
+            sleep 1
+        done
+        if ! nodetool repair &>/dev/null; then
+            echo "Unable to repair cassandra"
+            exit 1
+        fi
+        printf "[SUCCESS]"
+        echo ""
+    fi
+
+    printf "Restoring postgresql data for esmond..."
     export PGUSER=$(sed -n -e 's/sql_db_user = //p' /etc/esmond/esmond.conf)
     export PGPASSWORD=$(sed -n -e 's/sql_db_password = //p' /etc/esmond/esmond.conf)
     export PGDATABASE=$(sed -n -e 's/sql_db_name = //p' /etc/esmond/esmond.conf)
@@ -233,6 +210,20 @@ if [ "$DATA" ]; then
         echo "Unable to restore esmond database"
         exit 1
     fi
+    unset PGUSER PGPASSWORD PGDATABASE
+    printf "[SUCCESS]"
+    echo ""
+
+    printf "Restoring postgresql data for pscheduler..."
+    export PGUSER=$(sed -n -e 's/.*user=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    export PGPASSWORD=$(sed -n -e 's/.*password=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    export PGDATABASE=$(sed -n -e 's/.*dbname=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    psql --no-password < $TEMP_RST_DIR/$TEMP_BAK_NAME/postgresql_data/pscheduler.dump &>/dev/null
+    if [ "$?" != "0" ]; then
+        echo "Unable to restore pscheduler database"
+        exit 1
+    fi
+    unset PGUSER PGPASSWORD PGDATABASE
     printf "[SUCCESS]"
     echo ""
 fi

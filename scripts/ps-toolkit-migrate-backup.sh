@@ -25,11 +25,14 @@ if [ -z "$1" ]; then
     echo "Usage: $0 [-d|--data] <tgz-file>"
     echo "Missing path to tar file in options list"
     exit 1
+elif [ -e "$1" ]; then
+    echo "Backup file already exists: $1"
+    exit 1
 fi
 
 #Create temp directory
 rm -rf $TEMP_BAK_DIR
-mkdir $TEMP_BAK_DIR
+mkdir -m 700 $TEMP_BAK_DIR
 if [ "$?" != "0" ]; then
     echo "Unable to create temp directory"
     exit 1
@@ -70,17 +73,6 @@ if [ "$?" != "0" ]; then
     printf "[SUCCESS]"
     echo ""
     echo " - Note: No user account passwords found to be migrated. This may be normal if you have not setup any non-root users"
-else
-    printf "[SUCCESS]"
-    echo ""
-fi
-
-printf "Backing up administrative users..."
-awk -F: '($1 == "wheel") {print $4}' /etc/group | sed s"/,/ /g" > $TEMP_BAK_DIR/etc/wheel_users
-if [ "$?" != "0" ]; then
-    printf "[SUCCESS]"
-    echo ""
-    echo " - Note: No user administrators found to be migrated."
 else
     printf "[SUCCESS]"
     echo ""
@@ -154,33 +146,54 @@ fi
 
 #backup databases
 if [ "$DATA" ]; then
-    printf "Backing-up cassandra data..."
-    if ! nodetool snapshot esmond -t esmond_snapshot &>/dev/null; then
-        echo "Unable to snapshot cassandra database"
-        exit 1
-    fi
-    for SNAPSHOT in /var/lib/cassandra/data/esmond/*/snapshots/esmond_snapshot; do
-        TABLE=${SNAPSHOT%/snapshots/*}
-        TABLE=${TABLE#*/esmond/}
-        mkdir $TEMP_BAK_DIR/cassandra_data/$TABLE
-        cp -a $SNAPSHOT $TEMP_BAK_DIR/cassandra_data/$TABLE/
-        if [ "$?" != "0" ]; then
-            echo "Unable to copy $TABLE snapshot"
+    if [ -d /var/lib/cassandra/data/esmond ]; then
+        printf "Backing-up cassandra data for esmond..."
+        nodetool clearsnapshot esmond -t esmond_snapshot &>/dev/null
+        if ! nodetool snapshot esmond -t esmond_snapshot &>/dev/null; then
+            echo "Unable to snapshot cassandra database"
             exit 1
         fi
-    done
-    printf "[SUCCESS]"
-    echo ""
+        for SNAPSHOT in /var/lib/cassandra/data/esmond/*/snapshots/esmond_snapshot; do
+            TABLE=${SNAPSHOT%/snapshots/*}
+            TABLE=${TABLE#*/esmond/}
+            mkdir $TEMP_BAK_DIR/cassandra_data/$TABLE
+            cp -a $SNAPSHOT $TEMP_BAK_DIR/cassandra_data/$TABLE/
+            if [ "$?" != "0" ]; then
+                echo "Unable to copy $TABLE snapshot"
+                exit 1
+            fi
+        done
+        nodetool clearsnapshot esmond -t esmond_snapshot &>/dev/null
+        printf "[SUCCESS]"
+        echo ""
+    fi
 
-    printf "Backing-up postgresql data..."
+    PG_DUMP=pg_dump
+    [ -x /usr/pgsql-9.5/bin/pg_dump ] && PG_DUMP=/usr/pgsql-9.5/bin/pg_dump
+
+    printf "Backing-up postgresql data for esmond..."
     export PGUSER=$(sed -n -e 's/sql_db_user = //p' /etc/esmond/esmond.conf)
     export PGPASSWORD=$(sed -n -e 's/sql_db_password = //p' /etc/esmond/esmond.conf)
     export PGDATABASE=$(sed -n -e 's/sql_db_name = //p' /etc/esmond/esmond.conf)
-    pg_dump --no-password > $TEMP_BAK_DIR/postgresql_data/esmond.dump 2>/dev/null
+    $PG_DUMP --no-password > $TEMP_BAK_DIR/postgresql_data/esmond.dump 2>/dev/null
     if [ "$?" != "0" ]; then
         echo "Unable to dump esmond database"
         exit 1
     fi
+    unset PGUSER PGPASSWORD PGDATABASE
+    printf "[SUCCESS]"
+    echo ""
+
+    printf "Backing-up postgresql data for pscheduler..."
+    export PGUSER=$(sed -n -e 's/.*user=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    export PGPASSWORD=$(sed -n -e 's/.*password=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    export PGDATABASE=$(sed -n -e 's/.*dbname=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+    $PG_DUMP --no-password > $TEMP_BAK_DIR/postgresql_data/pscheduler.dump 2>/dev/null
+    if [ "$?" != "0" ]; then
+        echo "Unable to dump pscheduler database"
+        exit 1
+    fi
+    unset PGUSER PGPASSWORD PGDATABASE
     printf "[SUCCESS]"
     echo ""
 fi
