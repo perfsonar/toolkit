@@ -5,7 +5,7 @@
 # multi-ethtool
 #
 # chkconfig: - 95 99
-# description:	pS-Performance Toolkit script to configure the NIC parameters based on enabled services
+# description:	pS-Performance Toolkit script to configure the NIC parameters
 # 
 # see:
 # http://code.google.com/p/perfsonar-ps/issues/detail?id=122
@@ -16,53 +16,10 @@
 # Source function library.
 . /etc/init.d/functions
 
-LATENCY_ENABLED=
-BANDWIDTH_ENABLED=
-NDTNPAD_ENABLED=
-
-NDT=`/sbin/chkconfig --list ndt | grep on`
-NPAD=`/sbin/chkconfig --list npad | grep -w on`
-OWAMP=`/sbin/chkconfig --list owamp-server | grep -w on`
-BWCTL=`/sbin/chkconfig --list bwctl-server | grep -w on`
-
-if [ "x$NDT" != "x" -o "x$NPAD" != "x" ]; then
-        NDTNPAD_ENABLED=1
-fi
-
-if [ "x$OWAMP" != "x" ]; then
-        LATENCY_ENABLED=1
-fi
-
-if [ "x$BWCTL" != "x" ]; then
-        BANDWIDTH_ENABLED=1
-fi
-
-
-# XXX: should make these configurable via configuration file
-
-TCP_CONGESTION_CONTROL=
-DISABLE_TCP_OFFLOAD=
-DISABLE_INTERRUPT_COALESCING=
-TXQUEUELEN=
-
-echo "NDTNPAD_ENABLED: $NDTNPAD_ENABLED"
-echo "LATENCY_ENABLED: $LATENCY_ENABLED"
-echo "BANDWIDTH_ENABLED: $BANDWIDTH_ENABLED"
-
-if [ "$NDTNPAD_ENABLED" ]; then
-    TCP_CONGESTION_CONTROL=reno
-else
-    TCP_CONGESTION_CONTROL=htcp
-fi
-
-if [ "$LATENCY_ENABLED" -o "$NDTNPAD_ENABLED" ]; then
-    DISABLE_TCP_OFFLOAD=1
-    DISABLE_INTERRUPT_COALESCING=1
-fi
-
-if [ "$BANDWIDTH_ENABLED" ]; then
-    TXQUEUELEN=10000
-fi
+#always set these on perfsonar hosts
+DISABLE_TCP_OFFLOAD=1
+DISABLE_INTERRUPT_COALESCING=1
+TXQUEUELEN=10000
 
 # find all the interfaces besides loopback.
 # ignore aliases, alternative configurations, and editor backup files
@@ -122,31 +79,11 @@ for interface in $interfaces; do
     fi
 done
 
-if [ -n "$TCP_CONGESTION_CONTROL" ]; then
-    echo -n $"Setting TCP congestion control algorithm to $TCP_CONGESTION_CONTROL: "
-    TCP_CONG_SET $TCP_CONGESTION_CONTROL
-    if [ $? -eq 0 ]; then
-        success; echo
-    else
-        failure; echo; ret=1
-    fi
-fi
-
 return $ret
 }
 
 TXQUEUELEN_SET() {
 /sbin/ip link set $1 txqueuelen $2
-}
-
-TCP_CONG_SET() {
-retval=0;
-echo $1 > /proc/sys/net/ipv4/tcp_congestion_control
-result=`cat /proc/sys/net/ipv4/tcp_congestion_control`;
-if [ "$result" != "$1" ]; then
-retval=1;
-fi
-return $retval;
 }
 
 IC_OFF() {
