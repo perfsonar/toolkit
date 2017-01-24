@@ -1,0 +1,189 @@
+--- a/scripts/system_environment/configure_esmond
++++ b/scripts/system_environment/configure_esmond
+@@ -1,99 +1,12 @@
+ #!/bin/bash
+-PG_VERSION=9.5
+-PG_BINDIR=/usr/pgsql-${PG_VERSION}/bin
+-PG_DATADIR=/var/lib/pgsql/${PG_VERSION}/data
+-PG_SERVICE_NAME="postgresql-${PG_VERSION}"
+-
+-#fire-up cassandra if needed
+-/sbin/service cassandra status &> /dev/null
+-if [ $? -ne 0 ]; then
+-    /sbin/service cassandra restart 
+-    if [ $? -ne 0 ]; then
+-        echo "Unable to start cassandra. Proceeding with rest of esmond configuration"
+-    fi
+-fi
+-
+-#init postgres - we shouldn't ever have to do this
+-if [ -z "$(ls -A ${PG_DATADIR})" ]; then
+-    su -l postgres -c "${NEW_BINDIR}/initdb  --locale='C' --encoding='sql_ascii' --pgdata='${PG_DATADIR}' --auth='trust'"
+-fi
+-
+-#fix update error in pg_hba.conf - can remove after 4.0rcs have been out for awhile
+-if [ -f "${PG_DATADIR}/pg_hba.conf" ]; then
+-    # Remove #BEGIN-xxx that got jammed up onto previous lines
+-    sed -i -e 's/\(.\)\(#BEGIN-\)/\1\n\2/' "${PG_DATADIR}/pg_hba.conf"
+-    # Remove stock pg_hba line that got jammed up on an #END
+-    sed -i -e 's/#END-esmondlocal/#END-esmond\nlocal/g' "${PG_DATADIR}/pg_hba.conf"
+-fi
+-
+-#make sure postgresql is running
+-/sbin/service ${PG_SERVICE_NAME} status &> /dev/null
+-if [ $? -ne 0 ]; then
+-    /sbin/service ${PG_SERVICE_NAME} restart 
+-    if [ $? -ne 0 ]; then
+-        echo "Unable to start ${PG_SERVICE_NAME}. Your esmond database may not be initialized"
+-        exit 1
+-    fi
+-fi
+-
+-#create user if not exists or is an old user
+-USER_EXISTS=$(su -l postgres -c "psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='esmond'\"" 2> /dev/null)
+-if [ $? -ne 0 ]; then
+-    echo "Unable to connect to postgresql to check user. Your esmond database may not be initialized"
+-    exit 1
+-fi
+-OLD_USER_EXISTS=$(su -l postgres -c "psql -tAc \"SELECT 1 FROM pg_authid WHERE rolpassword='md5' || md5('7hc4m1' || rolname)\"" 2> /dev/null)
+-if [ $? -ne 0 ]; then
+-    echo "Unable to connect to postgresql to check for old users. Your esmond database may not be initialized"
+-    exit 1
+-fi
+-if [ "$USER_EXISTS" != "1" ] || [ "$OLD_USER_EXISTS" == "1" ]; then
+-    DB_PASSWORD=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c32;echo;)
+-    if [ "$USER_EXISTS" == "1" ]; then
+-        su -l postgres -c "psql -c \"ALTER ROLE esmond WITH PASSWORD '${DB_PASSWORD}'\"" &> /dev/null
+-    else
+-        su -l postgres -c "psql -c \"CREATE USER esmond WITH PASSWORD '${DB_PASSWORD}'\"" &> /dev/null
+-        su -l postgres -c "psql -c \"CREATE DATABASE esmond\"" &> /dev/null
+-        su -l postgres -c "psql -c \"GRANT ALL ON DATABASE esmond to esmond\"" &> /dev/null
+-    fi
+-    sed -i "s/sql_db_name = .*/sql_db_name = esmond/g" /etc/esmond/esmond.conf
+-    sed -i "s/sql_db_user = .*/sql_db_user = esmond/g" /etc/esmond/esmond.conf
+-    sed -i "s/sql_db_password = .*/sql_db_password = ${DB_PASSWORD}/g" /etc/esmond/esmond.conf
+-    drop-in -n -t esmond - ${PG_DATADIR}/pg_hba.conf <<EOF
+-#
+-# esmond
+-#
+-# This user should never need to access the database from anywhere
+-# other than locally.
+-#
+-local     esmond          esmond                            md5
+-host      esmond          esmond     127.0.0.1/32           md5
+-host      esmond          esmond     ::1/128                md5
+-EOF
+-    /sbin/service ${PG_SERVICE_NAME} restart 
+-    if [ $? -ne 0 ]; then
+-        echo "Unable to restart ${PG_SERVICE_NAME}. Your esmond database may not be initialized"
+-    fi
+-fi
+ 
+ #set esmond env variables
+-export ESMOND_ROOT=/usr/lib/esmond
+-export ESMOND_CONF=/etc/esmond/esmond.conf
++. /etc/default/esmond
++export ESMOND_ROOT ESMOND_CONF
+ export DJANGO_SETTINGS_MODULE=esmond.settings
+ 
+-#initialize python
+-cd $ESMOND_ROOT
+-if [ -e /opt/rh/python27/enable ]; then
+-    source /opt/rh/python27/enable
+-    /opt/rh/python27/root/usr/bin/virtualenv --prompt="(esmond)" .
+-fi
+-. bin/activate
+-
+-#build esmond tables
+-python esmond/manage.py syncdb --noinput &> /dev/null
+-
+ #create api key
+-KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
++KEY=`python /usr/lib/python2.7/dist-packages/esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
+ 
+ #set API Key in meshconfig-agent-tasks.conf
+ if [ -n "$KEY" ]; then
+--- a/scripts/system_environment/configure_fail2ban
++++ b/scripts/system_environment/configure_fail2ban
+@@ -10,5 +10,5 @@
+     echo "" >> /etc/fail2ban/jail.local
+     echo "[sshd]" >> /etc/fail2ban/jail.local
+     echo "enabled = true" >> /etc/fail2ban/jail.local
+-    /sbin/service fail2ban restart
++    service fail2ban restart
+ fi
+--- a/scripts/system_environment/disable_http_trace
++++ b/scripts/system_environment/disable_http_trace
+@@ -3,7 +3,18 @@
+ # Disable the HTTP TRACE methods. Does not matter if this is running in an
+ # 'upgrade' or 'new install' context.
+ #######################
+-cat > /etc/httpd/conf.d/disable_trace.conf <<EOF
++
++if type a2enconf &>/dev/null; then
++  CONF=/etc/apache2/conf-available.d/disable_trace.conf
++else
++  CONF=/etc/apache2/conf.d/disable_trace.conf
++fi
++
++cat > $CONF <<EOF
+ # Disables the HTTP TRACE method
+ TraceEnable      Off
+ EOF
++
++if type a2enconf &>/dev/null; then
++  a2enconf disable_trace.conf
++fi
+--- a/scripts/system_environment/upgrade_configdaemon
++++ b/scripts/system_environment/upgrade_configdaemon
+@@ -104,5 +104,5 @@
+ EOF
+ 
+ #centos 7 should not need this
+-/sbin/service perfsonar-configdaemon restart
++service perfsonar-configdaemon restart
+ fi
+--- a/scripts/system_environment/upgrade_fix_permissions
++++ b/scripts/system_environment/upgrade_fix_permissions
+@@ -8,10 +8,10 @@
+ chown -R perfsonar:perfsonar /var/log/perfsonar
+ 
+ mkdir -p /var/log/cacti
+-chown -R apache /var/log/cacti
++chown -R www-data /var/log/cacti
+ 
+ mkdir -p /var/log/perfsonar/web_admin
+-chown -R apache:perfsonar /var/log/perfsonar/web_admin
++chown -R www-data:perfsonar /var/log/perfsonar/web_admin
+ 
+ # Make sure that the various /var/lib/perfsonar directories are correct.
+ mkdir -p /var/lib/perfsonar
+@@ -22,7 +22,7 @@
+ 
+ # Toolkit odds and ends
+ mkdir -p /var/run/web_admin_sessions
+-chown -R apache /var/run/web_admin_sessions
++chown -R www-data /var/run/web_admin_sessions
+ 
+ #Try cacti data, but don't complain if it's not there
+-chown -R apache /var/lib/cacti/rra 2> /dev/null
++chown -R www-data /var/lib/cacti/rra 2> /dev/null
+--- a/scripts/system_environment/disable_weak_ssl_ciphers
++++ b/scripts/system_environment/disable_weak_ssl_ciphers
+@@ -4,6 +4,14 @@
+ # 'upgrade' or 'new install' context.
+ #######################
+ 
+-sed -i 's|SSLProtocol.*|SSLProtocol -ALL +TLSv1 +TLSv1.1 +TLSv1.2|g' /etc/httpd/conf.d/ssl.conf
++SSLCONF=/etc/apache2/sites-available/default-ssl.conf
+ 
+-sed -i 's|SSLCipherSuite.*|SSLCipherSuite ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA|g'  /etc/httpd/conf.d/ssl.conf
++grep -q '^[[:space:]]*SSLProtocol' $SSLCONF || \
++  sed -i '/^[[:space:]]*<\/VirtualHost>/i \
++		SSLProtocol' $SSLCONF
++sed -i 's|SSLProtocol.*|SSLProtocol -ALL +TLSv1 +TLSv1.1 +TLSv1.2|g' $SSLCONF
++
++grep -q '^[[:space:]]*SSLCipherSuite' $SSLCONF || \
++  sed -i '/^[[:space:]]*<\/VirtualHost>/i \
++		SSLCipherSuite' $SSLCONF
++sed -i 's|SSLCipherSuite.*|SSLCipherSuite ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA|g' $SSLCONF
