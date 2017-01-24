@@ -1,20 +1,102 @@
 --- a/init_scripts/perfsonar-configure_nic_parameters
 +++ b/init_scripts/perfsonar-configure_nic_parameters
-@@ -20,10 +20,10 @@
- BANDWIDTH_ENABLED=
- NDTNPAD_ENABLED=
+@@ -14,7 +14,7 @@
+ #
  
--NDT=`/sbin/chkconfig --list ndt | grep on`
--NPAD=`/sbin/chkconfig --list npad | grep -w on`
--OWAMP=`/sbin/chkconfig --list owamp-server | grep -w on`
--BWCTL=`/sbin/chkconfig --list bwctl-server | grep -w on`
-+NDT=`/sbin/insserv -s | grep '^S:.*:ndt$'`
-+NPAD=`/sbin/insserv -s | grep '^S:.*:npad$'`
-+OWAMP=`/sbin/insserv -s | grep '^S:.*:owamp-server$'`
-+BWCTL=`/sbin/insserv -s | grep '^S:.*:bwctl-server$'`
+ # Source function library.
+-. /etc/init.d/functions
++. /lib/lsb/init-functions
  
- if [ "x$NDT" != "x" -o "x$NPAD" != "x" ]; then
-         NDTNPAD_ENABLED=1
+ #always set these on perfsonar hosts
+ DISABLE_TCP_OFFLOAD=1
+@@ -23,14 +23,8 @@
+ 
+ # find all the interfaces besides loopback.
+ # ignore aliases, alternative configurations, and editor backup files
+-interfaces=$(ls /etc/sysconfig/network-scripts/ifcfg* | \
+-            LANG=C sed -e "$__sed_discard_ignored_files" \
+-                       -e '/\(ifcfg-lo\|:\|ifcfg-.*-range\)/d' \
+-                       -e '/ifcfg-[A-Za-z0-9\._-]\+$/ { s/^ifcfg-//g;s/[0-9]/ &/}' | \
+-            LANG=C sort -k 1,1 -k 2n | \
+-            LANG=C sed 's/ //' | \
+-            LANG=C cut -d/ -f 5 | \
+-        LANG=C sed -e 's/ifcfg-//g' )
++interfaces=$(/sbin/ifquery --all --list | grep -v -w lo)
++interfaces="$interfaces $(/sbin/ifquery --allow hotplug --list)"
+ 
+ start() {
+ ret=0
+@@ -48,33 +42,33 @@
+         RETVAL=$?
+         if [ $RETVAL -eq 0 ]; then
+             # apply multi-ethtool settings
+-            echo -n $"disabling interrupt coalescing for interface $interface: "
++            log_action_begin_msg "Disabling interrupt coalescing for interface $interface"
+             IC_OFF $interface
+             if [ $? -eq 0 ]; then
+-                success; echo
++                log_action_end_msg $?
+             else
+-                failure; echo; ret=1
++                log_action_end_msg $?; ret=1
+             fi
+         fi
+     fi
+ 
+     if [ $DISABLE_TCP_OFFLOAD ]; then
+-        echo -n $"disabling TCP offload for interface $interface: "
++        log_action_begin_msg "Disabling TCP offload for interface $interface"
+         TSO_OFF $interface
+         if [ $? -eq 0 ]; then
+-            success; echo
++            log_action_end_msg $?
+         else
+-            failure; echo; ret=1
++            log_action_end_msg $?; ret=1
+         fi
+     fi
+ 
+     if [ $TXQUEUELEN -ne 0 ]; then
+-        echo -n $"Setting txqueuelen for $interface to $TXQUEUELEN: "
++        log_action_begin_msg "Setting txqueuelen for $interface to $TXQUEUELEN"
+         TXQUEUELEN_SET $interface $TXQUEUELEN
+         if [ $? -eq 0 ]; then
+-            success; echo
++            log_action_end_msg $?
+         else
+-            failure; echo; ret=1
++            log_action_end_msg $?; ret=1
+         fi
+     fi
+ done
+@@ -88,23 +82,22 @@
+ 
+ IC_OFF() {
+ for i in "$1"; do
+-    /usr/sbin/ethtool -C $i rx-frames 1
+-    /usr/sbin/ethtool -C $i rx-usecs 0
++    /sbin/ethtool -C $i rx-frames 1
++    /sbin/ethtool -C $i rx-usecs 0
+ done
+ }
+ 
+ TSO_ON() {
+-/usr/sbin/ethtool -K "$1" tso on
++/sbin/ethtool -K "$1" tso on
+ }
+ 
+ TSO_OFF() {
+-/usr/sbin/ethtool -K "$1" tso off
++/sbin/ethtool -K "$1" tso off
+ }
+ 
+ 
+ case "$1" in
+     start)
+-        [ -f "$VAR_SUBSYS_TCP_TUNING" ] && exit 0
+         start
+         RETVAL=$?
+         ;;
 --- a/scripts/system_environment/disable_unwanted_services
 +++ b/scripts/system_environment/disable_unwanted_services
 @@ -8,7 +8,7 @@
