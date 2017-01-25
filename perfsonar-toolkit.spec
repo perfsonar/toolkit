@@ -436,6 +436,12 @@ echo "%{version}" > /var/lib/perfsonar/bundles/bundle_version
 chmod 644 /var/lib/perfsonar/bundles/bundle_type
 chmod 644 /var/lib/perfsonar/bundles/bundle_version
 
+#symlink to pcheduler logs
+chmod 755 /var/log/pscheduler/
+touch /var/log/pscheduler/pscheduler.log
+chmod 644 /var/log/pscheduler/pscheduler.log
+ln -s /var/log/pscheduler/pscheduler.log /var/log/perfsonar/pscheduler.log 2> /dev/null
+
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
 # so we'll put that in the "maybe" category.
