@@ -802,6 +802,7 @@ TestConfigComponent.submitTestConfigForm = function( ) {
 TestConfigComponent._getUserHostToAddInfo = function() {
     var host = {};
     var address = $('#test-add-host-address').val();
+    address = $.trim( address );
     host.address = address;
     var description = $('#test-add-host-description').val();
     host.description = description;
@@ -1082,6 +1083,7 @@ TestConfigComponent.addTestMemberFromCommunity = function( e ) {
 
     var settings = {};
     var hostname = row.find('td.address').text();
+    hostname = $.trim( hostname );
     var description = row.find('input.description').val();
     var new_host_ipv4 = row.find('input.test_ipv4').prop('checked');
     var new_host_ipv6 = row.find('input.test_ipv6').prop('checked');
@@ -1132,6 +1134,7 @@ TestConfigComponent.addTestMember = function(e) {
     if ( typeof hostname == 'undefined' || hostname == '' ) {
         return false;
     }
+    hostname = $.trim( hostname );
     var description = $('#new-host-description').val();
     var new_host_ipv4 = $('#new-ipv4').prop("checked");
     var new_host_ipv6 = $('#new-ipv6').prop("checked");
