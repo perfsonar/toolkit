@@ -442,6 +442,9 @@ touch /var/log/pscheduler/pscheduler.log
 chmod 644 /var/log/pscheduler/pscheduler.log
 ln -s /var/log/pscheduler/pscheduler.log /var/log/perfsonar/pscheduler.log 2> /dev/null
 
+#symlink to web config files
+ln -s /usr/lib/perfsonar/web-ng/etc /etc/perfsonar/toolkit/web 2> /dev/null
+
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
 # so we'll put that in the "maybe" category.
