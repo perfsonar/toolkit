@@ -135,7 +135,7 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
 
     var rpm_version = data.toolkit_rpm_version;
     if (typeof rpm_version != "undefined") {  
-        status_more_values.push( {label: "Toolkit RPM version", value: rpm_version} );
+        status_more_values.push( {label: "Toolkit package version", value: rpm_version} );
     }
 
     data.status_values = status_values;
