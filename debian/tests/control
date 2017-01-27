@@ -21,3 +21,7 @@ Restrictions: needs-root
 Tests: sysctl
 Depends: perfsonar-toolkit-sysctl
 Restrictions: needs-root
+
+Tests: systemenv
+Depends: perfsonar-toolkit-systemenv
+Restrictions: needs-root
