@@ -99,12 +99,15 @@
          ;;
 --- a/scripts/system_environment/disable_unwanted_services
 +++ b/scripts/system_environment/disable_unwanted_services
-@@ -8,7 +8,7 @@
+@@ -6,9 +6,9 @@
+ 
+ function disable_service() {
      if type systemctl &>/dev/null; then
-         systemctl disable $1 2>/dev/null
+-        systemctl disable $1 2>/dev/null
++        systemctl disable $1 &>/dev/null
      else
 -        /sbin/chkconfig $1 off 2>/dev/null
-+        /usr/sbin/update-rc.d $1 disable 2>/dev/null
++        /usr/sbin/update-rc.d $1 disable &>/dev/null
      fi
  }
  
