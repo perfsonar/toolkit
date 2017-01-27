@@ -208,7 +208,8 @@
 -mv /etc/rsyslog.conf.tmp /etc/rsyslog.conf
 -
  # Make sure that the owamp/bwctl log file gets rotated regularly
- grep owamp_bwctl.log /etc/logrotate.d/syslog &> /dev/null
+-grep owamp_bwctl.log /etc/logrotate.d/syslog &> /dev/null
++grep owamp_bwctl.log /etc/logrotate.d/perfsonar-toolkit &> /dev/null
  if [ $? != 0 ]; then
 -cat >>/etc/logrotate.d/syslog <<EOF
 +cat >>/etc/logrotate.d/perfsonar-toolkit <<EOF
