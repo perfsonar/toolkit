@@ -197,7 +197,7 @@
 +cat >> /etc/rsyslog.d/owamp_bwctl-syslog.conf <<EOF
  # Save bwctl and owamp messages to /var/log/perfsonar/owamp_bwctl.log
  local5.*                                                -/var/log/perfsonar/owamp_bwctl.log
-+& stop
++& ~
  EOF
  fi
  
@@ -218,7 +218,7 @@
      postrotate
 -        /bin/kill -HUP \`cat /var/run/syslogd.pid 2> /dev/null\` 2> /dev/null || true
 -        /bin/kill -HUP \`cat /var/run/rsyslogd.pid 2> /dev/null\` 2> /dev/null || true
-+        invoke-rc.d rsyslog rotate > /dev/null
++        service rsyslog restart > /dev/null
      endscript
  }
  EOF
