@@ -67,3 +67,12 @@
  cmd += " " + user
  
  retVal = os.system(cmd)
+@@ -95,7 +95,7 @@
+     fout.write(buffer)
+ 
+ #restart ssh
+-retVal = os.system("/sbin/service sshd restart")
++retVal = os.system("service ssh restart")
+ if (retVal != 0):
+     print Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL
+     sys.exit(1)
