@@ -6,6 +6,8 @@ scripts/system_environment/configure_esmond usr/lib/perfsonar/scripts/system_env
 # ssh already enabled in debian
 #scripts/system_environment/configure_fail2ban usr/lib/perfsonar/scripts/system_environment/
 scripts/system_environment/configure_owamp_testports usr/lib/perfsonar/scripts/system_environment/
+# move from rpm postinst to regular script
+scripts/system_environment/configure_root_bashrc usr/lib/perfsonar/scripts/system_environment/
 scripts/system_environment/configure_syslog_local5_location usr/lib/perfsonar/scripts/system_environment/
 # trace already disabled in debian
 #scripts/system_environment/disable_http_trace usr/lib/perfsonar/scripts/system_environment/
