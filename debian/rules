@@ -21,3 +21,8 @@ export DH_OPTIONS
 	dh $@ 
 
 override_dh_auto_install:
+
+override_dh_install:
+	dh_install
+	chmod +x ./debian/perfsonar-toolkit/usr/lib/perfsonar/scripts/*
+	chmod +x ./debian/perfsonar-toolkit-systemenv/usr/lib/perfsonar/scripts/system_environment/*
