@@ -56,3 +56,14 @@
  </Directory>
  
  ##
+--- a/scripts/add_pssudo_user
++++ b/scripts/add_pssudo_user
+@@ -59,7 +59,7 @@
+     sys.exit(1)
+ 
+ user = ans
+-cmd = "/usr/sbin/adduser -m -G pssudo"
++cmd = "/usr/sbin/useradd -m -G pssudo"
+ cmd += " " + user
+ 
+ retVal = os.system(cmd)
