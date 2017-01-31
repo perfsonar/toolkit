@@ -127,7 +127,7 @@ def password(user=None):
         user_exists = True
 
         if htpasswd_exists:
-            retVal = os.system("grep -q '^" + user + ": " + htpasswd_file)
+            retVal = os.system("grep -q '^" + user + ":' " + htpasswd_file)
             if int(retVal) != 0:
                 user_exists = False
         else:
