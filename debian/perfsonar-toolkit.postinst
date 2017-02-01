@@ -44,6 +44,14 @@ case "$1" in
         chmod 640 /etc/perfsonar/toolkit/psadmin.htpasswd
         chown root:www-data /etc/perfsonar/toolkit/psadmin.htpasswd
 
+        # Set bundle type and version
+        VERSION=$(zcat /usr/share/doc/$DPKG_MAINTSCRIPT_PACKAGE/changelog* | head -1 | perl -ne '$_=~ /.*\((.*)\).*/; print $1;')
+        mkdir -p /var/lib/perfsonar/bundles
+        echo "perfsonar-toolkit" > /var/lib/perfsonar/bundles/bundle_type
+        echo "${VERSION}" > /var/lib/perfsonar/bundles/bundle_version
+        chmod 644 /var/lib/perfsonar/bundles/bundle_type
+        chmod 644 /var/lib/perfsonar/bundles/bundle_version
+
         # apache setup
         if [ -e /usr/share/apache2/apache2-maintscript-helper ]; then
             . /usr/share/apache2/apache2-maintscript-helper
