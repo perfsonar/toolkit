@@ -26,3 +26,7 @@ override_dh_install:
 	dh_install
 	chmod +x ./debian/perfsonar-toolkit/usr/lib/perfsonar/scripts/*
 	chmod +x ./debian/perfsonar-toolkit-systemenv/usr/lib/perfsonar/scripts/system_environment/*
+
+override_dh_installinit:
+	dh_installinit --onlyscripts --name=perfsonar-generate_motd
+	dh_installinit --onlyscripts --name=perfsonar-configure_nic_parameters
