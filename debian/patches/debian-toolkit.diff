@@ -76,3 +76,108 @@
  if (retVal != 0):
      print Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL
      sys.exit(1)
+--- a/scripts/clean_esmond_db.sh
++++ b/scripts/clean_esmond_db.sh
+@@ -1,10 +1,8 @@
+ #!/bin/bash
+-export ESMOND_ROOT=/usr/lib/esmond
+-export ESMOND_CONF=/etc/esmond/esmond.conf
++
++. /etc/default/esmond
++export ESMOND_ROOT
++export ESMOND_CONF
+ export DJANGO_SETTINGS_MODULE=esmond.settings
+-cd $ESMOND_ROOT
+-if [ -e /opt/rh/python27/enable ]; then
+-    source /opt/rh/python27/enable
+-fi
+-. bin/activate
+-python ./util/ps_remove_data.py -c /etc/perfsonar/toolkit/clean_esmond_db.conf
++
++python /usr/share/esmond/util/ps_remove_data.py -c /etc/perfsonar/toolkit/clean_esmond_db.conf
+--- a/init_scripts/perfsonar-configure_nic_parameters
++++ b/init_scripts/perfsonar-configure_nic_parameters
+@@ -1,17 +1,12 @@
+ #!/bin/sh
+-#
+-# $Id$
+-#
+-# multi-ethtool
+-#
+-# chkconfig: - 95 99
+-# description:	pS-Performance Toolkit script to configure the NIC parameters
+-# 
+-# see:
+-# http://code.google.com/p/perfsonar-ps/issues/detail?id=122
+-# https://bugzilla.redhat.com/show_bug.cgi?id=179877
+-#
+-#
++### BEGIN INIT INFO
++# Provides:          perfsonar-configure_nic_parameters
++# Required-Start:    $local_fs $remote_fs $network
++# Required-Stop:     $local_fs $remote_fs $network
++# Default-Start:     2 3 4 5
++# Default-Stop:      0 1 6
++# Short-Description: pS-Performance Toolkit script to configure the NIC parameters
++### END INIT INFO
+ 
+ # Source function library.
+ . /etc/init.d/functions
+@@ -108,6 +103,10 @@
+         start
+         RETVAL=$?
+         ;;
++    stop)
++        # to make systemd happy
++        RETVAL=0
++        ;;
+     *)
+         echo $"Usage: $0 {start}"
+         RETVAL=2
+--- a/init_scripts/perfsonar-generate_motd
++++ b/init_scripts/perfsonar-generate_motd
+@@ -1,11 +1,15 @@
+ #!/usr/bin/perl
+-#
+-# pS-Performance Toolkit script that changes the MOTD to include the toolkit
+-# version number as well as the URL to go to configure the toolkit.
+-#
+-# chkconfig: 2345 99 99
+-# description: pS-Performance Toolkit MOTD maintenance script
+-#
++### BEGIN INIT INFO
++# Provides:          perfsonar-generate_motd
++# Required-Start:    $local_fs $remote_fs
++# Required-Stop:     $local_fs $remote_fs
++# Default-Start:     2 3 4 5
++# Default-Stop:      0 1 6
++# Short-Description: pS-Performance Toolkit MOTD maintenance script
++# Description:       pS-Performance Toolkit script that changes the MOTD
++#                    to include the toolkit version number as well as
++#                    the URL to go to configure the toolkit.
++### END INIT INFO
+ 
+ use strict;
+ use warnings;
+--- a/init_scripts/perfsonar-psb_to_esmond
++++ b/init_scripts/perfsonar-psb_to_esmond
+@@ -1,10 +1,13 @@
+ #!/bin/bash
+-#
+-# Init file for perfSONAR MA data conversion tool
+-#
+-# chkconfig: 2345 99 20
+-# description: perfSONAR MA data conversion tool
+-#
++### BEGIN INIT INFO
++# Provides:          perfsonar-psb_to_esmond
++# Required-Start:    $local_fs $remote_fs $network apache2 cassandra
++# Required-Stop:     $local_fs $remote_fs $network apache2 cassandra
++# Default-Start:     2 3 4 5
++# Default-Stop:      0 1 6
++# Short-Description: perfSONAR MA data conversion tool
++# Description:       Init file for perfSONAR MA data conversion tool
++### END INIT INFO
+ 
+ PREFIX=/usr/lib/perfsonar
+ BINDIR=${PREFIX}/scripts

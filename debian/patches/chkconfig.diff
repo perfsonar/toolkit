@@ -1,7 +1,7 @@
 --- a/init_scripts/perfsonar-configure_nic_parameters
 +++ b/init_scripts/perfsonar-configure_nic_parameters
-@@ -14,7 +14,7 @@
- #
+@@ -9,7 +9,7 @@
+ ### END INIT INFO
  
  # Source function library.
 -. /etc/init.d/functions
@@ -9,7 +9,7 @@
  
  #always set these on perfsonar hosts
  DISABLE_TCP_OFFLOAD=1
-@@ -23,14 +23,8 @@
+@@ -18,14 +18,8 @@
  
  # find all the interfaces besides loopback.
  # ignore aliases, alternative configurations, and editor backup files
@@ -26,7 +26,7 @@
  
  start() {
  ret=0
-@@ -48,33 +42,33 @@
+@@ -43,33 +37,33 @@
          RETVAL=$?
          if [ $RETVAL -eq 0 ]; then
              # apply multi-ethtool settings
@@ -69,7 +69,7 @@
          fi
      fi
  done
-@@ -88,23 +82,22 @@
+@@ -83,23 +77,22 @@
  
  IC_OFF() {
  for i in "$1"; do
