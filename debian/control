@@ -20,7 +20,8 @@ Depends: libperfsonar-perl, apache2, apache2-utils, ssl-cert,
  perfsonar-toolkit-config-daemon, perfsonar-core,
  perfsonar-lscachedaemon, perfsonar-traceroute-viewer,
  perfsonar-meshconfig-jsonbuilder,
- perfsonar-toolkit-graphs, ${misc:Depends}
+ perfsonar-toolkit-graphs, perfsonar-toolkit-install,
+ perfsonar-toolkit-systemenv, ${misc:Depends}
 Description: perfSONAR Toolkit web
  perfSONAR Toolkit web GUI and associated services.
 
@@ -75,8 +76,7 @@ Architecture: all
 Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
  perfsonar-toolkit-servicewatcher, perfsonar-toolkit-ntp,
  perfsonar-toolkit-library, bwctl-server, esmond,
- perfsonar-meshconfig-agent, perfsonar-toolkit,
- owamp-server, nscd
+ perfsonar-meshconfig-agent, owamp-server, nscd
 Description: perfSONAR Toolkit system tuning
  Tunes and configures the system according to performance
  and security best practices.
