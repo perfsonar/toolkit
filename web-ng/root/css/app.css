@@ -2629,6 +2629,11 @@ to put the stuff inside. */
 
 */
 
+.reveal-modal.loading.ntpclosest {
+    width:80%;
+    margin-left:20%;
+}
+
 .reveal-modal.loading {
   position: fixed;
   overflow: hidden;
