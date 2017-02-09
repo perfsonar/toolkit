@@ -41,8 +41,6 @@ lib/perfSONAR_PS/Utils/Closest.pm
 lib/perfSONAR_PS/Utils/Config/BWCTL.pm
 lib/perfSONAR_PS/Utils/Config/NTP.pm
 lib/perfSONAR_PS/Utils/Config/OWAMP.pm
-lib/psTracerouteUtils.pm
-python_lib/Internet2Commands.py
 python_lib/Internet2Consts.py
 python_lib/Internet2Lib.py
 scripts/add_psadmin_user

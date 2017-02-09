@@ -82,6 +82,5 @@ YAML::Syck
 base
 constant
 lib
-psTracerouteUtils
 vars
 warnings
