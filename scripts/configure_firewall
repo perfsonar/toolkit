@@ -139,6 +139,13 @@ addFirewallRules(){
         for rule in "${firewall_rules[@]}"; do
             case ${rule} in
                 "-A ${CHAIN}"*)
+                    # Skip SSH rule if port already handled by INPUT chain
+                    if echo "$rule" | grep -q -w -e '--dport 22' &&
+                       iptables -nL INPUT | grep -q -w dpt:22
+                    then
+                       continue
+                    fi
+
                     $iptables_cmd $rule &> /dev/null
                     ;;
                 "-I ${CHAIN}"*)
