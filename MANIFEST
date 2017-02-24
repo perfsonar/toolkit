@@ -15,7 +15,7 @@ etc/firewalld/services/bwctl.xml
 etc/firewalld/services/ndt.xml
 etc/firewalld/services/npad.xml
 etc/firewalld/services/oppd.xml
-etc/firewalld/services/owamp.xml
+etc/firewalld/services/owamp-control.xml
 etc/firewalld/services/traceroute.xml
 etc/ntp_known_servers
 etc/old_firewall_settings.conf
@@ -41,8 +41,6 @@ lib/perfSONAR_PS/Utils/Closest.pm
 lib/perfSONAR_PS/Utils/Config/BWCTL.pm
 lib/perfSONAR_PS/Utils/Config/NTP.pm
 lib/perfSONAR_PS/Utils/Config/OWAMP.pm
-lib/psTracerouteUtils.pm
-python_lib/Internet2Commands.py
 python_lib/Internet2Consts.py
 python_lib/Internet2Lib.py
 scripts/add_psadmin_user

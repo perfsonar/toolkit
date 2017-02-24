@@ -32,7 +32,7 @@ HostConfigPage.initialize = function() {
 
     $('form#hostConfigForm input').change(HostConfigPage._showSaveBar);
     $('form#hostConfigForm select').change(HostConfigPage._showSaveBar);
-    
+
     $('#admin_info_save_button').click(HostConfigPage._save);
     $('#admin_info_cancel_button').click( HostConfigPage._cancel);
 
@@ -68,7 +68,7 @@ HostConfigPage._handleSubForm = function(topic, result) {
         var message = '';
         if (HostConfigPage.ntpSaveCompleted && HostConfigPage.autoUpdatesSaveCompleted) {
             message += 'Auto updates and NTP saved successfully';
-            
+
         } else {
             if (HostConfigPage.autoUpdatesSaveCompleted) {
                 message += 'Auto Updates saved successfully. ';
