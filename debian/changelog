@@ -1,11 +1,14 @@
-perfsonar-toolkit (4.0~10.rc2-1~bpo70+1) perfsonar-wheezy-staging; urgency=low
+perfsonar-toolkit (4.0~13.rc3-1~bpo70+1) perfsonar-wheezy-staging; urgency=low
 
   * Backport to Wheezy.
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Thu, 03 Nov 2016 15:51:03 +0100
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Fri, 24 Feb 2017 15:57:40 +0100
 
-perfsonar-toolkit (4.0~10.rc2-1) perfsonar-jessie-staging; urgency=low
+perfsonar-toolkit (4.0~13.rc3-1) perfsonar-jessie-staging; urgency=low
 
+  * New upstream version.
+  * Improving configuration scripts.
+  * Improving startup scripts.
   * Adding dependencies: ssl-cert, ntp, libperfsonar-toolkit-perl,
     perfsonar-lsregistrationdaemon, perfsonar-toolkit-config-daemon,
     perfsonar-core, perfsonar-lscachedaemon, perfsonar-traceroute-viewer,
@@ -15,7 +18,7 @@ perfsonar-toolkit (4.0~10.rc2-1) perfsonar-jessie-staging; urgency=low
   * Enabling apache ssl module.
   * Adding a lintian-overrides for incorrect JS library detection.
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Thu, 03 Nov 2016 15:49:18 +0100
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Fri, 24 Feb 2017 15:56:19 +0100
 
 perfsonar-toolkit (3.5.1.3-1) perfsonar-jessie-release; urgency=low
 
