@@ -87,10 +87,17 @@ TXQUEUELEN_SET() {
 }
 
 IC_OFF() {
+IC_RET=0
 for i in "$1"; do
-    /usr/sbin/ethtool -C $i rx-frames 1
-    /usr/sbin/ethtool -C $i rx-usecs 0
+    if ! /usr/sbin/ethtool -c $i | grep -q '^rx-frames: 1$'; then
+         /usr/sbin/ethtool -C $i rx-frames 1 || IC_RET=$?
+    fi
+
+    if ! /usr/sbin/ethtool -c $i | grep -q '^rx-usecs: 0$'; then
+         /usr/sbin/ethtool -C $i rx-usecs 0 || IC_RET=$?
+    fi
 done
+return $IC_RET
 }
 
 TSO_ON() {

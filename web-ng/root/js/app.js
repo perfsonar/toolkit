@@ -78,7 +78,7 @@ $(document).ready(function() {
 
     // Hide the popover when the user clicks outside of it
     $(document).click(function(e) {
-        $(".sidebar-popover").fadeOut("fast");
+        $(".sidebar-popover").not(".graph-values-popover").fadeOut("fast");
     });
 
     // Stop clicking inside the popover from hiding it

@@ -130,12 +130,12 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
 
     var toolkit_version = data.toolkit_version;
     if (toolkit_version !== null) {  
-        status_more_values.push( {label: "Toolkit version", value: toolkit_version} );
+        status_more_values.push( {label: "perfSONAR version", value: toolkit_version} );
     }
 
     var rpm_version = data.toolkit_rpm_version;
     if (typeof rpm_version != "undefined") {  
-        status_more_values.push( {label: "Toolkit RPM version", value: rpm_version} );
+        status_more_values.push( {label: "Toolkit package version", value: rpm_version} );
     }
 
     data.status_values = status_values;
