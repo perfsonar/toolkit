@@ -428,7 +428,7 @@ chown apache /var/run/web_admin_sessions
 mkdir -p /var/run/toolkit/
 
 # Install a link to the logs into the web location
-ln -sf /var/log/perfsonar %{install_base}/web-ng/root/admin/logs
+ln -sT /var/log/perfsonar %{install_base}/web-ng/root/admin/logs 2> /dev/null
 
 #Set bundle type and version
 echo "perfsonar-toolkit" > /var/lib/perfsonar/bundles/bundle_type
