@@ -77,7 +77,7 @@ Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
  perfsonar-toolkit-servicewatcher, perfsonar-toolkit-ntp,
  perfsonar-toolkit-library, bwctl-server, esmond,
  perfsonar-meshconfig-agent, owamp-server, nscd,
- perfsonar-toolkit-config-daemon
+ perfsonar-toolkit-config-daemon, perfsonar-lsregistrationdaemon
 Description: perfSONAR Toolkit system tuning
  Tunes and configures the system according to performance
  and security best practices.
