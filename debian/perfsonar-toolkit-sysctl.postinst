@@ -26,7 +26,7 @@ case "$1" in
     configure)
         # generate config
         script=configure_sysctl
-        if [ "$2" ]; then
+        if [ "$2" -a -e /etc/sysctl.d/perfsonar-toolkit-sysctl.conf ]; then
             echo "Running: $script upgrade $2"
             /usr/lib/perfsonar/scripts/$script upgrade $2
         else
