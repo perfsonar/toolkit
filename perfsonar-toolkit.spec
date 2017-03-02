@@ -678,6 +678,8 @@ fi
 /usr/lib/firewalld/services/*.xml
 
 %files install
+%config(noreplace) %{config_base}/pscheduler_ulimit.conf
+%attr(0644,root,root) %{config_base}/pscheduler_ulimit.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
 %attr(0644,root,root) %{config_base}/default_service_configs/pscheduler_limits.conf
