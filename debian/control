@@ -34,6 +34,7 @@ Description: perfSONAR Toolkit library
 Package: perfsonar-toolkit-security
 Architecture: all
 Depends: firewalld, fail2ban, ${misc:Depends}
+Conflicts: iptables-persistent, netfilter-persistent
 Description: perfSONAR Toolkit firewall configuration
  Configures IPTables rules and installs fail2ban for perfSONAR Toolkit.
 
