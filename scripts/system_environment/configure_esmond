@@ -4,6 +4,18 @@ PG_BINDIR=/usr/pgsql-${PG_VERSION}/bin
 PG_DATADIR=/var/lib/pgsql/${PG_VERSION}/data
 PG_SERVICE_NAME="postgresql-${PG_VERSION}"
 
+#Determine install type
+# UPDATE: Don't force meshconfig-agent-tasks.conf to add localhost MAs
+# NEW: Add localhost MAs if don't see the API key referenced anywhere else
+# FORCE: Add the localhost MA 
+INSTALL_TYPE="UPDATE"
+if [ "$1" == "1" ]; then
+    INSTALL_TYPE="NEW"
+elif [ "$1" == "--force" ]; then
+    INSTALL_TYPE="FORCE"
+fi
+echo $INSTALL_TYPE
+
 #fire-up cassandra if needed
 /sbin/service cassandra status &> /dev/null
 if [ $? -ne 0 ]; then
@@ -95,11 +107,51 @@ python esmond/manage.py syncdb --noinput &> /dev/null
 #create api key
 KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
 
-#set API Key in meshconfig-agent-tasks.conf
+#setup localhost measurement archives in meshconfig-agent-tasks.conf
 if [ -n "$KEY" ]; then
+    ADD_LOCAL_MA=0
+    #If has string ESMOND_API_KEY then probably added pre-4.0. Replace the string 
+    # with the api key and proceed
     grep -q ESMOND_API_KEY /etc/perfsonar/meshconfig-agent-tasks.conf
-    if [ $? == 0 ]; then
+    if [ $? -eq 0 ]; then
         sed -i "s/ESMOND_API_KEY/$KEY/g" /etc/perfsonar/meshconfig-agent-tasks.conf
+    else
+        #check if key already referenced in file
+        grep -q $KEY /etc/perfsonar/meshconfig-agent-tasks.conf
+        KEY_GREP=$?
+        #adding an MA will depend on install type and if already saw referenced key
+        if [ "$INSTALL_TYPE" == "FORCE" ]; then
+            #If we gave it the --force option, definitely add
+            ADD_LOCAL_MA=1
+        elif [ "$INSTALL_TYPE" == "NEW" ]; then
+            #If we are installing from RPM for first time, add if key not referenced
+            if [ $KEY_GREP -ne 0 ]; then
+                ADD_LOCAL_MA=1
+            fi
+        fi
+    fi
+    
+    #finally, drop-in MA if needed
+    if [ $ADD_LOCAL_MA -eq 1 ]; then
+        drop-in -n -t perfsonar-configure_esmond - /etc/perfsonar/meshconfig-agent-tasks.conf <<EOF
+<measurement_archive>
+    type   esmond/latency
+    database   https://localhost/esmond/perfsonar/archive/
+    password   $KEY
+</measurement_archive>
+
+<measurement_archive>
+    type   esmond/throughput
+    database   https://localhost/esmond/perfsonar/archive/
+    password   $KEY
+</measurement_archive>
+
+<measurement_archive>
+    type       esmond/traceroute
+    database   https://localhost/esmond/perfsonar/archive/
+    password   $KEY
+</measurement_archive>
+EOF
     fi
 fi
 
