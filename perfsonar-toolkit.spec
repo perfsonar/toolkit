@@ -17,7 +17,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.13.rc3 
+%define relnum  0.14.rc3 
 
 Name:			perfsonar-toolkit
 Version:		4.0
@@ -428,7 +428,7 @@ chown apache /var/run/web_admin_sessions
 mkdir -p /var/run/toolkit/
 
 # Install a link to the logs into the web location
-ln -sf /var/log/perfsonar %{install_base}/web-ng/root/admin/logs
+ln -sT /var/log/perfsonar %{install_base}/web-ng/root/admin/logs 2> /dev/null
 
 #Set bundle type and version
 echo "perfsonar-toolkit" > /var/lib/perfsonar/bundles/bundle_type
@@ -623,6 +623,7 @@ fi
 %exclude %{config_base}/templates/ntp_conf.tmpl
 %exclude %{config_base}/default_service_configs/pg_hba.conf
 %exclude %{config_base}/default_service_configs/pscheduler_limits.conf
+%exclude %{config_base}/pscheduler_ulimit.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web-ng/*
 /etc/httpd/conf.d/*
@@ -678,6 +679,8 @@ fi
 /usr/lib/firewalld/services/*.xml
 
 %files install
+%config(noreplace) %{config_base}/pscheduler_ulimit.conf
+%attr(0644,root,root) %{config_base}/pscheduler_ulimit.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
 %attr(0644,root,root) %{config_base}/default_service_configs/pscheduler_limits.conf
