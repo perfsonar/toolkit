@@ -522,20 +522,6 @@ for script in %{install_base}/scripts/system_environment/*; do
 	fi
 done
 
-# Add a script to inspire them to create a 'psadmin' and sudo user if they don't already have one
-# Clear out old references first to fix bug where these got repeated
-sed -i "/add_psadmin_user/d" /root/.bashrc
-sed -i "/add_pssudo_user/d" /root/.bashrc
-sed -i '/^if \[ -t 0 -a -t 1 -a -t 2 \];/,/^fi/d' /root/.bashrc 
-cat >> /root/.bashrc <<EOF
-if [ -t 0 -a -t 1 -a -t 2 ]; then
-# Run the add_psadmin_user script to ensure that a psadmin user has been created
-%{install_base}/scripts/add_psadmin_user --auto
-# Run the add_pssudo_user script to encourage disabling root ssh
-%{install_base}/scripts/add_pssudo_user --auto
-fi
-EOF
-
 
 #########################################################################
 # The system environment scripts monkey with the apache configuration, so
