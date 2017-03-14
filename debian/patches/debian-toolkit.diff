@@ -183,14 +183,12 @@
  BINDIR=${PREFIX}/scripts
 --- a/web-ng/root/gui/reverse_traceroute.cgi
 +++ b/web-ng/root/gui/reverse_traceroute.cgi
-@@ -255,8 +255,8 @@
+@@ -255,7 +255,7 @@
  #########################################################################
  # Build the executable function for tracepath
  elsif($function eq "tracepath") {
 -  $Tr="/bin/tracepath";
--  @Tropts="";
 +  $Tr="tracepath";
-+  @Tropts=();
+   @Tropts=();
  }
  #########################################################################
- #Keep track of last request
