@@ -256,7 +256,7 @@ elsif($function =~ /synack/) {
 # Build the executable function for tracepath
 elsif($function eq "tracepath") {
   $Tr="/bin/tracepath";
-  @Tropts="";
+  @Tropts=();
 }
 #########################################################################
 #Keep track of last request

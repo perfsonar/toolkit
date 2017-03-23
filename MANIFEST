@@ -65,6 +65,7 @@ scripts/ps-toolkit-migrate-restore.sh
 scripts/psb_to_esmond.pl
 scripts/remove_home_partition
 scripts/service_watcher
+scripts/system_environment/add_psadmin_pssudo
 scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path
 scripts/system_environment/bwctl_port_verify
