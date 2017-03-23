@@ -17,7 +17,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.15.rc3 
+%define relnum  0.16.rc3 
 
 Name:			perfsonar-toolkit
 Version:		4.0
@@ -443,7 +443,7 @@ chmod 644 /var/log/pscheduler/pscheduler.log
 ln -s /var/log/pscheduler/pscheduler.log /var/log/perfsonar/pscheduler.log 2> /dev/null
 
 #symlink to web config files
-ln -s /usr/lib/perfsonar/web-ng/etc /etc/perfsonar/toolkit/web 2> /dev/null
+ln -sT /usr/lib/perfsonar/web-ng/etc /etc/perfsonar/toolkit/web 2> /dev/null
 
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
@@ -521,20 +521,6 @@ for script in %{install_base}/scripts/system_environment/*; do
 		$script upgrade ${PREV_VERSION}
 	fi
 done
-
-# Add a script to inspire them to create a 'psadmin' and sudo user if they don't already have one
-# Clear out old references first to fix bug where these got repeated
-sed -i "/add_psadmin_user/d" /root/.bashrc
-sed -i "/add_pssudo_user/d" /root/.bashrc
-sed -i '/^if \[ -t 0 -a -t 1 -a -t 2 \];/,/^fi/d' /root/.bashrc 
-cat >> /root/.bashrc <<EOF
-if [ -t 0 -a -t 1 -a -t 2 ]; then
-# Run the add_psadmin_user script to ensure that a psadmin user has been created
-%{install_base}/scripts/add_psadmin_user --auto
-# Run the add_pssudo_user script to encourage disabling root ssh
-%{install_base}/scripts/add_pssudo_user --auto
-fi
-EOF
 
 
 #########################################################################
