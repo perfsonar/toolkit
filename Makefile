@@ -2,7 +2,7 @@ PACKAGE=perfsonar-toolkit
 ROOTPATH=/usr/lib/perfsonar
 CONFIGPATH=/etc/perfsonar/toolkit
 VERSION=4.0
-RELEASE=0.16.rc3
+RELEASE=0.17.rc3
 
 default:
 	@echo No need to build the package. Just run \"make install\"
