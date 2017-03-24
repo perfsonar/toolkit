@@ -9,12 +9,11 @@ PG_SERVICE_NAME="postgresql-${PG_VERSION}"
 # NEW: Add localhost MAs if don't see the API key referenced anywhere else
 # FORCE: Add the localhost MA 
 INSTALL_TYPE="UPDATE"
-if [ "$1" == "1" ]; then
+if [ "$1" == "new" ]; then
     INSTALL_TYPE="NEW"
 elif [ "$1" == "--force" ]; then
     INSTALL_TYPE="FORCE"
 fi
-echo $INSTALL_TYPE
 
 #fire-up cassandra if needed
 /sbin/service cassandra status &> /dev/null
@@ -154,6 +153,9 @@ if [ -n "$KEY" ]; then
 EOF
     fi
 fi
+#make sure after all the edits meshconfig still has proper permissions
+chown perfsonar:perfsonar /etc/perfsonar/meshconfig-agent-tasks.conf
+chmod 644 /etc/perfsonar/meshconfig-agent-tasks.conf
 
 #Create archiver file for easy access
 mkdir -p /usr/share/pscheduler

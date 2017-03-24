@@ -222,6 +222,16 @@ deletePortRuleFromFile(){
     done
 }
 
+#enable firewalld/iptables
+if type systemctl &>/dev/null; then
+    systemctl enable firewalld 2>/dev/null
+    systemctl start firewalld 2>/dev/null
+else
+    /sbin/chkconfig iptables on 2>/dev/null
+    /etc/init.d/iptables start 2>/dev/null
+fi
+
+#configure firewall rules
 main
 
 exit 0
