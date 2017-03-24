@@ -559,9 +559,6 @@ else
     %{install_base}/scripts/configure_ntpd upgrade ${PREV_VERSION}
 fi
 
-#enabling ntp service
-chkconfig ntpd on
-
 %post security
 
 #configuring firewall
