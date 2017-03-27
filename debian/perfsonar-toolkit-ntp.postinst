@@ -21,9 +21,9 @@ set -e
 case "$1" in
     configure)
         if [ -z "$2" ]; then
-            /usr/lib/perfsonar/scripts/configure_ntpd new
+            /usr/lib/perfsonar/scripts/configure_ntpd new || true
         else
-            /usr/lib/perfsonar/scripts/configure_ntpd upgrade $2
+            /usr/lib/perfsonar/scripts/configure_ntpd upgrade $2 || true
         fi
     ;;
 
