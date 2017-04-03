@@ -137,8 +137,6 @@ web-ng/root/data/country_data.csv
 web-ng/root/data/country_data.json
 web-ng/root/data/us_states_hash.json
 web-ng/root/gui/reverse_traceroute.cgi
-web-ng/root/gui/services/etc/.htaccess
-web-ng/root/gui/services/index.cgi
 web-ng/root/images/perfSONAR-logo-powered-reverse.png
 web-ng/root/images/perfSONAR-logo-powered.png
 web-ng/root/images/perfSONAR-logo-reversed-green.png
