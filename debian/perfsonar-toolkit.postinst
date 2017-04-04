@@ -37,8 +37,10 @@ case "$1" in
         chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/traceroute
 
         mkdir -p /var/lib/perfsonar/log_view/bwctl
-        mkdir -p /var/lib/perfsonar/log_view/ndt
         mkdir -p /var/lib/perfsonar/log_view/owamp
+
+        # Removing ald log_view/ndt directory if present (to be removed post 4.0)
+        rm -rf /var/lib/perfsonar/log_view/ndt
 
         touch /etc/perfsonar/toolkit/psadmin.htpasswd
         chmod 640 /etc/perfsonar/toolkit/psadmin.htpasswd

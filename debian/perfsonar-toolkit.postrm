@@ -34,8 +34,10 @@ case "$1" in
         rm -rf /var/lib/perfsonar/db_backups/traceroute
 
         rm -rf /var/lib/perfsonar/log_view/bwctl
-        rm -rf /var/lib/perfsonar/log_view/ndt
         rm -rf /var/lib/perfsonar/log_view/owamp
+
+        # Removing ald log_view/ndt directory if present
+        rm -rf /var/lib/perfsonar/log_view/ndt
 
         rm -f /etc/perfsonar/toolkit/psadmin.htpasswd
 
