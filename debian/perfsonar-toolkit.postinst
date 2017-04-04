@@ -37,7 +37,6 @@ case "$1" in
         chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/traceroute
 
         mkdir -p /var/lib/perfsonar/log_view/bwctl
-        mkdir -p /var/lib/perfsonar/log_view/ndt
         mkdir -p /var/lib/perfsonar/log_view/owamp
 
         touch /etc/perfsonar/toolkit/psadmin.htpasswd
