@@ -12,8 +12,6 @@ etc/default_service_configs/pscheduler_limits.conf
 etc/default_service_configs/jail.local
 etc/default_system_firewall_settings.conf
 etc/firewalld/services/bwctl.xml
-etc/firewalld/services/ndt.xml
-etc/firewalld/services/npad.xml
 etc/firewalld/services/oppd.xml
 etc/firewalld/services/owamp-control.xml
 etc/firewalld/services/traceroute.xml
@@ -139,8 +137,6 @@ web-ng/root/data/country_data.csv
 web-ng/root/data/country_data.json
 web-ng/root/data/us_states_hash.json
 web-ng/root/gui/reverse_traceroute.cgi
-web-ng/root/gui/services/etc/.htaccess
-web-ng/root/gui/services/index.cgi
 web-ng/root/images/perfSONAR-logo-powered-reverse.png
 web-ng/root/images/perfSONAR-logo-powered.png
 web-ng/root/images/perfSONAR-logo-reversed-green.png

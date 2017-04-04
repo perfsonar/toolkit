@@ -370,20 +370,6 @@ $services_update_method->add_input_parameter(
     type            => 'boolean',
     );
 
-$services_update_method->add_input_parameter(
-    name            => "ndt",
-    description     => "Whether to enable the NDT service",
-    required        => 0,
-    type            => 'boolean',
-    );
-
-$services_update_method->add_input_parameter(
-    name            => "npad",
-    description     => "Whether to enable the NPAD service",
-    required        => 0,
-    type            => 'boolean',
-    );
-
 $router->add_method($services_update_method);
 
 my $get_auto_updates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
