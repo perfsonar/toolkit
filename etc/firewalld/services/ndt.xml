@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service>
-  <short>NDT</short>
-  <description>NDT test and control ports.</description>
-  <port protocol="tcp" port="3001-3003"/> <!-- NDT Test (Incoming) -->
-  <port protocol="tcp" port="7123"/> <!-- NDT Control (Incoming) -->
-  <port protocol="tcp" port="843"/> <!-- Flash crossdomain (for NDT) -->
-</service>
