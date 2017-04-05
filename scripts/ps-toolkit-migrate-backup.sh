@@ -79,7 +79,7 @@ else
 fi
 
 #get perfsonar files
-printf "Backing-up toolkit configuration..."
+printf "Backing-up perfsonar configuration..."
 cp -a /etc/perfsonar $TEMP_BAK_DIR/etc
 if [ "$?" != "0" ]; then
     echo "Unable to copy /etc/perfsonar"
