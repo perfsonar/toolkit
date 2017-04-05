@@ -559,9 +559,6 @@ else
     %{install_base}/scripts/configure_ntpd upgrade ${PREV_VERSION}
 fi
 
-#enabling ntp service
-chkconfig ntpd on
-
 %post security
 
 #configuring firewall
@@ -628,7 +625,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/regular_testing.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/tests.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
@@ -647,8 +643,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/%{cron_hourly_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-backup.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
 
@@ -669,6 +663,8 @@ fi
 %attr(0644,root,root) %{config_base}/pscheduler_ulimit.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-migrate-backup.sh
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-migrate-restore.sh
 %attr(0644,root,root) %{config_base}/default_service_configs/pscheduler_limits.conf
 
 %files sysctl

@@ -58,8 +58,8 @@ scripts/logscraper.cron
 scripts/manage_users
 scripts/mod_interface_route
 scripts/nptoolkit-configure.py
-scripts/ps-toolkit-migrate-backup.sh
-scripts/ps-toolkit-migrate-restore.sh
+scripts/ps-migrate-backup.sh
+scripts/ps-migrate-restore.sh
 scripts/psb_to_esmond.pl
 scripts/remove_home_partition
 scripts/service_watcher
