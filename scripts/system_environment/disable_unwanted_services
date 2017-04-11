@@ -47,6 +47,7 @@ if [ "$1" == "new" ]; then
     disable_service rpcidmapd
     disable_service rpcsvcgssd
     disable_service smartd
+    disable_service tuned
     disable_service ypbind
     disable_service yum-updatesd
 fi
