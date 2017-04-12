@@ -25,6 +25,7 @@ case "$1" in
         else
             /usr/lib/perfsonar/scripts/configure_ntpd upgrade $2 || true
         fi
+        service ntp restart
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
