@@ -20,8 +20,8 @@ set -e
 
 case "$1" in
     configure)
-        service firewalld restart
         /usr/lib/perfsonar/scripts/configure_firewall install
+        service firewalld restart
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
