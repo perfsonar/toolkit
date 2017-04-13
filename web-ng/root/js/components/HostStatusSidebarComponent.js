@@ -9,10 +9,10 @@ var HostStatusSidebarComponent = {
     metadata: null,
     details_set: false,
     metadata_set: false,
-    health_token: null,        
+    health_token: null,
     health_refresh_interval: 10000, // in milliseconds
     id_prefix: "health-value-",
-    recommended_ram: 4, // in gigabytes
+    recommended_ram: 3.5, // in gigabytes; we really recommend 4 but will often detect as < 4
     show_ram_in_details: true,
 };
 
@@ -38,7 +38,7 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
     } else {
         data.ntp_classes = 'color-red';
     }
-    
+
     data.registered = (data.globally_registered == 1 ? "Yes" : "No");
     if (data.globally_registered == 1 ) {
         data.registered_classes = 'color-green';
@@ -47,13 +47,13 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
     }
 
     var primary_interface = data.external_address.iface;
-    if (typeof primary_interface != "undefined") {  
+    if (typeof primary_interface != "undefined") {
         data.primary_interface = primary_interface;
     }
 
     // will loop to print out (in order)
     var status_values = [];
-   
+
     var auto_updates = data.auto_updates;
     if (typeof auto_updates != "undefined") {
         var auto_updates_value = (auto_updates == 1 ? "ON" : "OFF");
@@ -70,13 +70,13 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
 
     // (will be hidden in Status section if shown in Health section)
     var host_memory = data.host_memory;
-    if (typeof host_memory != "undefined") {   
+    if (typeof host_memory != "undefined") {
         var memVal = {};
         if (host_memory < HostStatusSidebarComponent.recommended_ram) {
             memVal.classes = "color-red";
         }
         host_memory += " GB";
-        memVal.id    = "ram_details";  
+        memVal.id    = "ram_details";
         memVal.label = "RAM";
         memVal.value = host_memory;
         status_values.push( memVal );
@@ -95,16 +95,16 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
             status_more_values.push( {label: "Model", value: data.product_name} );
         }
     }
-        
+
     var cpu_val;
     var cpus = data.cpus;
-    if (typeof cpus != "undefined") {   
-       cpu_val = cpus; 
+    if (typeof cpus != "undefined") {
+       cpu_val = cpus;
     } else {
         cpu_val = "?";
     }
     var cpu_cores = data.cpu_cores;
-    if (typeof cpu_cores != "undefined") {   
+    if (typeof cpu_cores != "undefined") {
         cpu_val = cpu_val + " / " + cpu_cores;
     } else {
         cpu_val = cpu_val + " / ?";
@@ -113,8 +113,8 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
 
 
     var cpu_speed = Math.round(data.cpu_speed);
-    if (typeof cpu_speed != "undefined") {  
-        cpu_speed += " MHz"; 
+    if (typeof cpu_speed != "undefined") {
+        cpu_speed += " MHz";
         status_more_values.push( {label: "CPU Speed", value: cpu_speed} );
     }
 
@@ -129,18 +129,18 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
     }
 
     var toolkit_version = data.toolkit_version;
-    if (toolkit_version !== null) {  
+    if (toolkit_version !== null) {
         status_more_values.push( {label: "perfSONAR version", value: toolkit_version} );
     }
 
     var rpm_version = data.toolkit_rpm_version;
-    if (typeof rpm_version != "undefined") {  
+    if (typeof rpm_version != "undefined") {
         status_more_values.push( {label: "Toolkit package version", value: rpm_version} );
     }
 
     data.status_values = status_values;
     data.status_more_values = status_more_values;
-    
+
     HostStatusSidebarComponent.details = data;
 
     HostStatusSidebarComponent.details_set = true;
