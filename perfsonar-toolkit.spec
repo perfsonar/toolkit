@@ -20,7 +20,7 @@
 %define relnum  1 
 
 Name:			perfsonar-toolkit
-Version:		4.0
+Version:		4.0.0.1
 Release:		%{relnum}%{?dist}
 Summary:		perfSONAR Toolkit
 License:		Distributable, see LICENSE
@@ -693,6 +693,9 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_esmond 
 
 %changelog
+* Wed Apr 19 2017 andy@es.net
+- Adding back NDT firewall ports
+
 * Thu Mar 4 2015 sowmya@es.net
 - Splitting out Install Script package and Toolkit library package
 
