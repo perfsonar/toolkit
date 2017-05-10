@@ -75,7 +75,7 @@ Package: perfsonar-toolkit-systemenv
 Architecture: all
 Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
  perfsonar-toolkit-servicewatcher, perfsonar-toolkit-ntp,
- perfsonar-toolkit-library, bwctl-server, esmond,
+ perfsonar-toolkit-library, bwctl-server, drop-in, esmond,
  perfsonar-meshconfig-agent, owamp-server, nscd,
  perfsonar-toolkit-config-daemon, perfsonar-lsregistrationdaemon
 Description: perfSONAR Toolkit system tuning
