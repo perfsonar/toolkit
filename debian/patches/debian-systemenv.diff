@@ -109,15 +109,6 @@
  
  #setup localhost measurement archives in meshconfig-agent-tasks.conf
  if [ -n "$KEY" ]; then
-@@ -132,7 +45,7 @@
-     
-     #finally, drop-in MA if needed
-     if [ $ADD_LOCAL_MA -eq 1 ]; then
--        drop-in -n -t perfsonar-configure_esmond - /etc/perfsonar/meshconfig-agent-tasks.conf <<EOF
-+        cat >> /etc/perfsonar/meshconfig-agent-tasks.conf <<EOF
- <measurement_archive>
-     type   esmond/latency
-     database   https://localhost/esmond/perfsonar/archive/
 --- a/scripts/system_environment/configure_fail2ban
 +++ b/scripts/system_environment/configure_fail2ban
 @@ -10,5 +10,5 @@
