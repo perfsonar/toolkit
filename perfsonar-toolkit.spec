@@ -125,6 +125,9 @@ BuildRequires: systemd
 Requires:		mod_auth_shadow
 %endif
 
+# Unit test mock library
+BuildRequires: perl-Test-MockObject
+
 Obsoletes:		perl-perfSONAR_PS-TopologyService
 Obsoletes:		perl-perfSONAR_PS-Toolkit
 Provides:       perl-perfSONAR_PS-Toolkit
