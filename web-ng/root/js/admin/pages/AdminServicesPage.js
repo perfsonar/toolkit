@@ -10,7 +10,7 @@ var AdminServicesPage = {
     formCancelTopic: 'ui.form.cancel',
     saveServicesTopic: 'store.host_services.save',
     saveServicesErrorTopic: 'store.host_services.save_error',
-    serviceList: ['bwctl', 'owamp', 'ndt', 'npad'],
+    serviceList: ['bwctl', 'owamp'],
     bandwidthServices: ['bwctl'],
     latencyServices: ['owamp'],
 };

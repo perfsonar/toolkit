@@ -19,6 +19,7 @@ if [ "$1" == "new" ]; then
     disable_service avahi-daemon
     disable_service avahi-dnsconfd
     disable_service bluetooth
+    disable_service chronyd
     disable_service cpuspeed
     disable_service cups
     disable_service firstboot
@@ -30,6 +31,7 @@ if [ "$1" == "new" ]; then
     disable_service kudzu
     disable_service mdmonitor
     disable_service mdmpd
+    disable_service NetworkManager
     disable_service ndt
     disable_service netfs
     disable_service nfs
@@ -45,6 +47,7 @@ if [ "$1" == "new" ]; then
     disable_service rpcidmapd
     disable_service rpcsvcgssd
     disable_service smartd
+    disable_service tuned
     disable_service ypbind
     disable_service yum-updatesd
 fi

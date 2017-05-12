@@ -2,10 +2,11 @@
 // assues Dispatcher has already been declared (so load that first as well)
 
 // the default timeperiod (actually "timeperiod,summary_window") is 1-week,1day.
+var origin = location.origin;
 var TestStore = {
     testList: null,
     tests: null,
-    ma_url: 'http://localhost/esmond/perfsonar/archive/',
+    ma_url: origin + '/esmond/perfsonar/archive/',
     ma_url_enc: null,
     timeperiod: "604800,86400",
     testSummary: {}
@@ -59,7 +60,7 @@ TestStore.retrieveNeededTestAvgs = function(sources, destinations) {
             for (var e=0; e<TestStore.tests.length; e++) {
                 var existingSource = TestStore.tests[e].source_ip;
                 var existingDest = TestStore.tests[e].destination_ip;
-                if ( sources[i] == existingSource && destinations[i] == existingDest ) { 
+                if ( sources[i] == existingSource && destinations[i] == existingDest ) {
                     alreadyDone = 1;
                     break;
                 }
@@ -75,29 +76,14 @@ TestStore.retrieveNeededTestAvgs = function(sources, destinations) {
         destsToDo = destinations;
     }
 
-/* 
-    // Get/show test results in batches 
-    // (Be sure not to retrieveTests if there are no sources and destinations or it'll get ALL test results)
-    var batchSize = 10;  // no. of tests per batch
-    var batchSrcs = [];
-    var batchDests = [];
-    for (var i=0; i<sourcesToDo.length; i+=batchSize) {
-        batchSrcs = sourcesToDo.slice(i,i+batchSize);
-        batchDests = destsToDo.slice(i,i+batchSize);
-        TestStore._retrieveTests( batchSrcs, batchDests );
-        // (after each batch, TestStore.tests contains those test results merged with the previous results.)
-        batchSrcs = [];
-        batchDests = [];
-    }
-*/
-// all in one request (seems to be faster!)
-        TestStore._retrieveTests( sourcesToDo, destsToDo );
+    // retrieve, all in one request (seems to be faster!)
+    TestStore._retrieveTests( sourcesToDo, destsToDo );
 
 };
 
 TestStore._retrieveList = function() {
         // get all test sources and destinations, etc.
-        var the_url = "/perfsonar-graphs/graphData.cgi?action=test_list&timeperiod=" + TestStore.timeperiod 
+        var the_url = "/perfsonar-graphs/cgi-bin/graphData.cgi?action=test_list&timeperiod=" + TestStore.timeperiod 
                 + "&url=" + TestStore.ma_url_enc;
         $.ajax({
             url: the_url,
@@ -118,7 +104,7 @@ TestStore._retrieveList = function() {
 
 TestStore._retrieveTests = function(sources, destinations) {
     // get test results for those tests in the parameter arrays
-    var the_url = "/perfsonar-graphs/graphData.cgi?action=tests&timeperiod=" + TestStore.timeperiod
+    var the_url = "/perfsonar-graphs/cgi-bin/graphData.cgi?action=tests&timeperiod=" + TestStore.timeperiod
                 + "&url=" + TestStore.ma_url_enc;
     for (var i=0; i<sources.length; i++) {
         the_url += '&src='+sources[i]+';dest='+destinations[i];

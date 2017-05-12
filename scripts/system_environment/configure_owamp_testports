@@ -1,0 +1,17 @@
+#!/bin/bash
+
+TASKS_CONF="/etc/perfsonar/meshconfig-agent-tasks.conf"
+
+#set powstream test ports if no default parameters
+TESTPORTS=`grep -m 1 '^testports' /etc/owamp-server/owamp-server.conf | cut -f2 -d " "`
+if [ -n "$TESTPORTS" ]; then
+    RECVPORTS_SET=`grep receive_port_range $TASKS_CONF`
+    if [ -z "$RECVPORTS_SET" ]; then
+       echo "" >> $TASKS_CONF
+       echo "#Default testports set by automated toolkit script" >> $TASKS_CONF
+       echo "<default_parameters>" >> $TASKS_CONF
+       echo "   type  powstream" >> $TASKS_CONF
+       echo "   receive_port_range $TESTPORTS" >> $TASKS_CONF
+       echo "</default_parameters>" >> $TASKS_CONF
+    fi
+fi 

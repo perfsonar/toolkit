@@ -4,17 +4,37 @@ PG_BINDIR=/usr/pgsql-${PG_VERSION}/bin
 PG_DATADIR=/var/lib/pgsql/${PG_VERSION}/data
 PG_SERVICE_NAME="postgresql-${PG_VERSION}"
 
-#disable JMX in cassandra so will start even if /etc/sysconfig/network HOSTNAME does not resolve
-sed -i '/^JVM_OPTS="\$JVM_OPTS -Dcom.sun.management.jmx/ s/^/#/' /etc/cassandra/conf/cassandra-env.sh
-#fire-up cassandra
-/sbin/service cassandra restart 
+#Determine install type
+# UPDATE: Don't force meshconfig-agent-tasks.conf to add localhost MAs
+# NEW: Add localhost MAs if don't see the API key referenced anywhere else
+# FORCE: Add the localhost MA 
+INSTALL_TYPE="UPDATE"
+if [ "$1" == "new" ]; then
+    INSTALL_TYPE="NEW"
+elif [ "$1" == "--force" ]; then
+    INSTALL_TYPE="FORCE"
+fi
+
+#fire-up cassandra if needed
+/sbin/service cassandra status &> /dev/null
 if [ $? -ne 0 ]; then
-    echo "Unable to start cassandra. Proceeding with rest of esmond configuration"
+    /sbin/service cassandra restart 
+    if [ $? -ne 0 ]; then
+        echo "Unable to start cassandra. Proceeding with rest of esmond configuration"
+    fi
 fi
 
 #init postgres - we shouldn't ever have to do this
 if [ -z "$(ls -A ${PG_DATADIR})" ]; then
     su -l postgres -c "${NEW_BINDIR}/initdb  --locale='C' --encoding='sql_ascii' --pgdata='${PG_DATADIR}' --auth='trust'"
+fi
+
+#fix update error in pg_hba.conf - can remove after 4.0rcs have been out for awhile
+if [ -f "${PG_DATADIR}/pg_hba.conf" ]; then
+    # Remove #BEGIN-xxx that got jammed up onto previous lines
+    sed -i -e 's/\(.\)\(#BEGIN-\)/\1\n\2/' "${PG_DATADIR}/pg_hba.conf"
+    # Remove stock pg_hba line that got jammed up on an #END
+    sed -i -e 's/#END-esmondlocal/#END-esmond\nlocal/g' "${PG_DATADIR}/pg_hba.conf"
 fi
 
 #make sure postgresql is running
@@ -28,12 +48,12 @@ if [ $? -ne 0 ]; then
 fi
 
 #create user if not exists or is an old user
-USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='esmond'" 2> /dev/null)
+USER_EXISTS=$(su -l postgres -c "psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='esmond'\"" 2> /dev/null)
 if [ $? -ne 0 ]; then
     echo "Unable to connect to postgresql to check user. Your esmond database may not be initialized"
     exit 1
 fi
-OLD_USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_authid WHERE rolpassword='md5' || md5('7hc4m1' || rolname)" 2> /dev/null)
+OLD_USER_EXISTS=$(su -l postgres -c "psql -tAc \"SELECT 1 FROM pg_authid WHERE rolpassword='md5' || md5('7hc4m1' || rolname)\"" 2> /dev/null)
 if [ $? -ne 0 ]; then
     echo "Unable to connect to postgresql to check for old users. Your esmond database may not be initialized"
     exit 1
@@ -41,11 +61,11 @@ fi
 if [ "$USER_EXISTS" != "1" ] || [ "$OLD_USER_EXISTS" == "1" ]; then
     DB_PASSWORD=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c32;echo;)
     if [ "$USER_EXISTS" == "1" ]; then
-        sudo -u postgres psql -c "ALTER ROLE esmond WITH PASSWORD '${DB_PASSWORD}'" &> /dev/null
+        su -l postgres -c "psql -c \"ALTER ROLE esmond WITH PASSWORD '${DB_PASSWORD}'\"" &> /dev/null
     else
-        sudo -u postgres psql -c "CREATE USER esmond WITH PASSWORD '${DB_PASSWORD}'" &> /dev/null
-        sudo -u postgres psql -c "CREATE DATABASE esmond" &> /dev/null
-        sudo -u postgres psql -c "GRANT ALL ON DATABASE esmond to esmond" &> /dev/null
+        su -l postgres -c "psql -c \"CREATE USER esmond WITH PASSWORD '${DB_PASSWORD}'\"" &> /dev/null
+        su -l postgres -c "psql -c \"CREATE DATABASE esmond\"" &> /dev/null
+        su -l postgres -c "psql -c \"GRANT ALL ON DATABASE esmond to esmond\"" &> /dev/null
     fi
     sed -i "s/sql_db_name = .*/sql_db_name = esmond/g" /etc/esmond/esmond.conf
     sed -i "s/sql_db_user = .*/sql_db_user = esmond/g" /etc/esmond/esmond.conf
@@ -86,9 +106,61 @@ python esmond/manage.py syncdb --noinput &> /dev/null
 #create api key
 KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
 
-#TODO: Switch on md5 auth
-if [ -n "$KEY" ] && [ ! -f "/etc/perfsonar/psc-archiver-esmond.json" ]; then
-cat >/etc/perfsonar/psc-archiver-esmond.json <<EOF
+#setup localhost measurement archives in meshconfig-agent-tasks.conf
+if [ -n "$KEY" ]; then
+    ADD_LOCAL_MA=0
+    #If has string ESMOND_API_KEY then probably added pre-4.0. Replace the string 
+    # with the api key and proceed
+    grep -q ESMOND_API_KEY /etc/perfsonar/meshconfig-agent-tasks.conf
+    if [ $? -eq 0 ]; then
+        sed -i "s/ESMOND_API_KEY/$KEY/g" /etc/perfsonar/meshconfig-agent-tasks.conf
+    else
+        #check if key already referenced in file
+        grep -q $KEY /etc/perfsonar/meshconfig-agent-tasks.conf
+        KEY_GREP=$?
+        #adding an MA will depend on install type and if already saw referenced key
+        if [ "$INSTALL_TYPE" == "FORCE" ]; then
+            #If we gave it the --force option, definitely add
+            ADD_LOCAL_MA=1
+        elif [ "$INSTALL_TYPE" == "NEW" ]; then
+            #If we are installing from RPM for first time, add if key not referenced
+            if [ $KEY_GREP -ne 0 ]; then
+                ADD_LOCAL_MA=1
+            fi
+        fi
+    fi
+    
+    #finally, drop-in MA if needed
+    if [ $ADD_LOCAL_MA -eq 1 ]; then
+        drop-in -n -t perfsonar-configure_esmond - /etc/perfsonar/meshconfig-agent-tasks.conf <<EOF
+<measurement_archive>
+    type   esmond/latency
+    database   https://localhost/esmond/perfsonar/archive/
+    password   $KEY
+</measurement_archive>
+
+<measurement_archive>
+    type   esmond/throughput
+    database   https://localhost/esmond/perfsonar/archive/
+    password   $KEY
+</measurement_archive>
+
+<measurement_archive>
+    type       esmond/traceroute
+    database   https://localhost/esmond/perfsonar/archive/
+    password   $KEY
+</measurement_archive>
+EOF
+    fi
+fi
+#make sure after all the edits meshconfig still has proper permissions
+chown perfsonar:perfsonar /etc/perfsonar/meshconfig-agent-tasks.conf
+chmod 644 /etc/perfsonar/meshconfig-agent-tasks.conf
+
+#Create archiver file for easy access
+mkdir -p /usr/share/pscheduler
+if [ -n "$KEY" ] && [ ! -f "/usr/share/pscheduler/psc-archiver-esmond.json" ]; then
+cat >/usr/share/pscheduler/psc-archiver-esmond.json <<EOF
 {
     "archiver": "esmond",
     "data": {

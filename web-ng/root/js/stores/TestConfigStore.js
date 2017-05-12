@@ -286,6 +286,11 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             } else {
                 delete test.parameters.omit_interval;
             }
+            if ( settings.zero_copy ) {
+                test.parameters.zero_copy = settings.zero_copy;
+            } else {
+                delete test.parameters.zero_copy;
+            }
             if ( settings.send_only ) {
                 test.parameters.send_only = settings.send_only;
             } else {

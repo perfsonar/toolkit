@@ -57,23 +57,38 @@ TestConfigComponent.initialize = function() {
         return ret;
     });
 
-    Handlebars.registerHelper('hostname_or_ip', function(hostnames, ipv4_addresses, ipv6_addresses, options) {
+    Handlebars.registerHelper('hostname_or_ip', function(ifname, hostnames, ipv4_addresses, ipv6_addresses, options) {
+    // Get all the hostnames (or ip's if no reverse DNS) for an interface. 
+    // (Each interface may have multiple ip's and each ip may have multiple hostnames)
+    // hostnames[ip] = array of hostnames for that ip,  ipv4/6_addresses = array of all v4/v6 ip's. 
         var ret = [];
         for(var a=0; a<ipv4_addresses.length; a+=1) {
-            if (hostnames[ipv4_addresses[a]]) {
-                ret = ret.concat(hostnames[ipv4_addresses[a]]);
+            if (typeof hostnames != "undefined" && hostnames[ipv4_addresses[a]].length>0) {
+                ret = ret.concat(hostnames[ipv4_addresses[a]]); // join ret and array of hostnames
             } else {
-                ret.push(ipv4_addresses[a]);
+                ret.push(ipv4_addresses[a]); // append ip
             }
         }
         for(var a=0; a<ipv6_addresses.length; a+=1) {
-            if (hostnames[ipv6_addresses[a]]) {
+            if (typeof hostnames != "undefined" && hostnames[ipv6_addresses[a]].length>0) {
                 ret = ret.concat(hostnames[ipv6_addresses[a]]);
             } else {
                 ret.push(ipv6_addresses[a]);
             }
         }
-        return ret.join(", ");
+        // this removes duplicate hostnames and ip's
+        var deduped = ret.filter( function (el, i, arr) {
+            return arr.indexOf(el) === i;
+        });
+
+        var hostnames_string = deduped.join(", ");
+
+        // look for loopbacks and add a note about them
+        if ( ifname == "lo" || ifname.startsWith("lo:") ) {
+            hostnames_string += "  [note: loopbacks are not normally used in tests]";
+        }    
+
+        return hostnames_string;
     });
 
     // Hide subrows on load
@@ -787,6 +802,7 @@ TestConfigComponent.submitTestConfigForm = function( ) {
 TestConfigComponent._getUserHostToAddInfo = function() {
     var host = {};
     var address = $('#test-add-host-address').val();
+    address = $.trim( address );
     host.address = address;
     var description = $('#test-add-host-description').val();
     host.description = description;
@@ -932,6 +948,9 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var autotuning = $('#useAutotuningSwitch').prop('checked');
             settings.autotuning = autotuning;
 
+            var window_size = $('#windowSize').val();
+            settings.window_size = window_size;
+
             var tos_bits = $('#tosBits').val();
             settings.tos_bits = tos_bits;
 
@@ -941,8 +960,8 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var omit_interval = $('#omit_interval').val();
             settings.omit_interval = omit_interval;
 
-            var window_size = $('#windowSize').val();
-            settings.window_size = window_size;
+            var zero_copy  = $('#useZeroCopySwitch').prop('checked');
+            settings.zero_copy = zero_copy;
 
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
@@ -1064,6 +1083,7 @@ TestConfigComponent.addTestMemberFromCommunity = function( e ) {
 
     var settings = {};
     var hostname = row.find('td.address').text();
+    hostname = $.trim( hostname );
     var description = row.find('input.description').val();
     var new_host_ipv4 = row.find('input.test_ipv4').prop('checked');
     var new_host_ipv6 = row.find('input.test_ipv6').prop('checked');
@@ -1114,6 +1134,7 @@ TestConfigComponent.addTestMember = function(e) {
     if ( typeof hostname == 'undefined' || hostname == '' ) {
         return false;
     }
+    hostname = $.trim( hostname );
     var description = $('#new-host-description').val();
     var new_host_ipv4 = $('#new-ipv4').prop("checked");
     var new_host_ipv6 = $('#new-ipv6').prop("checked");

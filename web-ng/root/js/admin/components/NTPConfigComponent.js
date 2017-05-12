@@ -196,6 +196,7 @@ NTPConfigComponent._setEventHandlers = function() {
     var closest_link = $('#get-closest-servers-link');
     closest_link.click( function(e) {
         NTPClosestStore.retrieveNTPClosest();
+        $('#loading-modal').addClass('ntpclosest');
         $('#loading-modal h3 span.loading_text').text(' Selecting Closest Servers -- this may take up to 1 minute ...');
         $('#loading-modal').foundation('reveal', 'open');
         e.preventDefault();
@@ -362,6 +363,7 @@ NTPConfigComponent._removeServer = function ( hostname ) {
 
 NTPConfigComponent._getClosest = function( topic ) {
     $('#loading-modal').foundation('reveal', 'close');
+    $('#loading-modal').removeClass('ntpclosest');
     var data = NTPClosestStore.getNTPClosest();
     var selected = [];
     $.each(data.selected, function(i, val) {

@@ -17,10 +17,10 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum  0.3.a1 
+%define relnum  1 
 
 Name:			perfsonar-toolkit
-Version:		4.0
+Version:		4.0.0.2
 Release:		%{relnum}%{?dist}
 Summary:		perfSONAR Toolkit
 License:		Distributable, see LICENSE
@@ -108,32 +108,6 @@ Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
 Requires:       esmond >= 2.1
 Requires:       esmond-database-postgresql95
-Requires:       httpd-wsgi-socket
-Requires:       pscheduler-api-server
-Requires:       pscheduler-archiver-bitbucket
-Requires:       pscheduler-archiver-esmond
-Requires:       pscheduler-archiver-failer
-Requires:       pscheduler-archiver-syslog
-Requires:       pscheduler-core
-Requires:       pscheduler-database
-Requires:       pscheduler-server
-Requires:       pscheduler-test-idle
-Requires:       pscheduler-test-latency
-Requires:       pscheduler-test-rtt
-Requires:       pscheduler-test-simplestream
-Requires:       pscheduler-test-throughput
-Requires:       pscheduler-test-trace
-Requires:       pscheduler-tool-iperf
-Requires:       pscheduler-tool-owping
-Requires:       pscheduler-tool-paris-traceroute
-Requires:       pscheduler-tool-ping
-Requires:       pscheduler-tool-simplestreamer
-Requires:       pscheduler-tool-sleep
-Requires:       pscheduler-tool-snooze
-Requires:       pscheduler-tool-tracepath
-Requires:       pscheduler-tool-traceroute
-
-
 
 # Misc performance/performance-related tools
 Requires:		tcptrace
@@ -148,7 +122,6 @@ Requires:		yum-cron
 BuildRequires: systemd
 %{?systemd_requires: %systemd_requires}
 %else
-Requires:		ndt
 Requires:		mod_auth_shadow
 %endif
 
@@ -162,7 +135,7 @@ Requires(post):	perl
 Requires(post):	perfsonar-lscachedaemon
 Requires(post):	perfsonar-lsregistrationdaemon
 Requires(post):	perfsonar-graphs
-Requires(post):	perfsonar-regulartesting
+Requires(post):	perfsonar-meshconfig-agent
 
 Requires(post):	perfsonar-common
 Requires(post):	esmond          >= 2.1
@@ -173,7 +146,6 @@ Requires(post):	owamp-client    >= 3.5.0
 Requires(post):	owamp-server    >= 3.5.0
 %if 0%{?el7}
 %else
-Requires(post):	ndt
 Requires(post):	mod_auth_shadow
 %endif
 
@@ -302,10 +274,12 @@ Summary:                perfSONAR Toolkit sysctl configuration
 Group:                  Development/Tools
 Requires:               coreutils
 Requires:               perfsonar-common
+Requires:               libperfsonar-perl
 Requires:               initscripts
 Requires(pre):          rpm
 Requires(post):         coreutils
 Requires(post):         perfsonar-common
+Requires(post):         libperfsonar-perl
 Requires(post):         initscripts
 Obsoletes:              perl-perfSONAR_PS-Toolkit-sysctl
 Provides:               perl-perfSONAR_PS-Toolkit-sysctl
@@ -437,15 +411,10 @@ mkdir -p /var/lib/perfsonar/log_view/bwctl
 mkdir -p /var/lib/perfsonar/log_view/ndt	
 mkdir -p /var/lib/perfsonar/log_view/owamp
 
-#Make sure root is in the wheel group for fresh install. If upgrade, keep user settings
 if [ $1 -eq 1 ] ; then
-    /usr/sbin/usermod -a -Gwheel root
-    
     #3.5.1 fixes
     #make sure web_admin.conf points to the right lscache directory
     sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web-ng/etc/web_admin.conf
-    sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web/root/admin/administrative_info/etc/web_admin.conf
-    sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web/root/admin/regular_testing/etc/web_admin.conf
     
     #make sure we trash pre-3.5.1 config_daemon
     /etc/init.d/config_daemon stop &>/dev/null || :
@@ -458,25 +427,23 @@ chown apache /var/run/web_admin_sessions
 
 mkdir -p /var/run/toolkit/
 
-# Modify the perfsonar-graphs CGIs to use the toolkit's header/footer/sidebar
-ln -sf %{install_base}/web/templates/header.tmpl %{graphs_base}/templates/
-ln -sf %{install_base}/web/templates/sidebar.html %{graphs_base}/templates/
-ln -sf %{install_base}/web/templates/footer.tmpl %{graphs_base}/templates/
-
 # Install a link to the logs into the web location
-ln -sf /var/log/perfsonar %{install_base}/web/root/admin/logs
-ln -sf /var/log/perfsonar %{install_base}/web-ng/root/admin/logs
-
-# Install links to the toolkit header/footer/sidebar in the log_view
-ln -sf %{install_base}/web/templates/header.tmpl %{install_base}/web/root/admin/log_view/templates/
-ln -sf %{install_base}/web/templates/sidebar.html %{install_base}/web/root/admin/log_view/templates/
-ln -sf %{install_base}/web/templates/footer.tmpl %{install_base}/web/root/admin/log_view/templates/
+ln -sT /var/log/perfsonar %{install_base}/web-ng/root/admin/logs 2> /dev/null
 
 #Set bundle type and version
 echo "perfsonar-toolkit" > /var/lib/perfsonar/bundles/bundle_type
 echo "%{version}" > /var/lib/perfsonar/bundles/bundle_version
 chmod 644 /var/lib/perfsonar/bundles/bundle_type
 chmod 644 /var/lib/perfsonar/bundles/bundle_version
+
+#symlink to pcheduler logs
+chmod 755 /var/log/pscheduler/
+touch /var/log/pscheduler/pscheduler.log
+chmod 644 /var/log/pscheduler/pscheduler.log
+ln -s /var/log/pscheduler/pscheduler.log /var/log/perfsonar/pscheduler.log 2> /dev/null
+
+#symlink to web config files
+ln -sT /usr/lib/perfsonar/web-ng/etc /etc/perfsonar/toolkit/web 2> /dev/null
 
 # we need all these things readable the CGIs (XXX: the configuration daemon
 # should be how they read these, but that'd require a fair number of changes,
@@ -514,18 +481,21 @@ chkconfig cassandra on
 chkconfig postgresql-9.5 on
 
 #Restart pscheduler daemons to make sure they got all tests, tools, and archivers
+#also meshconfig-agent because it needs pscheduler
 %if 0%{?el7}
 systemctl restart httpd &>/dev/null || :
 systemctl restart pscheduler-archiver &>/dev/null || :
 systemctl restart pscheduler-runner &>/dev/null || :
 systemctl restart pscheduler-scheduler &>/dev/null || :
 systemctl restart pscheduler-ticker &>/dev/null || :
+systemctl restart perfsonar-meshconfig-agent &>/dev/null || :
 %else
 /sbin/service httpd restart &>/dev/null || :
 /sbin/service pscheduler-archiver restart &>/dev/null || :
 /sbin/service pscheduler-runner restart &>/dev/null || :
 /sbin/service pscheduler-scheduler restart &>/dev/null || :
 /sbin/service pscheduler-ticker restart &>/dev/null || :
+/sbin/service perfsonar-meshconfig-agent restart &>/dev/null || :
 %endif
 
 #Restart config_daemon and fix nic parameters
@@ -551,17 +521,6 @@ for script in %{install_base}/scripts/system_environment/*; do
 		$script upgrade ${PREV_VERSION}
 	fi
 done
-
-# Add a script to inspire them to create a 'psadmin' and sudo user if they don't already have one
-# Clear out old references first to fix bug where these got repeated
-sed -i "/add_psadmin_user/d" /root/.bashrc
-sed -i "/add_pssudo_user/d" /root/.bashrc
-cat >> /root/.bashrc <<EOF
-# Run the add_psadmin_user script to ensure that a psadmin user has been created
-%{install_base}/scripts/add_psadmin_user --auto
-# Run the add_pssudo_user script to encourage disabling root ssh
-%{install_base}/scripts/add_pssudo_user --auto
-EOF
 
 
 #########################################################################
@@ -599,9 +558,6 @@ else
     echo "Running: configure_ntpd upgrade ${PREV_VERSION}"
     %{install_base}/scripts/configure_ntpd upgrade ${PREV_VERSION}
 fi
-
-#enabling ntp service
-chkconfig ntpd on
 
 %post security
 
@@ -649,24 +605,14 @@ fi
 %exclude %{config_base}/servicewatcher-logger.conf
 %exclude %{config_base}/templates/ntp_conf.tmpl
 %exclude %{config_base}/default_service_configs/pg_hba.conf
+%exclude %{config_base}/default_service_configs/pscheduler_limits.conf
+%exclude %{config_base}/pscheduler_ulimit.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
-%{install_base}/web/*
 %{install_base}/web-ng/*
-%config(noreplace) %{install_base}/web/root/gui/services/etc/web_admin.conf
 /etc/httpd/conf.d/*
 %attr(0640,root,root) /etc/sudoers.d/*
 %attr(0644,root,root) /etc/cron.d/%{crontab_3}
 # Make sure the cgi scripts are all executable
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/services/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/gui/reverse_traceroute.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/regular_testing/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/ntp/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/administrative_info/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/enabled_services/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/bwctl.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/ndt.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web/root/admin/log_view/owamp.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/administrative_info/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/regular_testing/index.cgi
@@ -679,7 +625,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/regular_testing.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/tests.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/services/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
@@ -698,11 +643,8 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/%{cron_hourly_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-backup.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-toolkit-migrate-restore.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/upgrade/*
 
 %files systemenv
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
@@ -717,8 +659,13 @@ fi
 /usr/lib/firewalld/services/*.xml
 
 %files install
+%config(noreplace) %{config_base}/pscheduler_ulimit.conf
+%attr(0644,root,root) %{config_base}/pscheduler_ulimit.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-migrate-backup.sh
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-migrate-restore.sh
+%attr(0644,root,root) %{config_base}/default_service_configs/pscheduler_limits.conf
 
 %files sysctl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_sysctl
@@ -746,6 +693,9 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_esmond 
 
 %changelog
+* Wed Apr 19 2017 andy@es.net
+- Adding back NDT firewall ports
+
 * Thu Mar 4 2015 sowmya@es.net
 - Splitting out Install Script package and Toolkit library package
 
