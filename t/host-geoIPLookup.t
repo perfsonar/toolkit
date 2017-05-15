@@ -14,7 +14,9 @@ use Test::More tests => 8;
 use Data::Dumper;
 
 use perfSONAR_PS::NPToolkit::UnitTests::Util qw( test_result );
-use perfSONAR_PS::Utils::GeoLookup qw(geoIPLookup);
+use perfSONAR_PS::Utils::GeoLookup qw(geoIPLookup geoIPDBVersion);
+
+geoIPDBVersion();
 
 # test IP addresses below are for:    
 #             perfsonar-dev.grnoc.iu.edu ipv4 & ipv6, 
