@@ -117,7 +117,7 @@ sub compare_PStests {
                             $mfound = 1;
                             # check the member info
                             while (my ($key, $expected_value) = each %$expected_member) {
-                                ##warn ('comparing member '.$key.': '.$member->{$key}." = ".$expected_value."        ");
+                                #warn ('comparing member '.$key.': '.$member->{$key}." == ".$expected_value."        ") if $member->{$key}  ne $expected_value;
                                 is($member->{$key}, $expected_value, "$key - in Member <$expected_mem_desc>");
                             }
                         }

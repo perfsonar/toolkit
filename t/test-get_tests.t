@@ -10,7 +10,7 @@ use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init( {level => 'OFF'} );
 
 # note that if a test or member is not found, it will say you didn't run the no. of tests planned.
-use Test::More tests => 126;
+use Test::More tests => 133;
 
 use Data::Dumper;
 
@@ -19,7 +19,7 @@ use perfSONAR_PS::NPToolkit::UnitTests::Util qw( test_result );
 use perfSONAR_PS::NPToolkit::UnitTests::Util qw( compare_PStests );
 
 my $basedir = 't';
-my $regtesting_file    = $basedir.'/etc/regulartesting.conf';  
+my $regtesting_file    = $basedir.'/etc/regulartesting.conf';
 my $expected_data_file = $basedir.'/expected/test-get_tests.txt';
 
 # EXPECTED METHOD RESULTS - read hash from a file 

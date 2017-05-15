@@ -19,7 +19,7 @@ $expected = {
                       },
           'test_configuration' => [
                                     {
-                                      'description' => 'Owamp Test AAAA',
+                                      'description' => 'Owamp Test A',
                                       'disabled' => undef,
                                       'added_by_mesh' => undef,
                                       'type' => 'owamp',
@@ -108,7 +108,7 @@ $expected = {
                                                        'test_ipv6' => 0,
                                                        'test_ipv4' => 1,
                                                        'name' => undef,
-                                                       'description' => 'Black Hills State University, Spearfish, SD, USAAA',
+                                                       'description' => 'Black Hills State University, Spearfish, SD, US',
                                                        'port' => undef,
                                                        'sender' => 1,
                                                        'address' => '206.176.26.174'
@@ -121,7 +121,7 @@ $expected = {
                                                        'description' => 'NDSU, Fargo, ND, US',
                                                        'port' => undef,
                                                        'sender' => 1,
-                                                       'address' => '2001:4930:95::299999'
+                                                       'address' => '2001:4930:95::2'
                                                      },
                                                      {
                                                        'receiver' => 1,
@@ -132,16 +132,6 @@ $expected = {
                                                        'port' => undef,
                                                        'sender' => 1,
                                                        'address' => 'ps-test-owamp.bldc.iu.edu'
-                                                     },
-                                                     {
-                                                       'receiver' => 1,
-                                                       'test_ipv6' => 0,
-                                                       'test_ipv4' => 1,
-                                                       'name' => undef,
-                                                       'description' => 'perfsonar-dev',
-                                                       'port' => undef,
-                                                       'sender' => 1,
-                                                       'address' => 'perfsonar-dev.grnoc.iu.edu'
                                                      }
                                                    ],
                                       'parameters' => {
