@@ -79,7 +79,8 @@ my $expected_results = {
           'longitude' => '8.4610',
           'latitude' => '47.0000',
           'time_zone' => 'Europe/Zurich',
-          'country_full' => 'Switzerland'
+          'country_full' => 'Switzerland',
+          'state_abbr' => 25
      },
     "2a02:a90:ffff:ffff::c:1d" => {
           'country' => 'CH',
@@ -93,6 +94,7 @@ if ( $libversion eq "1.5.0" ) {
     $expected_results->{'205.189.32.128'}->{'time_zone'} = 'America/Rainy_River';
     $expected_results->{'193.222.73.227'}->{'longitude'} = '8.1551';
     $expected_results->{'193.222.73.227'}->{'latitude'} = '47.1449';
+    delete $expected_results->{'193.222.73.227'}->{'state_abbr'};
 }
 
 my $result;
