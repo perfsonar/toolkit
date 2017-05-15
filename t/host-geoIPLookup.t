@@ -77,10 +77,13 @@ my $expected_results = {
     "193.222.73.227" => {
           'country' => 'CH',
           'longitude' => '8.4610',
-          'latitude' => '47.0000',
+          'latitude' => '47.4102',
           'time_zone' => 'Europe/Zurich',
           'country_full' => 'Switzerland',
-          'state_abbr' => 25
+          'state_abbr' => 25,
+	  'state' => 'Zurich',
+	  'city' => 'Oberengstringen',
+	  'code' => '8102'
      },
     "2a02:a90:ffff:ffff::c:1d" => {
           'country' => 'CH',
@@ -95,6 +98,8 @@ if ( $libversion eq "1.5.0" ) {
     $expected_results->{'193.222.73.227'}->{'longitude'} = '8.1551';
     $expected_results->{'193.222.73.227'}->{'latitude'} = '47.1449';
     delete $expected_results->{'193.222.73.227'}->{'state_abbr'};
+    delete $expected_results->{'193.222.73.227'}->{'city'};
+    delete $expected_results->{'193.222.73.227'}->{'code'};
 }
 
 my $result;
