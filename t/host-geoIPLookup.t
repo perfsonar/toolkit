@@ -18,15 +18,12 @@ use perfSONAR_PS::Utils::GeoLookup qw(geoIPLookup geoIPVersion);
 
 my $versions = geoIPVersion();
 
-warn "versions " . Dumper $versions;
-
 my $libversion = $versions->{'lib'};
 
-
-# test IP addresses below are for:    
-#             perfsonar-dev.grnoc.iu.edu ipv4 & ipv6, 
+# test IP addresses below are for:
+#             perfsonar-dev.grnoc.iu.edu ipv4 & ipv6,
 #             ps-dashboard.es.net ipv4 & ipv6,
-#             bdw-vncv1.pfs2.canarie.ca ipv4 & ipv6, 
+#             bdw-vncv1.pfs2.canarie.ca ipv4 & ipv6,
 #             www.swisscom.com ipv4 (coords are of the country-center) & ipv6
 my $expected_results = {
     "140.182.44.162" => {
@@ -91,13 +88,14 @@ my $expected_results = {
     }
 };
 
-# override expected values for newer libraries
+# override expected values for older libraries
 if ( $libversion eq "1.5.0" ) {
     $expected_results->{'140.182.44.162'}->{'time_zone'} = 'America/Indianapolis';
     $expected_results->{'205.189.32.128'}->{'time_zone'} = 'America/Rainy_River';
     $expected_results->{'193.222.73.227'}->{'longitude'} = '8.1551';
     $expected_results->{'193.222.73.227'}->{'latitude'} = '47.1449';
     delete $expected_results->{'193.222.73.227'}->{'state_abbr'};
+    delete $expected_results->{'193.222.73.227'}->{'state'};
     delete $expected_results->{'193.222.73.227'}->{'city'};
     delete $expected_results->{'193.222.73.227'}->{'code'};
 }
