@@ -46,7 +46,7 @@ $data = $router->call_method( { method => sub { $info->get_system_health(@_); } 
 #warn "data: " . Dumper $data;
 
 ok( positive_number( $data->{'mem_total'} ), 'Total memory is a positive number');
-ok( positive_number ( $data->{'swap_total'} ), 'Swap memory is a positive number');
+ok( nonnegative_number ( $data->{'swap_total'} ), 'Swap memory is a positive number');
 ok( positive_number ( $data->{'rootfs'}->{'total'} ), 'Root FS total space is a positive number');
 
 
@@ -70,7 +70,7 @@ $data = $router->call_method( { method => sub { $info->get_system_health(@_); } 
 
 # Check public values
 ok( positive_number( $data->{'mem_total'} ), 'Total memory is a positive number');
-ok( positive_number ( $data->{'swap_total'} ), 'Swap memory is a positive number');
+ok( nonnegative_number ( $data->{'swap_total'} ), 'Swap memory is a positive number');
 ok( positive_number ( $data->{'rootfs'}->{'total'} ), 'Root FS total space is a positive number');
 
 # Check private values (which we should now have, since we're authenticated)
