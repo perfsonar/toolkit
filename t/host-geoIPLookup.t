@@ -14,9 +14,14 @@ use Test::More tests => 8;
 use Data::Dumper;
 
 use perfSONAR_PS::NPToolkit::UnitTests::Util qw( test_result );
-use perfSONAR_PS::Utils::GeoLookup qw(geoIPLookup geoIPDBVersion);
+use perfSONAR_PS::Utils::GeoLookup qw(geoIPLookup geoIPVersion);
 
-geoIPDBVersion();
+my $versions = geoIPVersion();
+
+warn "versions " . Dumper $versions;
+
+my $libversion = $versions->{'lib'};
+
 
 # test IP addresses below are for:    
 #             perfsonar-dev.grnoc.iu.edu ipv4 & ipv6, 
@@ -71,7 +76,7 @@ my $expected_results = {
     },
     "193.222.73.227" => {
           'country' => 'CH',
-          'longitude' => '8.0000',
+          'longitude' => '8.4610',
           'latitude' => '47.0000',
           'time_zone' => 'Europe/Zurich',
           'country_full' => 'Switzerland'
@@ -81,6 +86,14 @@ my $expected_results = {
           'country_full' => 'Switzerland'
     }
 };
+
+# override expected values for newer libraries
+if ( $libversion eq "1.5.0" ) {
+    $expected_results->{'140.182.44.162'}->{'time_zone'} = 'America/Indianapolis';
+    $expected_results->{'205.189.32.128'}->{'time_zone'} = 'America/Rainy_River';
+    $expected_results->{'193.222.73.227'}->{'longitude'} = '8.1551';
+    $expected_results->{'193.222.73.227'}->{'latitude'} = '47.1449';
+}
 
 my $result;
 foreach my $ip (keys %$expected_results) {
