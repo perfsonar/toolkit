@@ -76,7 +76,7 @@ push @$tests, $row;
 $row = {};
 $row->{'save_succeed'}              = 1;
 $row->{'restart_succeed'}           = -1;
-$row->{'expected_save_response'}    = 0;
+$row->{'expected_save_response'}    = 1;
 # the file is saved before the services are restarted, so the file should be updated
 $row->{'expected_data'}             = $updated_metadata;
 push @$tests, $row;
@@ -135,11 +135,13 @@ foreach my $test ( @$tests ) {
 
     $data = $router->call_method( { method => sub { $info->update_metadata(@_); } } );
 
+
     my $message = $data->{'error_msg'};
     $message = $data->{'status_msg'} if $data->{'status_msg'};
     my $response = $data->{'success'};
     $message = "Save response is as expected";
     $message .= " ( save_success: $save_success; restart_success: $restart_success )";
+
     is( $response, $expected_save_response, $message );
 
     # re-instantiate the Host info object so it reloads the config
