@@ -259,6 +259,12 @@ small {
   font-size: 80%;
 }
 
+small.warning {
+    color: #999;
+    margin-bottom: 2px;
+    display:block;
+}
+
 /**
  * Prevent `sub` and `sup` affecting `line-height` in all browsers.
  */
