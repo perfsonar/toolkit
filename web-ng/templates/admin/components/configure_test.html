@@ -85,6 +85,7 @@
                 </div>  <!-- end row -->
                 <div class="row">
                     <div class="medium-6 columns">
+                        <small class="warning">&nbsp;</small>
                         <label for="interfaceSelector">Interface</label>
                         <select id="interfaceSelector">
                             <option value="" {{#unless parameters.local_interface}}selected{{/unless}}>Default</option>
@@ -95,6 +96,7 @@
                     </div>
                         {{#if showThroughputParameters}}
                     <div class="medium-3 columns">
+                        <small class="warning">&nbsp;</small>
                             <label for="protocolSelector">Protocol</label>
                             <select id="protocolSelector">
                                 <option value="tcp" {{#compare parameters.protocol "tcp"}}selected{{/compare}}>TCP</option>
@@ -103,7 +105,9 @@
                     </div>
                     <div class="medium-3 columns" id="udpBandwidthContainer" style="display:{{#compare parameters.protocol "udp"}}block{{else}}none{{/compare}};">
                         <label for="udpBandwidth">UDP Bandwidth (MB)</label>
-                        <input type="text" id="udpBandwidth" value="{{#if parameters.udp_bandwidth_mb}}{{parameters.udp_bandwidth_mb}}{{else}}0{{/if}}" />
+                        <small class="warning">Recommended: less than 50MB</small>
+                        <input type="text" id="udpBandwidth" value="{{#if parameters.udp_bandwidth_mb}}{{parameters.udp_bandwidth_mb}}{{else}}10{{/if}}" pattern="positive_integer" />
+                        <small class="error">Must be a positive integer</small>
                     </div>
                         {{/if}}
 
