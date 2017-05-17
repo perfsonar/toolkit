@@ -5,7 +5,7 @@ Maintainer: Valentin Vidic <Valentin.Vidic@CARNet.hr>
 Build-Depends: debhelper (>= 9.0.0), quilt, dh-exec,
  libperfsonar-perl, libperfsonar-toolkit-perl,
  libtest-mockobject-perl, libfile-copy-recursive-perl,
- geoip-database-extra
+ libcgi-pm-perl, geoip-database-extra
 Standards-Version: 3.9.6
 Homepage: http://www.perfsonar.net/
 Vcs-Git: git://github.com/perfsonar/toolkit
