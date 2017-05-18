@@ -20,6 +20,20 @@ SharedUIFunctions.initValidation = function() {
             patterns: {
                 positive_integer: /^[1-9][0-9]*$/,
                 nonnegative_integer: /^[0-9]+$/,
+            },
+            validators: {
+                validHost: function(el, required, parent) {
+                    // Returns whether this is a valid host (could be ipv4/ipv6 address or fqdn)
+                    // requires validator.js library
+                    var host = el.value;
+                    //valid = validator.isIP( host ) || validator.isFQDN( host, { require_tld: false, allow_underscores: true } );
+                    var valid = SharedUIFunctions.validHost( host );
+                    if ( typeof host == "undefined" || host == "" && !required ) {
+                        valid = true;
+                    }
+                    return valid;
+                }
+
             }
         }
     });
@@ -77,6 +91,11 @@ SharedUIFunctions._saveSuccess = function( topic, message ) {
     Dispatcher.publish(SharedUIFunctions.formSuccessTopic, message);
 };
 
+SharedUIFunctions.validHost = function( host ) {
+    var valid = validator.isIP( host ) || validator.isFQDN( host, { require_tld: false, allow_underscores: true } );
+    return valid;
+};
+
 SharedUIFunctions._saveError = function( topic, message ) {
     Dispatcher.publish(SharedUIFunctions.formErrorTopic, message);
 };
@@ -112,7 +131,7 @@ SharedUIFunctions.getLabelText = function ( state ) {
 
 
 Handlebars.registerHelper("everyOther", function (index, amount, scope) {
-    if ( ++index % amount ) { 
+    if ( ++index % amount ) {
         return scope.inverse(this);
     } else {
         return scope.fn(this);
