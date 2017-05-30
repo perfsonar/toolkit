@@ -9,11 +9,11 @@ use lib "$Bin/../lib";
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init( {level => 'OFF'} );
 
-use Test::More tests => 8;
+use Test::More tests => 20;
 
 use Data::Dumper;
 
-use perfSONAR_PS::NPToolkit::UnitTests::Util qw( test_result );
+use perfSONAR_PS::NPToolkit::UnitTests::Util qw( test_result geo_range );
 use perfSONAR_PS::Utils::GeoLookup qw(geoIPLookup geoIPVersion);
 
 my $versions = geoIPVersion();
@@ -88,22 +88,20 @@ my $expected_results = {
     }
 };
 
-# override expected values for older libraries
-if ( $libversion eq "1.5.0" ) {
-    $expected_results->{'140.182.44.162'}->{'time_zone'} = 'America/Indianapolis';
-    $expected_results->{'205.189.32.128'}->{'time_zone'} = 'America/Rainy_River';
-    $expected_results->{'193.222.73.227'}->{'longitude'} = '8.1551';
-    $expected_results->{'193.222.73.227'}->{'latitude'} = '47.1449';
-    delete $expected_results->{'193.222.73.227'}->{'state_abbr'};
-    delete $expected_results->{'193.222.73.227'}->{'state'};
-    delete $expected_results->{'193.222.73.227'}->{'city'};
-    delete $expected_results->{'193.222.73.227'}->{'code'};
-}
+$expected_results->{'140.182.44.162'}->{'time_zone'} = 'America/IndianapolisZ';
+$expected_results->{'205.189.32.128'}->{'time_zone'} = 'America/Rainy_RiverZ';
+$expected_results->{'193.222.73.227'}->{'longitude'} = '8.1552';
+$expected_results->{'193.222.73.227'}->{'latitude'} = '47.1450';
+delete $expected_results->{'193.222.73.227'}->{'state_abbr'};
+delete $expected_results->{'193.222.73.227'}->{'state'};
+delete $expected_results->{'193.222.73.227'}->{'city'};
+delete $expected_results->{'193.222.73.227'}->{'code'};
 
 my $result;
 foreach my $ip (keys %$expected_results) {
     $result = geoIPLookup($ip);
     test_result($result, $expected_results->{$ip}, "location data is as expected for $ip");
     #warn $ip." geoIPLookup result = ".Dumper $result;
-}    
-    
+}
+
+

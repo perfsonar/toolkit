@@ -17,15 +17,34 @@ use base 'Exporter';
 use FindBin qw($Bin);
 use Log::Log4perl qw(:easy);
 use Test::More;
+use Test::Deep;
 use Config::General;
 use Params::Validate qw(:all);
 use Scalar::Util qw(looks_like_number);
 use Data::Dumper;
 
-our @EXPORT_OK = qw( test_health positive_number nonnegative_number test_result hash_to_parameters compare_PStests );
+# Set the GEO_RANGE constant, which is used to test for geoip values within a certain threshold (in degrees)
+use constant GEO_RANGE => 1;
+
+our @EXPORT_OK = qw( test_health positive_number nonnegative_number test_result hash_to_parameters compare_PStests geo_range );
 
 sub test_health {
     my $values = @_;
+
+}
+
+my $current_expected_geo_value;
+
+sub geo_range {
+    my ( $value, $expected ) = @_;
+    if ( not defined $expected ) { 
+        $expected = $current_expected_geo_value;
+    }
+    if ( $value < $expected + GEO_RANGE and
+         $value > $expected - GEO_RANGE ) {
+        return 1;
+    }
+    return 0;
 
 }
 
@@ -49,10 +68,67 @@ sub test_result {
     my ( $result, $expected, $description ) = @_;
     $description = "Test result data is as expected" if not defined $description or $description eq '';
 
+    my @geoip_fields = (
+        'latitude',
+        'longitude',
+        'time_zone',
+        #'state',
+        #'city',
+        #'code'
+    );
+
     # disable logging
     Log::Log4perl->easy_init( {level => 'OFF'} );
 
-    is_deeply($result, $expected, $description);
+
+    # check geoip values manually
+
+    while ( my ($key, $val ) = each %$result ) {
+        my $exp_val = $expected->{ $key };
+        $current_expected_geo_value = $exp_val;
+        if ( $key eq 'latitude' or $key eq 'longitude' ) {
+            cmp_deeply( $val, code(\&geo_range) );
+        } elsif ( $key eq 'time_zone' ) {
+            # we only care about the first("continent") portion in the format Continent/City or Continent/State/City or similar
+            $exp_val =~ m|^([^/]+)/|;
+            my $exp_cont = $1;
+            $val =~ m|^([^/]+)/|;
+            my $cont_val = $1;
+            is ( $exp_cont, $exp_cont, "Continient for Time Zone is as expected" );
+
+        }
+
+        #methods(name => "John", phone => "55378008"),
+
+
+    }
+
+    # create copies of results/expected as we are about to delete the geop values
+
+    my $res_copy = \%$result;
+    my $exp_copy = \%$expected;
+
+
+    foreach my $field ( @geoip_fields ) {
+        delete $res_copy->{ $field };
+        delete $exp_copy->{ $field };
+    }
+
+
+    #is_deeply($result, $expected, $description);
+    cmp_deeply($res_copy, $exp_copy, $description);
+
+    # ignore these
+    # time_zone
+    # latitude
+    # longitude
+    # state_abbr
+    # state
+    # city
+    # code
+    # country
+    # country_full
+    
 
 }
 
@@ -78,7 +154,7 @@ sub hash_to_parameters {
 # Any extra info in the test data won't cause a fail.
 sub compare_PStests {
     my ( $tests, $expected_tests ) = @_;
-    
+
     foreach my $expected_test (@$expected_tests) {
 
         # identify tests by their descriptions
