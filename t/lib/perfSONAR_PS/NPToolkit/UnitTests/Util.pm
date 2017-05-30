@@ -73,6 +73,7 @@ sub test_result {
         'longitude',
         'time_zone',
         #'state',
+        #'state_abbr',
         #'city',
         #'code'
     );
@@ -115,20 +116,17 @@ sub test_result {
     }
 
 
-    #is_deeply($result, $expected, $description);
-    cmp_deeply($res_copy, $exp_copy, $description);
 
-    # ignore these
-    # time_zone
-    # latitude
-    # longitude
-    # state_abbr
-    # state
-    # city
-    # code
-    # country
-    # country_full
-    
+    #is_deeply($result, $expected, $description);
+    cmp_deeply($res_copy, subhashof( $exp_copy ), $description);
+
+    # check countries and country abbreviations
+
+    is( $res_copy->{'country'}, $exp_copy->{'country'}, "Country is correct");
+    is( $res_copy->{'country_full'}, $exp_copy->{'country_full'}, "Full country name is correct");
+
+
+
 
 }
 

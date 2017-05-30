@@ -92,10 +92,6 @@ $expected_results->{'140.182.44.162'}->{'time_zone'} = 'America/IndianapolisZ';
 $expected_results->{'205.189.32.128'}->{'time_zone'} = 'America/Rainy_RiverZ';
 $expected_results->{'193.222.73.227'}->{'longitude'} = '8.1552';
 $expected_results->{'193.222.73.227'}->{'latitude'} = '47.1450';
-delete $expected_results->{'193.222.73.227'}->{'state_abbr'};
-delete $expected_results->{'193.222.73.227'}->{'state'};
-delete $expected_results->{'193.222.73.227'}->{'city'};
-delete $expected_results->{'193.222.73.227'}->{'code'};
 
 my $result;
 foreach my $ip (keys %$expected_results) {
