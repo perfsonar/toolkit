@@ -128,6 +128,9 @@ Requires:		mod_auth_shadow
 # Unit test mock library
 BuildRequires: perl-Test-MockObject
 
+# Deep object comparision
+BuildRequires: perl-Test-Deep
+
 Obsoletes:		perl-perfSONAR_PS-TopologyService
 Obsoletes:		perl-perfSONAR_PS-Toolkit
 Provides:       perl-perfSONAR_PS-Toolkit
