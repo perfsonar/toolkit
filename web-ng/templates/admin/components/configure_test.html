@@ -354,8 +354,9 @@
 
                                 <div class="row">
                                     <div class="medium-4 columns">
-                                        <label for="new-host-name">Host name</label>
-                                        <input type="text" id="new-host-name" placeholder="Host">
+                                        <label for="new-host-name">Hostname/IP</label>
+                                        <input type="text" id="new-host-name" placeholder="Host" data-abide-validator="validHost">
+                                        <small class="error">Enter a valid Hostname/IP</small>
                                     </div>
                                     <div class="medium-5 columns"> 
                                         <label for="new-host-description">Host description</label>

@@ -1131,7 +1131,14 @@ TestConfigComponent.addTestMember = function(e) {
     e.preventDefault();
 
     var hostname = $('#new-host-name').val();
-    if ( typeof hostname == 'undefined' || hostname == '' ) {
+
+    var valid = SharedUIFunctions.validHost( hostname );
+
+    if ( typeof hostname == "undefined" || hostname == '' ) {
+        return true;
+    }
+
+    if ( typeof hostname == 'undefined' || hostname == '' || !valid  ) {
         return false;
     }
     hostname = $.trim( hostname );
