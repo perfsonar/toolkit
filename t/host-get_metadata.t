@@ -33,7 +33,7 @@ my $info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
 
 $data = $info->get_metadata();
 
-warn "data:\n" . Dumper $data;
+#warn "data:\n" . Dumper $data;
 
 # check the metadata
 

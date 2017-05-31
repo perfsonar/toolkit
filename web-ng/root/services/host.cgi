@@ -61,14 +61,6 @@ my $summary_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 
 $router->add_method($summary_method);
 
-my $info_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            =>  "get_admin_info",
-    description     =>  "Retrieves host admin information",
-    callback        =>  sub { $host_info->get_admin_information(@_); }
-    );
-
-$router->add_method($info_method);
-
 my $metadata_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_metadata",
     description     =>  "Retrieves host metadata",
