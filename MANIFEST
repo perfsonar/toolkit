@@ -331,6 +331,8 @@ web-ng/root/js/jquery-ui/images/ui-icons_444444_256x240.png
 web-ng/root/js/jquery-ui/jquery-ui.theme.min.css
 web-ng/root/js/jquery-ui/external/jquery/jquery.js
 web-ng/root/js/jquery-ui/index.html
+web-ng/root/js/validator.js/validator.js
+web-ng/root/js/validator.js/validator.min.js
 web-ng/root/js/datatables_plugin/datatables.js
 web-ng/root/js/datatables_plugin/DataTables-1.10.12/js/dataTables.jqueryui.min.js
 web-ng/root/js/datatables_plugin/DataTables-1.10.12/js/dataTables.foundation.min.js
