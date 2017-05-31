@@ -23,11 +23,23 @@ my $ls_file = $basedir . '/etc/lsregistrationdaemon.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 my %conf = $conf_obj->getall;
 
+my $bwctl_config = 't/etc/bwctl-server.conf';
+my $bwctl_limits = 't/etc/bwctl-server.limits';
+
+my $owamp_config = 't/etc/owamp-server.conf';
+my $owamp_limits = 't/etc/owamp-server.limits';
+
 my $data;
 my $params = {};
 $params->{'config_file'} = $config_file;
 $params->{'load_ls_registration'} = 1;
 $params->{'ls_config_file'} = $ls_file;
+
+$params->{'bwctl_config'} = $bwctl_config;
+$params->{'bwctl_limits'} = $bwctl_limits;
+
+$params->{'owamp_config'} = $owamp_config;
+$params->{'owamp_limits'} = $owamp_limits;
 
 my $info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
 

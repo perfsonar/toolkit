@@ -9,7 +9,7 @@ use lib "$Bin/../lib";
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init( {level => 'OFF'} );
 
-use Test::More tests => 1;
+use Test::More tests => 3;
 
 use Config::General;
 use Data::Dumper;
@@ -33,7 +33,7 @@ my $info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
 
 $data = $info->get_metadata();
 
-#warn "data:\n" . Dumper $data;
+warn "data:\n" . Dumper $data;
 
 # check the metadata
 

@@ -1,0 +1,4 @@
+limit root with delete_on_fetch=on, bandwidth=0, disk=0, allow_open_mode=on
+limit regular with delete_on_fetch=on, parent=root, bandwidth=20M, disk=10G, allow_open_mode=on
+limit jail with parent=root, bandwidth=1, disk=1, allow_open_mode=off
+assign default regular
