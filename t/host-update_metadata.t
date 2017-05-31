@@ -16,7 +16,7 @@ use lib "$Bin/../lib";
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init( {level => 'OFF'} );
 
-use Test::More tests => 15;
+use Test::More tests => 23;
 
 use Config::General;
 use Data::Dumper;
