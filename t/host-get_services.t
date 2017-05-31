@@ -71,4 +71,4 @@ my $admin_info = {};
 $admin_info->{'administrator'} = $data->{'administrator'};
 $admin_info->{'location'} = $data->{'location'};
 
-test_result($admin_info, $expected_admin_info, "Administrative info data is as expected");
+test_result($admin_info, $expected_admin_info, "Services info is as expected");
