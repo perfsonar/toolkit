@@ -179,11 +179,6 @@ TestConfigComponent._buildTable = function() {
     if (data === null) {
         return;
     }
-    /* We *shouldn't* need this anymore since it happens in the constructor
-    if ( tableView == undefined ) {
-        tableView = 'host';
-    }
-    */
 
     for (var i in Object.keys(data.testsByHost) ) {
         var host = data.testsByHost[i];
