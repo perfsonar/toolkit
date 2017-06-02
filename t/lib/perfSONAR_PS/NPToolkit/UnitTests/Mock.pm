@@ -20,12 +20,17 @@ use Config::General;
 use Params::Validate qw(:all);
 use Data::Dumper;
 
-our @EXPORT_OK = qw( save_file_mock success_value );
+our @EXPORT_OK = qw( save_file_mock succeed_value array_value );
 
 sub succeed_value {
     my $success = shift;
-    #$success = shift;
     return $success;
+}
+
+sub array_value {
+    my (@value) = @_;
+    warn "value " . Dumper @value;
+    return @value;
 }
 
 # override the saveFile method
