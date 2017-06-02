@@ -44,6 +44,8 @@ $params->{'owamp_config'} = $owamp_config;
 $params->{'owamp_limits'} = $owamp_limits;
 
 # check the services
+# we want to check these 4 conditions
+# each service enabled/disabled, each service running/stopped
 my $qmock = Test::MockObject->new();
 my @service_running_vals = ( 0, 1 );
 my @service_enabled_vals = ( 0, 1 );
@@ -54,11 +56,13 @@ my @fake_interfaces = (
     'localhost'
 );
 
+# Mock the "package_version" method
+# This allows us to set tit he package version to whatever we want for testing.
 
 $qmock->fake_module(
-        'perfSONAR_PS::NPToolkit::Services::Base',
-        package_version => sub{ perfSONAR_PS::NPToolkit::UnitTests::Mock::succeed_value( $package_version ) }
-    );
+    'perfSONAR_PS::NPToolkit::Services::Base',
+    package_version => sub{ perfSONAR_PS::NPToolkit::UnitTests::Mock::succeed_value( $package_version ) }
+);
 
 # Mock the "lookup_interfaces" method
 
@@ -79,7 +83,6 @@ foreach my $running ( @service_running_vals ) {
         );
 
         # Mock the 'disabled' method
-        warn "enabled  : $enabled";
         $qmock->fake_module(
             'perfSONAR_PS::NPToolkit::Services::Base',
             disabled => sub{ perfSONAR_PS::NPToolkit::UnitTests::Mock::succeed_value( !$enabled ) }
@@ -90,17 +93,9 @@ foreach my $running ( @service_running_vals ) {
         my $services_info = $info->get_services();
 
 
-
-        warn "expected services:\n" . Dumper $expected_services;
-
-        warn "data running $running:\n" . Dumper $services_info;
-
-
-
         test_result($services_info, $expected_services, "Services info is as expected");
 
     }
-    warn "fake_interfaces " . Dumper @fake_interfaces;
 
 }
 
@@ -114,7 +109,6 @@ sub get_expected_services {
     my $pscheduler_addresses = [];
 
     foreach my $addr ( @fake_interfaces ) {
-        warn "addr: $addr";
         push @$esmond_addresses, 'https://' . $addr . '/esmond/perfsonar/archive/';
         push @$pscheduler_addresses, 'https://' . $addr . '/pscheduler';
     }

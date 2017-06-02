@@ -25,6 +25,9 @@ install:
 test:
 	PERL_DL_NONLAZY=1 /usr/bin/perl "-MExtUtils::Command::MM" "-e" "test_harness(0)" t/*.t
 
+cover:
+	cover -test
+
 test_jenkins:
 	mkdir -p tap_output
 	PERL5OPT=-MDevel::Cover prove t/ --archive tap_output/

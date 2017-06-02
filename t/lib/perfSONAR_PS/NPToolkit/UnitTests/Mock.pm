@@ -29,7 +29,6 @@ sub succeed_value {
 
 sub array_value {
     my (@value) = @_;
-    warn "value " . Dumper @value;
     return @value;
 }
 

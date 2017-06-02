@@ -26,7 +26,7 @@ use File::Copy::Recursive qw( fcopy );
 local $File::Copy::Recursive::RMTrgFil = 1;
 
 use perfSONAR_PS::NPToolkit::DataService::Host;
-use perfSONAR_PS::NPToolkit::UnitTests::Mock qw( save_file_mock success_value );
+use perfSONAR_PS::NPToolkit::UnitTests::Mock qw( save_file_mock succeed_value );
 use perfSONAR_PS::NPToolkit::UnitTests::Util qw( test_result hash_to_parameters );
 use perfSONAR_PS::NPToolkit::UnitTests::Router;
 
