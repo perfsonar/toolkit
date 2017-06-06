@@ -10,7 +10,6 @@ use warnings;
 
 use Params::Validate qw(:all);
 use Getopt::Long;
-use Net::Interface;
 
 my ($command, $rt_table, $device, @ipv4_addresses, @ipv6_addresses, $ipv4_gateway, $ipv6_gateway);
 

@@ -50,7 +50,6 @@ Net::CIDR
 Net::DNS
 Net::Domain
 Net::IP
-Net::Interface
 Net::NTP
 Net::Ping
 Net::Server

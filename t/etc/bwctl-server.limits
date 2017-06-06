@@ -1,0 +1,63 @@
+#	This is an EXAMPLE "limits" file for the bwctld process.
+#
+#	You SHOULD change this to meet the requirements for your local
+#	deployment needs!
+#
+#	This example configuration allows Abilene measurement hosts to run
+#	tests to your server, but will not allow you to run tests to your own
+#	hosts. This is intentional so you will have to look at this file and
+#	modifiy it.
+#
+#
+#	Basics:
+#	Almost the same as owampd - with the following limit types defined:
+#
+#	parent - specified which limit to inherit settings from
+#	bandwidth - Sets the maximum UDP bandwidth
+#	duration - Sets the maximum duration for tests
+#	allow_open_mode - Allows unauthenticated users
+#	allow_tcp - Allows for TCP tests
+#	allow_udp - Allows for UDP tests
+#       max_time_error - Sets the maximum time offset that the server will accept
+#       minimum_ttl - Sets the minimum TTL for traceroute tests
+#
+
+# setup the root node with max bandwidth as open as possible.
+# Super-user access
+limit root with \
+	bandwidth=900m, \
+	duration=60, \
+	allow_udp=on, \
+	allow_tcp=on, \
+	allow_open_mode=on, \
+        max_time_error=20
+
+# Disable UDP tests for non-authorized users. Unspecified values default to
+# parent permissions
+limit regular with parent=root, \
+	allow_udp=off
+
+# minimal everything
+# send hackers and bad nets here
+limit jail with parent=root, \
+	bandwidth=1, \
+	duration=1, \
+	allow_udp=off, \
+	allow_tcp=off, \
+	allow_open_mode=off
+
+# Default everything to regular user access
+# this allows TCP for up to 60 seconds and 
+# no UDP tests
+assign default regular
+
+# hacker and BBI networks
+# this shows a 172.16 private address block being
+# prohibited 
+# see RFC 1918 for a descripton of private address blocks
+assign net 172.16.10.0/24 jail
+
+# localhost (and any other hosts you completely trust)
+# (might as well trust localhost, the user could run iperf directly...)
+assign net 127.0.0.1/32 root
+assign net ::1/128  root

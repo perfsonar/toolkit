@@ -179,11 +179,6 @@ TestConfigComponent._buildTable = function() {
     if (data === null) {
         return;
     }
-    /* We *shouldn't* need this anymore since it happens in the constructor
-    if ( tableView == undefined ) {
-        tableView = 'host';
-    }
-    */
 
     for (var i in Object.keys(data.testsByHost) ) {
         var host = data.testsByHost[i];
@@ -694,25 +689,25 @@ TestConfigComponent._drawConfigForm = function( ) {
         e.preventDefault();
     });
 
-    // Add options to the throughput or traceroute test's Tools selector - first values from the existing test's 
-    // config file, then adding any others from the defaults file. Then, when it's turned into a select2, setting the 
-    // val will show  the pre-selected tools in the correct order 
-    // (select2 orders the selections in the order they are in the options list). 
+    // Add options to the throughput or traceroute test's Tools selector - first values from the existing test's
+    // config file, then adding any others from the defaults file. Then, when it's turned into a select2, setting the
+    // val will show  the pre-selected tools in the correct order
+    // (select2 orders the selections in the order they are in the options list).
     var all_options;
     var max_num_selectable;
     if ( testConfig.type == "bwctl/throughput") {
-        all_options = ['iperf3','iperf'];  
-        max_num_selectable = 2;
+        all_options = ['iperf3','iperf', 'nuttcp'];
+        max_num_selectable = 3;
     }
     if ( testConfig.type == "traceroute") {
-        all_options = ['tracepath', 'traceroute', 'paris-traceroute'];  
+        all_options = ['tracepath', 'traceroute', 'paris-traceroute'];
         max_num_selectable = 3;
     }
 
     if (testConfig.type == "bwctl/throughput" || testConfig.type == "traceroute")  {
         $('#tools_selector').empty();
         var selectedToolsArray = [];
-        // testConfig.parameters has values for this test from the defaults file, 
+        // testConfig.parameters has values for this test from the defaults file,
         // the reg. testing config file's defaults, values saved previously for a specific test, or those previously
         // entered by the user and saved in memory by clicking on OK (before clicking SAVE).
         if (testConfig.parameters.tool) {   // to be doubly sure not to get an error
@@ -720,7 +715,7 @@ TestConfigComponent._drawConfigForm = function( ) {
         }
         var options_union = selectedToolsArray.concat(all_options);
         var data = [];
-        for(var i in options_union) { 
+        for(var i in options_union) {
             var row = {};
             row.text = options_union[i];
             row.id   = options_union[i];
@@ -743,7 +738,7 @@ TestConfigComponent._drawConfigForm = function( ) {
 
         // make it so selected values can be dragged to reorder. Uses jquery-ui's sortable.
         $('#toolsContainer ul.select2-selection__rendered').sortable({ containment: 'parent' });
-        // make options clicked on by the user show up in that order 
+        // make options clicked on by the user show up in that order
         $('#toolsContainer select').on("select2:select", function (evt) {
             var element = evt.params.data.element;
             var $element = $(element);
@@ -752,7 +747,7 @@ TestConfigComponent._drawConfigForm = function( ) {
             $(this).trigger("change");
         });
 
-    } // end if doing throughput or traceroute 
+    } // end if doing throughput or traceroute
 
 };
 
@@ -1131,7 +1126,14 @@ TestConfigComponent.addTestMember = function(e) {
     e.preventDefault();
 
     var hostname = $('#new-host-name').val();
-    if ( typeof hostname == 'undefined' || hostname == '' ) {
+
+    var valid = SharedUIFunctions.validHost( hostname );
+
+    if ( typeof hostname == "undefined" || hostname == '' ) {
+        return true;
+    }
+
+    if ( typeof hostname == 'undefined' || hostname == '' || !valid  ) {
         return false;
     }
     hostname = $.trim( hostname );

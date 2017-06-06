@@ -1,7 +1,10 @@
-#Ignore mac hidden file
+# Ignore mac hidden file
 .DS_Store
 # Ignore quilt cache directory
 .pc/
 .*.swn
 .*.swo
 .*.swp
+# Ignore unit test output
+tap_output/
+cover_db/

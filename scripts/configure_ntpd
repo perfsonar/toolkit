@@ -71,8 +71,10 @@ if type systemctl &>/dev/null; then
     systemctl disable chronyd 2>/dev/null
     systemctl stop chronyd 2>/dev/null
     systemctl enable ntpd 2>/dev/null
+    systemctl stop ntpd 2>/dev/null
     systemctl start ntpd 2>/dev/null
 else
     /sbin/chkconfig ntpd on 2>/dev/null
+    /etc/init.d/ntpd stop 2>/dev/null
     /etc/init.d/ntpd start 2>/dev/null
 fi
