@@ -1,0 +1,16 @@
+--- a/t/host-geoIPLookup.t
++++ b/t/host-geoIPLookup.t
+@@ -93,6 +93,13 @@
+ $expected_results->{'193.222.73.227'}->{'longitude'} = '8.1552';
+ $expected_results->{'193.222.73.227'}->{'latitude'} = '47.1450';
+ 
++# skip tests that require country_name_by_addr_v6
++foreach my $ip (keys %$expected_results) {
++    if ($ip =~ m/:/) {
++        delete $expected_results->{$ip}->{country_full};
++    }
++}
++ 
+ my $result;
+ foreach my $ip (keys %$expected_results) {
+     $result = geoIPLookup($ip);
