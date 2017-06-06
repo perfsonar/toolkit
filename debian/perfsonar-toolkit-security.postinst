@@ -21,11 +21,8 @@ set -e
 case "$1" in
     configure)
         /usr/lib/perfsonar/scripts/configure_firewall install
-
         service fail2ban stop
-        service firewalld stop
-        sleep 3
-        service firewalld start
+        service firewalld restart
         service fail2ban start
     ;;
 
