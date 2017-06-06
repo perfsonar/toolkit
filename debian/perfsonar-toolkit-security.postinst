@@ -20,10 +20,12 @@ set -e
 
 case "$1" in
     configure)
-        sleep 3 # wait for firewalld to start after install
         /usr/lib/perfsonar/scripts/configure_firewall install
+
         service fail2ban stop
-        service firewalld restart
+        service firewalld stop
+        sleep 3
+        service firewalld start
         service fail2ban start
     ;;
 
