@@ -20,9 +20,9 @@ set -e
 
 case "$1" in
     configure)
+        /usr/lib/perfsonar/scripts/configure_firewall install
         service fail2ban stop
         service firewalld restart
-        /usr/lib/perfsonar/scripts/configure_firewall install
         service fail2ban start
     ;;
 
