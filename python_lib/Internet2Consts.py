@@ -41,16 +41,6 @@ FSTAB         = "/etc/fstab"
 RESOLV   = "/etc/resolv.conf"
 STATICIP = CONF_DIR + "static.ip"
 
-# NDT Template
-NDT_TEMPLATE = "/usr/local/etc/tcpbw100.template"
-NDT_SAVE     = "/usr/local/ndt/tcpbw100.html"
-
-# NPAD Templates
-NPAD_DIR           = "/usr/local/npad-dist/"
-NPAD_WWW           = "/usr/local/npad-dist/www/"
-NPAD_HTML_TEMPLATE = "/usr/local/etc/diag_form.html.template"
-NPAD_HTML_SAVE     = NPAD_WWW + "diag_form.html"
-
 # NTP Config file
 NTP_CONF = "/etc/ntp.conf"
 NTP_KNOWN_SERVERS = "/usr/local/etc/ntp.static.servers"
@@ -79,13 +69,9 @@ PASS_MARKER  = MARKER_DIR + "set.pass"
 BWCTL_MARKER = MARKER_DIR + "customize.bwctl"
 OWAMP_MARKER = MARKER_DIR + "customize.owamp"
 NTP_MARKER   = MARKER_DIR + "customize.ntp"
-NDT_MARKER   = MARKER_DIR + "customize.ndt"
-NPAD_MARKER  = MARKER_DIR + "customize.npad"
 TZ_MARKER    = MARKER_DIR + "customize.timezone"
 
 SSH_INIT_SCRIPT            = "/etc/init.d/ssh"
 APACHE_INIT_SCRIPT         = "/etc/init.d/httpf"
 BWCTL_INIT_SCRIPT          = "/etc/init.d/bwctl-server"
 OWAMP_INIT_SCRIPT          = "/etc/init.d/owamp-server"
-NDT_INIT_SCRIPT            = "/etc/init.d/ndt"
-NPAD_INIT_SCRIPT           = "/etc/init.d/npad"
