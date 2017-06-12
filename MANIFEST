@@ -16,7 +16,6 @@ etc/firewalld/services/oppd.xml
 etc/firewalld/services/owamp-control.xml
 etc/firewalld/services/traceroute.xml
 etc/ntp_known_servers
-etc/old_firewall_settings.conf
 etc/perfsonar_firewall_settings.conf
 etc/perfsonar_firewalld_settings.conf
 etc/perfsonar_sudo
