@@ -163,6 +163,9 @@ web-ng/root/js/components/HostServicesComponent.js
 web-ng/root/js/components/HostStatusSidebarComponent.js
 web-ng/root/js/components/PageHeader.js
 web-ng/root/js/components/TestResultsComponent.js
+web-ng/root/js/d3/d3.js
+web-ng/root/js/d3/d3.min.js
+web-ng/root/js/shared/TestResultUtils.js
 web-ng/root/js/foundation.min.js
 web-ng/root/js/foundation/foundation.abide.js
 web-ng/root/js/foundation/foundation.accordion.js
