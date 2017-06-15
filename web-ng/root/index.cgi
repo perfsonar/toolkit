@@ -63,12 +63,12 @@ if ($authenticated) {
 }
 
 push @$js_files, (
-    $include_prefix . 'js/stores/TestStore.js', 
-    '/perfsonar-graphs/js/d3.min.js', # TODO: fix to better relative URL
-    '/perfsonar-graphs/js/TestResultUtils.js', # TODO: fix to better relative URL
-    $include_prefix . 'js/components/HostInfoComponent.js', 
-    $include_prefix . 'js/components/HostStatusSidebarComponent.js', 
-    $include_prefix . 'js/components/HostServicesComponent.js', 
+    $include_prefix . 'js/stores/TestStore.js',
+    $include_prefix . 'js/d3/d3.min.js',
+    $include_prefix . 'js/shared/TestResultUtils.js',
+    $include_prefix . 'js/components/HostInfoComponent.js',
+    $include_prefix . 'js/components/HostStatusSidebarComponent.js',
+    $include_prefix . 'js/components/HostServicesComponent.js',
     $include_prefix . 'js/components/TestResultsComponent.js',
     $include_prefix . 'js/pages/DashboardPage.js'
 );
