@@ -438,7 +438,7 @@ ln -sT /var/log/perfsonar %{install_base}/web-ng/root/admin/logs 2> /dev/null
 
 #Set bundle type and version
 echo "perfsonar-toolkit" > /var/lib/perfsonar/bundles/bundle_type
-echo "%{version}" > /var/lib/perfsonar/bundles/bundle_version
+echo "%{version}-%{release}" > /var/lib/perfsonar/bundles/bundle_version
 chmod 644 /var/lib/perfsonar/bundles/bundle_type
 chmod 644 /var/lib/perfsonar/bundles/bundle_version
 
