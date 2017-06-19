@@ -1,4 +1,4 @@
-perfsonar-toolkit (4.0.1~0.rc1.0) perfsonar-jessie-release; urgency=low
+perfsonar-toolkit (4.0.1~0.rc1-1) perfsonar-jessie-release; urgency=low
 
   * New upstream version.
   * Splitting the perfsonar-toolkit-systemenv into perfsonar-toolkit-systemenv
