@@ -522,10 +522,8 @@ TestConfigStore.addHostToTestView = function (tests, testIn, member) {
     tests[address].tests.push(test);
     tests[address].address = address;
     tests[address].host_id = host_id;
-    // This won't work because it gets overwritten every time
-    //tests[address].member_id = member_id;
 
-    if ( test[type_count_name] ) {
+    if ( tests[address][type_count_name] ) {
         tests[address][type_count_name]++;
     } else {
         tests[address][type_count_name] = 1;

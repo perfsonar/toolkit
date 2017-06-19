@@ -458,13 +458,13 @@ if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
     print "<div align='center'><table border='1'>
         <tr><td align='center'>",
       "<a href='http://www.stanford.edu/'>
-        <img src='http://www.slac.stanford.edu/comp/net/wan-mon/stanford-seal.gif'
+        <img src='https://www.slac.stanford.edu/comp/net/wan-mon/stanford-seal.gif'
            alt='Stanford University seal' title='Stanford University seal'></a>
         <a href='http://www.slac.stanford.edu/'>
           <!--
-          <img src='http://www.slac.stanford.edu/icon/slac3.gif'
+          <img src='https://www.slac.stanford.edu/icon/slac3.gif'
           -->
-          <img src='http://www.slac.stanford.edu/icon/newlogo-sm.gif'
+          <img src='https://www.slac.stanford.edu/icon/newlogo-sm.gif'
           alt='SLAC logo, click here to learn more about SLAC'
           title='SLAC logo, click here to learn more about SLAC'
         ></a>

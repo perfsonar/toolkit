@@ -116,14 +116,18 @@ Requires:		coreutils
 Requires:		httpd
 Requires:		mod_ssl
 Requires:		nagios-plugins-all
-Requires:		nscd
-Requires:		yum-cron
 %if 0%{?el7}
 BuildRequires: systemd
 %{?systemd_requires: %systemd_requires}
 %else
 Requires:		mod_auth_shadow
 %endif
+
+# Unit test mock library
+BuildRequires: perl-Test-MockObject
+
+# Deep object comparision
+BuildRequires: perl-Test-Deep
 
 Obsoletes:		perl-perfSONAR_PS-TopologyService
 Obsoletes:		perl-perfSONAR_PS-Toolkit
@@ -159,6 +163,23 @@ Requires(post):	nscd
 %description
 The perfSONAR Toolkit web GUI and associated services.
 
+%package systemenv-testpoint
+Summary:		perfSONAR Testpoint System Configuration
+Group:			Development/Tools
+Requires:               perfsonar-meshconfig-agent
+Requires:		nscd
+Requires:		yum-cron
+Requires(post):	bwctl-server    >= 1.6.0
+Requires(post):	owamp-server    >= 3.5.0
+Requires(post):	chkconfig
+Requires(post):	rsyslog
+Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment-Testpoint
+
+%description systemenv-testpoint
+Tunes and configures a testpoint system according to performance and
+security best practices.
+
+
 %package systemenv
 Summary:		perfSONAR Toolkit System Configuration
 Group:			Development/Tools
@@ -168,10 +189,9 @@ Requires:       perfsonar-toolkit-sysctl
 Requires:       perfsonar-toolkit-servicewatcher
 Requires:       perfsonar-toolkit-ntp
 Requires:       perfsonar-toolkit-library
+Requires:       perfsonar-toolkit-systemenv-testpoint
 Requires(post):	perfsonar-common
 Requires(post):	perfsonar-toolkit
-Requires(post):	bwctl-server    >= 1.6.0
-Requires(post):	owamp-server    >= 3.5.0
 Requires(post):	acpid
 Requires(post):	avahi
 Requires(post):	chkconfig
@@ -320,6 +340,11 @@ Provides:               perl-perfSONAR_PS-Toolkit-service-watcher
 %description servicewatcher
 Installs the service-watcher package
 
+%pre systemenv-testpoint
+rm -rf %{_localstatedir}/lib/rpm-state
+mkdir -p %{_localstatedir}/lib/rpm-state
+rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
+
 %pre systemenv
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
@@ -432,7 +457,7 @@ ln -sT /var/log/perfsonar %{install_base}/web-ng/root/admin/logs 2> /dev/null
 
 #Set bundle type and version
 echo "perfsonar-toolkit" > /var/lib/perfsonar/bundles/bundle_type
-echo "%{version}" > /var/lib/perfsonar/bundles/bundle_version
+echo "%{version}-%{release}" > /var/lib/perfsonar/bundles/bundle_version
 chmod 644 /var/lib/perfsonar/bundles/bundle_type
 chmod 644 /var/lib/perfsonar/bundles/bundle_version
 
@@ -505,6 +530,23 @@ systemctl restart %{init_script_1} &>/dev/null || :
 /etc/init.d/%{init_script_1} restart &>/dev/null || :
 %endif
 /etc/init.d/%{init_script_3} start &>/dev/null || :
+
+%post systemenv-testpoint
+if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
+    PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
+    rm %{_localstatedir}/lib/rpm-state/previous_version
+fi
+
+for script in %{install_base}/scripts/system_environment/testpoint/*; do
+	if [ $1 -eq 1 ] ; then
+		echo "Running: $script new"
+		$script new
+	else
+		echo "Running: $script upgrade ${PREV_VERSION}"
+		$script upgrade ${PREV_VERSION}
+	fi
+done
+
 
 %post systemenv
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
@@ -646,9 +688,13 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
 
+%files systemenv-testpoint
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/testpoint/*
+
 %files systemenv
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
 %exclude %{install_base}/scripts/system_environment/configure_esmond 
+%exclude %{install_base}/scripts/system_environment/testpoint
 
 %files security
 %config %{config_base}/default_system_firewall_settings.conf
