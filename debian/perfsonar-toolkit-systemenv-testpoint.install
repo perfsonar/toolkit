@@ -1,0 +1,9 @@
+scripts/system_environment/testpoint/bwctl_port_verify usr/lib/perfsonar/scripts/system_environment/testpoint/
+scripts/system_environment/testpoint/configure_bwctld_log_location usr/lib/perfsonar/scripts/system_environment/testpoint/
+scripts/system_environment/testpoint/configure_owamp_testports usr/lib/perfsonar/scripts/system_environment/testpoint/
+scripts/system_environment/testpoint/configure_syslog_local5_location usr/lib/perfsonar/scripts/system_environment/testpoint/
+scripts/system_environment/testpoint/enable_auto_updates usr/lib/perfsonar/scripts/system_environment/testpoint/
+scripts/system_environment/testpoint/enable_nscd usr/lib/perfsonar/scripts/system_environment/testpoint/
+# The default OWAMP configuration is managed by the owamp package
+#scripts/system_environment/testpoint/increase_owamp_limits usr/lib/perfsonar/scripts/system_environment/testpoint/
+#scripts/system_environment/testpoint/increase_owamp_port_range usr/lib/perfsonar/scripts/system_environment/testpoint/

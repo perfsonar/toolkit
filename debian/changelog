@@ -1,8 +1,16 @@
-perfsonar-toolkit (4.0.0.2-1~bpo70+1) perfsonar-wheezy-release; urgency=low
+perfsonar-toolkit (4.0.1~0.rc1-1~bpo70+1) perfsonar-wheezy-release; urgency=low
 
   * Backport to Wheezy.
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Fri, 05 May 2017 12:49:04 +0000
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Mon, 19 Jun 2017 22:19:56 +0000
+
+perfsonar-toolkit (4.0.1~0.rc1-1) perfsonar-jessie-release; urgency=low
+
+  * New upstream version.
+  * Splitting the perfsonar-toolkit-systemenv into perfsonar-toolkit-systemenv
+    and perfsonar-toolkit-systemenv-testpoint
+
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Fri, 05 May 2017 12:46:16 +0000
 
 perfsonar-toolkit (4.0.0.2-1) perfsonar-jessie-release; urgency=low
 
