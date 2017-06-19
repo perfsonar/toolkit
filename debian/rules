@@ -26,7 +26,7 @@ override_dh_install:
 	dh_install
 	chmod +x ./debian/perfsonar-toolkit/usr/lib/perfsonar/scripts/*
 	chmod +x ./debian/perfsonar-toolkit-systemenv/usr/lib/perfsonar/scripts/system_environment/*
-	chmod +x ./debian/perfsonar-toolkit-systemenv/usr/lib/perfsonar/scripts/system_environment/testpoint/*
+	chmod +x ./debian/perfsonar-toolkit-systemenv-testpoint/usr/lib/perfsonar/scripts/system_environment/testpoint/*
 
 override_dh_installinit:
 	dh_installinit
