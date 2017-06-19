@@ -1,3 +1,11 @@
+perfsonar-toolkit (4.0.1~0.rc1.0) perfsonar-jessie-release; urgency=low
+
+  * New upstream version.
+  * Splitting the perfsonar-toolkit-systemenv into perfsonar-toolkit-systemenv
+    and perfsonar-toolkit-systemenv-testpoint
+
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Fri, 05 May 2017 12:46:16 +0000
+
 perfsonar-toolkit (4.0.0.2-1) perfsonar-jessie-release; urgency=low
 
   * New upstream version.

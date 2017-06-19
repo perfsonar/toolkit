@@ -75,13 +75,20 @@ Depends: perfsonar-toolkit-library, python-apt
 Description: perfSONAR Toolkit core scripts
  Contains Toolkit installation scripts.
 
+Package: perfsonar-toolkit-systemenv-testpoint
+Architecture: all
+Depends: nscd, bwctl-server, owamp-server
+Description: perfSONAR Testpoint system tuning
+ Tunes and configures the system according to performance
+ and security best practices.
+
 Package: perfsonar-toolkit-systemenv
 Architecture: all
 Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
  perfsonar-toolkit-servicewatcher, perfsonar-toolkit-ntp,
- perfsonar-toolkit-library, bwctl-server, drop-in, esmond,
- perfsonar-meshconfig-agent, owamp-server, nscd,
- perfsonar-toolkit-config-daemon, perfsonar-lsregistrationdaemon
+ perfsonar-toolkit-library, drop-in, esmond,
+ perfsonar-meshconfig-agent, perfsonar-toolkit-systemenv-testpoint,
+ perfsonar-toolkit-config-daemon, perfsonar-lsregistrationdaemon,
 Description: perfSONAR Toolkit system tuning
  Tunes and configures the system according to performance
  and security best practices.
