@@ -21,6 +21,8 @@ set -e
 case "$1" in
     configure)
         for script in /usr/lib/perfsonar/scripts/system_environment/*; do
+            [ -d $script ] && continue
+
             if [ "$2" ]; then
                 echo "Running: $script upgrade $2"
                 $script upgrade $2 || true
