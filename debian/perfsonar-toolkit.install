@@ -3,9 +3,7 @@ etc/administrative_info etc/perfsonar/toolkit
 etc/clean_esmond_db.conf etc/perfsonar/toolkit
 etc/default_service_configs/jail.local etc/perfsonar/toolkit/default_service_configs/
 etc/perfsonar_sudo etc/sudoers.d
-etc/templates/diag_form_html.tmpl etc/perfsonar/toolkit/templates/
 etc/templates/motd.tmpl etc/perfsonar/toolkit/templates/
-etc/templates/tcpbw100_html.tmpl etc/perfsonar/toolkit/templates/
 init_scripts/perfsonar-configure_nic_parameters etc/init.d/
 init_scripts/perfsonar-generate_motd etc/init.d/
 init_scripts/perfsonar-psb_to_esmond etc/init.d/
