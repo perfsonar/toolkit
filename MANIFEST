@@ -16,17 +16,14 @@ etc/firewalld/services/oppd.xml
 etc/firewalld/services/owamp-control.xml
 etc/firewalld/services/traceroute.xml
 etc/ntp_known_servers
-etc/old_firewall_settings.conf
 etc/perfsonar_firewall_settings.conf
 etc/perfsonar_firewalld_settings.conf
 etc/perfsonar_sudo
 etc/pscheduler_ulimit.conf
 etc/servicewatcher-logger.conf
 etc/servicewatcher.conf
-etc/templates/diag_form_html.tmpl
 etc/templates/motd.tmpl
 etc/templates/ntp_conf.tmpl
-etc/templates/tcpbw100_html.tmpl
 init_scripts/perfsonar-configdaemon
 init_scripts/perfsonar-configdaemon.service
 init_scripts/perfsonar-configure_nic_parameters
