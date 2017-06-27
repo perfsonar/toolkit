@@ -1,6 +1,6 @@
 --- a/scripts/configure_firewall
 +++ b/scripts/configure_firewall
-@@ -37,7 +37,7 @@
+@@ -35,7 +35,7 @@
      if type firewall-cmd &>/dev/null; then
          firewall-cmd --quiet --runtime-to-permanent
      else
