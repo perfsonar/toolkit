@@ -21,7 +21,7 @@ import commands        # For checking of the given drive is a volume group
 # @return The lst of results, or None if empty
 def runCommand(command):
     result = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE).communicate()[0]
-    
+
     if not result:
         return None
     else:
@@ -37,7 +37,7 @@ def saveConfig():
     # Now run our special saveconfig script!
     print "running "+Internet2Consts.SAVECONFIG + " >/dev/null 2>&1"
     retVal = os.system(Internet2Consts.SAVECONFIG + " >/dev/null 2>&1")
-    
+
     # Now return true/false depending on the retVal
     if retVal == 0:
         return True
@@ -294,20 +294,6 @@ def parseTemplate(user, template, saveLocation):
     
     return True
 # End parseTemplate
-
-# The NPAD file needs a lot of TLC - that one gets its own method (works just like parseTemplate though)
-# @param user The user we are saving as
-def saveNPADFile(user):
-    # First fix the two template files
-#    parseTemplate(user, Internet2Consts.NPAD_CONF_TEMPLATE, Internet2Consts.NPAD_CONF_SAVE)
-    parseTemplate(user, Internet2Consts.NPAD_HTML_TEMPLATE, Internet2Consts.NPAD_HTML_SAVE)
-    
-#    # Now do the makes (-C reads the make file from an arbitrary dir - vs the current one)
-#    os.system("make -C " + Internet2Consts.NPAD_DIR + " > /dev/null 2>&1")
-#    os.system("make install -C " + Internet2Consts.NPAD_DIR + " > /dev/null 2>&1")
-            
-    return
-# End saveNPADFile
 
 # Resynchronizes the tools on the toolkit after updating the user data
 # @param user The new user data object --- DEPRECATED: The user object is now read by the resync script
