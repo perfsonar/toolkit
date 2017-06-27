@@ -27,4 +27,4 @@
 +firewall_script /usr/lib/perfsonar/scripts/configure_firewall
  
  <access>
- 	<service yum_cron> 
+ 	<service yum_cron>
