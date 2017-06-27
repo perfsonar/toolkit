@@ -206,16 +206,28 @@
                 <span class="sidebar-popover__value">{{host}}</span>
             </li>
             {{/if}}
-            {{#if address}}
+            {{#if refid}}
             <li class="sidebar-popover__item">
-                <span class="sidebar-popover__param">Address:</span>
-                <span class="sidebar-popover__value">{{address}}</span>
+                <span class="sidebar-popover__param">Reference ID:</span>
+                <span class="sidebar-popover__value">{{refid}}</span>
             </li>
             {{/if}}
             {{#if stratum}}
             <li class="sidebar-popover__item">
                 <span class="sidebar-popover__param">Stratum:</span>
                 <span class="sidebar-popover__value">{{stratum}}</span>
+            </li>
+            {{/if}}
+            {{#if type}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">Type:</span>
+                <span class="sidebar-popover__value">{{type}}</span>
+            </li>
+            {{/if}}
+            {{#if when}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">When:</span>
+                <span class="sidebar-popover__value">{{when}}</span>
             </li>
             {{/if}}
             {{#if reach}}
