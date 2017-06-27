@@ -218,6 +218,18 @@
                 <span class="sidebar-popover__value">{{stratum}}</span>
             </li>
             {{/if}}
+            {{#if type}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">Type:</span>
+                <span class="sidebar-popover__value">{{type}}</span>
+            </li>
+            {{/if}}
+            {{#if when}}
+            <li class="sidebar-popover__item">
+                <span class="sidebar-popover__param">When:</span>
+                <span class="sidebar-popover__value">{{when}}</span>
+            </li>
+            {{/if}}
             {{#if reach}}
             <li class="sidebar-popover__item">
                 <span class="sidebar-popover__param">Reach:</span>
