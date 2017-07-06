@@ -39,7 +39,7 @@ $data = $info->get_metadata();
 
 my $expected_metadata = {
     'communities' => [
-        'Indiana',
+        'IndianaZZZZ', # TODO: FIX
         'perfSONAR',
         'perfSONAR-PS'
     ],
