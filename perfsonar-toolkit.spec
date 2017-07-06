@@ -697,7 +697,6 @@ fi
 
 %files security
 %config %{config_base}/default_system_firewall_settings.conf
-%config %{config_base}/old_firewall_settings.conf
 %config %{config_base}/perfsonar_firewall_settings.conf
 %config %{config_base}/perfsonar_firewalld_settings.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_firewall
