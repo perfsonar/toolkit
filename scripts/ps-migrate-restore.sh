@@ -132,18 +132,6 @@ fi
 printf "[SUCCESS]"
 echo ""
 
-#get pscheduler if exists
-if [ -d "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/pscheduler" ]; then
-    printf "Restoring pScheduler configuration..."
-    cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/pscheduler/* /etc/pscheduler
-    if [ "$?" != "0" ]; then
-        echo "Unable to restore /etc/pscheduler"
-        exit 1
-    fi
-    printf "[SUCCESS]"
-    echo ""
-fi
-
 #get NTP config
 printf "Restoring NTP configuration..."
 cp $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/ntp.conf /etc/ntp.conf 
@@ -213,19 +201,15 @@ if [ "$DATA" ]; then
     unset PGUSER PGPASSWORD PGDATABASE
     printf "[SUCCESS]"
     echo ""
+fi
 
-    printf "Restoring postgresql data for pscheduler..."
-    export PGUSER=$(sed -n -e 's/.*user=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
-    export PGPASSWORD=$(sed -n -e 's/.*password=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
-    export PGDATABASE=$(sed -n -e 's/.*dbname=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
-    psql --no-password < $TEMP_RST_DIR/$TEMP_BAK_NAME/postgresql_data/pscheduler.dump &>/dev/null
+#get pscheduler if exists
+if [ -e "$TEMP_RST_DIR/$TEMP_BAK_NAME/pscheduler" ]; then
+    pscheduler restore $TEMP_RST_DIR/$TEMP_BAK_NAME/pscheduler
     if [ "$?" != "0" ]; then
-        echo "Unable to restore pscheduler database"
+        echo "Unable to restore pScheduler configuration"
         exit 1
     fi
-    unset PGUSER PGPASSWORD PGDATABASE
-    printf "[SUCCESS]"
-    echo ""
 fi
 
 #Clean up temp directory
