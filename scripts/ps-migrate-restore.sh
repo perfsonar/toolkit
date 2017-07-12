@@ -204,8 +204,9 @@ if [ "$DATA" ]; then
 fi
 
 #get pscheduler if exists
-if [ -e "$TEMP_RST_DIR/$TEMP_BAK_NAME/pscheduler" ]; then
-    pscheduler restore $TEMP_RST_DIR/$TEMP_BAK_NAME/pscheduler
+PSCHEDULER_BACKUP=$TEMP_RST_DIR/$TEMP_BAK_NAME/pscheduler
+if [ -e $PSCHEDULER_BACKUP ] && which pscheduler > /dev/null; then
+    pscheduler restore $PSCHEDULER_BACKUP
     if [ "$?" != "0" ]; then
         echo "Unable to restore pScheduler configuration"
         exit 1
