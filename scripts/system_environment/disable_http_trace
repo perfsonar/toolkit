@@ -1,9 +1,0 @@
-#!/bin/bash
-#######################
-# Disable the HTTP TRACE methods. Does not matter if this is running in an
-# 'upgrade' or 'new install' context.
-#######################
-cat > /etc/httpd/conf.d/disable_trace.conf <<EOF
-# Disables the HTTP TRACE method
-TraceEnable      Off
-EOF

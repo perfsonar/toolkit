@@ -275,6 +275,8 @@ Requires(post):         chkconfig
 %endif
 Requires:               fail2ban
 Requires:               perfsonar-common
+Requires:               httpd
+Requires:               mod_ssl
 Requires(pre):          rpm
 Requires(post):         perfsonar-common
 Requires(post):         coreutils
@@ -283,11 +285,13 @@ Requires(post):         kernel-devel
 Requires(post):         kernel
 Requires(post):         kernel-headers
 Requires(post):         module-init-tools
+Requires(post):         httpd
+Requires(post):         mod_ssl
 Obsoletes:              perl-perfSONAR_PS-Toolkit-security
 Provides:               perl-perfSONAR_PS-Toolkit-security
 
 %description security
-Configures IPTables rules and installs fail2ban for perfSONAR Toolkit
+Configures IPTables rules, installs fail2ban and secures apache for perfSONAR Toolkit
 
 %package sysctl
 Summary:                perfSONAR Toolkit sysctl configuration
@@ -384,6 +388,7 @@ install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
+install -D -m 0644 etc/apache-perfsonar-security.conf %{buildroot}/etc/httpd/conf.d/apache-perfsonar-security.conf
 install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 
 %if 0%{?el7}
@@ -617,6 +622,14 @@ chkconfig ip6tables on
 chkconfig fail2ban on
 %endif
 
+#configure apache
+%{install_base}/scripts/configure_apache_security install
+%if 0%{?el7}
+systemctl restart httpd &>/dev/null || :
+%else
+/sbin/service httpd restart &>/dev/null || :
+%endif
+
 %post sysctl
 
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
@@ -648,6 +661,7 @@ fi
 %exclude %{config_base}/default_service_configs/pg_hba.conf
 %exclude %{config_base}/default_service_configs/pscheduler_limits.conf
 %exclude %{config_base}/pscheduler_ulimit.conf
+%exclude /etc/httpd/conf.d/apache-perfsonar-security.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web-ng/*
 /etc/httpd/conf.d/*
@@ -700,6 +714,8 @@ fi
 %config %{config_base}/perfsonar_firewall_settings.conf
 %config %{config_base}/perfsonar_firewalld_settings.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_firewall
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_apache_security
+/etc/httpd/conf.d/apache-perfsonar-security.conf
 /usr/lib/firewalld/services/*.xml
 
 %files install

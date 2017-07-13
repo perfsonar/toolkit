@@ -4,6 +4,7 @@ bin/config_daemon.pl
 doc/LICENSE
 doc/iptables-config.example
 etc/administrative_info
+etc/apache-perfsonar-security.conf
 etc/clean_esmond_db.conf
 etc/configdaemon-logger.conf
 etc/configdaemon.conf
@@ -44,6 +45,7 @@ scripts/add_pssudo_user
 scripts/apache-toolkit_web_gui.conf
 scripts/autoselect_ntp_servers
 scripts/clean_esmond_db.sh
+scripts/configure_apache_security
 scripts/configure_cacti
 scripts/configure_firewall
 scripts/configure_ntpd
@@ -66,11 +68,9 @@ scripts/system_environment/add_toolkit_dirs_path
 scripts/system_environment/configure_esmond
 scripts/system_environment/configure_fail2ban
 scripts/system_environment/upgrade_configdaemon
-scripts/system_environment/disable_http_trace
 scripts/system_environment/disable_mysql_network_access
 scripts/system_environment/disable_php_advertising
 scripts/system_environment/disable_unwanted_services
-scripts/system_environment/disable_weak_ssl_ciphers
 scripts/system_environment/disable_zeroconf
 scripts/system_environment/enable_apache_redirect
 scripts/system_environment/enable_ntp_restarts
