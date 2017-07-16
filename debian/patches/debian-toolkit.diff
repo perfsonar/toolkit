@@ -1,6 +1,6 @@
 --- a/scripts/apache-toolkit_web_gui.conf
 +++ b/scripts/apache-toolkit_web_gui.conf
-@@ -100,23 +100,11 @@
+@@ -98,23 +98,11 @@
      Options +FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -29,7 +29,7 @@
  </Location>
  
  # Allow indexes on logs
-@@ -130,23 +118,11 @@
+@@ -128,23 +116,11 @@
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
      AllowOverride All
