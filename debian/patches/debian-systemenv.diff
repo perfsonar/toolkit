@@ -118,28 +118,6 @@
 -    /sbin/service fail2ban restart
 +    service fail2ban restart
  fi
---- a/scripts/system_environment/disable_http_trace
-+++ b/scripts/system_environment/disable_http_trace
-@@ -3,7 +3,18 @@
- # Disable the HTTP TRACE methods. Does not matter if this is running in an
- # 'upgrade' or 'new install' context.
- #######################
--cat > /etc/httpd/conf.d/disable_trace.conf <<EOF
-+
-+if type a2enconf &>/dev/null; then
-+  CONF=/etc/apache2/conf-available.d/disable_trace.conf
-+else
-+  CONF=/etc/apache2/conf.d/disable_trace.conf
-+fi
-+
-+cat > $CONF <<EOF
- # Disables the HTTP TRACE method
- TraceEnable      Off
- EOF
-+
-+if type a2enconf &>/dev/null; then
-+  a2enconf disable_trace.conf
-+fi
 --- a/scripts/system_environment/upgrade_configdaemon
 +++ b/scripts/system_environment/upgrade_configdaemon
 @@ -86,5 +86,5 @@
@@ -174,9 +152,9 @@
  #Try cacti data, but don't complain if it's not there
 -chown -R apache /var/lib/cacti/rra 2> /dev/null
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
---- a/scripts/system_environment/disable_weak_ssl_ciphers
-+++ b/scripts/system_environment/disable_weak_ssl_ciphers
-@@ -4,6 +4,18 @@
+--- a/scripts/configure_apache_security
++++ b/scripts/configure_apache_security
+@@ -5,9 +5,21 @@
  # 'upgrade' or 'new install' context.
  #######################
  
@@ -197,6 +175,16 @@
 +  sed -i '/^[[:space:]]*<\/VirtualHost>/i \
 +		SSLCipherSuite' $SSLCONF
 +sed -i 's|SSLCipherSuite.*|SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS|g' $SSLCONF
+ 
+ 
+ #######################
+@@ -15,4 +27,4 @@
+ #######################
+ if [ -f "/etc/httpd/conf.d/welcome.conf" ]; then
+     mv -f /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.bak
+-fi
+\ No newline at end of file
++fi
 --- a/scripts/system_environment/testpoint/configure_syslog_local5_location
 +++ b/scripts/system_environment/testpoint/configure_syslog_local5_location
 @@ -8,27 +8,21 @@
