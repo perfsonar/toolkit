@@ -1,6 +1,16 @@
 --- a/scripts/apache-toolkit_web_gui.conf
 +++ b/scripts/apache-toolkit_web_gui.conf
-@@ -98,23 +98,11 @@
+@@ -46,6 +46,9 @@
+ # But, allow anonymous access via port 80 (http)
+ # NOTE: Need to set non-https re-write rules and redirects here
+ <VirtualHost *:80>
++    # Hide default index page
++    DocumentRoot /var/www/perfsonar
++
+     # Redirects requests to "/" to "/toolkit". It's done in this strange way to
+     # avoid confusing people who enter an IP address and would get redirected to
+     # the hostname, or vice versa.
+@@ -98,23 +101,11 @@
      Options +FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -8,7 +18,7 @@
 -      Order allow,deny
 -      Allow from all
 -    </IfVersion>
--
+ 
 -    <IfVersion >= 2.4>
 -      AuthType Basic
 -      AuthName "Password Required"
@@ -21,7 +31,6 @@
 -      AuthName "Password Required"
 -      Require group psadmin
 -    </IfVersion>
-+
 +    AuthType Basic
 +    AuthName "Password Required"
 +    AuthUserFile /etc/perfsonar/toolkit/psadmin.htpasswd
@@ -29,7 +38,7 @@
  </Location>
  
  # Allow indexes on logs
-@@ -128,23 +116,11 @@
+@@ -128,23 +119,11 @@
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
      AllowOverride All
@@ -37,7 +46,7 @@
 -      Order allow,deny
 -      Allow from all
 -    </IfVersion>
--
+ 
 -    <IfVersion >= 2.4>
 -      AuthType Basic
 -      AuthName "Password Required"
@@ -50,7 +59,6 @@
 -      AuthName "Password Required"
 -      Require group psadmin
 -    </IfVersion>
-+
 +    AuthType Basic
 +    AuthName "Password Required"
 +    AuthUserFile /etc/perfsonar/toolkit/psadmin.htpasswd
