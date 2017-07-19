@@ -55,6 +55,7 @@ case "$1" in
         chmod 644 /var/lib/perfsonar/bundles/bundle_version
 
         # apache setup
+        /usr/lib/perfsonar/scripts/configure_apache_security
         if [ -e /usr/share/apache2/apache2-maintscript-helper ]; then
             . /usr/share/apache2/apache2-maintscript-helper
 
@@ -64,6 +65,7 @@ case "$1" in
             apache2_invoke enmod ssl
             apache2_invoke ensite default-ssl
             apache2_invoke enconf apache-toolkit_web_gui
+            apache2_invoke enconf apache-perfsonar-security
         fi
     ;;
 
