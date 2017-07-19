@@ -154,7 +154,7 @@
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
 --- a/scripts/configure_apache_security
 +++ b/scripts/configure_apache_security
-@@ -5,9 +5,21 @@
+@@ -5,14 +5,29 @@
  # 'upgrade' or 'new install' context.
  #######################
  
@@ -178,13 +178,18 @@
  
  
  #######################
-@@ -15,4 +27,4 @@
+ # Get rid of default welcome page
  #######################
- if [ -f "/etc/httpd/conf.d/welcome.conf" ]; then
-     mv -f /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.bak
+-if [ -f "/etc/httpd/conf.d/welcome.conf" ]; then
+-    mv -f /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.bak
 -fi
 \ No newline at end of file
-+fi
++mkdir -p /var/www/perfsonar
++for CONF in /etc/apache2/sites-available/{default,default-ssl,000-default.conf,default-ssl.conf}; do
++    if [ -f $CONF ]; then
++       sed -i 's/DocumentRoot \/var\/www\(\/html\)\?$/DocumentRoot \/var\/www\/perfsonar/' $CONF
++    fi
++done
 --- a/scripts/system_environment/testpoint/configure_syslog_local5_location
 +++ b/scripts/system_environment/testpoint/configure_syslog_local5_location
 @@ -8,27 +8,21 @@

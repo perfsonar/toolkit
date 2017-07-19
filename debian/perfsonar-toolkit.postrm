@@ -44,6 +44,7 @@ case "$1" in
         # apache setup
         if ! [ -e /usr/share/apache2/apache2-maintscript-helper ]; then
             rm -f /etc/apache2/conf.d/apache-toolkit_web_gui.conf
+            rm -f /etc/apache2/conf.d/apache-perfsonar-security.conf
 
             if which invoke-rc.d > /dev/null; then
                 invoke-rc.d apache2 reload
