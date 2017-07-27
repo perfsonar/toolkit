@@ -10,18 +10,15 @@ Tests: servicewatcher
 Depends: perfsonar-toolkit-servicewatcher
 Restrictions: needs-root
 
-Tests: ntp
-Depends: perfsonar-toolkit-ntp
-Restrictions: needs-root
-
 Tests: security
 Depends: perfsonar-toolkit-security
 Restrictions: needs-root
 
+Tests: ntp
+Depends: perfsonar-toolkit-ntp
+
 Tests: sysctl
 Depends: perfsonar-toolkit-sysctl
-Restrictions: needs-root
 
 Tests: systemenv
 Depends: perfsonar-toolkit-systemenv
-Restrictions: needs-root
