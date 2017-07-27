@@ -1,4 +1,4 @@
-Tests: web, webauth, pssudo
+Tests: web, webauth, ssl, pssudo
 Depends: perfsonar-toolkit, curl, sudo
 Restrictions: needs-root
 
