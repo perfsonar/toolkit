@@ -20,7 +20,8 @@ optionalPackages=[
     'perfsonar-toolkit-ntp',
     'perfsonar-toolkit-security',
     'perfsonar-toolkit-servicewatcher',
-    'perfsonar-toolkit-sysctl'
+    'perfsonar-toolkit-sysctl',
+    'perfsonar-toolkit-systemenv-testpoint'
 ]
 
 def installPackages(yumHandle, packageNames):
