@@ -29,8 +29,8 @@
  import Internet2Lib
  import Internet2Consts
  
-@@ -23,47 +23,49 @@
-     'perfsonar-toolkit-sysctl'
+@@ -24,47 +24,49 @@
+     'perfsonar-toolkit-systemenv-testpoint'
  ]
  
 -def installPackages(yumHandle, packageNames):
