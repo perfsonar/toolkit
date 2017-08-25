@@ -18,6 +18,7 @@ Log::Log4perl->easy_init( {level => 'OFF'} );
 
 use Test::More tests => 23;
 
+use utf8;
 use Config::General;
 use Data::Dumper;
 use Test::MockObject::Extends;
