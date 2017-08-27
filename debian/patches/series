@@ -6,4 +6,3 @@ chkconfig.diff
 debian-install.diff
 debian-systemenv.diff
 debian-sysctl.diff
-utf8.diff
