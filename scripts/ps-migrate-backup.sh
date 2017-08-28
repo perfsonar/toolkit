@@ -108,20 +108,6 @@ fi
 printf "[SUCCESS]"
 echo ""
 
-#get pscheduler if exists
-if [ -d "/etc/pscheduler" ]; then
-    printf "Backing-up pScheduler configuration..."
-    cp -a /etc/pscheduler $TEMP_BAK_DIR/etc
-    if [ "$?" != "0" ]; then
-        echo "Unable to copy /etc/pscheduler"
-        exit 1
-    fi
-    #don't copy over db passwords
-    rm -rf $TEMP_BAK_DIR/etc/pscheduler/database
-    printf "[SUCCESS]"
-    echo ""
-fi
-
 #get NTP config
 printf "Backing-up NTP configuration..."
 cp /etc/ntp.conf  $TEMP_BAK_DIR/etc/ntp.conf
@@ -183,19 +169,15 @@ if [ "$DATA" ]; then
     unset PGUSER PGPASSWORD PGDATABASE
     printf "[SUCCESS]"
     echo ""
+fi
 
-    printf "Backing-up postgresql data for pscheduler..."
-    export PGUSER=$(sed -n -e 's/.*user=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
-    export PGPASSWORD=$(sed -n -e 's/.*password=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
-    export PGDATABASE=$(sed -n -e 's/.*dbname=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
-    $PG_DUMP --no-password > $TEMP_BAK_DIR/postgresql_data/pscheduler.dump 2>/dev/null
+#get pscheduler if exists
+if which pscheduler > /dev/null; then
+    pscheduler backup > $TEMP_BAK_DIR/pscheduler
     if [ "$?" != "0" ]; then
-        echo "Unable to dump pscheduler database"
+        echo "Unable to create pScheduler backup"
         exit 1
     fi
-    unset PGUSER PGPASSWORD PGDATABASE
-    printf "[SUCCESS]"
-    echo ""
 fi
 
 #create tar
