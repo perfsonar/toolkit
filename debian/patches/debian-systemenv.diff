@@ -9,7 +9,7 @@
  
  #Determine install type
  # UPDATE: Don't force meshconfig-agent-tasks.conf to add localhost MAs
-@@ -15,96 +11,13 @@
+@@ -15,97 +11,13 @@
      INSTALL_TYPE="FORCE"
  fi
  
@@ -101,7 +101,8 @@
 -. bin/activate
 -
 -#build esmond tables
--python esmond/manage.py syncdb --noinput &> /dev/null
+-python esmond/manage.py makemigrations --noinput &> /dev/null
+-python esmond/manage.py migrate --noinput &> /dev/null
 -
  #create api key
 -KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
