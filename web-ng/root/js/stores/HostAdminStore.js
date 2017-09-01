@@ -13,8 +13,6 @@ var HostAdminStore = {
     saveAdminInfoErrorTopic: 'store.host_admin_info.save_error',
     saveMetadataTopic: 'store.host_metadata.save',
     saveMetadataErrorTopic: 'store.host_metadata.save_error',
-    saveServicesTopic: 'store.host_services.save',
-    saveServicesErrorTopic: 'store.host_services.save_error',
     saveCommunitiesTopic: 'store.communities_host.save',
     saveCommunitiesErrorTopic: 'store.communities_host.save_error',
     ntpInfoTopic: 'store.change.ntp_config',
@@ -60,26 +58,6 @@ HostAdminStore.saveMetadata = function( data ) {
 
         },
         traditional: true, // so we pass role array as two role args, not role[]
-        error: function(jqXHR, textStatus, errorThrown) {
-            Dispatcher.publish(error_topic, errorThrown);
-        }
-    });
-};
-
-HostAdminStore.saveServices = function(services) {
-    var topic = HostAdminStore.saveServicesTopic;
-    var error_topic = HostAdminStore.saveServicesErrorTopic;
-    $.ajax({
-        url: 'services/host.cgi?method=update_enabled_services',
-        type: 'POST',
-        data: services,
-        dataType: 'json',
-        contentType: 'application/x-www-form-urlencoded',
-        success: function(result) {
-            HostServicesStore._retrieveServices();
-            Dispatcher.publish(topic, result.message);
-
-        },
         error: function(jqXHR, textStatus, errorThrown) {
             Dispatcher.publish(error_topic, errorThrown);
         }
