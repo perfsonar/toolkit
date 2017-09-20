@@ -1,0 +1,16 @@
+{
+    "parser": "babel-eslint",
+    "env": {
+        "browser": true,
+        "node": true,
+        "es6": true
+    },
+    "ecmaFeatures": {
+        "modules": true
+    },
+    /* For now, we're just checking for whether files have fatal syntax errors; later we'll want to enale this for style warnings etc:
+    "extends": "eslint:recommended",
+    */
+    "rules": {
+    }
+}

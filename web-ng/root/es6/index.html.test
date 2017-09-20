@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <script type="text/javascript" src="index_bundle.js"></script></body>
+    <meta charset="UTF-8">
+    <title>Webpack App</title>
+  </head>
+  <body>
+  <script>
+window.onload = function() {
+    console.log("hej psShared", psShared);
+    console.log("heY testVar", testVar);
+};
+  </script>
+</html>
