@@ -4,7 +4,7 @@ var CommunityUpdateComponent = {
     communitiesToRemove: [],
     allTopic: 'store.change.communities_all',
     hostTopic: 'store.change.communities_host',
-    metadataTopic: 'store.change.host_metadata', 
+    metadataTopic: 'store.change.host_metadata',
     allSet: false,
     hostSet: false,
     placeholder: 'Select communities',

@@ -1,5 +1,5 @@
 require('es6-promise').polyfill()
-
+var path = require("path");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var PRODUCTION = false; // TODO: fix
@@ -41,5 +41,22 @@ module.exports = {
         ]
         */
     },
+ resolve: {
+
+        extensions: ["", ".js", ".jsx", ".json"],
+
+
+        symlinks: false,
+
+        modulesDirectories: [    path.resolve(__dirname) + "/node_modules",
+                       path.resolve(__dirname) + '/js-shared'
+                        //"/home/mj82/src/toolkit/js-shared"
+
+                    ]
+
+    },
+        resolveLoader: {
+              root: path.join(__dirname, 'node_modules')
+        }
 };
 

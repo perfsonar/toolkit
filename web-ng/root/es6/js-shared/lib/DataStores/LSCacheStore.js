@@ -20,6 +20,69 @@ module.exports = {
     lsCacheURL: null,
     data: null,
 
+    retrieveCommunities: function( callback ) {
+        console.log("retrieving communities ...");
+        let query = {
+            "size": 0,
+            "aggs": {
+                "distinct_communities": {
+                    "terms": {
+                        "field": "group-communities.keyword",
+                        "size": 1000
+
+                    }
+
+                }
+
+            }
+
+        };
+        let message = "communities_request";
+        LSCacheStore.subscribeTag( this.handleLSCommunityResponse.bind(this) , message );
+        LSCacheStore.queryLSCache( query, message );
+
+    },
+
+    handleLSCommunityResponse: function() {
+        let data = LSCacheStore.getResponseData();
+        console.log("data!", data);
+        if ( typeof ( data ) != "undefined"
+                && "aggregations" in data
+                && "distinct_communities" in data.aggregations
+                && "buckets" in data.aggregations.distinct_communities
+                && data.aggregations.distinct_communities.buckets.length > 0
+           ) {
+               data = data.aggregations.distinct_communities.buckets;
+               let communities = [];
+               for( let i in data ) {
+                   let row = data[i];
+                   if ( row.key == "" || typeof row.key == "undefined" ) {
+                       continue;
+                   }
+                   communities.push( row.key );
+               }
+
+               //communities.sort();
+
+               communities.sort(function(a,b) {
+                   a = a.toLowerCase();
+                   b = b.toLowerCase();
+                   if( a == b) return 0;
+                   if( a > b) return 1;
+                   return -1;
+               });
+               console.log("communities", communities);
+
+            let message = "communities";
+            emitter.emit("communities");
+
+        } else {
+            console.log("no data!!!");
+
+        }
+
+    },
+
     retrieveLSList: function() {
         axios.get( lsCacheHostsURL )
              .then(function(response){

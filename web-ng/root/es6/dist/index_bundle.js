@@ -93,23 +93,6 @@ var psShared =
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	/*
-	export let testVar = "testvariable";
-	
-	
-	export class Model {
-	      constructor(properties) {
-	              this.properties = properties;
-	                }
-	
-	        toObject() {
-	                return this.properties;
-	                  }
-	}
-	*/
-	
-	console.log("asdf1!");
-	
 	module.exports = {
 	    getTimezone: function getTimezone(date) {
 	        var tz = void 0;
@@ -28310,14 +28293,17 @@ var psShared =
 
 /***/ }),
 /* 211 */
-/*!*****************************************************************!*\
-  !*** ./~/babel-runtime/~/regenerator-runtime/runtime-module.js ***!
-  \*****************************************************************/
+/*!*************************************************!*\
+  !*** ./~/regenerator-runtime/runtime-module.js ***!
+  \*************************************************/
 /***/ (function(module, exports, __webpack_require__) {
 
-	// This method of obtaining a reference to the global object needs to be
+	/* WEBPACK VAR INJECTION */(function(global) {// This method of obtaining a reference to the global object needs to be
 	// kept identical to the way it is obtained in runtime.js
-	var g = (function() { return this })() || Function("return this")();
+	var g =
+	  typeof global === "object" ? global :
+	  typeof window === "object" ? window :
+	  typeof self === "object" ? self : this;
 	
 	// Use `getOwnPropertyNames` because not all browsers support calling
 	// `hasOwnProperty` on the global `self` object in a worker. See #183.
@@ -28343,16 +28329,17 @@ var psShared =
 	    g.regeneratorRuntime = undefined;
 	  }
 	}
-
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
 /* 212 */
-/*!**********************************************************!*\
-  !*** ./~/babel-runtime/~/regenerator-runtime/runtime.js ***!
-  \**********************************************************/
+/*!******************************************!*\
+  !*** ./~/regenerator-runtime/runtime.js ***!
+  \******************************************/
 /***/ (function(module, exports) {
 
-	/**
+	/* WEBPACK VAR INJECTION */(function(global) {/**
 	 * Copyright (c) 2014, Facebook, Inc.
 	 * All rights reserved.
 	 *
@@ -28542,6 +28529,10 @@ var psShared =
 	          resolve(result);
 	        }, reject);
 	      }
+	    }
+	
+	    if (typeof global.process === "object" && global.process.domain) {
+	      invoke = global.process.domain.bind(invoke);
 	    }
 	
 	    var previousPromise;
@@ -29077,12 +29068,15 @@ var psShared =
 	    }
 	  };
 	})(
-	  // In sloppy mode, unbound `this` refers to the global object, fallback to
-	  // Function constructor if we're in global strict mode. That is sadly a form
-	  // of indirect eval which violates Content Security Policy.
-	  (function() { return this })() || Function("return this")()
+	  // Among the various tricks for obtaining a reference to the global
+	  // object, this seems to be the most reliable technique that does not
+	  // use indirect eval (which violates Content Security Policy).
+	  typeof global === "object" ? global :
+	  typeof window === "object" ? window :
+	  typeof self === "object" ? self : this
 	);
-
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
 /* 213 */
@@ -37441,6 +37435,60 @@ var psShared =
 	    useProxy: false,
 	    lsCacheURL: null,
 	    data: null,
+	
+	    retrieveCommunities: function retrieveCommunities(callback) {
+	        console.log("retrieving communities ...");
+	        var query = {
+	            "size": 0,
+	            "aggs": {
+	                "distinct_communities": {
+	                    "terms": {
+	                        "field": "group-communities.keyword",
+	                        "size": 1000
+	
+	                    }
+	
+	                }
+	
+	            }
+	
+	        };
+	        var message = "communities_request";
+	        LSCacheStore.subscribeTag(this.handleLSCommunityResponse.bind(this), message);
+	        LSCacheStore.queryLSCache(query, message);
+	    },
+	
+	    handleLSCommunityResponse: function handleLSCommunityResponse() {
+	        var data = LSCacheStore.getResponseData();
+	        console.log("data!", data);
+	        if (typeof data != "undefined" && "aggregations" in data && "distinct_communities" in data.aggregations && "buckets" in data.aggregations.distinct_communities && data.aggregations.distinct_communities.buckets.length > 0) {
+	            data = data.aggregations.distinct_communities.buckets;
+	            var communities = [];
+	            for (var i in data) {
+	                var row = data[i];
+	                if (row.key == "" || typeof row.key == "undefined") {
+	                    continue;
+	                }
+	                communities.push(row.key);
+	            }
+	
+	            //communities.sort();
+	
+	            communities.sort(function (a, b) {
+	                a = a.toLowerCase();
+	                b = b.toLowerCase();
+	                if (a == b) return 0;
+	                if (a > b) return 1;
+	                return -1;
+	            });
+	            console.log("communities", communities);
+	
+	            var message = "communities";
+	            emitter.emit("communities");
+	        } else {
+	            console.log("no data!!!");
+	        }
+	    },
 	
 	    retrieveLSList: function retrieveLSList() {
 	        axios.get(lsCacheHostsURL).then(function (response) {
@@ -46813,12 +46861,12 @@ var psShared =
 
 /***/ }),
 /* 346 */
-/*!**************************************!*\
-  !*** ./~/url/~/punycode/punycode.js ***!
-  \**************************************/
+/*!********************************!*\
+  !*** ./~/punycode/punycode.js ***!
+  \********************************/
 /***/ (function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/*! https://mths.be/punycode v1.3.2 by @mathias */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/*! https://mths.be/punycode v1.4.1 by @mathias */
 	;(function(root) {
 	
 		/** Detect free variables */
@@ -46884,7 +46932,7 @@ var psShared =
 		 * @returns {Error} Throws a `RangeError` with the applicable error message.
 		 */
 		function error(type) {
-			throw RangeError(errors[type]);
+			throw new RangeError(errors[type]);
 		}
 	
 		/**
@@ -47031,7 +47079,7 @@ var psShared =
 	
 		/**
 		 * Bias adaptation function as per section 3.4 of RFC 3492.
-		 * http://tools.ietf.org/html/rfc3492#section-3.4
+		 * https://tools.ietf.org/html/rfc3492#section-3.4
 		 * @private
 		 */
 		function adapt(delta, numPoints, firstTime) {
@@ -47306,7 +47354,7 @@ var psShared =
 			 * @memberOf punycode
 			 * @type String
 			 */
-			'version': '1.3.2',
+			'version': '1.4.1',
 			/**
 			 * An object of methods to convert from JavaScript's internal character
 			 * representation (UCS-2) to Unicode code points, and back.
@@ -47334,20 +47382,23 @@ var psShared =
 				return punycode;
 			}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else if (freeExports && freeModule) {
-			if (module.exports == freeExports) { // in Node.js or RingoJS v0.8.0+
+			if (module.exports == freeExports) {
+				// in Node.js, io.js, or RingoJS v0.8.0+
 				freeModule.exports = punycode;
-			} else { // in Narwhal or RingoJS v0.7.0-
+			} else {
+				// in Narwhal or RingoJS v0.7.0-
 				for (key in punycode) {
 					punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
 				}
 			}
-		} else { // in Rhino or a web browser
+		} else {
+			// in Rhino or a web browser
 			root.punycode = punycode;
 		}
 	
 	}(this));
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../../webpack/buildin/module.js */ 5)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../webpack/buildin/module.js */ 5)(module), (function() { return this; }())))
 
 /***/ }),
 /* 347 */

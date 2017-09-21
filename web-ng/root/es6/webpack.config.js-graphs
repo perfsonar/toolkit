@@ -10,7 +10,7 @@ var plugins = [
   }),
   new SplitByPathPlugin([
       {
-        name: 'ps-shared',
+        name: 'psshared',
         path: __dirname + '/js-shared'
       },
       {
