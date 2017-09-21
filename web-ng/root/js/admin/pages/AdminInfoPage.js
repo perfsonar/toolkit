@@ -6,17 +6,7 @@ var AdminInfoPage = {
     formSubmitTopic:    'ui.form.submit',
 };
 
-//var GraphUtilities = psShared.GraphUtilities;
-var LSCacheStore = psShared.LSCacheStore;
-
-AdminInfoPage.gotCaches = function() {
-    LSCacheStore.retrieveCommunities();
-
-};
-
 AdminInfoPage.initialize = function() {
-    var callback = this.gotCaches;
-    LSCacheStore.subscribeLSCaches( callback );
     $("#adminInfoForm")
         .on('valid.fndtn.abide', function(e) {
             if(e.namespace != 'abide.fndtn') {

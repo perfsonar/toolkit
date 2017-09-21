@@ -37435,6 +37435,7 @@ var psShared =
 	    useProxy: false,
 	    lsCacheURL: null,
 	    data: null,
+	    communities: [],
 	
 	    retrieveCommunities: function retrieveCommunities(callback) {
 	        console.log("retrieving communities ...");
@@ -37458,6 +37459,10 @@ var psShared =
 	        LSCacheStore.queryLSCache(query, message);
 	    },
 	
+	    getCommunities: function getCommunities() {
+	        return this.communities;
+	    },
+	
 	    handleLSCommunityResponse: function handleLSCommunityResponse() {
 	        var data = LSCacheStore.getResponseData();
 	        console.log("data!", data);
@@ -37472,8 +37477,6 @@ var psShared =
 	                communities.push(row.key);
 	            }
 	
-	            //communities.sort();
-	
 	            communities.sort(function (a, b) {
 	                a = a.toLowerCase();
 	                b = b.toLowerCase();
@@ -37482,11 +37485,13 @@ var psShared =
 	                return -1;
 	            });
 	            console.log("communities", communities);
+	            this.communities = communities;
 	
 	            var message = "communities";
 	            emitter.emit("communities");
 	        } else {
 	            console.log("no data!!!");
+	            this.communities = [];
 	        }
 	    },
 	

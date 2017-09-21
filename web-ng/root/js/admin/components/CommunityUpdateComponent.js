@@ -137,7 +137,14 @@ CommunityUpdateComponent._combineCommunities = function() {
     var host = CommunityUpdateComponent.communities.host;
     var combined = $.extend({}, all, host);
     var sorted = [];
-    var keys = Object.keys(combined).sort();
+    var keys = Object.keys(combined).sort(function(a,b) {
+        a = a.toLowerCase();
+        b = b.toLowerCase();
+        if( a == b) return 0;
+        if( a > b) return 1;
+        return -1;
+    });
+
     for(var i in keys) {
         var row = {};
         row.id = i;

@@ -19,6 +19,7 @@ module.exports = {
     useProxy: false,
     lsCacheURL: null,
     data: null,
+    communities: [],
 
     retrieveCommunities: function( callback ) {
         console.log("retrieving communities ...");
@@ -43,6 +44,11 @@ module.exports = {
 
     },
 
+    getCommunities: function() {
+        return this.communities;
+
+    },
+
     handleLSCommunityResponse: function() {
         let data = LSCacheStore.getResponseData();
         console.log("data!", data);
@@ -62,8 +68,6 @@ module.exports = {
                    communities.push( row.key );
                }
 
-               //communities.sort();
-
                communities.sort(function(a,b) {
                    a = a.toLowerCase();
                    b = b.toLowerCase();
@@ -72,12 +76,14 @@ module.exports = {
                    return -1;
                });
                console.log("communities", communities);
+               this.communities = communities;
 
-            let message = "communities";
-            emitter.emit("communities");
+               let message = "communities";
+               emitter.emit("communities");
 
         } else {
             console.log("no data!!!");
+            this.communities = [];
 
         }
 
