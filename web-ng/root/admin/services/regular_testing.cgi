@@ -45,7 +45,7 @@ if ( $conf{logger_conf} ) {
 else {
 
     # If they've not specified a logger, send it all to /dev/null
-    Log::Log4perl->easy_init( { level => $DEBUG, file => "/dev/null" } );
+    Log::Log4perl->easy_init( { level => $DEBUG, file => "/dev/null", utf8 => 1 } );
 }
 
 our $logger = get_logger( "perfSONAR_PS::WebGUI::ServiceStatus" );

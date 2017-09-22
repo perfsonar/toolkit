@@ -673,7 +673,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/regular_testing/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/ntp.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/communities.cgi

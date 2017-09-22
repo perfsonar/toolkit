@@ -94,7 +94,6 @@ web-ng/root/admin/administrative_info/index.cgi
 web-ng/root/admin/regular_testing/index.cgi
 web-ng/root/admin/host.cgi
 web-ng/root/admin/index.cgi
-web-ng/root/admin/services.cgi
 web-ng/root/admin/services/host.cgi
 web-ng/root/admin/services/ntp.cgi
 web-ng/root/admin/services/communities.cgi
@@ -151,7 +150,6 @@ web-ng/root/js/admin/components/OldTestConfigComponent.js
 web-ng/root/js/admin/components/TestConfigComponent.js
 web-ng/root/js/admin/components/HostMetadataComponent.js
 web-ng/root/js/admin/pages/AdminInfoPage.js
-web-ng/root/js/admin/pages/AdminServicesPage.js
 web-ng/root/js/admin/pages/HostConfigPage.js
 web-ng/root/js/admin/pages/TestConfigPage.js
 web-ng/root/js/app.js
@@ -230,7 +228,6 @@ web-ng/root/js/stores/TestConfigAdminStore.js
 web-ng/root/js/vendor/jquery.js
 web-ng/root/js/vendor/modernizr.js
 web-ng/root/js/admin/pages/AdminInfoPage.js
-web-ng/root/js/admin/pages/AdminServicesPage.js
 web-ng/root/js/admin/pages/HostConfigPage.js
 web-ng/root/js/components/PageHeader.js
 web-ng/root/js/select2/i18n/az.js
@@ -312,7 +309,6 @@ web-ng/templates/admin/components/sticky_bar.html
 web-ng/templates/admin/components/test_config_default_parameters.html
 web-ng/templates/admin/pages/admin_info.html
 web-ng/templates/admin/pages/host.html
-web-ng/templates/admin/pages/services.html
 web-ng/templates/components/json_link.html
 web-ng/templates/components/loader.html
 web-ng/root/js/jquery-ui/jquery-ui.theme.css
