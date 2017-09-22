@@ -11,7 +11,8 @@ const lsQueryURL = "/perfsonar-graphs/cgi-bin/graphData.cgi?action=interfaces";
 const proxyURL = "/perfsonar-graphs/cgi-bin/graphData.cgi?action=ls_cache_data&url=";
 
 /*
- * DESCRIPTION OF CLASS HERE
+ * This "LSCacheStore" class interacts with the LS caches, selecting a cache from those availale,
+ * and querying it for various information. 
 */
 
 module.exports = {
@@ -140,12 +141,8 @@ module.exports = {
 
     },
 
-    // TODO: convert this function to a generic one that can take a query as a parameter
-    // and a callback
     queryLSCache: function( query, message ) {
         let lsCacheURL = this.lsCacheURL + "_search";
-
-        //this.retrieveHostLSData( hosts, lsCacheURL );
 
         console.log("query", query);
 
@@ -173,8 +170,6 @@ module.exports = {
         .then(function( response ) {
             let data = response.data;
             console.log("data from posted request FIRST DONE SECTION", data);
-            //this.handleInterfaceInfoResponse( data );
-            //this.handleLSCacheDataResponse( data, message );
             successCallback( data );
 
         }.bind(this))
