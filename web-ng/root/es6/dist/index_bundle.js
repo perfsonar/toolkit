@@ -37427,7 +37427,8 @@ var psShared =
 	var proxyURL = "/perfsonar-graphs/cgi-bin/graphData.cgi?action=ls_cache_data&url=";
 	
 	/*
-	 * DESCRIPTION OF CLASS HERE
+	 * This "LSCacheStore" class interacts with the LS caches, selecting a cache from those availale,
+	 * and querying it for various information. 
 	*/
 	
 	module.exports = {
@@ -37436,8 +37437,9 @@ var psShared =
 	    lsCacheURL: null,
 	    data: null,
 	    communities: [],
+	    communityHosts: [],
 	
-	    retrieveCommunities: function retrieveCommunities(callback) {
+	    retrieveCommunities: function retrieveCommunities() {
 	        console.log("retrieving communities ...");
 	        var query = {
 	            "size": 0,
@@ -37461,6 +37463,47 @@ var psShared =
 	
 	    getCommunities: function getCommunities() {
 	        return this.communities;
+	    },
+	
+	    getCommunityHosts: function getCommunityHosts() {
+	        return this.communityHosts;
+	    },
+	
+	    retrieveCommunityHosts: function retrieveCommunityHosts(community, testType) {
+	        console.log("retrieving hosts in community ...", community, testType);
+	        var eventTypeLookup = {
+	            "throughput": "bwctl",
+	            "bwctl/throughput": "bwctl",
+	            "latency": "owamp",
+	            "ping": "ping"
+	        };
+	        var eventType = eventTypeLookup[testType];
+	
+	        var query = {
+	            //"size": 0,
+	            "query": {
+	                "constant_score": {
+	                    "filter": {
+	                        "bool": {
+	                            "must": [{ "match": { "type": "service" } }, { "term": { "group-communities.keyword": community } }, { "term": { "service-type.keyword": eventType } }]
+	                        }
+	                    }
+	
+	                }
+	
+	            }
+	
+	        };
+	
+	        var message = "community_hosts";
+	        LSCacheStore.subscribeTag(this.handleLSCommunityHostsResponse.bind(this), message);
+	        LSCacheStore.queryLSCache(query, message);
+	    },
+	
+	    handleLSCommunityHostsResponse: function handleLSCommunityHostsResponse() {
+	        var data = LSCacheStore.getResponseData();
+	        console.log("community hosts data!", data);
+	        this.communityHosts = data;
 	    },
 	
 	    handleLSCommunityResponse: function handleLSCommunityResponse() {
@@ -37539,12 +37582,8 @@ var psShared =
 	        emitter.off(tag, callback);
 	    },
 	
-	    // TODO: convert this function to a generic one that can take a query as a parameter
-	    // and a callback
 	    queryLSCache: function queryLSCache(query, message) {
 	        var lsCacheURL = this.lsCacheURL + "_search";
-	
-	        //this.retrieveHostLSData( hosts, lsCacheURL );
 	
 	        console.log("query", query);
 	
@@ -37570,8 +37609,6 @@ var psShared =
 	        }).then(function (response) {
 	            var data = response.data;
 	            console.log("data from posted request FIRST DONE SECTION", data);
-	            //this.handleInterfaceInfoResponse( data );
-	            //this.handleLSCacheDataResponse( data, message );
 	            successCallback(data);
 	        }.bind(this)).catch(function (error) {
 	            console.log("error", error);

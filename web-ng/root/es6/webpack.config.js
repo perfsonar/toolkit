@@ -50,7 +50,6 @@ module.exports = {
 
         modulesDirectories: [    path.resolve(__dirname) + "/node_modules",
                        path.resolve(__dirname) + '/js-shared'
-                        //"/home/mj82/src/toolkit/js-shared"
 
                     ]
 

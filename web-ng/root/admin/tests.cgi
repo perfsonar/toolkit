@@ -49,21 +49,22 @@ my $tt = Template->new({
 my $page = 'admin/pages/tests.html';
 my $css = [ $include_prefix . 'css/toolkit.css' ];
 my $js_files = [ 
-    $include_prefix . 'js/pubsub/jquery.pubsub.js', 
-    $include_prefix . 'js/actions/Dispatcher.js', 
-    $include_prefix . 'js/stores/DataStore.js', 
-    $include_prefix . 'js/stores/CommunityAllStore.js', 
-    $include_prefix . 'js/stores/CommunityHostsStore.js', 
-    $include_prefix . 'js/stores/TestConfigStore.js', 
-    $include_prefix . 'js/stores/TestConfigAdminStore.js', 
-    $include_prefix . 'js/stores/HostDetailsStore.js', 
-    $include_prefix . 'js/handlebars/handlebars.js', 
+    $include_prefix . '../es6/dist/index_bundle.js',
+    $include_prefix . 'js/pubsub/jquery.pubsub.js',
+    $include_prefix . 'js/actions/Dispatcher.js',
+    $include_prefix . 'js/stores/DataStore.js',
+    $include_prefix . 'js/stores/CommunityAllStore.js',
+    $include_prefix . 'js/stores/CommunityHostsStore.js',
+    $include_prefix . 'js/stores/TestConfigStore.js',
+    $include_prefix . 'js/stores/TestConfigAdminStore.js',
+    $include_prefix . 'js/stores/HostDetailsStore.js',
+    $include_prefix . 'js/handlebars/handlebars.js',
     $include_prefix . 'js/d3/d3.min.js',
     $include_prefix . 'js/shared/TestResultUtils.js',
-    $include_prefix . 'js/shared/SharedUIFunctions.js', 
-    $include_prefix . 'js/admin/components/StickySaveBar.js', 
-    $include_prefix . 'js/components/PageHeader.js', 
-    $include_prefix . 'js/admin/components/TestConfigComponent.js', 
+    $include_prefix . 'js/shared/SharedUIFunctions.js',
+    $include_prefix . 'js/admin/components/StickySaveBar.js',
+    $include_prefix . 'js/components/PageHeader.js',
+    $include_prefix . 'js/admin/components/TestConfigComponent.js',
     $include_prefix . 'js/admin/pages/TestConfigPage.js'
     ];
 

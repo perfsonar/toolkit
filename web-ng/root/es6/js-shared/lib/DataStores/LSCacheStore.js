@@ -21,8 +21,9 @@ module.exports = {
     lsCacheURL: null,
     data: null,
     communities: [],
+    communityHosts: [],
 
-    retrieveCommunities: function( callback ) {
+    retrieveCommunities: function( ) {
         console.log("retrieving communities ...");
         let query = {
             "size": 0,
@@ -45,9 +46,56 @@ module.exports = {
 
     },
 
-    getCommunities: function() {
+    getCommunities: function( ) {
         return this.communities;
 
+    },
+
+    getCommunityHosts: function( ) {
+        return this.communityHosts;
+
+    },
+
+    retrieveCommunityHosts: function( community, testType ) {
+        console.log("retrieving hosts in community ...", community, testType );
+        let eventTypeLookup = {
+            "throughput": "bwctl",
+            "bwctl/throughput": "bwctl",
+            "latency": "owamp",
+            "ping": "ping"
+        };
+        let eventType = eventTypeLookup[ testType ];
+
+        let query = {
+            //"size": 0,
+            "query": {
+                "constant_score": {
+                    "filter": {
+                        "bool": {
+                            "must": [
+                                { "match": { "type": "service" } },
+                                { "term": { "group-communities.keyword": community } },
+                                { "term": { "service-type.keyword": eventType } }
+                            ]
+                        }
+                    }
+
+                }
+
+            }
+
+        };
+
+        let message = "community_hosts";
+        LSCacheStore.subscribeTag( this.handleLSCommunityHostsResponse.bind(this) , message );
+        LSCacheStore.queryLSCache( query, message );
+
+    },
+
+    handleLSCommunityHostsResponse: function() {
+        let data = LSCacheStore.getResponseData();
+        console.log("community hosts data!", data);
+        this.communityHosts = data;
     },
 
     handleLSCommunityResponse: function() {
