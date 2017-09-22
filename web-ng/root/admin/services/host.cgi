@@ -253,31 +253,6 @@ my $services_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 
 $router->add_method($services_method);
 
-my $services_update_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            => "update_enabled_services",
-    description     => "Updates enabled service configuration",
-    auth_required   => 1,
-    callback        => sub { $host_info->update_enabled_services(@_); },
-    min_params      => 1,
-    request_methods => ['POST'],
-    );
-
-$services_update_method->add_input_parameter(
-    name            => "bwctl",
-    description     => "Whether to enable the BWCTL service",
-    required        => 0,
-    type            => 'boolean',
-    );
-
-$services_update_method->add_input_parameter(
-    name            => "owamp",
-    description     => "Whether to enable the OWAMP service",
-    required        => 0,
-    type            => 'boolean',
-    );
-
-$router->add_method($services_update_method);
-
 my $get_auto_updates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            => "get_auto_updates",
     description     => "Gets auto updates configuration",
