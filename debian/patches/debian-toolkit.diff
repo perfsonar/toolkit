@@ -88,8 +88,10 @@
      sys.exit(1)
 --- a/scripts/clean_esmond_db.sh
 +++ b/scripts/clean_esmond_db.sh
-@@ -1,10 +1,8 @@
- #!/bin/bash
+@@ -9,15 +9,13 @@
+ fi
+ 
+ #run ps_remove_data.py to delete expired data
 -export ESMOND_ROOT=/usr/lib/esmond
 -export ESMOND_CONF=/etc/esmond/esmond.conf
 +
@@ -105,6 +107,9 @@
 -python ./util/ps_remove_data.py -c /etc/perfsonar/toolkit/clean_esmond_db.conf
 +
 +python /usr/share/esmond/util/ps_remove_data.py -c /etc/perfsonar/toolkit/clean_esmond_db.conf
+ 
+ #force a compaction
+ if [ "$ESMOND_CLEANER_MULTI_NODE" != "1" ]; then
 --- a/init_scripts/perfsonar-configure_nic_parameters
 +++ b/init_scripts/perfsonar-configure_nic_parameters
 @@ -1,17 +1,12 @@
