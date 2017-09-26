@@ -17,10 +17,10 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum   2 
+%define relnum   0.1.b1 
 
 Name:			perfsonar-toolkit
-Version:		4.0.1
+Version:		4.0.2
 Release:		%{relnum}%{?dist}
 Summary:		perfSONAR Toolkit
 License:		Distributable, see LICENSE
