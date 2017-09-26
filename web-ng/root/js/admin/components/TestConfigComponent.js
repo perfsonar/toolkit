@@ -457,7 +457,7 @@ TestConfigComponent._selectCommunities = function( communities ) {
         if ( selectedCommunity != '' ) {
             $('#hosts-in-community-loading-modal').show();
             $('#community-hosts').hide();
-            CommunityHostsStore.getHostByCommunity ( selectedCommunity, TestConfigComponent.testConfig.type );
+            CommunityHostsStore.getHostByCommunity ( selectedCommunity, TestConfigComponent.testConfig.type, LSCacheStore.lsCacheURL );
         } else {
             TestConfigComponent._clearCommunityHosts();
 
@@ -475,6 +475,8 @@ TestConfigComponent._clearCommunityHosts = function() {
 TestConfigComponent._setHostsFromCommunity = function() {
     var data = CommunityHostsStore.getData();
 
+    data = TestConfigComponent._removeDuplicateHosts( data );
+
     $('#hosts-in-community-loading-modal').hide();
     var hosts = TestConfigComponent._processHostData( data );
 
@@ -487,6 +489,26 @@ TestConfigComponent._setHostsFromCommunity = function() {
     var template = Handlebars.compile( raw_template );
     container_el.html( template( { hosts: hosts_data } ) );
     $('#hostsInCommunityTableContainer  a.member-add-button').click( TestConfigComponent.addTestMemberFromCommunity );
+
+};
+
+TestConfigComponent._removeDuplicateHosts = function( data ) {
+    var addresses = {};
+    var deduped = [];
+
+    for(var i in data.hosts) {
+        var row = data.hosts[i];
+        var address = row.address;
+        if ( !( address in addresses ) ) {
+            deduped.push( row );
+            addresses[ address ] = i;
+        }
+
+    }
+    var dedupedhosts = {
+        "hosts": deduped
+    };
+    return dedupedhosts;
 
 };
 

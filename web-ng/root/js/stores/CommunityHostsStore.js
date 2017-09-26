@@ -4,11 +4,15 @@ var CommunityHostsStore = new DataStore("store.change.test_by_community", "servi
 
 CommunityHostsStore.baseurl = CommunityHostsStore.url;
 
-CommunityHostsStore.getHostByCommunity = function ( community, testType ) {
+CommunityHostsStore.getHostByCommunity = function ( community, testType, cacheURL ) {
     var url = CommunityHostsStore.baseurl;
     url += '&community=' + encodeURIComponent(community);
     if (testType ) {
        url += '&test_type=' + encodeURIComponent(testType);
+    }
+    if ( cacheURL ) {
+        url += '&cache=' + cacheURL;
+
     }
     CommunityHostsStore.url = url;
     CommunityHostsStore._retrieveData();

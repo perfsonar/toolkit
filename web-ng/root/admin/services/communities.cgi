@@ -106,6 +106,14 @@ $get_hosts_in_community_method->add_input_parameter(
     type            => 'text',
     );
 
+$get_hosts_in_community_method->add_input_parameter(
+    name            => "cache",
+    description     => "The cache to query",
+    required        => 1,
+    allow_empty     => 0,
+    type            => 'text',
+    );
+
 $router->add_method($get_hosts_in_community_method);
 
 #add host community method

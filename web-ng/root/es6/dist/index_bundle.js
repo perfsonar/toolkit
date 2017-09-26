@@ -37556,6 +37556,8 @@ var psShared =
 	            this.lsCacheURL = data[0].url;
 	            if (this.lsCacheURL === null) {
 	                console.log("no url found!");
+	            } else {
+	                this.lsCacheURL += "_search";
 	            }
 	            console.log("selecting cache url: ", this.lsCacheURL);
 	            emitter.emit(this.LSCachesRetrievedTag);
@@ -37583,7 +37585,7 @@ var psShared =
 	    },
 	
 	    queryLSCache: function queryLSCache(query, message) {
-	        var lsCacheURL = this.lsCacheURL + "_search";
+	        var lsCacheURL = this.lsCacheURL;
 	
 	        console.log("query", query);
 	
