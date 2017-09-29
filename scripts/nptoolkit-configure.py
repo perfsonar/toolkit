@@ -105,7 +105,7 @@ def initialize():
                          "requiresReboot": True,
                     },
                     {
-                         "description": "Manage Users",
+                         "description": "Manage Web Users",
                          "command": "/usr/lib/perfsonar/scripts/manage_users",
                          "isConfiguredFunction": None,
                          "required": False,
