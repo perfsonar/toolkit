@@ -17,7 +17,7 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum   0.2.b1 
+%define relnum   0.3.b1 
 
 Name:			perfsonar-toolkit
 Version:		4.0.2
