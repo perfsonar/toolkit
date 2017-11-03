@@ -1,10 +1,9 @@
+scripts/system_environment/add_psadmin_pssudo
 scripts/system_environment/add_sbin_path usr/lib/perfsonar/scripts/system_environment/
 scripts/system_environment/add_toolkit_dirs_path usr/lib/perfsonar/scripts/system_environment/
 scripts/system_environment/configure_esmond usr/lib/perfsonar/scripts/system_environment/
 # ssh already enabled in debian
 #scripts/system_environment/configure_fail2ban usr/lib/perfsonar/scripts/system_environment/
-# move from rpm postinst to regular script
-scripts/system_environment/configure_root_bashrc usr/lib/perfsonar/scripts/system_environment/
 # network already disabled in debian
 #scripts/system_environment/disable_mysql_network_access usr/lib/perfsonar/scripts/system_environment/
 # php already disabled in debian
