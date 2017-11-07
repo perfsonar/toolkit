@@ -1,5 +1,7 @@
---- a/bin/config_daemon.pl
-+++ b/bin/config_daemon.pl
+Index: toolkit/bin/config_daemon.pl
+===================================================================
+--- toolkit.orig/bin/config_daemon.pl	2017-09-29 15:33:58.000000000 +0000
++++ toolkit/bin/config_daemon.pl	2017-11-07 12:37:33.000000000 +0000
 @@ -29,7 +29,7 @@
  use Log::Log4perl qw/:easy/;
  
@@ -18,8 +20,10 @@
  }
  
  ( $status, $res ) = lockPIDFile( $PIDFILE );
---- a/etc/configdaemon.conf
-+++ b/etc/configdaemon.conf
+Index: toolkit/etc/configdaemon.conf
+===================================================================
+--- toolkit.orig/etc/configdaemon.conf	2017-09-29 15:33:58.000000000 +0000
++++ toolkit/etc/configdaemon.conf	2017-11-07 12:37:33.000000000 +0000
 @@ -1,6 +1,6 @@
  address		localhost
  port		9000

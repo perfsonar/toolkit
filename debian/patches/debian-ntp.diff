@@ -1,5 +1,7 @@
---- a/scripts/configure_ntpd
-+++ b/scripts/configure_ntpd
+Index: toolkit/scripts/configure_ntpd
+===================================================================
+--- toolkit.orig/scripts/configure_ntpd	2017-09-29 15:33:57.000000000 +0000
++++ toolkit/scripts/configure_ntpd	2017-11-07 12:37:34.000000000 +0000
 @@ -45,7 +45,7 @@
  
  file=/etc/ntp/step-tickers
