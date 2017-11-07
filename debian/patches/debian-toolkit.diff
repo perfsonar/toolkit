@@ -1,5 +1,7 @@
---- a/scripts/apache-toolkit_web_gui.conf
-+++ b/scripts/apache-toolkit_web_gui.conf
+Index: toolkit/scripts/apache-toolkit_web_gui.conf
+===================================================================
+--- toolkit.orig/scripts/apache-toolkit_web_gui.conf	2017-11-07 12:37:36.000000000 +0000
++++ toolkit/scripts/apache-toolkit_web_gui.conf	2017-11-07 12:39:36.000000000 +0000
 @@ -46,6 +46,9 @@
  # But, allow anonymous access via port 80 (http)
  # NOTE: Need to set non-https re-write rules and redirects here
@@ -66,8 +68,10 @@
  </Directory>
  
  ##
---- a/scripts/add_pssudo_user
-+++ b/scripts/add_pssudo_user
+Index: toolkit/scripts/add_pssudo_user
+===================================================================
+--- toolkit.orig/scripts/add_pssudo_user	2017-11-07 12:37:36.000000000 +0000
++++ toolkit/scripts/add_pssudo_user	2017-11-07 12:39:36.000000000 +0000
 @@ -59,7 +59,7 @@
      sys.exit(1)
  
@@ -86,8 +90,10 @@
  if (retVal != 0):
      print Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL
      sys.exit(1)
---- a/scripts/clean_esmond_db.sh
-+++ b/scripts/clean_esmond_db.sh
+Index: toolkit/scripts/clean_esmond_db.sh
+===================================================================
+--- toolkit.orig/scripts/clean_esmond_db.sh	2017-11-07 12:37:36.000000000 +0000
++++ toolkit/scripts/clean_esmond_db.sh	2017-11-07 12:39:36.000000000 +0000
 @@ -9,15 +9,13 @@
  fi
  
@@ -110,8 +116,10 @@
  
  #force a compaction
  if [ "$ESMOND_CLEANER_MULTI_NODE" != "1" ]; then
---- a/init_scripts/perfsonar-configure_nic_parameters
-+++ b/init_scripts/perfsonar-configure_nic_parameters
+Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
+===================================================================
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2017-11-07 12:37:36.000000000 +0000
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2017-11-07 12:39:36.000000000 +0000
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -149,8 +157,10 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- a/init_scripts/perfsonar-generate_motd
-+++ b/init_scripts/perfsonar-generate_motd
+Index: toolkit/init_scripts/perfsonar-generate_motd
+===================================================================
+--- toolkit.orig/init_scripts/perfsonar-generate_motd	2017-11-07 12:37:36.000000000 +0000
++++ toolkit/init_scripts/perfsonar-generate_motd	2017-11-07 12:39:36.000000000 +0000
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -174,8 +184,10 @@
  
  use strict;
  use warnings;
---- a/init_scripts/perfsonar-psb_to_esmond
-+++ b/init_scripts/perfsonar-psb_to_esmond
+Index: toolkit/init_scripts/perfsonar-psb_to_esmond
+===================================================================
+--- toolkit.orig/init_scripts/perfsonar-psb_to_esmond	2017-11-07 12:37:36.000000000 +0000
++++ toolkit/init_scripts/perfsonar-psb_to_esmond	2017-11-07 12:39:36.000000000 +0000
 @@ -1,10 +1,13 @@
  #!/bin/bash
 -#
@@ -196,8 +208,10 @@
  
  PREFIX=/usr/lib/perfsonar
  BINDIR=${PREFIX}/scripts
---- a/web-ng/root/gui/reverse_traceroute.cgi
-+++ b/web-ng/root/gui/reverse_traceroute.cgi
+Index: toolkit/web-ng/root/gui/reverse_traceroute.cgi
+===================================================================
+--- toolkit.orig/web-ng/root/gui/reverse_traceroute.cgi	2017-11-07 12:38:14.000000000 +0000
++++ toolkit/web-ng/root/gui/reverse_traceroute.cgi	2017-11-07 12:39:36.000000000 +0000
 @@ -255,7 +255,7 @@
  #########################################################################
  # Build the executable function for tracepath

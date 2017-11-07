@@ -1,14 +1,15 @@
-perfsonar-toolkit (4.0.2~2.b1-1~bpo70+1) perfsonar-wheezy-staging; urgency=low
+perfsonar-toolkit (4.0.2-1~bpo70+1) perfsonar-wheezy-release; urgency=low
 
   * Backport to Wheezy.
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Fri, 29 Sep 2017 15:33:08 +0000
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 07 Nov 2017 12:39:36 +0000
 
-perfsonar-toolkit (4.0.2~2.b1-1) perfsonar-jessie-staging; urgency=low
+perfsonar-toolkit (4.0.2-1) perfsonar-jessie-release; urgency=low
 
   * New upstream version.
+  * Remove automatic changes to root .bashrc
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Fri, 29 Sep 2017 15:17:52 +0000
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 07 Nov 2017 12:37:33 +0000
 
 perfsonar-toolkit (4.0.1-1) perfsonar-jessie-release; urgency=low
 
