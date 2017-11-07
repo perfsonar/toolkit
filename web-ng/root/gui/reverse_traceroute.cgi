@@ -179,7 +179,7 @@ foreach my $pair (@pairs) {
            .  "valid values=ping or tracepath or traceroute<br>\n";
     }
   }
-  elsif($name eq "debug") {$debug=$value;}
+ # elsif($name eq "debug") {$debug=$value;}
   elsif($name eq "size")  {
     #$ping_size=$value;
     #if($ping_size eq "") {$ping_size=56;}

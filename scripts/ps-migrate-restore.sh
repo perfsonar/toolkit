@@ -206,10 +206,38 @@ fi
 #get pscheduler if exists
 PSCHEDULER_BACKUP=$TEMP_RST_DIR/$TEMP_BAK_NAME/pscheduler
 if [ -e $PSCHEDULER_BACKUP ] && which pscheduler > /dev/null; then
+    #new style restore
     pscheduler restore $PSCHEDULER_BACKUP
     if [ "$?" != "0" ]; then
         echo "Unable to restore pScheduler configuration"
         exit 1
+    fi
+else
+    #old style restore
+    if [ -d "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/pscheduler" ]; then
+        printf "Restoring pScheduler configuration..."
+        cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/pscheduler/* /etc/pscheduler
+        if [ "$?" != "0" ]; then
+            echo "Unable to restore /etc/pscheduler"
+            exit 1
+        fi
+        printf "[SUCCESS]"
+        echo ""
+    fi
+    if [ -e $TEMP_RST_DIR/$TEMP_BAK_NAME/postgresql_data/pscheduler.dump ] && which pscheduler > /dev/null; then
+        #old style restore
+        printf "Restoring postgresql data for pscheduler..."
+        export PGUSER=$(sed -n -e 's/.*user=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+        export PGPASSWORD=$(sed -n -e 's/.*password=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+        export PGDATABASE=$(sed -n -e 's/.*dbname=\([^ ]*\).*/\1/p' /etc/pscheduler/database/database-dsn)
+        psql --no-password < $TEMP_RST_DIR/$TEMP_BAK_NAME/postgresql_data/pscheduler.dump &>/dev/null
+        if [ "$?" != "0" ]; then
+            echo "Unable to restore pscheduler database"
+            exit 1
+        fi
+        unset PGUSER PGPASSWORD PGDATABASE
+        printf "[SUCCESS]"
+        echo ""
     fi
 fi
 

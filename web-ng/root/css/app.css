@@ -82,6 +82,15 @@
   float: right;
 }
 
+/* Align classes */
+.left-align {
+    text-align:left;
+}
+
+.right-align {
+    text-align:right;
+}
+
 /* Lists add to ul and ol */
 
 .no-list {
