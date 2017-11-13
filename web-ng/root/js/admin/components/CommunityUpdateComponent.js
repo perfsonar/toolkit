@@ -3,6 +3,8 @@ var CommunityUpdateComponent = {
     communitiesToAdd: [],
     communitiesToRemove: [],
     allTopic: 'store.change.communities_all',
+    allErrorTopic: 'store.change.communities_all_error',
+    //allErrorTopic: 'communities_request_err',
     hostTopic: 'store.change.communities_host',
     metadataTopic: 'store.change.host_metadata',
     allSet: false,
@@ -15,6 +17,7 @@ var CommunityUpdateComponent = {
 CommunityUpdateComponent.initialize = function() {
     Dispatcher.subscribe(CommunityUpdateComponent.metadataTopic, CommunityUpdateComponent._setHostCommunities);
     Dispatcher.subscribe(CommunityUpdateComponent.allTopic, CommunityUpdateComponent._setAllCommunities);
+    Dispatcher.subscribe(CommunityUpdateComponent.allErrorTopic, CommunityUpdateComponent._AllCommunityError);
     var addButton = $('#community_add_button');
     var addName = $('#community_add_name');
     var sel = $('#update_communities');
@@ -32,6 +35,18 @@ CommunityUpdateComponent.initialize = function() {
 
         sel.select2( { placeholder: CommunityUpdateComponent.placeholder });
     });
+
+};
+
+CommunityUpdateComponent._AllCommunityError = function( ) {
+    $("#communities_error").show();
+    var sel = $('#update_communities');
+
+    CommunityUpdateComponent.allSet = true;
+
+    if (CommunityUpdateComponent.allSet && CommunityUpdateComponent.hostSet) {
+        CommunityUpdateComponent._selectCommunities();
+    }
 
 };
 

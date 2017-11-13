@@ -37502,13 +37502,12 @@ var psShared =
 	
 	    handleLSCommunityHostsResponse: function handleLSCommunityHostsResponse() {
 	        var data = LSCacheStore.getResponseData();
-	        console.log("community hosts data!", data);
+	        //console.log("community hosts data!", data);
 	        this.communityHosts = data;
 	    },
 	
 	    handleLSCommunityResponse: function handleLSCommunityResponse() {
 	        var data = LSCacheStore.getResponseData();
-	        console.log("data!", data);
 	        if (typeof data != "undefined" && "aggregations" in data && "distinct_communities" in data.aggregations && "buckets" in data.aggregations.distinct_communities && data.aggregations.distinct_communities.buckets.length > 0) {
 	            data = data.aggregations.distinct_communities.buckets;
 	            var communities = [];
@@ -37527,7 +37526,6 @@ var psShared =
 	                if (a > b) return 1;
 	                return -1;
 	            });
-	            console.log("communities", communities);
 	            this.communities = communities;
 	
 	            var message = "communities";
@@ -37603,6 +37601,10 @@ var psShared =
 	            self.handleLSCacheDataResponse(data, message);
 	        };
 	
+	        var failureCallback = function failureCallback(data) {
+	            self.handleLSCacheDataError(data, message);
+	        };
+	
 	        axios({
 	            "url": lsCacheURL,
 	            "data": preparedQuery,
@@ -37655,12 +37657,12 @@ var psShared =
 	                        method: "POST"
 	                    }).then(function (response) {
 	                        var data = response.data;
-	                        console.log("query data! SECOND DONE SECTIONz", data);
+	                        //console.log("query data! SECOND DONE SECTION", data);
 	                        //this.handleInterfaceInfoResponse(data);
 	                        //this.handleLSCacheDataResponse( data, message );
 	                        successCallback(data);
 	                    }.bind(this)).catch(function (data) {
-	                        //this.handleInterfaceInfoError(data);
+	                        failureCallback(data);
 	                    }.bind(this));
 	                } else {
 	                    // Something happened in setting up the request that triggered an Error
@@ -37673,10 +37675,16 @@ var psShared =
 	            }
 	        }.bind(this));
 	    },
+	
 	    handleLSCacheDataResponse: function handleLSCacheDataResponse(data, message) {
-	        console.log("handling LS cache data response (data, message)", data, message);
 	        this.data = data;
 	        emitter.emit(this.message);
+	    },
+	
+	    handleLSCacheDataError: function handleLSCacheDataError(data, message) {
+	        message += "_err";
+	        //this.data = data;
+	        emitter.emit(message);
 	    },
 	
 	    getResponseData: function getResponseData() {
@@ -37751,10 +37759,7 @@ var psShared =
 	        return this.interfaceObj;
 	    },
 	    handleInterfaceInfoResponse: function handleInterfaceInfoResponse(data) {
-	        console.log("data", data);
 	        data = this._parseInterfaceResults(data);
-	        console.log("processed data", data);
-	        //this.addData( data );
 	        this.interfaceInfo = data;
 	    },
 	
@@ -37767,11 +37772,9 @@ var psShared =
 	                var address = addresses[j];
 	                if (!(address in out)) {
 	                    out[address] = row;
-	                    console.log("client uuid: ", row["client-uuid"]);
 	                }
 	            }
 	        }
-	        console.log("keyed on address", out);
 	        return out;
 	    },
 	

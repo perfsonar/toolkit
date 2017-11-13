@@ -52,6 +52,11 @@
   color: #32a066 !important;
 }
 
+.red-error {
+    color:#f04124;
+
+}
+
 #host_services .disabled {
   color: #A9B1B5;
 }

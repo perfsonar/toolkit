@@ -87,20 +87,20 @@ module.exports = {
         };
 
         let message = "community_hosts";
-        LSCacheStore.subscribeTag( this.handleLSCommunityHostsResponse.bind(this) , message );
+        LSCacheStore.subscribeTag( this.handleLSCommunityHostsResponse.bind(this), message );
         LSCacheStore.queryLSCache( query, message );
 
     },
 
     handleLSCommunityHostsResponse: function() {
         let data = LSCacheStore.getResponseData();
-        console.log("community hosts data!", data);
+        //console.log("community hosts data!", data);
         this.communityHosts = data;
     },
 
+
     handleLSCommunityResponse: function() {
         let data = LSCacheStore.getResponseData();
-        console.log("data!", data);
         if ( typeof ( data ) != "undefined"
                 && "aggregations" in data
                 && "distinct_communities" in data.aggregations
@@ -124,7 +124,6 @@ module.exports = {
                    if( a > b) return 1;
                    return -1;
                });
-               console.log("communities", communities);
                this.communities = communities;
 
                let message = "communities";
@@ -210,6 +209,10 @@ module.exports = {
 
         };
 
+        let failureCallback = function( data ) {
+            self.handleLSCacheDataError( data, message );
+        };
+
         axios({
             "url": lsCacheURL,
             "data": preparedQuery,
@@ -266,13 +269,13 @@ module.exports = {
                         })
                         .then(function(response) {
                                 let data = response.data;
-                                console.log("query data! SECOND DONE SECTIONz", data);
+                                //console.log("query data! SECOND DONE SECTION", data);
                                 //this.handleInterfaceInfoResponse(data);
                                 //this.handleLSCacheDataResponse( data, message );
                                 successCallback( data );
                             }.bind(this))
                             .catch (function( data ) {
-                                  //this.handleInterfaceInfoError(data);
+                                  failureCallback( data );
                             }.bind(this));
             } else {
                 // Something happened in setting up the request that triggered an Error
@@ -293,10 +296,16 @@ module.exports = {
 
 
     },
+
     handleLSCacheDataResponse: function( data, message ) {
-        console.log("handling LS cache data response (data, message)", data, message);
         this.data = data;
         emitter.emit( this.message );
+    },
+
+    handleLSCacheDataError: function( data, message ) {
+        message += "_err";
+        //this.data = data;
+        emitter.emit( message );
     },
 
     getResponseData: function() {
@@ -373,10 +382,7 @@ module.exports = {
         return this.interfaceObj;
     },
     handleInterfaceInfoResponse: function( data ) {
-        console.log("data", data);
         data = this._parseInterfaceResults( data );
-        console.log("processed data", data);
-        //this.addData( data );
         this.interfaceInfo = data;
     },
 
@@ -389,7 +395,6 @@ module.exports = {
                 let address = addresses[j];
                 if ( !( address in out ) ) {
                     out[ address ] = row;
-                    console.log("client uuid: ", row["client-uuid"] );
 
                 }
 
@@ -398,7 +403,6 @@ module.exports = {
 
 
         }
-        console.log("keyed on address", out);
         return out;
     },
 

@@ -7,11 +7,12 @@ var LSCacheStore = psShared.LSCacheStore;
 var CommunityAllStore = {
     communityDetails: null,
     communityAllTopic: 'store.change.communities_all',
+    communityAllErrorTopic: 'store.change.communities_all_error'
 };
 
 CommunityAllStore.getValues = function() {
     var communities = LSCacheStore.getCommunities();
-    
+
     // format like "key": 0
     // as this is the format other places expect
 
@@ -24,16 +25,21 @@ CommunityAllStore.getValues = function() {
     var structured = {
         "keywords": out
     };
-    console.log("out", structured);
     CommunityAllStore.communityDetails = structured;
     Dispatcher.publish(CommunityAllStore.communityAllTopic);
 
 };
 
+CommunityAllStore.handleError = function() {
+    Dispatcher.publish(CommunityAllStore.communityAllErrorTopic);
+};
+
 CommunityAllStore.retrieveCommunities = function() {
     var message = "communities";
     var callback = CommunityAllStore.getValues;
+    var callbackErr = CommunityAllStore.handleError;
     LSCacheStore.subscribeTag( callback, message );
+    LSCacheStore.subscribeTag( callbackErr, "communities_request_err" );
     LSCacheStore.retrieveCommunities();
 
 };
