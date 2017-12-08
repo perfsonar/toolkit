@@ -2,4 +2,10 @@
 
 set -e
 
-iptables -nvL | grep -C 10 33434:33634
+for i in 1 2 3 4 5; do
+  if iptables -nvL | grep -C 10 33434:33634; then
+    break
+  fi
+
+  sleep 1
+done
