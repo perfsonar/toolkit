@@ -3,27 +3,34 @@
 use strict;
 $ENV{PATH}='/bin:/usr/bin:/sbin:/usr/local/bin:/usr/local/etc:/usr/sbin:/usr/local/sbin';#For untainting
 my $t00=time();
-########################## Testing ##############################################
+################### Testing ##############################################
 # For testing from command line you need to set some environment variables, 
 # e.g. assuming you are using the tcsh shell
 # setenv REQUEST_URI /cgi-wrap/traceroute.pl
 # setenv QUERY_STRING 'target=www.slac.stanford.edu&function=ping'
 #For IPv4
-# setenv QUERY_STRING www.cern.ch;  setenv REMOTE_HOST www.google.com
 # setenv REMOTE_ADDR 72.14.204.105; setenv SERVER_NAME www.slac.stanford.edu
+# setenv QUERY_STRING www.cern.ch;  setenv REMOTE_HOST www.google.com
 #For IPv6
-# setenv QUERY_STRING 'target=ipv6.google.com'; setenv REMOTE_HOST ipv6.google.com 
 # setenv REMOTE_ADDR 2a00:1450:8007::6a;        setenv SERVER_NAME ui2-4.dir.garr.it
-# #To find the IPv6 address of a host use
-# #dig ipv6.google.com -t AAAA
-# You will also need to include the -T option in the command line if you want to
+# setenv QUERY_STRING 'target=ipv6.google.com'; setenv REMOTE_HOST ipv6.google.com 
+#You will also need to include the -T option in the command line if you want to
 # use the perl -d debug facility, i.e. you need to use:
 # perl -d -T traceroute.pl
+#URL tests for IPv6 are:
+# Good IPv6 address
+#   http://www3.slac.stanford.edu/cgi-bin/traceroute.pl?target=2001:da8:270:2018:f816:3eff:fef3:bd3&function=traceroute
+#   http://net.its.hawaii.edu/cgi-bin/traceroute.pl?target=2001%3A4860%3A8005%3A%3A68&function=traceroute&ipv=6
+#   http://www.slac.stanford.edu/cgi-bin/traceroute.pl?target=ipv6.google.com&function=traceroute
+# Bad IP address
+#   http://www3.slac.stanford.edu/cgi-wrap/traceroute-new.pl?target=2001:da8:2019:b238:4521:5866:9abf&function=traceroute
+#Other hints:
+# To find the IPv6 address of a host use
+# #dig ipv6.google.com -t AAAA
 # REMOTE_HOST, REMOTE_ADDR are the name and IP address of the client/browser
 # SERVER_NAME is the name of the web server,
 # QUERY_STRING is the name or IP address of the host to be probed.
-
-################################################################################
+#########################################################################
 # Put out header right at start to ensure it precedes any errors or bug reports.
 # To enable line-buffered output (more interactive output), change the name
 # of this script to nph-traceroute.pl or use a Unix logical link.
@@ -34,13 +41,16 @@ if ($0 =~ /nph-/) {
 }
 #Get this out first so can get out error messages
 print $msg."Content-type: text/html\n\n";
-my $version="7.0, 7/30/2016, Les Cottrell";
-# Print server user name (e.g. apache) if max_processes exceeded
-# Increase to 2 the debug value to exceed if we are to  print the process list 
-# following max_processes exceeded.  It caused confusion since it looked
-# like instead of traceroute ps was being executed.
-# Released to perfSONAR
-###############################################################################
+my $version="7.31, 12/16/2017, Les Cottrell";
+#  7.3 12/13/2017
+#  Added \[\] to untainting of dig command. Needed to distinguish IPv6
+#  address from the port number. 
+#  Do not avoid testing internal domains if server is IPv6 host, 
+#  Added avoid calling gethostbyname6 if hostname is already an ipv6 address
+#  7.31 12/16/2017
+#  Accomodated how Solaris differs from Linux in its interpretation of exec(@args).
+#  Improved diagnostic for bad target address or name.
+##########################################################################
 #Understand the local environment
 use Cwd;
 my $AF_INET=2;
@@ -55,7 +65,7 @@ my $ipaddr=gethostbyname6($hostname);
 my $site="";#Allows us to special case SLAC's configuration
 if($hostname=~/\.slac\.stanford\.edu/) {$site="slac";}
 my $archname=$^O;
-########################## Get the form action field #########################
+###################### Get the form action field #########################
 #$form allows one to use a different form action field, e.g.
 #REQUEST_URI is of the form: /cgi-bin/traceroute.pl?choice=yes
 my ($temp, $bin_dir);
@@ -105,7 +115,7 @@ my $errtail="</font></i></b>";
 my $warn="";
 my $addr = $ENV{'REMOTE_ADDR'}; $addr=~s/\s+//g;
 my $host = $addr;
-###############################################################################
+########################################################################
 # if we're being accessed via a proxy that passes the client's address:
 # For more on this see: http://www.zope.org/Members/TWilson/GettingVisitorsIP
 # Note if using ssl and going through a firewall/NAT then,
@@ -130,7 +140,7 @@ if (defined $ENV{'HTTP_X_FORWARDED_FOR'}) {
          . " HTTP_X_FORWARDED_FOR=$ENV{'HTTP_X_FORWARDED_FOR'}<br>\n";
   }
 }
-###########################################################################
+#####################################################################
 # Process QUERY_STRING if present. QUERY_STRING may contain the target host.
 my $query="";
 if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
@@ -143,7 +153,7 @@ if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
     $host = '';  # not so nice, but anyway...
   }
 }
-############################################################################
+#######################################################################
 #Get optional information from QUERY_STRING, if supplied
 my $function;#Allows us to either ping or traceroute or tracepath
 if($progname =~ /ping/)          {$function="ping";}
@@ -179,7 +189,13 @@ foreach my $pair (@pairs) {
            .  "valid values=ping or tracepath or traceroute<br>\n";
     }
   }
- # elsif($name eq "debug") {$debug=$value;}
+  #The debug feature is disabled due to concerns
+  #A user brought to the attention of the perfSONAR development team a 
+  #potential security issue with the reverse traceroute script. It looks 
+  #like the "options=" URL parameter is allowing some javascript through 
+  #which if the debug option is also enabled will get printed to the screen.
+  #You may want to restore the fpllowing line for debugging.  
+  #elsif($name eq "debug") {$debug=$value;}
   elsif($name eq "size")  {
     #$ping_size=$value;
     #if($ping_size eq "") {$ping_size=56;}
@@ -228,11 +244,11 @@ foreach my $pair (@pairs) {
     }  
   }
 }
-###########################################################################
+#######################################################################
 #Add in the ICMP option if requested
 my $ping_npackets="";
 if($function eq "traceroute") {if($probe ne "") {push (@Tropts,$probe);}}
-###########################################################################
+########################################################################
 # Build the executable function for ping
 elsif($function eq "ping") {
   $Tr="ping";
@@ -256,7 +272,7 @@ elsif($function =~ /synack/) {
 # Build the executable function for tracepath
 elsif($function eq "tracepath") {
   $Tr="/bin/tracepath";
-  @Tropts=();
+  @Tropts="";
 }
 #########################################################################
 #Keep track of last request
@@ -332,7 +348,7 @@ elsif(valid_ip($addr) eq "4") {#$QUERY_STRING contains an IPv4 target address
   }
 }
 else {
-  $err.="Invalid character in IP address or name. Valid characters are 'a-zA-Z0-9_.-:'.<br>\n";
+  $err.="Target host = $addr is not a valid IP name or IPv4 or IPv6 address'.<br>\n";
 }
 if($err ne "") {
   print "$errhead $err $errtail";
@@ -401,10 +417,14 @@ if($host=~/in-addr\.btopenworld\.com/) {
 my ($http_addr, $http_domain, $remote_domain);
 if($function ne 'traceroute') {;}
 #elsif(!( $http_addr=(gethostbyname($ENV{'SERVER_NAME'}))[4] )) {
+elsif($ipv6 == 1 || valid_ip($ENV{'SERVER_NAME'}) eq '6') 
+  {;}#No domain check for IPv6 (add by Cottrell 4/15/2011); 
+     #Reordered ipv6 before gethostbyname6 (by Cottrell 12/3/2017).)
+     #Added valid_ip (by Cottrell 12/6/2017)
 elsif(!( $http_addr=(gethostbyname6($ENV{'SERVER_NAME'})))) {
-   $err.="Can't find address of $function SERVER_NAME $ENV{'SERVER_NAME'}:$!$?.<br>\n";
+  $err.="Can't find address of $function SERVER_NAME $ENV{'SERVER_NAME'}, "
+      . "\$ipv6=$ipv6, err=$! || $?.<br>\n";
 }
-elsif($ipv6 == 1) {;}#No domain check for IPv6 (add by Cottrell 4/15/2011)
 else {#IPv4 traceroute function
   my ($a1, $b1, $c1, $d1)=unpack('C4',$http_addr);
   # compare class-C networks correctly.
@@ -458,13 +478,13 @@ if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
     print "<div align='center'><table border='1'>
         <tr><td align='center'>",
       "<a href='http://www.stanford.edu/'>
-        <img src='https://www.slac.stanford.edu/comp/net/wan-mon/stanford-seal.gif'
+        <img src='http://www.slac.stanford.edu/comp/net/wan-mon/stanford-seal.gif'
            alt='Stanford University seal' title='Stanford University seal'></a>
         <a href='http://www.slac.stanford.edu/'>
           <!--
-          <img src='https://www.slac.stanford.edu/icon/slac3.gif'
+          <img src='http://www.slac.stanford.edu/icon/slac3.gif'
           -->
-          <img src='https://www.slac.stanford.edu/icon/newlogo-sm.gif'
+          <img src='http://www.slac.stanford.edu/icon/newlogo-sm.gif'
           alt='SLAC logo, click here to learn more about SLAC'
           title='SLAC logo, click here to learn more about SLAC'
         ></a>
@@ -499,7 +519,9 @@ if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
        -->
        <a href='http://www.geoiptool.com/'>Locating a Host</a> |
        <a href='http://visualroute.visualware.com/'>visual traceroute</a> |
+       <!--
        <a href='http://www.fixedorbit.com/trace.htm'>Find AS's between hosts</a> |
+       -->
        <a href='http://asn.cymru.com/cgi-bin/whois.cgi'>Find AS of a host</a> |
        <a href='http://www.ietf.org/rfc/rfc2142.txt'>contacting someone</a>
        </td>",
@@ -661,6 +683,14 @@ elsif($function eq "tracepath") {
   &exec(@args);
 }
 elsif($archname eq "solaris" && $function eq "ping") {
+  #IPv6 ping looks like:
+  #436cottrell@www1:~>ping -s -A inet6 2001:da8:270:2018:f816:3eff:fef3:bd3
+  #PING 2001:da8:270:2018:f816:3eff:fef3:bd3: 56 data bytes
+  #64 bytes from 2001:da8:270:2018:f816:3eff:fef3:bd3: icmp_seq=0. time=166. ms
+  #64 bytes from 2001:da8:270:2018:f816:3eff:fef3:bd3: icmp_seq=1. time=165. ms
+  #^C
+  #----2001:da8:270:2018:f816:3eff:fef3:bd3 PING Statistics----
+  #2 packets transmitted, 2 packets received, 0% packet loss
   my @args=($Tr, @Tropts, $addr, $ping_size, $ping_npackets);
   alarm(45);
   &exec(@args);
@@ -684,15 +714,16 @@ sub exec {
   my @args=@_;
   print "Executing exec(@args)\n";
   my $t0=time();
-  #system(@args) == 0 or die "Can't system(@args): $?";
-  my $exitcode = system(@args);
+  my $cmd=join(" ",@args); #Passing @args to system(@args) messes up in Solaris
+  my $exitcode=system(join(" ",@args));
+  print $exitcode;
   if ( $exitcode == 0 ) {
      # Exit was normal
   }
-  elsif ( $exitcode == 1) {
+  elsif ( $exitcode >> 8 == 1) {
      die "Responses not seen --- Can't system(@args): $?"
   }
-  elsif ( $exitcode == 2 ) {
+  elsif ( $exitcode >> 8 == 2) {
      die "Error in command --- Can't system(@args): $?"
   }
   elsif ( $exitcode == 256 ) {
@@ -702,14 +733,15 @@ sub exec {
      die "Other error code seen --- Can't system(@args): $?"
   }
   my $username = getpwuid( $< );
-  print "@args took ".(time()-$t0)."secs. Total time=".(time()-$t00)."secs. user=$username\n";
+  print "@args took ".(time()-$t0)."secs. Total script traceroute.pl time="
+      . (time()-$t00)."secs, user=$username\@$hostname, OS=$archname\n";
   return;
 }
-##############################################################################
+###########################################################################
 ## Untaint will check for a vaild Unix file name and untaint it.
 ## Example:
 ##   $fn = untaint($fn)
-##------------------------------------------------------------------------------
+##-------------------------------------------------------------------------
 sub untaint {
   my $file = $_[0];
   unless ($file =~ /(^[\w\.\-\+\d\/]*$)/) { #Taint check
@@ -785,7 +817,7 @@ sub gethostbyname6 {
   }
   else {
     my $cmd="dig $name -t AAAA";
-    if(!($cmd=~ /^([\w\.:\-\s]+)$/)) {#Untaint Check for valid characters    
+    if(!($cmd=~ /^([\[\]\w\.:\-\s]+)$/)) {#Untaint Check for valid characters    
       print "<font color='red'><b>Invalid (tainted) command = $cmd, traceroute aborted!</b></font><br>\n";
       exit 1;
     }
@@ -800,9 +832,6 @@ sub gethostbyname6 {
   return $ipaddr;
 }
 __END__
-#Examples:
-http://net.its.hawaii.edu/cgi-bin/traceroute.pl?target=2001%3A4860%3A8005%3A%3A68&function=traceroute&ipv=6
-http://www.slac.stanford.edu/cgi-bin/traceroute.pl?target=ipv6.google.com&function=traceroute
 #--------------------------------------------------------------#
 #                                                              #
 #                      DISCLAIMER NOTICE                       #
@@ -1120,4 +1149,12 @@ http://www.slac.stanford.edu/cgi-bin/traceroute.pl?target=ipv6.google.com&functi
 #   with ps this looked like it was possible to execute  commands other 
 #   than the intended traceroute based on the host name (which would be 
 #   a security problem).   
-#   Rolf Seuster <seuster@uvic.ca> pointed this out with some useful examples. 
+#   Rolf Seuster <seuster@uvic.ca> pointed this out with some useful examples.
+#   Released to perfSONAR.
+#my $version="7.1, 9/19/2016, Les Cottrell";
+#   Removed link to http://www.fixedorbit.com/trace.htm
+#my $version="7.2, 10/9/2017, Les Cottrell";
+#   Commented out elsif($name eq "debug") {$debug=$value;} to avoid
+#   options=" URL parameterallowing some javascript through which if
+#   the debug option is also enabled will get printed to the screen.
+#   perfSONAR also made this modification.
