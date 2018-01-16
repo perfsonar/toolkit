@@ -660,7 +660,7 @@ fi
 %exclude %{config_base}/templates/ntp_conf.tmpl
 %exclude %{config_base}/default_service_configs/pg_hba.conf
 %exclude %{config_base}/default_service_configs/pscheduler_limits.conf
-%exclude %{config_base}/pscheduler_ulimit.conf
+%exclude %{config_base}/perfsonar_ulimit.conf
 %exclude /etc/httpd/conf.d/apache-perfsonar-security.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web-ng/*
@@ -718,8 +718,8 @@ fi
 /usr/lib/firewalld/services/*.xml
 
 %files install
-%config(noreplace) %{config_base}/pscheduler_ulimit.conf
-%attr(0644,root,root) %{config_base}/pscheduler_ulimit.conf
+%config(noreplace) %{config_base}/perfsonar_ulimit.conf
+%attr(0644,root,root) %{config_base}/perfsonar_ulimit.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-migrate-backup.sh

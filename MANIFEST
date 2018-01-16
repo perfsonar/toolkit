@@ -20,7 +20,7 @@ etc/ntp_known_servers
 etc/perfsonar_firewall_settings.conf
 etc/perfsonar_firewalld_settings.conf
 etc/perfsonar_sudo
-etc/pscheduler_ulimit.conf
+etc/perfsonar_ulimit.conf
 etc/servicewatcher-logger.conf
 etc/servicewatcher.conf
 etc/templates/motd.tmpl
