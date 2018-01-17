@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>TWAMP</short>
+  <description>TWAMP control port.</description>
+  <port protocol="tcp" port="862"/>
+</service>
