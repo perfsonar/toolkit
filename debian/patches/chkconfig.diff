@@ -1,7 +1,7 @@
 Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
 ===================================================================
---- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2017-12-19 16:41:08.000000000 +0000
-+++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2017-12-19 16:41:08.000000000 +0000
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-01-18 14:36:43.508504610 +0100
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-01-18 14:36:43.500504619 +0100
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -28,9 +28,15 @@ Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
  
  start() {
  ret=0
-@@ -43,33 +37,33 @@
+@@ -39,37 +33,38 @@
+ 
+     if [ $DISABLE_INTERRUPT_COALESCING ]; then
+         # test if this interface supports IC adjustments
++	DRIVER=$(/sbin/ethtool -i $interface | awk '$1 == "driver:" { print $2 }')
+         /sbin/ethtool -c $interface > /dev/null 2>&1
          RETVAL=$?
-         if [ $RETVAL -eq 0 ]; then
+-        if [ $RETVAL -eq 0 ]; then
++        if [ "$DRIVER" != "igb" -a $RETVAL -eq 0 ]; then
              # apply multi-ethtool settings
 -            echo -n $"disabling interrupt coalescing for interface $interface: "
 +            log_action_begin_msg "Disabling interrupt coalescing for interface $interface"
@@ -71,7 +77,7 @@ Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
          fi
      fi
  done
-@@ -84,29 +78,28 @@
+@@ -84,29 +79,28 @@
  IC_OFF() {
  IC_RET=0
  for i in "$1"; do
@@ -109,8 +115,8 @@ Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
          ;;
 Index: toolkit/scripts/system_environment/disable_unwanted_services
 ===================================================================
---- toolkit.orig/scripts/system_environment/disable_unwanted_services	2017-12-19 16:30:46.000000000 +0000
-+++ toolkit/scripts/system_environment/disable_unwanted_services	2017-12-19 16:41:08.000000000 +0000
+--- toolkit.orig/scripts/system_environment/disable_unwanted_services	2018-01-18 14:36:43.508504610 +0100
++++ toolkit/scripts/system_environment/disable_unwanted_services	2018-01-18 14:36:43.504504614 +0100
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -125,8 +131,8 @@ Index: toolkit/scripts/system_environment/disable_unwanted_services
  
 Index: toolkit/scripts/system_environment/testpoint/enable_auto_updates
 ===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2017-12-19 16:30:46.000000000 +0000
-+++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2017-12-19 16:41:08.000000000 +0000
+--- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2018-01-18 14:36:43.508504610 +0100
++++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2018-01-18 14:36:43.504504614 +0100
 @@ -15,27 +15,8 @@
  # Need to activate if new install or if they were previously running 3.3.2 or older
  if [[ "$1" == "new" || $MAJOR -lt 3 || ( $MAJOR -eq 3 && $MINOR -lt 4 ) ]]; then
@@ -161,8 +167,8 @@ Index: toolkit/scripts/system_environment/testpoint/enable_auto_updates
  fi
 Index: toolkit/scripts/system_environment/testpoint/enable_nscd
 ===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2017-12-19 16:30:46.000000000 +0000
-+++ toolkit/scripts/system_environment/testpoint/enable_nscd	2017-12-19 16:41:08.000000000 +0000
+--- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2018-01-18 14:36:43.508504610 +0100
++++ toolkit/scripts/system_environment/testpoint/enable_nscd	2018-01-18 14:36:43.504504614 +0100
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
      systemctl enable nscd
