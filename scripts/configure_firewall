@@ -9,9 +9,12 @@ BWCTLPARAMS=("iperf_port" "nuttcp_port" "owamp_port" "peer_port")
 BWCTLDEFAULTS=("5001:5300" "5301:5600" "5601:5900" "6001:6200")
 OWAMPPARAMS=("testports")
 OWAMPDEFAULTS=("8760:9960")
+TWAMPPARAMS=("testports")
+TWAMPDEFAULTS=("18760:19960")
 
 BWCTLFILE="/etc/bwctl-server/bwctl-server.conf"
 OWAMPFILE="/etc/owamp-server/owamp-server.conf"
+TWAMPFILE="/etc/twamp-server/twamp-server.conf"
 FIREWALL_RULES="/etc/perfsonar/toolkit/perfsonar_firewall_settings.conf"
 FIREWALLD_RULES="/etc/perfsonar/toolkit/perfsonar_firewalld_settings.conf"
 
@@ -59,6 +62,9 @@ addFirewalldRules(){
         p=`echo ${OWAMPPARAMS[@]}`;
         d=`echo ${OWAMPDEFAULTS[@]}`
         addPortRuleFromFile "$iptables_cmd" "$OWAMPFILE" "$p" "$d";
+        p=`echo ${TWAMPPARAMS[@]}`;
+        d=`echo ${TWAMPDEFAULTS[@]}`
+        addPortRuleFromFile "$iptables_cmd" "$TWAMPFILE" "$p" "$d";
 
         # Then all the rules from the static file
         readarray firewalld_rules < ${FIREWALLD_RULES}
@@ -105,6 +111,9 @@ addFirewallRules(){
         p=`echo ${OWAMPPARAMS[@]}`;
         d=`echo ${OWAMPDEFAULTS[@]}`
         addPortRuleFromFile "$iptables_cmd" "$OWAMPFILE" "$p" "$d";
+        p=`echo ${TWAMPPARAMS[@]}`;
+        d=`echo ${TWAMPDEFAULTS[@]}`
+        addPortRuleFromFile "$iptables_cmd" "$TWAMPFILE" "$p" "$d";
         
         #ICMP rules based on v6 or v4
         if [ "$iptables_cmd" = "ip6tables" ]; then 
