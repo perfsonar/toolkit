@@ -14,7 +14,7 @@ StickySaveBar.initialize = function() {
     Dispatcher.subscribe(StickySaveBar.formSuccessTopic, StickySaveBar._formSuccess );
     Dispatcher.subscribe(StickySaveBar.formErrorTopic,   StickySaveBar._formError   );
     Dispatcher.subscribe(StickySaveBar.formCancelTopic,  StickySaveBar._formCancel  );
-    $(".js-sticky-dismiss").click(function(e) {
+    $(".js-sticky-dismiss").on("click", function(e) {
         e.preventDefault();
         $(".sticky-bar--failure").fadeOut("fast");
     });
