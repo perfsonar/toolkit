@@ -1,17 +1,17 @@
 $(document).ready(function() {
-    $(".nav-dropdown-toggle").click(function(e) {
+    $(".nav-dropdown-toggle").on("click", function(e) {
         e.preventDefault();
         $(".nav-dropdown-menu").toggle(); 
     });
 
     //Hide the dropdown when anything outside is clicked
-    $(document).click(function() {
+    $(document).on("click", function() {
         $(".nav-dropdown-menu").hide();
     });
 
     // Don't hide the dropdown if items inside are clicked
     // and exclude nav-dropdown-toggle from the click outside thing above.
-    $(".nav-dropdown-toggle, .nav-dropdown-menu").click(function(e){
+    $(".nav-dropdown-toggle, .nav-dropdown-menu").on("click", function(e){
         e.stopPropagation();
     });
 
@@ -22,12 +22,12 @@ $(document).ready(function() {
         $(this).next(".services--list").toggleClass("visible-inline");
 
     });
-    $(".alert--dismiss").click(function(e) {
+    $(".alert--dismiss").on("click", function(e) {
         e.preventDefault();
         $(this).parent().fadeOut();
     });
 
-    $(".communities__add, .servers__add").click(function(e) {
+    $(".communities__add, .servers__add").on("click", function(e) {
         e.preventDefault();
         $(".communities__popular, .servers__popular").toggle(); 
     });
@@ -44,19 +44,19 @@ $(document).ready(function() {
     */
 
     /*
-    $(".js-save-button").click(function(e) {
+    $(".js-save-button").on("click", function(e) {
         e.preventDefault();
         $(".js-unsaved-message").fadeOut("fast");
         $(".sticky-bar--saved").fadeIn("fast").delay(1500).fadeOut("slow");
     });
     */
     /*
-    $(".js-cancel-button").click(function(e) {
+    $(".js-cancel-button").on("click", function(e) {
         e.preventDefault();
         $(".sticky-bar--failure").fadeIn("fast");
     });
 
-    $(".js-sticky-dismiss").click(function(e) {
+    $(".js-sticky-dismiss").on("click", function(e) {
         e.preventDefault();
         $(".js-unsaved-message").hide();
         $(".sticky-bar--failure").fadeOut("fast");
@@ -77,7 +77,7 @@ $(document).ready(function() {
     });
 
     // Hide the popover when the user clicks outside of it
-    $(document).click(function(e) {
+    $(document).on("click", function(e) {
         $(".sidebar-popover").not(".graph-values-popover").fadeOut("fast");
     });
 
