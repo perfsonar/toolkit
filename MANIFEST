@@ -22,6 +22,7 @@ etc/perfsonar_firewall_settings.conf
 etc/perfsonar_firewalld_settings.conf
 etc/perfsonar_sudo
 etc/perfsonar_ulimit.conf
+etc/perfsonar_ulimit_apache.conf
 etc/servicewatcher-logger.conf
 etc/servicewatcher.conf
 etc/templates/motd.tmpl
