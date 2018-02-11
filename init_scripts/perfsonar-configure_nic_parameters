@@ -16,10 +16,24 @@
 # Source function library.
 . /etc/init.d/functions
 
-#always set these on perfsonar hosts
+# always set these on perfsonar hosts
 DISABLE_TCP_OFFLOAD=1
 DISABLE_INTERRUPT_COALESCING=1
 TXQUEUELEN=10000
+
+# detect the location of ethtool binary
+if [ -x /usr/sbin/ethtool ]; then
+    ETHTOOL=/usr/sbin/ethtool
+elif [ -x /sbin/ethtool ]; then
+    ETHTOOL=/sbin/ethtool
+fi
+
+# try to load local configuration
+if [ -f /etc/sysconfig/perfsonar-configure_nic_parameters ]; then
+    . /etc/sysconfig/perfsonar-configure_nic_parameters
+elif [ -f /etc/default/perfsonar-configure_nic_parameters ]; then
+    . /etc/default/perfsonar-configure_nic_parameters
+fi
 
 # find all the interfaces besides loopback.
 # ignore aliases, alternative configurations, and editor backup files
@@ -44,7 +58,7 @@ for interface in $interfaces; do
 
     if [ $DISABLE_INTERRUPT_COALESCING ]; then
         # test if this interface supports IC adjustments
-        /sbin/ethtool -c $interface > /dev/null 2>&1
+        $ETHTOOL -c $interface > /dev/null 2>&1
         RETVAL=$?
         if [ $RETVAL -eq 0 ]; then
             # apply multi-ethtool settings
@@ -53,7 +67,8 @@ for interface in $interfaces; do
             if [ $? -eq 0 ]; then
                 success; echo
             else
-                failure; echo; ret=1
+                # coalescing support is driver dependent so ignore errors here
+                failure; echo
             fi
         fi
     fi
@@ -88,24 +103,34 @@ TXQUEUELEN_SET() {
 
 IC_OFF() {
 IC_RET=0
-for i in "$1"; do
-    if ! /usr/sbin/ethtool -c $i | grep -q '^rx-frames: 1$'; then
-         /usr/sbin/ethtool -C $i rx-frames 1 || IC_RET=$?
-    fi
 
-    if ! /usr/sbin/ethtool -c $i | grep -q '^rx-usecs: 0$'; then
-         /usr/sbin/ethtool -C $i rx-usecs 0 || IC_RET=$?
-    fi
-done
+# if not set in local configuration try to detect coalescing values
+if [ "${RX_FRAMES-unset}" = "unset" ]; then
+    DRIVER=$(ethtool -i $1 | sed -n 's/^driver: //p')
+    case $DRIVER in
+        igb) RX_FRAMES=;  RX_USECS=1;;
+        tg3) RX_FRAMES=1; RX_USECS=1;;
+          *) RX_FRAMES=1; RX_USECS=0;;
+    esac
+fi
+
+if [ "$RX_FRAMES" ] && ! $ETHTOOL -c $1 | grep -q "^rx-frames: $RX_FRAMES\$"; then
+    $ETHTOOL -C $1 rx-frames $RX_FRAMES || IC_RET=$?
+fi
+
+if [ "$RX_USECS" ] && ! $ETHTOOL -c $1 | grep -q "^rx-usecs: $RX_USECS\$"; then
+    $ETHTOOL -C $1 rx-usecs $RX_USECS || IC_RET=$?
+fi
+
 return $IC_RET
 }
 
 TSO_ON() {
-/usr/sbin/ethtool -K "$1" tso on
+$ETHTOOL -K "$1" tso on
 }
 
 TSO_OFF() {
-/usr/sbin/ethtool -K "$1" tso off
+$ETHTOOL -K "$1" tso off
 }
 
 
