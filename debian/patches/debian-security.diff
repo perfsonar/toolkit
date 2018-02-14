@@ -1,8 +1,8 @@
 Index: toolkit/scripts/configure_firewall
 ===================================================================
---- toolkit.orig/scripts/configure_firewall	2017-12-19 16:30:47.000000000 +0000
-+++ toolkit/scripts/configure_firewall	2017-12-19 16:41:08.000000000 +0000
-@@ -35,7 +35,7 @@
+--- toolkit.orig/scripts/configure_firewall	2018-02-14 10:05:29.464165261 +0100
++++ toolkit/scripts/configure_firewall	2018-02-14 10:05:29.460165264 +0100
+@@ -38,7 +38,7 @@
      if type firewall-cmd &>/dev/null; then
          firewall-cmd --quiet --runtime-to-permanent
      else
