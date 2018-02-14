@@ -21,9 +21,9 @@ sed -i 's/--*\/var\/log\/messages/-\/var\/log\/messages/g' /etc/rsyslog.conf.tmp
 mv /etc/rsyslog.conf.tmp /etc/rsyslog.conf
 
 # Make sure that the owamp/bwctl log file gets rotated regularly
-grep owamp_bwctl.log /etc/logrotate.d/syslog &> /dev/null
+grep owamp_bwctl.log /etc/logrotate.d/perfsonar-toolkit &> /dev/null
 if [ $? != 0 ]; then
-cat >>/etc/logrotate.d/syslog <<EOF
+cat >>/etc/logrotate.d/perfsonar-toolkit <<EOF
 /var/log/perfsonar/owamp_bwctl.log {
     sharedscripts
     postrotate
@@ -32,6 +32,12 @@ cat >>/etc/logrotate.d/syslog <<EOF
     endscript
 }
 EOF
+fi
+
+# Cleanup previous implementation of log rotate
+grep owamp_bwctl.log /etc/logrotate.d/syslog &> /dev/null
+if [ $? == 0 ]; then
+  sed -i '/owamp_bwctl.log {$/,/^}$/d' /etc/logrotate.d/syslog
 fi
 
 # The log file needs to be created initially so that the log file isn't the
