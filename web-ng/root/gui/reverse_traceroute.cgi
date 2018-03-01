@@ -41,15 +41,10 @@ if ($0 =~ /nph-/) {
 }
 #Get this out first so can get out error messages
 print $msg."Content-type: text/html\n\n";
-my $version="7.31, 12/16/2017, Les Cottrell";
-#  7.3 12/13/2017
-#  Added \[\] to untainting of dig command. Needed to distinguish IPv6
-#  address from the port number. 
-#  Do not avoid testing internal domains if server is IPv6 host, 
-#  Added avoid calling gethostbyname6 if hostname is already an ipv6 address
-#  7.31 12/16/2017
-#  Accomodated how Solaris differs from Linux in its interpretation of exec(@args).
-#  Improved diagnostic for bad target address or name.
+my $version="7.4, 2/26/2018, Les Cottrell";
+#  Sanitized input to defend against cross site scripting (XSS),
+#  See https://www.perl.com/pub/2002/02/20/css.html/
+#  and https://wiki.sei.cmu.edu/confluence/display/perl/IDS33-PL.+Sanitize+untrusted+data+passed+across+a+trust+boundary
 ##########################################################################
 #Understand the local environment
 use Cwd;
@@ -65,6 +60,7 @@ my $ipaddr=gethostbyname6($hostname);
 my $site="";#Allows us to special case SLAC's configuration
 if($hostname=~/\.slac\.stanford\.edu/) {$site="slac";}
 my $archname=$^O;
+use HTML::Entities;#Sanitize responses, see https://www.perl.com/pub/2002/02/20/css.html/
 ###################### Get the form action field #########################
 #$form allows one to use a different form action field, e.g.
 #REQUEST_URI is of the form: /cgi-bin/traceroute.pl?choice=yes
@@ -108,7 +104,7 @@ if($site eq "slac") {
 }
 else {$Sy=$Tr;} #Only support synack at SLAC
 #######################################################################
-my $timeout=0.05/24; # Don't send 2nd email item if previous sent in < timeout hrs
+my $timeout=0.05/24;#Don't send 2nd email item if previous sent in < timeout hrs
 my $err="";
 my $errhead='</pre><font color="magenta"><b><i>';
 my $errtail="</font></i></b>";
@@ -166,6 +162,7 @@ my @options=();
 foreach my $pair (@pairs) {
   my ($name,$value)=split(/=/,$pair);
   $name=lc($name);
+  $value=HTML::Entities::encode($value);#Sanitize against XSS
   if($name eq "target") {
     $addr=$value;
   }
@@ -348,7 +345,8 @@ elsif(valid_ip($addr) eq "4") {#$QUERY_STRING contains an IPv4 target address
   }
 }
 else {
-  $err.="Target host = $addr is not a valid IP name or IPv4 or IPv6 address'.<br>\n";
+  $err.="Target host = ".HTML::Entities::encode($addr) 
+      . "is not a valid IP name or IPv4 or IPv6 address:<br>\n";
 }
 if($err ne "") {
   print "$errhead $err $errtail";
@@ -1158,3 +1156,12 @@ __END__
 #   options=" URL parameterallowing some javascript through which if
 #   the debug option is also enabled will get printed to the screen.
 #   perfSONAR also made this modification.
+#my $version="7.31, 12/16/2017, Les Cottrell";
+#  7.3 12/13/2017
+#  Added \[\] to untainting of dig command. Needed to distinguish IPv6
+#  address from the port number. 
+#  Do not avoid testing internal domains if server is IPv6 host, 
+#  Added avoid calling gethostbyname6 if hostname is already an ipv6 address
+#  7.31 12/16/2017
+#  Accomodated how Solaris differs from Linux in its interpretation of exec(@args).
+#  Improved diagnostic for bad target address or name.
