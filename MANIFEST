@@ -48,6 +48,7 @@ scripts/clean_esmond_db.sh
 scripts/configure_apache_security
 scripts/configure_cacti
 scripts/configure_firewall
+scripts/configure_memcached_security
 scripts/configure_ntpd
 scripts/configure_sysctl
 scripts/cron-clean_esmond_db
