@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ -f /etc/sysconfig/memcached ]; then
+    grep -q "OPTIONS=\"\"" /etc/sysconfig/memcached 
+    if [ $? -eq 0 ]; then
+        sed -i "s/OPTIONS=\"\"/OPTIONS=\"-l 127.0.0.1,::1\"/" /etc/sysconfig/memcached
+        if [ -f "/etc/init.d/memcached" ]; then
+            /etc/init.d/memcached restart
+        else
+            systemctl restart memcached
+        fi
+    fi
+fi
