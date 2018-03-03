@@ -1,7 +1,5 @@
-Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
-===================================================================
---- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2017-12-19 16:41:08.000000000 +0000
-+++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2017-12-19 16:41:08.000000000 +0000
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-03-03 16:59:57.000000000 +0000
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-03-03 17:04:55.000000000 +0000
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -9,9 +7,9 @@ Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
 -. /etc/init.d/functions
 +. /lib/lsb/init-functions
  
- #always set these on perfsonar hosts
+ # always set these on perfsonar hosts
  DISABLE_TCP_OFFLOAD=1
-@@ -18,14 +18,8 @@
+@@ -32,14 +32,8 @@
  
  # find all the interfaces besides loopback.
  # ignore aliases, alternative configurations, and editor backup files
@@ -28,7 +26,7 @@ Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
  
  start() {
  ret=0
-@@ -43,33 +37,33 @@
+@@ -57,34 +51,34 @@
          RETVAL=$?
          if [ $RETVAL -eq 0 ]; then
              # apply multi-ethtool settings
@@ -39,7 +37,8 @@ Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
 -                success; echo
 +                log_action_end_msg $?
              else
--                failure; echo; ret=1
+                 # coalescing support is driver dependent so ignore errors here
+-                failure; echo
 +                log_action_end_msg $?; ret=1
              fi
          fi
@@ -71,35 +70,7 @@ Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
          fi
      fi
  done
-@@ -84,29 +78,28 @@
- IC_OFF() {
- IC_RET=0
- for i in "$1"; do
--    if ! /usr/sbin/ethtool -c $i | grep -q '^rx-frames: 1$'; then
--         /usr/sbin/ethtool -C $i rx-frames 1 || IC_RET=$?
-+    if ! /sbin/ethtool -c $i | grep -q '^rx-frames: 1$'; then
-+         /sbin/ethtool -C $i rx-frames 1 || IC_RET=$?
-     fi
- 
--    if ! /usr/sbin/ethtool -c $i | grep -q '^rx-usecs: 0$'; then
--         /usr/sbin/ethtool -C $i rx-usecs 0 || IC_RET=$?
-+    if ! /sbin/ethtool -c $i | grep -q '^rx-usecs: 0$'; then
-+         /sbin/ethtool -C $i rx-usecs 0 || IC_RET=$?
-     fi
- done
- return $IC_RET
- }
- 
- TSO_ON() {
--/usr/sbin/ethtool -K "$1" tso on
-+/sbin/ethtool -K "$1" tso on
- }
- 
- TSO_OFF() {
--/usr/sbin/ethtool -K "$1" tso off
-+/sbin/ethtool -K "$1" tso off
- }
- 
+@@ -131,7 +125,6 @@
  
  case "$1" in
      start)
@@ -107,10 +78,8 @@ Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
          start
          RETVAL=$?
          ;;
-Index: toolkit/scripts/system_environment/disable_unwanted_services
-===================================================================
---- toolkit.orig/scripts/system_environment/disable_unwanted_services	2017-12-19 16:30:46.000000000 +0000
-+++ toolkit/scripts/system_environment/disable_unwanted_services	2017-12-19 16:41:08.000000000 +0000
+--- toolkit.orig/scripts/system_environment/disable_unwanted_services	2018-03-03 16:47:21.000000000 +0000
++++ toolkit/scripts/system_environment/disable_unwanted_services	2018-03-03 17:02:33.000000000 +0000
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -123,10 +92,8 @@ Index: toolkit/scripts/system_environment/disable_unwanted_services
      fi
  }
  
-Index: toolkit/scripts/system_environment/testpoint/enable_auto_updates
-===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2017-12-19 16:30:46.000000000 +0000
-+++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2017-12-19 16:41:08.000000000 +0000
+--- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2018-03-03 16:47:21.000000000 +0000
++++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2018-03-03 17:02:33.000000000 +0000
 @@ -15,27 +15,8 @@
  # Need to activate if new install or if they were previously running 3.3.2 or older
  if [[ "$1" == "new" || $MAJOR -lt 3 || ( $MAJOR -eq 3 && $MINOR -lt 4 ) ]]; then
@@ -159,10 +126,8 @@ Index: toolkit/scripts/system_environment/testpoint/enable_auto_updates
 +    echo 'APT::Periodic::AutocleanInterval "31";' >> /etc/apt/apt.conf.d/60unattended-upgrades-perfsonar
 +    echo 'Unattended-Upgrade::Origins-Pattern:: "origin=perfSONAR";' >> /etc/apt/apt.conf.d/60unattended-upgrades-perfsonar
  fi
-Index: toolkit/scripts/system_environment/testpoint/enable_nscd
-===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2017-12-19 16:30:46.000000000 +0000
-+++ toolkit/scripts/system_environment/testpoint/enable_nscd	2017-12-19 16:41:08.000000000 +0000
+--- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2018-03-03 16:47:21.000000000 +0000
++++ toolkit/scripts/system_environment/testpoint/enable_nscd	2018-03-03 17:02:33.000000000 +0000
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
      systemctl enable nscd
