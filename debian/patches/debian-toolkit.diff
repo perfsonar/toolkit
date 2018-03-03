@@ -1,5 +1,5 @@
---- a/scripts/apache-toolkit_web_gui.conf
-+++ b/scripts/apache-toolkit_web_gui.conf
+--- toolkit.orig/scripts/apache-toolkit_web_gui.conf	2018-03-03 16:42:22.000000000 +0000
++++ toolkit/scripts/apache-toolkit_web_gui.conf	2018-03-03 16:44:27.000000000 +0000
 @@ -46,6 +46,9 @@
  # But, allow anonymous access via port 80 (http)
  # NOTE: Need to set non-https re-write rules and redirects here
@@ -66,8 +66,8 @@
  </Directory>
  
  ##
---- a/scripts/add_pssudo_user
-+++ b/scripts/add_pssudo_user
+--- toolkit.orig/scripts/add_pssudo_user	2018-03-03 16:42:22.000000000 +0000
++++ toolkit/scripts/add_pssudo_user	2018-03-03 16:44:27.000000000 +0000
 @@ -59,7 +59,7 @@
      sys.exit(1)
  
@@ -86,8 +86,8 @@
  if (retVal != 0):
      print Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL
      sys.exit(1)
---- a/scripts/clean_esmond_db.sh
-+++ b/scripts/clean_esmond_db.sh
+--- toolkit.orig/scripts/clean_esmond_db.sh	2018-03-03 16:42:22.000000000 +0000
++++ toolkit/scripts/clean_esmond_db.sh	2018-03-03 16:44:27.000000000 +0000
 @@ -9,15 +9,13 @@
  fi
  
@@ -110,8 +110,8 @@
  
  #force a compaction
  if [ "$ESMOND_CLEANER_MULTI_NODE" != "1" ]; then
---- a/init_scripts/perfsonar-configure_nic_parameters
-+++ b/init_scripts/perfsonar-configure_nic_parameters
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-03-03 16:44:08.000000000 +0000
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-03-03 16:44:27.000000000 +0000
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -138,7 +138,7 @@
  
  # Source function library.
  . /etc/init.d/functions
-@@ -115,6 +110,10 @@
+@@ -140,6 +135,10 @@
          start
          RETVAL=$?
          ;;
@@ -149,8 +149,8 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- a/init_scripts/perfsonar-generate_motd
-+++ b/init_scripts/perfsonar-generate_motd
+--- toolkit.orig/init_scripts/perfsonar-generate_motd	2018-03-03 16:42:22.000000000 +0000
++++ toolkit/init_scripts/perfsonar-generate_motd	2018-03-03 16:44:27.000000000 +0000
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -174,8 +174,8 @@
  
  use strict;
  use warnings;
---- a/init_scripts/perfsonar-psb_to_esmond
-+++ b/init_scripts/perfsonar-psb_to_esmond
+--- toolkit.orig/init_scripts/perfsonar-psb_to_esmond	2018-03-03 16:42:22.000000000 +0000
++++ toolkit/init_scripts/perfsonar-psb_to_esmond	2018-03-03 16:44:27.000000000 +0000
 @@ -1,10 +1,13 @@
  #!/bin/bash
 -#
@@ -196,9 +196,9 @@
  
  PREFIX=/usr/lib/perfsonar
  BINDIR=${PREFIX}/scripts
---- a/web-ng/root/gui/reverse_traceroute.cgi
-+++ b/web-ng/root/gui/reverse_traceroute.cgi
-@@ -271,7 +271,7 @@
+--- toolkit.orig/web-ng/root/gui/reverse_traceroute.cgi	2018-03-03 16:44:08.000000000 +0000
++++ toolkit/web-ng/root/gui/reverse_traceroute.cgi	2018-03-03 16:44:27.000000000 +0000
+@@ -268,7 +268,7 @@
  #########################################################################
  # Build the executable function for tracepath
  elsif($function eq "tracepath") {
