@@ -20,7 +20,8 @@ etc/ntp_known_servers
 etc/perfsonar_firewall_settings.conf
 etc/perfsonar_firewalld_settings.conf
 etc/perfsonar_sudo
-etc/pscheduler_ulimit.conf
+etc/perfsonar_ulimit.conf
+etc/perfsonar_ulimit_apache.conf
 etc/servicewatcher-logger.conf
 etc/servicewatcher.conf
 etc/templates/motd.tmpl
@@ -47,6 +48,7 @@ scripts/clean_esmond_db.sh
 scripts/configure_apache_security
 scripts/configure_cacti
 scripts/configure_firewall
+scripts/configure_memcached_security
 scripts/configure_ntpd
 scripts/configure_sysctl
 scripts/cron-clean_esmond_db
