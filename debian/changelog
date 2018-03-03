@@ -1,3 +1,11 @@
+perfsonar-toolkit (4.0.2.3-1) perfsonar-jessie-release; urgency=low
+
+  * New upstream version.
+  * Locking Build-Depends: on libperfsonar-perl (= 4.0.2.2-1)
+    and libperfsonar-toolkit-perl (= 4.0.2.2-1)
+
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Sat, 03 Mar 2018 18:17:07 +0000
+
 perfsonar-toolkit (4.0.2.1-2) perfsonar-jessie-release; urgency=low
 
   * New upstream version.

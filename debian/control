@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Valentin Vidic <Valentin.Vidic@CARNet.hr>
 Build-Depends: debhelper (>= 9.0.0), quilt, dh-exec,
- libperfsonar-perl, libperfsonar-toolkit-perl,
+ libperfsonar-perl (= 4.0.2.2-1), libperfsonar-toolkit-perl (= 4.0.2.2-1),
  libtest-mockobject-perl, libfile-copy-recursive-perl,
  libtest-deep-perl, libcgi-pm-perl
 Standards-Version: 3.9.6
