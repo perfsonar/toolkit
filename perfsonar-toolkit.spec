@@ -622,6 +622,9 @@ chkconfig ip6tables on
 chkconfig fail2ban on
 %endif
 
+#configure memcached
+%{install_base}/scripts/configure_memcached_security
+
 #configure apache
 %{install_base}/scripts/configure_apache_security install
 %if 0%{?el7}
@@ -715,6 +718,7 @@ fi
 %config %{config_base}/perfsonar_firewalld_settings.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_firewall
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_apache_security
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_memcached_security
 /etc/httpd/conf.d/apache-perfsonar-security.conf
 /usr/lib/firewalld/services/*.xml
 
