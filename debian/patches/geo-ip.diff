@@ -1,7 +1,7 @@
 Index: toolkit/t/host-geoIPLookup.t
 ===================================================================
---- toolkit.orig/t/host-geoIPLookup.t	2018-03-03 17:15:47.000000000 +0000
-+++ toolkit/t/host-geoIPLookup.t	2018-03-03 17:19:10.000000000 +0000
+--- toolkit.orig/t/host-geoIPLookup.t	2018-03-03 17:19:10.000000000 +0000
++++ toolkit/t/host-geoIPLookup.t	2018-03-04 22:12:13.000000000 +0000
 @@ -93,6 +93,13 @@
  $expected_results->{'193.222.73.227'}->{'longitude'} = '8.1552';
  $expected_results->{'193.222.73.227'}->{'latitude'} = '47.1450';
