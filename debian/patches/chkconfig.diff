@@ -1,5 +1,7 @@
---- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-03-03 17:56:19.000000000 +0000
-+++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-03-03 17:57:29.000000000 +0000
+Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
+===================================================================
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-03-05 08:24:24.000000000 +0000
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-03-05 08:24:25.000000000 +0000
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -78,8 +80,10 @@
          start
          RETVAL=$?
          ;;
---- toolkit.orig/scripts/system_environment/disable_unwanted_services	2018-03-03 17:19:11.000000000 +0000
-+++ toolkit/scripts/system_environment/disable_unwanted_services	2018-03-03 17:57:06.000000000 +0000
+Index: toolkit/scripts/system_environment/disable_unwanted_services
+===================================================================
+--- toolkit.orig/scripts/system_environment/disable_unwanted_services	2018-03-04 22:12:14.000000000 +0000
++++ toolkit/scripts/system_environment/disable_unwanted_services	2018-03-05 08:24:25.000000000 +0000
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -92,8 +96,10 @@
      fi
  }
  
---- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2018-03-03 17:19:11.000000000 +0000
-+++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2018-03-03 17:57:06.000000000 +0000
+Index: toolkit/scripts/system_environment/testpoint/enable_auto_updates
+===================================================================
+--- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2018-03-04 22:12:14.000000000 +0000
++++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2018-03-05 08:24:25.000000000 +0000
 @@ -15,27 +15,8 @@
  # Need to activate if new install or if they were previously running 3.3.2 or older
  if [[ "$1" == "new" || $MAJOR -lt 3 || ( $MAJOR -eq 3 && $MINOR -lt 4 ) ]]; then
@@ -126,8 +132,10 @@
 +    echo 'APT::Periodic::AutocleanInterval "31";' >> /etc/apt/apt.conf.d/60unattended-upgrades-perfsonar
 +    echo 'Unattended-Upgrade::Origins-Pattern:: "origin=perfSONAR";' >> /etc/apt/apt.conf.d/60unattended-upgrades-perfsonar
  fi
---- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2018-03-03 17:19:11.000000000 +0000
-+++ toolkit/scripts/system_environment/testpoint/enable_nscd	2018-03-03 17:57:06.000000000 +0000
+Index: toolkit/scripts/system_environment/testpoint/enable_nscd
+===================================================================
+--- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2018-03-04 22:12:14.000000000 +0000
++++ toolkit/scripts/system_environment/testpoint/enable_nscd	2018-03-05 08:24:25.000000000 +0000
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
      systemctl enable nscd
