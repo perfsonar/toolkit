@@ -17,10 +17,10 @@
 
 %define cron_hourly_1 logscraper.cron
 
-%define relnum   1 
+%define relnum   0.0.a1 
 
 Name:           perfsonar-toolkit
-Version:        4.0.2.1
+Version:        4.1
 Release:        %{relnum}%{?dist}
 Summary:        perfSONAR Toolkit
 License:        Distributable, see LICENSE
@@ -116,12 +116,9 @@ Requires:       coreutils
 Requires:       httpd
 Requires:       mod_ssl
 Requires:       nagios-plugins-all
-%if 0%{?el7}
-BuildRequires: systemd
+BuildRequires:  systemd
 %{?systemd_requires: %systemd_requires}
-%else
-Requires:       mod_auth_shadow
-%endif
+
 
 # Unit test mock library
 BuildRequires: perl-Test-MockObject
@@ -148,11 +145,6 @@ Requires(post): bwctl-client    >= 1.6.0
 Requires(post): bwctl-server    >= 1.6.0
 Requires(post): owamp-client    >= 3.5.0
 Requires(post): owamp-server    >= 3.5.0
-%if 0%{?el7}
-%else
-Requires(post): mod_auth_shadow
-%endif
-
 Requires(post): coreutils
 Requires(post): httpd
 Requires(post): iperf
@@ -205,20 +197,12 @@ Requires(post): pcsc-lite
 Requires(post): rootfiles
 Requires(post): drop-in
 Requires(post): perfsonar-toolkit-compat-database
-
-%if 0%{?el7}
-%else
-Requires(post): hal
-Requires(post): readahead
-Requires(post): bluez-utils
-Requires(post): cpuspeed
-%endif
 Requires(pre):  rpm
 Requires(post): rsyslog
 Requires(post): setup
 Requires(post): smartmontools
 Requires(post): sudo
-Obsoletes:              perfsonar-toolkit-systemenv < 4.0
+Obsoletes:      perfsonar-toolkit-systemenv < 4.0
 Obsoletes:      perl-perfSONAR_PS-Toolkit-SystemEnvironment
 Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 
@@ -233,7 +217,7 @@ Requires:       esmond-database-postgresql95
 Requires:       drop-in
 Requires(post): esmond-database-postgresql95
 Provides:       pscheduler-database-init
-Obsoletes:              perfsonar-toolkit-systemenv < 4.0
+Obsoletes:      perfsonar-toolkit-systemenv < 4.0
 
 %description compat-database
 Provides necessary bridge to 4.0 that ensures old esmond data is migrated prior to the
@@ -264,15 +248,7 @@ Installs install scripts
 Summary:                perfSONAR Toolkit IPTables configuration
 Group:                  Development/Tools
 Requires:               coreutils
-%if 0%{?el7}
 Requires:               firewalld
-%else
-Requires:               iptables
-Requires:               iptables-ipv6
-Requires(post):         iptables
-Requires(post):         iptables-ipv6
-Requires(post):         chkconfig
-%endif
 Requires:               fail2ban
 Requires:               perfsonar-common
 Requires:               httpd
@@ -390,12 +366,7 @@ install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 install -D -m 0644 etc/apache-perfsonar-security.conf %{buildroot}/etc/httpd/conf.d/apache-perfsonar-security.conf
 install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
-
-%if 0%{?el7}
 install -D -m 0644 init_scripts/%{init_script_1}.service %{buildroot}/%{_unitdir}/%{init_script_1}.service
-%else
-install -D -m 0755 init_scripts/%{init_script_1} %{buildroot}/etc/init.d/%{init_script_1}
-%endif
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
 install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_script_4}
@@ -418,13 +389,9 @@ rm -rf %{buildroot}
 
 %post
 # Add a group of users who can login to the web ui
-%if 0%{?el7}
 touch /etc/perfsonar/toolkit/psadmin.htpasswd
 chgrp apache /etc/perfsonar/toolkit/psadmin.htpasswd
 chmod 0640 /etc/perfsonar/toolkit/psadmin.htpasswd
-%else
-/usr/sbin/groupadd psadmin 2> /dev/null || :
-%endif
 /usr/sbin/groupadd pssudo 2> /dev/null || :
 
 mkdir -p /var/log/perfsonar/web_admin
@@ -484,20 +451,10 @@ chmod o+r /etc/bwctl-server/bwctl-server.limits 2> /dev/null
 chmod o+r /etc/bwctl-server/bwctl-server.keys 2> /dev/null
 chmod o+r /etc/owamp-server/owamp-server.limits 2> /dev/null
 chmod o+r /etc/owamp-server/owamp-server.pfs 2> /dev/null
-
-%if 0%{?el7}
-%else
-chkconfig --add %{init_script_1}
-%endif
 chkconfig --add %{init_script_2}
 chkconfig --add %{init_script_3}
 chkconfig --add %{init_script_4}
-
-%if 0%{?el7}
 systemctl --quiet enable %{init_script_1}
-%else
-chkconfig %{init_script_1} on
-%endif
 chkconfig %{init_script_2} on
 chkconfig %{init_script_3} on
 chkconfig %{init_script_4} on
@@ -512,28 +469,15 @@ chkconfig postgresql-9.5 on
 
 #Restart pscheduler daemons to make sure they got all tests, tools, and archivers
 #also meshconfig-agent because it needs pscheduler
-%if 0%{?el7}
 systemctl restart httpd &>/dev/null || :
 systemctl restart pscheduler-archiver &>/dev/null || :
 systemctl restart pscheduler-runner &>/dev/null || :
 systemctl restart pscheduler-scheduler &>/dev/null || :
 systemctl restart pscheduler-ticker &>/dev/null || :
 systemctl restart perfsonar-meshconfig-agent &>/dev/null || :
-%else
-/sbin/service httpd restart &>/dev/null || :
-/sbin/service pscheduler-archiver restart &>/dev/null || :
-/sbin/service pscheduler-runner restart &>/dev/null || :
-/sbin/service pscheduler-scheduler restart &>/dev/null || :
-/sbin/service pscheduler-ticker restart &>/dev/null || :
-/sbin/service perfsonar-meshconfig-agent restart &>/dev/null || :
-%endif
 
 #Restart config_daemon and fix nic parameters
-%if 0%{?el7}
 systemctl restart %{init_script_1} &>/dev/null || :
-%else
-/etc/init.d/%{init_script_1} restart &>/dev/null || :
-%endif
 /etc/init.d/%{init_script_3} start &>/dev/null || :
 
 %post systemenv-testpoint
@@ -613,25 +557,15 @@ echo "Running: configure_firewall install"
 %{install_base}/scripts/configure_firewall install
 
 #enabling services
-%if 0%{?el7}
 systemctl enable firewalld
 systemctl enable fail2ban
-%else
-chkconfig iptables on
-chkconfig ip6tables on
-chkconfig fail2ban on
-%endif
 
 #configure memcached
 %{install_base}/scripts/configure_memcached_security
 
 #configure apache
 %{install_base}/scripts/configure_apache_security install
-%if 0%{?el7}
 systemctl restart httpd &>/dev/null || :
-%else
-/sbin/service httpd restart &>/dev/null || :
-%endif
 
 %post sysctl
 
@@ -686,11 +620,7 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
-%if 0%{?el7}
 %attr(0644,root,root) %{_unitdir}/%{init_script_1}.service
-%else
-%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_1}
-%endif
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}
