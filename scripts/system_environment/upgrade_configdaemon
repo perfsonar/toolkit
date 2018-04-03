@@ -12,13 +12,20 @@ fi
 #Handle updating configs here
 UPDATE_CONFIG=0
 
+#this is pre-4.0
 grep "bwctl-server.conf" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     UPDATE_CONFIG=1
 fi 
 
-#this is pre-4.0, let's upgrade
+#this is 4.0
 grep "meshconfig-agent-tasks.conf" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    UPDATE_CONFIG=1
+fi 
+
+#this is pre-4.1
+grep "toolkit-webui.json" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     UPDATE_CONFIG=1
 fi 
@@ -27,61 +34,60 @@ if [ $UPDATE_CONFIG -eq 1 ]; then
 
 echo "Replacing /etc/perfsonar/toolkit/configdaemon.conf"
 cat > /etc/perfsonar/toolkit/configdaemon.conf <<- EOF
-address		localhost
-port		9000
+address     localhost
+port        9000
 firewall_script /usr/lib/perfsonar/scripts/system_environment/configure_firewall
 
 <access>
-	<service yum_cron>
-		restart		1
-		start 		1
-		stop 		1
-	</service>
-	<service meshconfig_agent>
-		restart		1
-		start		1
-		stop		1
-	</service>
-	<service owamp>
-		restart		1
-		start		1
-		stop		1
-	</service>
-	<service bwctl>
-		restart		1
-		start		1
-		stop		1
-	</service>
-	<service lsregistration>
-		restart		1
-		start		1
-		stop		1
-	</service>
-	<service ntp>
-		start		1
-		stop		1
-		restart		1
-	</service>
-	<file "/etc/ntp.conf">
-		read	1
-		write	1
-	</file>
-	<file "/etc/perfsonar/lsregistrationdaemon.conf">
-		read	1
-		write	1
-	</file>
-	<file "/etc/perfsonar/toolkit/ntp_known_servers">
-		read	1
-		write	1
-	</file>
+    <service yum_cron>
+        restart     1
+        start       1
+        stop        1
+    </service>
+    <service owamp>
+        restart     1
+        start       1
+        stop        1
+    </service>
+    <service bwctl>
+        restart     1
+        start       1
+        stop        1
+    </service>
+    <service lsregistration>
+        restart     1
+        start       1
+        stop        1
+    </service>
+    <service ntp>
+        start       1
+        stop        1
+        restart     1
+    </service>
+    <file "/etc/ntp.conf">
+        read    1
+        write   1
+    </file>
+    <file "/etc/perfsonar/lsregistrationdaemon.conf">
+        read    1
+        write   1
+    </file>
+    <file "/etc/perfsonar/toolkit/ntp_known_servers">
+        read    1
+        write   1
+    </file>
     <file "/etc/ntp/step-tickers">
-    		read    1
-    		write   1
-	</file>
-    <file "/etc/perfsonar/meshconfig-agent-tasks.conf">
-    		read    1
-    		write   1
-	</file>
+            read    1
+            write   1
+    </file>
+    <file "/var/lib/perfsonar/toolkit/gui-tasks.conf">
+            read    1
+            write   1
+    </file>
+    <file "/etc/perfsonar/psconfig/pscheduler.d/toolkit-webui.json">
+            read    1
+            write   1
+    </file>
 </access>
 EOF
 
