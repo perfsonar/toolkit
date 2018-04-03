@@ -74,7 +74,6 @@ else {
 }
 
 my @services = (
-    get_service_object("mysql"),
     get_service_object("httpd"),
     get_service_object("cassandra"),
     get_service_object("owamp"),
