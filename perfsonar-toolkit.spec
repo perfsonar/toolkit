@@ -96,7 +96,6 @@ Requires:       perfsonar-core
 Requires:       perfsonar-lscachedaemon
 Requires:       perfsonar-graphs
 Requires:       perfsonar-traceroute-viewer
-Requires:       perfsonar-meshconfig-jsonbuilder
 Requires:       perfsonar-toolkit-compat-database
 Requires:       libperfsonar-esmond-perl
 Requires:       libperfsonar-perl
@@ -135,7 +134,7 @@ Requires(post): perl
 Requires(post): perfsonar-lscachedaemon
 Requires(post): perfsonar-lsregistrationdaemon
 Requires(post): perfsonar-graphs
-Requires(post): perfsonar-meshconfig-agent
+Requires(post): perfsonar-psconfig-pscheduler
 
 Requires(post): perfsonar-common
 Requires(post): esmond          >= 2.1
@@ -157,7 +156,7 @@ The perfSONAR Toolkit web GUI and associated services.
 %package systemenv-testpoint
 Summary:        perfSONAR Testpoint System Configuration
 Group:          Development/Tools
-Requires:               perfsonar-meshconfig-agent
+Requires:       perfsonar-psconfig-pscheduler
 Requires:       nscd
 Requires:       yum-cron
 Requires(post): bwctl-server    >= 1.6.0
@@ -464,13 +463,13 @@ chkconfig cassandra on
 chkconfig postgresql-9.5 on
 
 #Restart pscheduler daemons to make sure they got all tests, tools, and archivers
-#also meshconfig-agent because it needs pscheduler
+#also psconfig-pscheduler-agent because it needs pscheduler
 systemctl restart httpd &>/dev/null || :
 systemctl restart pscheduler-archiver &>/dev/null || :
 systemctl restart pscheduler-runner &>/dev/null || :
 systemctl restart pscheduler-scheduler &>/dev/null || :
 systemctl restart pscheduler-ticker &>/dev/null || :
-systemctl restart perfsonar-meshconfig-agent &>/dev/null || :
+systemctl restart psconfig-pscheduler-agent &>/dev/null || :
 
 #Restart config_daemon and fix nic parameters
 systemctl restart %{init_script_1} &>/dev/null || :
