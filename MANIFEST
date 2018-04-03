@@ -31,7 +31,6 @@ init_scripts/perfsonar-configdaemon
 init_scripts/perfsonar-configdaemon.service
 init_scripts/perfsonar-configure_nic_parameters
 init_scripts/perfsonar-generate_motd
-init_scripts/perfsonar-psb_to_esmond
 lib/OWP/Conf.pm
 lib/OWP/Helper.pm
 lib/perfSONAR_PS/Config/OWP/Conf.pm
@@ -61,7 +60,6 @@ scripts/mod_interface_route
 scripts/nptoolkit-configure.py
 scripts/ps-migrate-backup.sh
 scripts/ps-migrate-restore.sh
-scripts/psb_to_esmond.pl
 scripts/remove_home_partition
 scripts/service_watcher
 scripts/system_environment/add_psadmin_pssudo

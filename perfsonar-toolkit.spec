@@ -10,7 +10,6 @@
 %define init_script_1 perfsonar-configdaemon
 %define init_script_2 perfsonar-generate_motd
 %define init_script_3 perfsonar-configure_nic_parameters
-%define init_script_4 perfsonar-psb_to_esmond
 
 %define crontab_1     cron-service_watcher
 %define crontab_3     cron-clean_esmond_db
@@ -369,7 +368,6 @@ install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 install -D -m 0644 init_scripts/%{init_script_1}.service %{buildroot}/%{_unitdir}/%{init_script_1}.service
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
-install -D -m 0755 init_scripts/%{init_script_4} %{buildroot}/etc/init.d/%{init_script_4}
 
 mkdir -p %{buildroot}/usr/lib/firewalld/services/
 mv etc/firewalld/services/* %{buildroot}/usr/lib/firewalld/services/
@@ -453,11 +451,9 @@ chmod o+r /etc/owamp-server/owamp-server.limits 2> /dev/null
 chmod o+r /etc/owamp-server/owamp-server.pfs 2> /dev/null
 chkconfig --add %{init_script_2}
 chkconfig --add %{init_script_3}
-chkconfig --add %{init_script_4}
 systemctl --quiet enable %{init_script_1}
 chkconfig %{init_script_2} on
 chkconfig %{init_script_3} on
-chkconfig %{init_script_4} on
 
 # apache needs to be on for the toolkit to work
 chkconfig --level 2345 httpd on
@@ -623,7 +619,6 @@ fi
 %attr(0644,root,root) %{_unitdir}/%{init_script_1}.service
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
-%attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_4}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
@@ -631,7 +626,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/%{cron_hourly_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/psb_to_esmond.pl
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
 
 %files systemenv-testpoint
