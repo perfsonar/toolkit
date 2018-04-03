@@ -5,6 +5,7 @@
 .*.swn
 .*.swo
 .*.swp
+.vagrant
 # Ignore unit test output
 tap_output/
 cover_db/
