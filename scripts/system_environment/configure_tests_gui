@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ ! -f "/var/lib/perfsonar/toolkit/gui-tasks.conf" ]; then
+    mkdir -p /var/lib/perfsonar/toolkit
+    touch /var/lib/perfsonar/toolkit/gui-tasks.conf
+    chown -R perfsonar:perfsonar /var/lib/perfsonar/toolkit
+    chmod 644 /var/lib/perfsonar/toolkit/gui-tasks.conf
+fi
