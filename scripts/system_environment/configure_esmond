@@ -122,7 +122,7 @@ if [ -n "$KEY" ]; then
     fi
 
     #finally, drop-in MA if needed
-    if [ $ADD_LOCAL_MA -eq 1 ]; then
+    if [ -d "/etc/perfsonar/psconfig/archives.d" ] && [ $ADD_LOCAL_MA -eq 1 ]; then
         cat >/etc/perfsonar/psconfig/archives.d/esmond_local.json <<EOF
 {
     "archiver" : "esmond",
