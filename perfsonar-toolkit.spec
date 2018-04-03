@@ -19,85 +19,85 @@
 
 %define relnum   1 
 
-Name:			perfsonar-toolkit
-Version:		4.0.2.1
-Release:		%{relnum}%{?dist}
-Summary:		perfSONAR Toolkit
-License:		Distributable, see LICENSE
-Group:			Applications/Communications
-URL:			http://www.perfsonar.net/
-Source0:		perfsonar-toolkit-%{version}.%{relnum}.tar.gz
-BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildArch:		noarch
-Requires:		perl
-Requires:		perl(AnyEvent) >= 4.81
-Requires:		perl(AnyEvent::HTTP)
-Requires:		perl(CGI)
-Requires:		perl(CGI::Ajax)
-Requires:		perl(CGI::Carp)
-Requires:		perl(CGI::Session)
-Requires:		perl(Class::Accessor)
-Requires:		perl(Config::General)
-Requires:		perl(Cwd)
-Requires:		perl(Data::Dumper)
-Requires:		perl(Data::UUID)
-Requires:		perl(Data::Validate::Domain)
-Requires:		perl(Data::Validate::IP)
-Requires:		perl(Date::Manip)
-Requires:		perl(Digest::MD5)
-Requires:		perl(English)
-Requires:		perl(Exporter)
-Requires:		perl(Fcntl)
-Requires:		perl(File::Basename)
-Requires:		perl(File::Spec)
-Requires:		perl(FindBin)
-Requires:		perl(Getopt::Long)
-Requires:		perl(IO::File)
-Requires:		perl(IO::Socket)
-Requires:		perl(JSON::XS)
-Requires:		perl(LWP::Simple)
-Requires:		perl(LWP::UserAgent)
-Requires:		perl(Log::Log4perl)
-Requires:		perl(Net::DNS)
-Requires:		perl(Net::IP)
-Requires:		perl(Net::IP)
-Requires:		perl(Net::Ping)
-Requires:		perl(Net::Server)
-Requires:		perl(NetAddr::IP)
-Requires:		perl(POSIX)
-Requires:		perl(Params::Validate)
-Requires:		perl(RPC::XML::Client)
-Requires:		perl(RPC::XML::Server)
-Requires:		perl(RPM2)
-Requires:		perl(Readonly)
-Requires:		perl(Regexp::Common)
-Requires:		perl(Scalar::Util)
-Requires:		perl(Socket)
-Requires:		perl(Storable)
-Requires:		perl(Sys::Hostname)
-Requires:		perl(Sys::Statistics::Linux)
-Requires:		perl(Template)
-Requires:		perl(Term::ReadLine)
-Requires:		perl(Time::HiRes)
-Requires:		perl(Time::Local)
-Requires:		perl(XML::LibXML) >= 1.60
-Requires:		perl(XML::Simple)
-Requires:		perl(XML::Twig)
-Requires:		perl(aliased)
-Requires:		perl(base)
-Requires:		perl(lib)
-Requires:		perl(utf8)
-Requires:		perl(vars)
-Requires:		perl(version)
-Requires:		perl(warnings)
+Name:           perfsonar-toolkit
+Version:        4.0.2.1
+Release:        %{relnum}%{?dist}
+Summary:        perfSONAR Toolkit
+License:        Distributable, see LICENSE
+Group:          Applications/Communications
+URL:            http://www.perfsonar.net/
+Source0:        perfsonar-toolkit-%{version}.%{relnum}.tar.gz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildArch:      noarch
+Requires:       perl
+Requires:       perl(AnyEvent) >= 4.81
+Requires:       perl(AnyEvent::HTTP)
+Requires:       perl(CGI)
+Requires:       perl(CGI::Ajax)
+Requires:       perl(CGI::Carp)
+Requires:       perl(CGI::Session)
+Requires:       perl(Class::Accessor)
+Requires:       perl(Config::General)
+Requires:       perl(Cwd)
+Requires:       perl(Data::Dumper)
+Requires:       perl(Data::UUID)
+Requires:       perl(Data::Validate::Domain)
+Requires:       perl(Data::Validate::IP)
+Requires:       perl(Date::Manip)
+Requires:       perl(Digest::MD5)
+Requires:       perl(English)
+Requires:       perl(Exporter)
+Requires:       perl(Fcntl)
+Requires:       perl(File::Basename)
+Requires:       perl(File::Spec)
+Requires:       perl(FindBin)
+Requires:       perl(Getopt::Long)
+Requires:       perl(IO::File)
+Requires:       perl(IO::Socket)
+Requires:       perl(JSON::XS)
+Requires:       perl(LWP::Simple)
+Requires:       perl(LWP::UserAgent)
+Requires:       perl(Log::Log4perl)
+Requires:       perl(Net::DNS)
+Requires:       perl(Net::IP)
+Requires:       perl(Net::IP)
+Requires:       perl(Net::Ping)
+Requires:       perl(Net::Server)
+Requires:       perl(NetAddr::IP)
+Requires:       perl(POSIX)
+Requires:       perl(Params::Validate)
+Requires:       perl(RPC::XML::Client)
+Requires:       perl(RPC::XML::Server)
+Requires:       perl(RPM2)
+Requires:       perl(Readonly)
+Requires:       perl(Regexp::Common)
+Requires:       perl(Scalar::Util)
+Requires:       perl(Socket)
+Requires:       perl(Storable)
+Requires:       perl(Sys::Hostname)
+Requires:       perl(Sys::Statistics::Linux)
+Requires:       perl(Template)
+Requires:       perl(Term::ReadLine)
+Requires:       perl(Time::HiRes)
+Requires:       perl(Time::Local)
+Requires:       perl(XML::LibXML) >= 1.60
+Requires:       perl(XML::Simple)
+Requires:       perl(XML::Twig)
+Requires:       perl(aliased)
+Requires:       perl(base)
+Requires:       perl(lib)
+Requires:       perl(utf8)
+Requires:       perl(vars)
+Requires:       perl(version)
+Requires:       perl(warnings)
 
 #perfSONAR packages
-Requires:		perfsonar-common
-Requires:		perfsonar-core
-Requires:		perfsonar-lscachedaemon
-Requires:		perfsonar-graphs
-Requires:		perfsonar-traceroute-viewer
-Requires:		perfsonar-meshconfig-jsonbuilder
+Requires:       perfsonar-common
+Requires:       perfsonar-core
+Requires:       perfsonar-lscachedaemon
+Requires:       perfsonar-graphs
+Requires:       perfsonar-traceroute-viewer
+Requires:       perfsonar-meshconfig-jsonbuilder
 Requires:       perfsonar-toolkit-compat-database
 Requires:       libperfsonar-esmond-perl
 Requires:       libperfsonar-perl
@@ -110,17 +110,17 @@ Requires:       esmond >= 2.1
 Requires:       esmond-database-postgresql95
 
 # Misc performance/performance-related tools
-Requires:		tcptrace
-Requires:		xplot-tcptrace
-Requires:		coreutils
-Requires:		httpd
-Requires:		mod_ssl
-Requires:		nagios-plugins-all
+Requires:       tcptrace
+Requires:       xplot-tcptrace
+Requires:       coreutils
+Requires:       httpd
+Requires:       mod_ssl
+Requires:       nagios-plugins-all
 %if 0%{?el7}
 BuildRequires: systemd
 %{?systemd_requires: %systemd_requires}
 %else
-Requires:		mod_auth_shadow
+Requires:       mod_auth_shadow
 %endif
 
 # Unit test mock library
@@ -129,50 +129,50 @@ BuildRequires: perl-Test-MockObject
 # Deep object comparision
 BuildRequires: perl-Test-Deep
 
-Obsoletes:		perl-perfSONAR_PS-TopologyService
-Obsoletes:		perl-perfSONAR_PS-Toolkit
+Obsoletes:      perl-perfSONAR_PS-TopologyService
+Obsoletes:      perl-perfSONAR_PS-Toolkit
 Provides:       perl-perfSONAR_PS-Toolkit
 
-Requires(pre):	rpm
+Requires(pre):  rpm
 # Anaconda requires a Requires(post) to ensure that packages are installed before the %post section is run...
-Requires(post):	perl
-Requires(post):	perfsonar-lscachedaemon
-Requires(post):	perfsonar-lsregistrationdaemon
-Requires(post):	perfsonar-graphs
-Requires(post):	perfsonar-meshconfig-agent
+Requires(post): perl
+Requires(post): perfsonar-lscachedaemon
+Requires(post): perfsonar-lsregistrationdaemon
+Requires(post): perfsonar-graphs
+Requires(post): perfsonar-meshconfig-agent
 
-Requires(post):	perfsonar-common
-Requires(post):	esmond          >= 2.1
-Requires(post):	esmond-database-postgresql95
-Requires(post):	bwctl-client    >= 1.6.0
-Requires(post):	bwctl-server    >= 1.6.0
-Requires(post):	owamp-client    >= 3.5.0
-Requires(post):	owamp-server    >= 3.5.0
+Requires(post): perfsonar-common
+Requires(post): esmond          >= 2.1
+Requires(post): esmond-database-postgresql95
+Requires(post): bwctl-client    >= 1.6.0
+Requires(post): bwctl-server    >= 1.6.0
+Requires(post): owamp-client    >= 3.5.0
+Requires(post): owamp-server    >= 3.5.0
 %if 0%{?el7}
 %else
-Requires(post):	mod_auth_shadow
+Requires(post): mod_auth_shadow
 %endif
 
-Requires(post):	coreutils
-Requires(post):	httpd
-Requires(post):	iperf
-Requires(post):	mod_ssl
-Requires(post):	nscd
+Requires(post): coreutils
+Requires(post): httpd
+Requires(post): iperf
+Requires(post): mod_ssl
+Requires(post): nscd
 
 
 %description
 The perfSONAR Toolkit web GUI and associated services.
 
 %package systemenv-testpoint
-Summary:		perfSONAR Testpoint System Configuration
-Group:			Development/Tools
+Summary:        perfSONAR Testpoint System Configuration
+Group:          Development/Tools
 Requires:               perfsonar-meshconfig-agent
-Requires:		nscd
-Requires:		yum-cron
-Requires(post):	bwctl-server    >= 1.6.0
-Requires(post):	owamp-server    >= 3.5.0
-Requires(post):	chkconfig
-Requires(post):	rsyslog
+Requires:       nscd
+Requires:       yum-cron
+Requires(post): bwctl-server    >= 1.6.0
+Requires(post): owamp-server    >= 3.5.0
+Requires(post): chkconfig
+Requires(post): rsyslog
 Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment-Testpoint
 
 %description systemenv-testpoint
@@ -181,45 +181,45 @@ security best practices.
 
 
 %package systemenv
-Summary:		perfSONAR Toolkit System Configuration
-Group:			Development/Tools
-Requires:		perfsonar-toolkit
+Summary:        perfSONAR Toolkit System Configuration
+Group:          Development/Tools
+Requires:       perfsonar-toolkit
 Requires:       perfsonar-toolkit-security
 Requires:       perfsonar-toolkit-sysctl
 Requires:       perfsonar-toolkit-servicewatcher
 Requires:       perfsonar-toolkit-ntp
 Requires:       perfsonar-toolkit-library
 Requires:       perfsonar-toolkit-systemenv-testpoint
-Requires(post):	perfsonar-common
-Requires(post):	perfsonar-toolkit
-Requires(post):	acpid
-Requires(post):	avahi
-Requires(post):	chkconfig
-Requires(post):	cups
-Requires(post):	httpd
-Requires(post):	irda-utils
-Requires(post):	irqbalance
-Requires(post):	mdadm
-Requires(post):	nfs-utils
-Requires(post):	pcsc-lite
-Requires(post):	rootfiles
-Requires(post):	drop-in
+Requires(post): perfsonar-common
+Requires(post): perfsonar-toolkit
+Requires(post): acpid
+Requires(post): avahi
+Requires(post): chkconfig
+Requires(post): cups
+Requires(post): httpd
+Requires(post): irda-utils
+Requires(post): irqbalance
+Requires(post): mdadm
+Requires(post): nfs-utils
+Requires(post): pcsc-lite
+Requires(post): rootfiles
+Requires(post): drop-in
 Requires(post): perfsonar-toolkit-compat-database
 
 %if 0%{?el7}
 %else
-Requires(post):	hal
-Requires(post):	readahead
-Requires(post):	bluez-utils
+Requires(post): hal
+Requires(post): readahead
+Requires(post): bluez-utils
 Requires(post): cpuspeed
 %endif
-Requires(pre):	rpm
-Requires(post):	rsyslog
-Requires(post):	setup
-Requires(post):	smartmontools
-Requires(post):	sudo
+Requires(pre):  rpm
+Requires(post): rsyslog
+Requires(post): setup
+Requires(post): smartmontools
+Requires(post): sudo
 Obsoletes:              perfsonar-toolkit-systemenv < 4.0
-Obsoletes:		perl-perfSONAR_PS-Toolkit-SystemEnvironment
+Obsoletes:      perl-perfSONAR_PS-Toolkit-SystemEnvironment
 Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 
 %description systemenv
@@ -227,12 +227,12 @@ Tunes and configures the system according to performance and security best
 practices.
 
 %package compat-database
-Summary:		perfSONAR Database Migration
-Group:			Development/Tools
-Requires:		esmond-database-postgresql95
-Requires:		drop-in
-Requires(post):	esmond-database-postgresql95
-Provides:		pscheduler-database-init
+Summary:        perfSONAR Database Migration
+Group:          Development/Tools
+Requires:       esmond-database-postgresql95
+Requires:       drop-in
+Requires(post): esmond-database-postgresql95
+Provides:       pscheduler-database-init
 Obsoletes:              perfsonar-toolkit-systemenv < 4.0
 
 %description compat-database
@@ -438,7 +438,7 @@ mkdir -p /var/lib/perfsonar/db_backups/traceroute
 chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/traceroute
 
 mkdir -p /var/lib/perfsonar/log_view/bwctl
-mkdir -p /var/lib/perfsonar/log_view/ndt	
+mkdir -p /var/lib/perfsonar/log_view/ndt    
 mkdir -p /var/lib/perfsonar/log_view/owamp
 
 if [ $1 -eq 1 ] ; then
@@ -543,13 +543,13 @@ if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
 fi
 
 for script in %{install_base}/scripts/system_environment/testpoint/*; do
-	if [ $1 -eq 1 ] ; then
-		echo "Running: $script new"
-		$script new
-	else
-		echo "Running: $script upgrade ${PREV_VERSION}"
-		$script upgrade ${PREV_VERSION}
-	fi
+    if [ $1 -eq 1 ] ; then
+        echo "Running: $script new"
+        $script new
+    else
+        echo "Running: $script upgrade ${PREV_VERSION}"
+        $script upgrade ${PREV_VERSION}
+    fi
 done
 
 
@@ -560,13 +560,13 @@ if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
 fi
 
 for script in %{install_base}/scripts/system_environment/*; do
-	if [ $1 -eq 1 ] ; then
-		echo "Running: $script new"
-		$script new
-	else
-		echo "Running: $script upgrade ${PREV_VERSION}"
-		$script upgrade ${PREV_VERSION}
-	fi
+    if [ $1 -eq 1 ] ; then
+        echo "Running: $script new"
+        $script new
+    else
+        echo "Running: $script upgrade ${PREV_VERSION}"
+        $script upgrade ${PREV_VERSION}
+    fi
 done
 
 
@@ -599,7 +599,7 @@ if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
 fi
 
 if [ $1 -eq 1 ] ; then
-	echo "Running: configure_ntpd new"
+    echo "Running: configure_ntpd new"
     %{install_base}/scripts/configure_ntpd new
 else
     echo "Running: configure_ntpd upgrade ${PREV_VERSION}"
@@ -641,7 +641,7 @@ if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
 fi
 
 if [ $1 -eq 1 ] ; then
-	echo "Running:  new"
+    echo "Running:  new"
     %{install_base}/scripts/configure_sysctl new
 else
     echo "Running: configure_sysctl upgrade ${PREV_VERSION}"
