@@ -1,17 +1,16 @@
 #!/bin/bash
 
-TASKS_CONF="/etc/perfsonar/meshconfig-agent-tasks.conf"
+TRANSFORM_SCRIPT="/etc/perfsonar/psconfig/transforms.d/latency-testports.json"
 
 #set powstream test ports if no default parameters
 TESTPORTS=`grep -m 1 '^testports' /etc/owamp-server/owamp-server.conf | cut -f2 -d " "`
 if [ -n "$TESTPORTS" ]; then
-    RECVPORTS_SET=`grep receive_port_range $TASKS_CONF`
-    if [ -z "$RECVPORTS_SET" ]; then
-       echo "" >> $TASKS_CONF
-       echo "#Default testports set by automated toolkit script" >> $TASKS_CONF
-       echo "<default_parameters>" >> $TASKS_CONF
-       echo "   type  powstream" >> $TASKS_CONF
-       echo "   receive_port_range $TESTPORTS" >> $TASKS_CONF
-       echo "</default_parameters>" >> $TASKS_CONF
-    fi
-fi 
+    IFS='-' read -ra PORT_RANGE <<< "$TESTPORTS"
+    if [ -n "${PORT_RANGE[0]}" ] && [ -n "${PORT_RANGE[1]}" ]; then
+        cat >${TRANSFORM_SCRIPT} <<EOF
+{
+    "script": ".tests |= map_values(if .type == \"latencybg\" or .type == \"latency\" then .spec.\"data-ports\" |= {\"lower\": ${PORT_RANGE[0]}, \"upper\": ${PORT_RANGE[1]}} else . end)"
+}
+EOF
+    fi 
+fi
