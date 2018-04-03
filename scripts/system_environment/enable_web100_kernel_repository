@@ -1,7 +1,0 @@
-#!/bin/bash
-#######################
-# Enable the Internet2-web100_kernel repository. Does not matter if this is
-# running in an 'upgrade' or 'new install' context.
-#######################
-
-sed -i -e 's|enabled.*=.*|enabled = 1|' /etc/yum.repos.d/Internet2-web100_kernel.repo &> /dev/null || :

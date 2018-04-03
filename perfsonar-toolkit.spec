@@ -519,13 +519,6 @@ service httpd reload || :
 %post compat-database
 
 if [ $1 -eq 1 ] ; then
-    #make sure the auth type is something pscheduler can use
-    cp -f /etc/perfsonar/toolkit/default_service_configs/pg_hba.conf /var/lib/pgsql/9.5/data/pg_hba.conf
-    
-    #disable old postgresql
-    /sbin/service postgresql stop || :
-    chkconfig postgresql off
-    
     #enable new postgresql
     /sbin/service postgresql-9.5 restart || :
     chkconfig postgresql-9.5 on
@@ -590,7 +583,6 @@ fi
 %exclude %{config_base}/servicewatcher.conf
 %exclude %{config_base}/servicewatcher-logger.conf
 %exclude %{config_base}/templates/ntp_conf.tmpl
-%exclude %{config_base}/default_service_configs/pg_hba.conf
 %exclude %{config_base}/default_service_configs/pscheduler_limits.conf
 %exclude %{config_base}/perfsonar_ulimit.conf
 %exclude %{config_base}/perfsonar_ulimit_apache.conf
@@ -621,7 +613,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_cacti
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/%{cron_hourly_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
@@ -678,7 +669,6 @@ fi
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
 %files compat-database
-%attr(0644,root,root) %{config_base}/default_service_configs/pg_hba.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_esmond 
 
 %changelog
