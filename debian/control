@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Valentin Vidic <Valentin.Vidic@CARNet.hr>
 Build-Depends: debhelper (>= 9.0.0), quilt, dh-exec,
  libperfsonar-perl, libperfsonar-toolkit-perl,
- perfsonar-psconfig-pscheduler,
+ perfsonar-psconfig-pscheduler-dev, perfsonar-psconfig-pscheduler,
  libtest-mockobject-perl, libfile-copy-recursive-perl,
  libtest-deep-perl, libcgi-pm-perl
 Standards-Version: 3.9.6
