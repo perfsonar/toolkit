@@ -95,6 +95,7 @@ Requires:       perfsonar-common
 Requires:       perfsonar-core
 Requires:       perfsonar-lscachedaemon
 Requires:       perfsonar-graphs
+Requires:       perfsonar-psconfig-publisher
 Requires:       perfsonar-traceroute-viewer
 Requires:       perfsonar-toolkit-compat-database
 Requires:       libperfsonar-esmond-perl
