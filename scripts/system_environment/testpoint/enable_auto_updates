@@ -28,14 +28,3 @@ if [ -f "/etc/yum/yum-cron.conf" ]; then
     sed -i "s/download_updates = .*/download_updates = yes/g" /etc/yum/yum-cron.conf
     sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/yum/yum-cron.conf
 fi
-
-
-# Handle updating configs here
-grep "<service yum_cron>" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
-if [ $? != 0 ]; then
-    sed -i '/<access>/a \\t<service yum_cron> \
-		\t\trestart	\t\t 1 \
-		\t\tstart \t\t 1 \
-		\t\tstop \t\t 1 \
-	\t</service>' /etc/perfsonar/toolkit/configdaemon.conf
-fi

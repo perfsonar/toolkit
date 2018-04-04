@@ -74,12 +74,11 @@ else {
 }
 
 my @services = (
-    get_service_object("mysql"),
     get_service_object("httpd"),
     get_service_object("cassandra"),
     get_service_object("owamp"),
     get_service_object("bwctl"),
-    get_service_object("meshconfig_agent"),
+    get_service_object("psconfig"),
     get_service_object("lsregistration"),
     get_service_object("pscheduler"),
     get_service_object("ls_cache_daemon"),

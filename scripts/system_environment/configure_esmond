@@ -5,7 +5,7 @@ PG_DATADIR=/var/lib/pgsql/${PG_VERSION}/data
 PG_SERVICE_NAME="postgresql-${PG_VERSION}"
 
 #Determine install type
-# UPDATE: Don't force meshconfig-agent-tasks.conf to add localhost MAs
+# UPDATE: Don't force creation of localhost MAs
 # NEW: Add localhost MAs if don't see the API key referenced anywhere else
 # FORCE: Add the localhost MA 
 INSTALL_TYPE="UPDATE"
@@ -107,56 +107,37 @@ python esmond/manage.py migrate --noinput &> /dev/null
 #create api key
 KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
 
-#setup localhost measurement archives in meshconfig-agent-tasks.conf
+#setup localhost measurement archive
 if [ -n "$KEY" ]; then
     ADD_LOCAL_MA=0
-    #If has string ESMOND_API_KEY then probably added pre-4.0. Replace the string 
-    # with the api key and proceed
-    grep -q ESMOND_API_KEY /etc/perfsonar/meshconfig-agent-tasks.conf
-    if [ $? -eq 0 ]; then
-        sed -i "s/ESMOND_API_KEY/$KEY/g" /etc/perfsonar/meshconfig-agent-tasks.conf
-    else
-        #check if key already referenced in file
-        grep -q $KEY /etc/perfsonar/meshconfig-agent-tasks.conf
-        KEY_GREP=$?
-        #adding an MA will depend on install type and if already saw referenced key
-        if [ "$INSTALL_TYPE" == "FORCE" ]; then
-            #If we gave it the --force option, definitely add
+    #adding an MA will depend on install type and if already saw referenced key
+    if [ "$INSTALL_TYPE" == "FORCE" ]; then
+        #If we gave it the --force option, definitely add
+        ADD_LOCAL_MA=1
+    elif [ "$INSTALL_TYPE" == "NEW" ]; then
+        #If we are installing from RPM for first time, add if key not referenced
+        if [ ! -f "/etc/perfsonar/psconfig/archives.d/esmond_local.json" ]; then
             ADD_LOCAL_MA=1
-        elif [ "$INSTALL_TYPE" == "NEW" ]; then
-            #If we are installing from RPM for first time, add if key not referenced
-            if [ $KEY_GREP -ne 0 ]; then
-                ADD_LOCAL_MA=1
-            fi
         fi
     fi
-    
+
     #finally, drop-in MA if needed
-    if [ $ADD_LOCAL_MA -eq 1 ]; then
-        drop-in -n -t perfsonar-configure_esmond - /etc/perfsonar/meshconfig-agent-tasks.conf <<EOF
-<measurement_archive>
-    type   esmond/latency
-    database   https://localhost/esmond/perfsonar/archive/
-    password   $KEY
-</measurement_archive>
-
-<measurement_archive>
-    type   esmond/throughput
-    database   https://localhost/esmond/perfsonar/archive/
-    password   $KEY
-</measurement_archive>
-
-<measurement_archive>
-    type       esmond/traceroute
-    database   https://localhost/esmond/perfsonar/archive/
-    password   $KEY
-</measurement_archive>
+    if [ -d "/etc/perfsonar/psconfig/archives.d" ] && [ $ADD_LOCAL_MA -eq 1 ]; then
+        cat >/etc/perfsonar/psconfig/archives.d/esmond_local.json <<EOF
+{
+    "archiver" : "esmond",
+    "data" : {
+        "url" : "https://{% scheduled_by_address %}/esmond/perfsonar/archive/",
+        "measurement-agent" : "{% scheduled_by_address %}",
+        "_auth-token" : "${KEY}"
+    }
+}
 EOF
     fi
 fi
-#make sure after all the edits meshconfig still has proper permissions
-chown perfsonar:perfsonar /etc/perfsonar/meshconfig-agent-tasks.conf
-chmod 644 /etc/perfsonar/meshconfig-agent-tasks.conf
+#make sure after all the edits local ma file still has proper permissions
+chown perfsonar:perfsonar /etc/perfsonar/psconfig/archives.d/esmond_local.json
+chmod 644 /etc/perfsonar/psconfig/archives.d/esmond_local.json
 
 #Create archiver file for easy access
 mkdir -p /usr/share/pscheduler

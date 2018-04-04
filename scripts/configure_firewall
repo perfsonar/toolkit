@@ -170,31 +170,33 @@ addPortRuleFromFile(){
     file=$2
     local params=( `echo "$3"` )
     local defaults=( `echo "$4"` )
+    
+    if [ -f "$file" ]; then
+        total=${#params[*]}
+        for (( i=0; i<=$(( $total - 1 )); i++ ))
+        do
+            param_name="${params[$i]}"
+            param_default="${defaults[$i]}"
+            portrange=`awk -v search="^$param_name" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
 
-    total=${#params[*]}
-    for (( i=0; i<=$(( $total - 1 )); i++ ))
-    do
-        param_name="${params[$i]}"
-        param_default="${defaults[$i]}"
-        portrange=`awk -v search="^$param_name" '$0 !~ /^#/ && $0 ~ search {$1=""; print $0}' $file | sed s/-/:/g`
-
-        if [ -z "$portrange" ]; then
-            portrange=$param_default
-            echo "Unable to find definition for \"$param_name\" in \"$file\" for \"$iptables_cmd\", using default of \"$portrange\""
-        fi
-
-        if [ ! -z "$portrange" ]; then
-            if type firewall-cmd &>/dev/null; then
-                portrange=${portrange/:/-}
-                portrange=${portrange// /}
-                firewall-cmd --quiet --add-port=$portrange/udp
-                firewall-cmd --quiet --add-port=$portrange/tcp
-            else
-                $iptables_cmd -A $CHAIN -m udp -p udp --dport $portrange -j ACCEPT
-                $iptables_cmd -A $CHAIN -m state --state NEW -m tcp -p tcp --dport $portrange -j ACCEPT
+            if [ -z "$portrange" ]; then
+                portrange=$param_default
+                echo "Unable to find definition for \"$param_name\" in \"$file\" for \"$iptables_cmd\", using default of \"$portrange\""
             fi
-        fi
-    done
+
+            if [ ! -z "$portrange" ]; then
+                if type firewall-cmd &>/dev/null; then
+                    portrange=${portrange/:/-}
+                    portrange=${portrange// /}
+                    firewall-cmd --quiet --add-port=$portrange/udp
+                    firewall-cmd --quiet --add-port=$portrange/tcp
+                else
+                    $iptables_cmd -A $CHAIN -m udp -p udp --dport $portrange -j ACCEPT
+                    $iptables_cmd -A $CHAIN -m state --state NEW -m tcp -p tcp --dport $portrange -j ACCEPT
+                fi
+            fi
+        done
+    fi
 }
 
 deletePortRuleFromFile(){

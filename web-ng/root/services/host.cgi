@@ -120,13 +120,13 @@ my $all_communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 
 $router->add_method($all_communities_method);
 
-my $meshes_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            =>  "get_meshes",
-    description     =>  "Retrieves host mesh information",
-    callback        =>  sub { $host_info->get_meshes(@_); }
+my $templates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "get_templates",
+    description     =>  "Retrieves list of pSConfig templates in use",
+    callback        =>  sub { $host_info->get_templates(@_); }
     );
 
-$router->add_method($meshes_method);
+$router->add_method($templates_method);
 
 $router->handle_request();
 

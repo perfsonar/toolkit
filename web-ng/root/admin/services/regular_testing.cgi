@@ -30,7 +30,7 @@ if ( !$authenticated ) {
     exit;
 }
 
-my $config_file = '/etc/perfsonar/meshconfig-agent-tasks.conf';
+my $config_file = '/var/lib/perfsonar/toolkit/gui-tasks.conf';
 my $test_config_defaults_file = $basedir . '/etc/test_config_defaults.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 our %conf = $conf_obj->getall;

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service>
-  <short>OPPD</short>
-  <description>OPPD test service.</description>
-  <port protocol="tcp" port="8090"/> <!-- Incoming OPPD -->
-</service>

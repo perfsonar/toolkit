@@ -1,0 +1,4 @@
+#!/bin/bash
+
+psrpm_build_perl perfsonar-toolkit
+
