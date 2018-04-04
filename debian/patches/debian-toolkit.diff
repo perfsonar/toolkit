@@ -174,28 +174,6 @@
  
  use strict;
  use warnings;
---- toolkit.orig/init_scripts/perfsonar-psb_to_esmond	2018-01-08 10:29:15.000000000 +0000
-+++ toolkit/init_scripts/perfsonar-psb_to_esmond	2018-03-03 16:31:28.000000000 +0000
-@@ -1,10 +1,13 @@
- #!/bin/bash
--#
--# Init file for perfSONAR MA data conversion tool
--#
--# chkconfig: 2345 99 20
--# description: perfSONAR MA data conversion tool
--#
-+### BEGIN INIT INFO
-+# Provides:          perfsonar-psb_to_esmond
-+# Required-Start:    $local_fs $remote_fs $network apache2 cassandra
-+# Required-Stop:     $local_fs $remote_fs $network apache2 cassandra
-+# Default-Start:     2 3 4 5
-+# Default-Stop:      0 1 6
-+# Short-Description: perfSONAR MA data conversion tool
-+# Description:       Init file for perfSONAR MA data conversion tool
-+### END INIT INFO
- 
- PREFIX=/usr/lib/perfsonar
- BINDIR=${PREFIX}/scripts
 --- toolkit.orig/web-ng/root/gui/reverse_traceroute.cgi	2018-03-03 16:29:53.000000000 +0000
 +++ toolkit/web-ng/root/gui/reverse_traceroute.cgi	2018-03-03 16:31:28.000000000 +0000
 @@ -268,7 +268,7 @@
