@@ -471,8 +471,9 @@ systemctl restart pscheduler-scheduler &>/dev/null || :
 systemctl restart pscheduler-ticker &>/dev/null || :
 systemctl restart psconfig-pscheduler-agent &>/dev/null || :
 
-#Restart config_daemon and fix nic parameters
+#Restart config_daemon, generate MOTD and fix nic parameters
 systemctl restart %{init_script_1} &>/dev/null || :
+/etc/init.d/%{init_script_2} start &>/dev/null || :
 /etc/init.d/%{init_script_3} start &>/dev/null || :
 
 %post systemenv-testpoint
