@@ -133,11 +133,11 @@ if [ -n "$KEY" ]; then
     }
 }
 EOF
+        #make sure after all the edits local ma file still has proper permissions
+        chown perfsonar:perfsonar /etc/perfsonar/psconfig/archives.d/esmond_local.json
+        chmod 644 /etc/perfsonar/psconfig/archives.d/esmond_local.json
     fi
 fi
-#make sure after all the edits local ma file still has proper permissions
-chown perfsonar:perfsonar /etc/perfsonar/psconfig/archives.d/esmond_local.json
-chmod 644 /etc/perfsonar/psconfig/archives.d/esmond_local.json
 
 #Create archiver file for easy access
 mkdir -p /usr/share/pscheduler

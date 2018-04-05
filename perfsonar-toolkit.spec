@@ -95,6 +95,7 @@ Requires:       perfsonar-common
 Requires:       perfsonar-core
 Requires:       perfsonar-lscachedaemon
 Requires:       perfsonar-graphs
+Requires:       perfsonar-psconfig-publisher
 Requires:       perfsonar-traceroute-viewer
 Requires:       perfsonar-toolkit-compat-database
 Requires:       libperfsonar-esmond-perl
@@ -471,8 +472,9 @@ systemctl restart pscheduler-scheduler &>/dev/null || :
 systemctl restart pscheduler-ticker &>/dev/null || :
 systemctl restart psconfig-pscheduler-agent &>/dev/null || :
 
-#Restart config_daemon and fix nic parameters
+#Restart config_daemon, generate MOTD and fix nic parameters
 systemctl restart %{init_script_1} &>/dev/null || :
+/etc/init.d/%{init_script_2} start &>/dev/null || :
 /etc/init.d/%{init_script_3} start &>/dev/null || :
 
 %post systemenv-testpoint
@@ -586,12 +588,12 @@ fi
 %exclude %{config_base}/default_service_configs/pscheduler_limits.conf
 %exclude %{config_base}/perfsonar_ulimit.conf
 %exclude %{config_base}/perfsonar_ulimit_apache.conf
+%exclude %{config_base}/clean_esmond_db.conf
 %exclude /etc/httpd/conf.d/apache-perfsonar-security.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web-ng/*
 /etc/httpd/conf.d/*
 %attr(0640,root,root) /etc/sudoers.d/*
-%attr(0644,root,root) /etc/cron.d/%{crontab_3}
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/administrative_info/index.cgi
@@ -612,7 +614,6 @@ fi
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/%{cron_hourly_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
@@ -669,7 +670,10 @@ fi
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
 %files compat-database
+%config(noreplace) %{config_base}/clean_esmond_db.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_esmond 
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
+%attr(0644,root,root) /etc/cron.d/%{crontab_3}
 
 %changelog
 * Wed Apr 19 2017 andy@es.net

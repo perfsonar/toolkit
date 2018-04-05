@@ -92,7 +92,6 @@ foreach my $running ( @service_running_vals ) {
 
         my $services_info = $info->get_services();
 
-
         test_result($services_info, $expected_services, "Services info is as expected");
 
     }
@@ -168,13 +167,6 @@ sub get_expected_services {
                 'is_running' => $running,
                 'addresses' => [],
                 'version' => $version,
-                'name' => 'meshconfig-agent',
-                'enabled' => $enabled
-            },
-            {
-                'is_running' => $running,
-                'addresses' => [],
-                'version' => $version,
                 'name' => 'owamp',
                 'daemon_port' => 861,
                 'testing_ports' => [
@@ -191,6 +183,13 @@ sub get_expected_services {
                 'addresses' => $pscheduler_addresses,
                 'version' => $version,
                 'name' => 'pscheduler',
+                'enabled' => $enabled
+            },
+            {
+                'is_running' => $running,
+                'addresses' => [],
+                'version' => $version,
+                'name' => 'psconfig',
                 'enabled' => $enabled
             }
         ]
