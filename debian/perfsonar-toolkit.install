@@ -11,7 +11,6 @@ scripts/apache-toolkit_web_gui.conf etc/apache2/conf-available/
 scripts/add_psadmin_user usr/lib/perfsonar/scripts/
 scripts/add_pssudo_user usr/lib/perfsonar/scripts/
 scripts/clean_esmond_db.sh usr/lib/perfsonar/scripts/
-scripts/configure_cacti usr/lib/perfsonar/scripts/
 scripts/configure_apache_security usr/lib/perfsonar/scripts/
 scripts/cron-clean_esmond_db etc/cron.d/
 scripts/logscraper.cron usr/lib/perfsonar/scripts/
