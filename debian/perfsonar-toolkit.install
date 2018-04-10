@@ -7,7 +7,6 @@ etc/templates/motd.tmpl etc/perfsonar/toolkit/templates/
 etc/apache-perfsonar-security.conf etc/apache2/conf-available/
 init_scripts/perfsonar-configure_nic_parameters etc/init.d/
 init_scripts/perfsonar-generate_motd etc/init.d/
-init_scripts/perfsonar-psb_to_esmond etc/init.d/
 scripts/apache-toolkit_web_gui.conf etc/apache2/conf-available/
 scripts/add_psadmin_user usr/lib/perfsonar/scripts/
 scripts/add_pssudo_user usr/lib/perfsonar/scripts/
@@ -20,5 +19,4 @@ scripts/manage_users usr/lib/perfsonar/scripts/
 scripts/mod_interface_route usr/lib/perfsonar/scripts/
 scripts/ps-migrate-backup.sh usr/lib/perfsonar/scripts/
 scripts/ps-migrate-restore.sh usr/lib/perfsonar/scripts/
-scripts/psb_to_esmond.pl usr/lib/perfsonar/scripts/
 scripts/remove_home_partition usr/lib/perfsonar/scripts/
