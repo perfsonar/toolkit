@@ -1,6 +1,5 @@
 web-ng usr/lib/perfsonar
 etc/administrative_info etc/perfsonar/toolkit
-etc/clean_esmond_db.conf etc/perfsonar/toolkit
 etc/default_service_configs/jail.local etc/perfsonar/toolkit/default_service_configs/
 etc/perfsonar_sudo etc/sudoers.d
 etc/templates/motd.tmpl etc/perfsonar/toolkit/templates/
@@ -10,9 +9,7 @@ init_scripts/perfsonar-generate_motd etc/init.d/
 scripts/apache-toolkit_web_gui.conf etc/apache2/conf-available/
 scripts/add_psadmin_user usr/lib/perfsonar/scripts/
 scripts/add_pssudo_user usr/lib/perfsonar/scripts/
-scripts/clean_esmond_db.sh usr/lib/perfsonar/scripts/
 scripts/configure_apache_security usr/lib/perfsonar/scripts/
-scripts/cron-clean_esmond_db etc/cron.d/
 scripts/logscraper.cron usr/lib/perfsonar/scripts/
 scripts/manage_users usr/lib/perfsonar/scripts/
 scripts/mod_interface_route usr/lib/perfsonar/scripts/

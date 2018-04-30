@@ -81,9 +81,9 @@ Package: perfsonar-toolkit-systemenv
 Architecture: all
 Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
  perfsonar-toolkit-servicewatcher, perfsonar-toolkit-ntp,
- perfsonar-toolkit-library, drop-in, esmond (>= 2.1),
- perfsonar-psconfig-pscheduler, perfsonar-toolkit-systemenv-testpoint,
- perfsonar-toolkit-config-daemon, perfsonar-lsregistrationdaemon,
+ perfsonar-toolkit-library, perfsonar-psconfig-pscheduler,
+ perfsonar-toolkit-systemenv-testpoint, perfsonar-toolkit-config-daemon,
+ perfsonar-lsregistrationdaemon, perfsonar-toolkit-compat-database,
  ${misc:Depends}
 Description: perfSONAR Toolkit system tuning
  Tunes and configures the system according to performance
@@ -96,3 +96,11 @@ Depends: nscd, bwctl-server (>= 1.6.0), owamp-server (>= 3.5.0),
 Description: perfSONAR Testpoint system tuning
  Tunes and configures the system according to performance
  and security best practices.
+
+Package: perfsonar-toolkit-compat-database
+Architecture: all
+Depends: drop-in, esmond (>= 2.1), ${misc:Depends}
+Description: perfSONAR Database Migration
+ Provides necessary bridge to 4.0 that ensures old esmond data is migrated
+ prior to the initialization of the postgresql 9.5 data directory by
+ pScheduler.
