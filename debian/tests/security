@@ -3,7 +3,7 @@
 set -e
 
 for i in 1 2 3 4 5; do
-  if iptables -w 10 -nvL | grep -C 10 33434:33634; then
+  if iptables -wnvL | grep -C 10 33434:33634; then
     break
   fi
 
