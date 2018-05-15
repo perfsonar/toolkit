@@ -2,7 +2,7 @@
 
 This repository contains scripts and GUIs included with the Toolkit distribution of perfSONAR. A Toolkit includes a full operating system with a consistent environment in terms of default system tunings, firewalls, and software configurations. It also includes GUIs used to manage the Toolkit system and display measurement results. 
 
-##Getting the Code
+## Getting the Code
 You may checkout the code with the following command:
 
 ```
@@ -11,22 +11,48 @@ git clone --recursive https://github.com/perfsonar/toolkit.git
 
 Note the use of the `--recursive` option to ensure any submodule trees are included in the clone.
 
-##Building and Installing
+## Building and Installing
 
-To install the code on your system run:
+It is recommended you use the provided Vagrant VM to run the software. The Vagrant VM builds an environment with the needed dependencies to build, run and test the software. Changes you make in the directory on the host system will be reflected in the /vagrant directory of the VM. You can start the VM as follows:
 
 ```bash
-make install
+vagrant up
 ```
 
-##Packaging
+You can then login with:
+
+```bash
+vagrant ssh
+```
+
+As you make changes, you can deploy them as follows:
+
+```bash
+cd /vagrant
+sudo make install
+```
+
+## Packaging the Source
 You may create a source tarball of this code with the following:
 
 ```bash
 make dist
 ```
 
-##Using the *shared* Submodule
+## Building RPMs
+
+You can build the RPMs with the following commands:
+
+```bash
+cd rpms
+vagrant up
+vagrant ssh
+build
+```
+
+For more information on building and testing RPMs see shared/rpms/RPM_README.md.
+
+## Using the *shared* Submodule
 This repository contains a [git submodule](http://git-scm.com/book/en/v2/Git-Tools-Submodules) to the perfSONAR [shared](https://github.com/perfsonar/perl-shared) repository. This submodule is used to access common perfSONAR libraries. You will find a number of symbolic links to these modules under *lib*. The use of a submodule has a few implications when working with the code in this repository:
 
 * As previously noted, when you clone the repository for the first time, you will want to use the `--recursive` option to make sure the submodule tree is included. If you do not, any symbolic links under *lib* will be broken in your local copy. If you forget the `--recursive` option, you can pull the submodule tree with the following commands:
@@ -50,5 +76,7 @@ This repository contains a [git submodule](http://git-scm.com/book/en/v2/Git-Too
     cd lib/perfSONAR_PS/Utils/
     ln -s ../../../shared/lib/perfSONAR_PS/Utils/DNS.pm DNS.pm
     ```
-For more information on using the submodule, see the *shared/README.md* file or access it [here](https://github.com/perfsonar/perl-shared/blob/master/README.md) 
+For more information on using the submodule, see the *shared/README.md* file or access it [here](https://github.com/perfsonar/perl-shared/blob/master/README.md)
+
+
 
