@@ -133,11 +133,6 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
         status_more_values.push( {label: "perfSONAR version", value: toolkit_version} );
     }
 
-    var rpm_version = data.toolkit_rpm_version;
-    if (typeof rpm_version != "undefined") {
-        status_more_values.push( {label: "Toolkit package version", value: rpm_version} );
-    }
-
     data.status_values = status_values;
     data.status_more_values = status_more_values;
 
