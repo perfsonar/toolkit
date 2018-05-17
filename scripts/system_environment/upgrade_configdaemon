@@ -24,11 +24,17 @@ if [ $? -ne 0 ]; then
     UPDATE_CONFIG=1
 fi 
 
+#this has incorrect listener
+grep "localhost" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    UPDATE_CONFIG=1
+fi 
+
 if [ $UPDATE_CONFIG -eq 1 ]; then
 
 echo "Replacing /etc/perfsonar/toolkit/configdaemon.conf"
 cat > /etc/perfsonar/toolkit/configdaemon.conf <<- EOF
-address     localhost
+address     127.0.0.1
 port        9000
 firewall_script /usr/lib/perfsonar/scripts/system_environment/configure_firewall
 
