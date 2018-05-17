@@ -51,7 +51,6 @@ scripts/configure_sysctl
 scripts/cron-clean_esmond_db
 scripts/cron-service_watcher
 scripts/install-optional-packages.py
-scripts/logscraper.cron
 scripts/manage_users
 scripts/mod_interface_route
 scripts/nptoolkit-configure.py
@@ -74,8 +73,6 @@ scripts/system_environment/enable_ntp_restarts
 scripts/system_environment/migrate_admininfo
 scripts/system_environment/upgrade_lsregistration
 scripts/system_environment/upgrade_fix_permissions
-scripts/system_environment/testpoint/bwctl_port_verify
-scripts/system_environment/testpoint/configure_bwctld_log_location
 scripts/system_environment/testpoint/configure_owamp_testports
 scripts/system_environment/testpoint/configure_syslog_local5_location
 scripts/system_environment/testpoint/enable_auto_updates

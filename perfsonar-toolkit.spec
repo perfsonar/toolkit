@@ -14,9 +14,7 @@
 %define crontab_1     cron-service_watcher
 %define crontab_3     cron-clean_esmond_db
 
-%define cron_hourly_1 logscraper.cron
-
-%define relnum   0.0.a1 
+%define relnum   0.1.a1 
 
 Name:           perfsonar-toolkit
 Version:        4.1
@@ -140,8 +138,6 @@ Requires(post): perfsonar-psconfig-pscheduler
 Requires(post): perfsonar-common
 Requires(post): esmond          >= 2.1
 Requires(post): esmond-database-postgresql95
-Requires(post): bwctl-client    >= 1.6.0
-Requires(post): bwctl-server    >= 1.6.0
 Requires(post): owamp-client    >= 3.5.0
 Requires(post): owamp-server    >= 3.5.0
 Requires(post): coreutils
@@ -160,7 +156,6 @@ Group:          Development/Tools
 Requires:       perfsonar-psconfig-pscheduler
 Requires:       nscd
 Requires:       yum-cron
-Requires(post): bwctl-server    >= 1.6.0
 Requires(post): owamp-server    >= 3.5.0
 Requires(post): chkconfig
 Requires(post): rsyslog
@@ -395,14 +390,6 @@ chmod 0640 /etc/perfsonar/toolkit/psadmin.htpasswd
 mkdir -p /var/log/perfsonar/web_admin
 chown apache:perfsonar /var/log/perfsonar/web_admin
 
-mkdir -p /var/lib/perfsonar/db_backups/bwctl
-chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/bwctl
-mkdir -p /var/lib/perfsonar/db_backups/owamp
-chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/owamp
-mkdir -p /var/lib/perfsonar/db_backups/traceroute
-chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/traceroute
-
-mkdir -p /var/lib/perfsonar/log_view/bwctl
 mkdir -p /var/lib/perfsonar/log_view/ndt    
 mkdir -p /var/lib/perfsonar/log_view/owamp
 
@@ -445,8 +432,6 @@ ln -sT /usr/lib/perfsonar/web-ng/etc /etc/perfsonar/toolkit/web 2> /dev/null
 # so we'll put that in the "maybe" category.
 chmod o+r /etc/perfsonar/lsregistrationdaemon.conf
 chmod o+r %{config_base}/ntp_known_servers
-chmod o+r /etc/bwctl-server/bwctl-server.limits 2> /dev/null
-chmod o+r /etc/bwctl-server/bwctl-server.keys 2> /dev/null
 chmod o+r /etc/owamp-server/owamp-server.limits 2> /dev/null
 chmod o+r /etc/owamp-server/owamp-server.pfs 2> /dev/null
 chkconfig --add %{init_script_2}
@@ -614,7 +599,6 @@ fi
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/%{cron_hourly_1}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
