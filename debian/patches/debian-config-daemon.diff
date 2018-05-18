@@ -1,5 +1,5 @@
---- toolkit.orig/bin/config_daemon.pl	2018-04-04 11:05:32.000000000 +0000
-+++ toolkit/bin/config_daemon.pl	2018-04-04 11:05:51.000000000 +0000
+--- toolkit.orig/bin/config_daemon.pl	2018-05-15 16:25:29.000000000 +0000
++++ toolkit/bin/config_daemon.pl	2018-05-18 11:03:08.000000000 +0000
 @@ -29,7 +29,7 @@
  use Log::Log4perl qw/:easy/;
  
@@ -18,10 +18,10 @@
  }
  
  ( $status, $res ) = lockPIDFile( $PIDFILE );
---- toolkit.orig/etc/configdaemon.conf	2018-04-04 11:05:51.000000000 +0000
-+++ toolkit/etc/configdaemon.conf	2018-04-04 11:07:21.000000000 +0000
+--- toolkit.orig/etc/configdaemon.conf	2018-05-18 11:03:03.000000000 +0000
++++ toolkit/etc/configdaemon.conf	2018-05-18 11:03:08.000000000 +0000
 @@ -1,6 +1,6 @@
- address     localhost
+ address     127.0.0.1
  port        9000
 -firewall_script /usr/lib/perfsonar/scripts/system_environment/configure_firewall
 +firewall_script /usr/lib/perfsonar/scripts/configure_firewall

@@ -1,5 +1,5 @@
---- toolkit.orig/scripts/system_environment/configure_esmond	2018-04-04 11:05:25.000000000 +0000
-+++ toolkit/scripts/system_environment/configure_esmond	2018-04-04 11:12:00.000000000 +0000
+--- toolkit.orig/scripts/system_environment/configure_esmond	2018-05-18 11:03:18.000000000 +0000
++++ toolkit/scripts/system_environment/configure_esmond	2018-05-18 11:03:34.000000000 +0000
 @@ -1,8 +1,4 @@
  #!/bin/bash
 -PG_VERSION=9.5
@@ -110,8 +110,8 @@
  
  #setup localhost measurement archive
  if [ -n "$KEY" ]; then
---- toolkit.orig/scripts/system_environment/configure_fail2ban	2018-03-05 08:24:26.000000000 +0000
-+++ toolkit/scripts/system_environment/configure_fail2ban	2018-04-04 11:12:00.000000000 +0000
+--- toolkit.orig/scripts/system_environment/configure_fail2ban	2018-05-18 11:03:18.000000000 +0000
++++ toolkit/scripts/system_environment/configure_fail2ban	2018-05-18 11:03:34.000000000 +0000
 @@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
@@ -119,17 +119,17 @@
 -    /sbin/service fail2ban restart
 +    service fail2ban restart
  fi
---- toolkit.orig/scripts/system_environment/upgrade_configdaemon	2018-04-04 11:05:25.000000000 +0000
-+++ toolkit/scripts/system_environment/upgrade_configdaemon	2018-04-04 11:12:00.000000000 +0000
-@@ -92,5 +92,5 @@
+--- toolkit.orig/scripts/system_environment/upgrade_configdaemon	2018-05-18 11:03:18.000000000 +0000
++++ toolkit/scripts/system_environment/upgrade_configdaemon	2018-05-18 11:03:34.000000000 +0000
+@@ -87,5 +87,5 @@
  EOF
  
  #centos 7 should not need this
 -/sbin/service perfsonar-configdaemon restart
 +service perfsonar-configdaemon restart
  fi
---- toolkit.orig/scripts/system_environment/upgrade_fix_permissions	2018-03-05 08:24:26.000000000 +0000
-+++ toolkit/scripts/system_environment/upgrade_fix_permissions	2018-04-04 11:12:00.000000000 +0000
+--- toolkit.orig/scripts/system_environment/upgrade_fix_permissions	2018-05-18 11:03:18.000000000 +0000
++++ toolkit/scripts/system_environment/upgrade_fix_permissions	2018-05-18 11:03:34.000000000 +0000
 @@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
@@ -153,8 +153,8 @@
  #Try cacti data, but don't complain if it's not there
 -chown -R apache /var/lib/cacti/rra 2> /dev/null
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
---- toolkit.orig/scripts/configure_apache_security	2018-03-05 08:24:26.000000000 +0000
-+++ toolkit/scripts/configure_apache_security	2018-04-04 11:12:00.000000000 +0000
+--- toolkit.orig/scripts/configure_apache_security	2018-05-18 11:03:18.000000000 +0000
++++ toolkit/scripts/configure_apache_security	2018-05-18 11:03:34.000000000 +0000
 @@ -5,14 +5,29 @@
  # 'upgrade' or 'new install' context.
  #######################
@@ -191,16 +191,12 @@
 +       sed -i 's/DocumentRoot \/var\/www\(\/html\)\?$/DocumentRoot \/var\/www\/perfsonar/' $CONF
 +    fi
 +done
---- toolkit.orig/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-03-05 18:33:01.000000000 +0000
-+++ toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-04-04 11:12:00.000000000 +0000
-@@ -8,18 +8,13 @@
- # Set 'local5' output location to /var/log/perfsonar/owamp_bwctl.log
- grep ^local5 /etc/rsyslog.d/owamp_bwctl-syslog.conf &> /dev/null
- if [ $? != 0 ]; then
--cat >> /etc/rsyslog.d/owamp_bwctl-syslog.conf <<EOF                                          
-+cat >> /etc/rsyslog.d/owamp_bwctl-syslog.conf <<EOF
- # Save bwctl and owamp messages to /var/log/perfsonar/owamp_bwctl.log
- local5.*                                                -/var/log/perfsonar/owamp_bwctl.log
+--- toolkit.orig/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-05-18 11:03:18.000000000 +0000
++++ toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-05-18 11:07:29.000000000 +0000
+@@ -17,15 +17,10 @@
+ cat >> /etc/rsyslog.d/owamp-syslog.conf <<EOF                                          
+ # Save bwctl and owamp messages to /var/log/perfsonar/owamp.log
+ local5.*                                                -/var/log/perfsonar/owamp.log
 +& stop
  EOF
  fi
@@ -212,10 +208,10 @@
 -mv /etc/rsyslog.conf.tmp /etc/rsyslog.conf
 -
  # Make sure that the owamp/bwctl log file gets rotated regularly
- grep owamp_bwctl.log /etc/logrotate.d/perfsonar-toolkit &> /dev/null
+ grep owamp.log /etc/logrotate.d/perfsonar-toolkit &> /dev/null
  if [ $? != 0 ]; then
-@@ -27,8 +22,7 @@
- /var/log/perfsonar/owamp_bwctl.log {
+@@ -33,8 +28,7 @@
+ /var/log/perfsonar/owamp.log {
      sharedscripts
      postrotate
 -        /bin/kill -HUP \`cat /var/run/syslogd.pid 2> /dev/null\` 2> /dev/null || true
