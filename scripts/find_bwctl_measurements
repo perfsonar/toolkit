@@ -1,0 +1,153 @@
+#!/usr/bin/perl
+
+=head1 NAME
+ 
+find_bwctl_measurements - Finds measurements using pScheduler BWCTL plug-ins stored in an esmond measurement archive. 
+ 
+=head1 SYNOPSIS
+ 
+agents [options]
+ 
+ Options:
+   -h | --help              Help message
+   -u | --url URL           URL of the esmond measurement archive to contact (Default: http://localhost/esmond/perfsonar/archive/)
+   --timerange SECS         The time range of data to look at in seconds. (Default: 86400)
+   --tools TOOLS            A comma-separated list of tools to request from the archive (Default: pscheduler/bwctliperf3,pscheduler/bwctliperf2,pscheduler/bwctlping,pscheduler/bwctltraceroute,pscheduler/bwctltracepath)
+   --timeout SECONDS        The number of seconds to wait for the archive to return query results. (Default: 30)
+   -v | --verbose           Add more output to aid in debugging
+=head1 OPTIONS
+ 
+=over 8
+ 
+=item B<-h | --help>
+ 
+Prints a help message and exits
+
+=item B<-u | --url URL>
+ 
+URL of the esmond measurement archive to contact (Default: http://localhost/esmond/perfsonar/archive/)
+
+=item B<--timerange SECS>
+ 
+The time range of data to look at in seconds. (Default: 86400)
+
+=item B<--tools TOOLS>
+ 
+A comma-separated list of tools to request from the archive (Default: pscheduler/bwctliperf3,pscheduler/bwctliperf2,pscheduler/bwctlping,pscheduler/bwctltraceroute,pscheduler/bwctltracepath)
+
+=item B<--timeout SECONDS>
+ 
+The number of seconds to wait for the archive to return query results. (Default: 30)
+
+=item B<-v | --verbose URL>
+ 
+Add more output to aid in debugging
+
+
+=head1 DESCRIPTION
+ 
+B<This program> finds measurements using pScheduler BWCTL plug-ins stored in an esmond measurement archive. This is primarily useful for determining impact of disabling deprecated BWCTL tools.
+ 
+=cut
+
+use strict;
+use warnings;
+
+use FindBin qw($RealBin);
+use lib "$RealBin/../lib";
+
+use Getopt::Long qw(GetOptions);
+use Pod::Usage;
+
+use perfSONAR_PS::Client::Esmond::ApiConnect;
+use perfSONAR_PS::Client::Esmond::ApiFilters;
+
+
+#command line options
+my $help;
+my $ma_url;
+my $time_range;
+my $timeout;
+my $tools_opt;
+my $verbose_opt;
+GetOptions(
+    'help|h' => \$help,
+    'url|u=s' => \$ma_url,
+    'timerange=i' => \$time_range,
+    'timeout=i' => \$timeout,
+    'tools=s' => \$tools_opt,
+    'verbose|v' => \$verbose_opt,
+) or pod2usage({ -verbose => 0, -exitval => 2 });
+
+
+#parse arguments
+if($help){
+    pod2usage({ -exitval => 0, -verbose => 2, -noperldoc => 1});
+}elsif(@ARGV > 0){
+    my $exitval = 2;
+    pod2usage({
+        -message => "No arguments accepted by this command",
+        -exitval => $exitval,
+        -verbose => 0   
+    });
+    exit $exitval;
+}
+#defaults
+$ma_url = "http://localhost/esmond/perfsonar/archive/" unless($ma_url);
+$time_range = 86400 unless($time_range);
+$timeout = 30 unless($timeout);
+my @tool_names = (
+    'pscheduler/bwctliperf3',
+    'pscheduler/bwctliperf2', 
+    'pscheduler/bwctlping',
+    'pscheduler/bwctltraceroute', 
+    'pscheduler/bwctltracepath'
+);
+if($tools_opt){
+    @tool_names = split ',', $tools_opt;
+}
+
+#print
+print "Looking for BWCTL tests in the past " . ($time_range == 86400 ? '24 hours' : "$time_range seconds" ) . " on $ma_url...\n\n";
+my $bwctl_count = 0;
+foreach my $tool_name(@tool_names){
+    chomp $tool_name;
+    if($tool_name !~ /^pscheduler\/bwctl/){
+        print "Skipping $tool_name because it does not start with pscheduler/bwctl and is not a BWCTL plug-in\n\n";
+        next;
+    }
+    $bwctl_count += print_metadata_by_tool($ma_url, $tool_name, $time_range, $timeout);
+}
+print "Total BWCTL tests found: $bwctl_count\n";
+
+#subroutine
+sub print_metadata_by_tool {
+    my ($ma_url, $tool_name, $time_range, $timeout) = @_;
+    
+    #define filters
+    my $filters = new perfSONAR_PS::Client::Esmond::ApiFilters(timeout => $timeout);
+    $filters->tool_name($tool_name) if($tool_name);
+    $filters->time_range($time_range) if($time_range);
+    
+    #define client
+    my $client = new perfSONAR_PS::Client::Esmond::ApiConnect(
+        url => $ma_url,
+        filters => $filters
+    );
+
+    #get results
+    print "[DEBUG] Contacting URL $ma_url?time-range=$time_range&tool-name=$tool_name\n" if($verbose_opt);
+    my $md = $client->get_metadata();
+    print "[DEBUG] Response received from $ma_url?time-range=$time_range&tool-name=$tool_name\n" if($verbose_opt);
+    if($client->error){
+        print STDERR "Unable to retrieve measurements for $tool_name at $ma_url: " . $client->error . "\n";
+        return 0;
+    }
+    print "$tool_name: \n";
+    foreach my $m(@{$md}){
+        print "    " . $m->source() . ' -> ' . $m->destination() . "\n";
+    }
+    print "   Subtotal: " . scalar(@{$md}) . "\n\n";
+    
+    return scalar(@{$md});
+}
