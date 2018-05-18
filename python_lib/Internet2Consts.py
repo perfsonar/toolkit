@@ -46,12 +46,6 @@ NTP_CONF = "/etc/ntp.conf"
 NTP_KNOWN_SERVERS = "/usr/local/etc/ntp.static.servers"
 NTP_CUSTOM_SERVERS = "/usr/local/etc/ntp.custom.servers"
 
-# BWCTL Config files
-BWCTL_ROOT   = "/etc/bwctl-server"
-BWCTL_CONF   = BWCTL_ROOT + "bwctl-server.conf"
-BWCTL_LIMITS = BWCTL_ROOT + "bwctl-server.limits"
-BWCTL_KEYS   = BWCTL_ROOT + "bwctl-server.keys"
-
 # OWAMP Config files
 OWAMP_ROOT   = "/etc/owamp-server"
 OWAMP_CONF   = OWAMP_ROOT + "owamp-server.conf"
@@ -66,12 +60,10 @@ SAVECONFIG   = BIN_DIR + "save_config"
 # They should be removed by the support scripts - not the main script!
 ENABLEDISABLE_MARKER  = MARKER_DIR + "customize.services"
 PASS_MARKER  = MARKER_DIR + "set.pass"
-BWCTL_MARKER = MARKER_DIR + "customize.bwctl"
 OWAMP_MARKER = MARKER_DIR + "customize.owamp"
 NTP_MARKER   = MARKER_DIR + "customize.ntp"
 TZ_MARKER    = MARKER_DIR + "customize.timezone"
 
 SSH_INIT_SCRIPT            = "/etc/init.d/ssh"
 APACHE_INIT_SCRIPT         = "/etc/init.d/httpf"
-BWCTL_INIT_SCRIPT          = "/etc/init.d/bwctl-server"
 OWAMP_INIT_SCRIPT          = "/etc/init.d/owamp-server"

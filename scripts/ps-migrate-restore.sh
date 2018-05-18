@@ -112,16 +112,6 @@ fi
 printf "[SUCCESS]"
 echo ""
 
-#get bwctl files
-printf "Restoring bwctl-server configuration..."
-cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/bwctl-server/*  /etc/bwctl-server
-if [ "$?" != "0" ]; then
-    echo "Unable to restore /etc/bwctl-server"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
-
 #get owamp files
 printf "Restoring owamp-server configuration..."
 cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/owamp-server/* /etc/owamp-server

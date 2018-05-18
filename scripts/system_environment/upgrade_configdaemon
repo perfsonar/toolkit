@@ -12,12 +12,6 @@ fi
 #Handle updating configs here
 UPDATE_CONFIG=0
 
-#this is pre-4.0
-grep "bwctl-server.conf" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-    UPDATE_CONFIG=1
-fi 
-
 #this is 4.0
 grep "meshconfig-agent-tasks.conf" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
 if [ $? -eq 0 ]; then
@@ -30,11 +24,17 @@ if [ $? -ne 0 ]; then
     UPDATE_CONFIG=1
 fi 
 
+#this has incorrect listener
+grep "localhost" /etc/perfsonar/toolkit/configdaemon.conf > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    UPDATE_CONFIG=1
+fi 
+
 if [ $UPDATE_CONFIG -eq 1 ]; then
 
 echo "Replacing /etc/perfsonar/toolkit/configdaemon.conf"
 cat > /etc/perfsonar/toolkit/configdaemon.conf <<- EOF
-address     localhost
+address     127.0.0.1
 port        9000
 firewall_script /usr/lib/perfsonar/scripts/system_environment/configure_firewall
 
@@ -45,11 +45,6 @@ firewall_script /usr/lib/perfsonar/scripts/system_environment/configure_firewall
         stop        1
     </service>
     <service owamp>
-        restart     1
-        start       1
-        stop        1
-    </service>
-    <service bwctl>
         restart     1
         start       1
         stop        1

@@ -88,16 +88,6 @@ fi
 printf "[SUCCESS]"
 echo ""
 
-#get bwctl files
-printf "Backing-up bwctl-server configuration..."
-cp -a /etc/bwctl-server $TEMP_BAK_DIR/etc
-if [ "$?" != "0" ]; then
-    echo "Unable to copy /etc/bwctl-server"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
-
 #get owamp files
 printf "Backing-up owamp-server configuration..."
 cp -a /etc/owamp-server $TEMP_BAK_DIR/etc

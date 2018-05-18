@@ -24,7 +24,6 @@ use perfSONAR_PS::Utils::DNS qw( reverse_dns resolve_address reverse_dns_multi r
 use perfSONAR_PS::Utils::Host qw( get_ethernet_interfaces get_interface_addresses discover_primary_address );
 use perfSONAR_PS::Client::gLS::Keywords;
 use perfSONAR_PS::NPToolkit::Config::AdministrativeInfo;
-use perfSONAR_PS::NPToolkit::Config::BWCTL;
 use perfSONAR_PS::NPToolkit::Config::RegularTesting;
 use perfSONAR_PS::Common qw(find findvalue extract genuid);
 use perfSONAR_PS::Web::Sidebar qw(set_sidebar_vars);
@@ -75,10 +74,9 @@ else {
 
 die( "Couldn't instantiate session: " . CGI::Session->errstr() ) unless ( $session );
 
-our ( $testing_conf, $bwctl_conf, $lookup_info, $status_msg, $error_msg, $current_test, $dns_cache, $is_modified, $initial_state_time );
+our ( $testing_conf, $lookup_info, $status_msg, $error_msg, $current_test, $dns_cache, $is_modified, $initial_state_time );
 if ( $session and not $session->is_expired and $session->param( "testing_conf" ) ) {
     $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new( { saved_state => $session->param( "testing_conf" ) } );
-    $bwctl_conf   = perfSONAR_PS::NPToolkit::Config::BWCTL->new( { saved_state => $session->param( "bwctl_conf" ) } );
     $lookup_info  = thaw( $session->param( "lookup_info" ) );
     $dns_cache    = thaw( $session->param( "dns_cache" ) );
     $current_test = $session->param( "current_test" );
@@ -158,15 +156,6 @@ sub save_config {
     my ( $status, $res ) = $testing_conf->save( { restart_services => 1 } );
     if ($status != 0) {
         $error_msg = "Problem saving configuration: $res";
-    } else {
-        ( $status, $res ) = $bwctl_conf->save( { restart_services => 1, config_firewall => 1 } );
-        if ($status != 0) {
-            $error_msg = "Problem saving configuration: $res";
-        } else {
-            $status_msg = "Configuration Saved And Services Restarted";
-            $is_modified = 0;
-            $initial_state_time = $testing_conf->last_modified();
-        }
     }
 
     save_state();
@@ -195,12 +184,6 @@ sub reset_state {
     $lookup_info = undef;
     $dns_cache   = {};
 
-    $bwctl_conf = perfSONAR_PS::NPToolkit::Config::BWCTL->new();
-    ( $status, $res ) = $bwctl_conf->init( { bwctld_limits => $conf{bwctld_limits}, bwctld_conf => $conf{bwctld_conf}, bwctld_keys => $conf{bwctld_keys} } );
-    if ( $status != 0 ) {
-        return ( $status, "Problem reading testing configuration: $res" );
-    }
-
     $testing_conf = perfSONAR_PS::NPToolkit::Config::RegularTesting->new();
     ( $status, $res ) = $testing_conf->init( { regular_testing_config_file => $conf{regular_testing_config_file} } );
     if ( $status != 0 ) {
@@ -213,7 +196,6 @@ sub reset_state {
 
 sub save_state {
     $session->param( "testing_conf", $testing_conf->save_state() );
-    $session->param( "bwctl_conf", $bwctl_conf->save_state() );
     $session->param( "lookup_info",  freeze( $lookup_info ) ) if ( $lookup_info );
     $session->param( "dns_cache",    freeze( $dns_cache ) );
     $session->param( "current_test", $current_test );
@@ -362,7 +344,6 @@ sub fill_variables_status {
     my $psb_owamp_tests      = 0;
     my $network_usage        = 0;
     my $owamp_port_usage     = 0;
-    my $bwctl_port_usage     = 0;
     my $traceroute_tests     = 0;
     
     if ( $status == 0 ) {
@@ -399,11 +380,9 @@ sub fill_variables_status {
                 my $num_tests = 0;
                 foreach my $member ( @{ $test->{members} } ) {
                     if ( $member->{sender} ) {
-                        $bwctl_port_usage += 2;
                         $num_tests++;
                     }
                     if ( $member->{receiver} ) {
-                        $bwctl_port_usage += 2;
                         $num_tests++;
                     }
                 }
@@ -414,30 +393,6 @@ sub fill_variables_status {
                 $network_usage += ( $num_tests * $test_duration ) / $test_interval if ($test_interval > 0);
             }
         }
-    }
-
-    # "merge" the two bwctl port ranges
-    my %bwctl_ports = ();
-    my $bwctl_port_range;
-
-    ($status, $res) = $bwctl_conf->get_port_range({ port_type => "peer" });
-    if ($status == 0) {
-        if ($res->{min_port} and $res->{max_port}) {
-            $bwctl_ports{min_port} = $res->{min_port};
-            $bwctl_ports{max_port} = $res->{max_port};
-        }
-    }
-
-    ($status, $res) = $bwctl_conf->get_port_range({ port_type => "iperf" });
-    if ($status == 0) {
-        if ($res->{min_port} and $res->{max_port}) {
-            $bwctl_ports{min_port} = ($bwctl_ports{min_port} and $bwctl_ports{min_port} < $res->{min_port})?$bwctl_ports{min_port}:$res->{min_port};
-            $bwctl_ports{max_port} = ($bwctl_ports{max_port} and $bwctl_ports{max_port} > $res->{max_port})?$bwctl_ports{max_port}:$res->{max_port};
-        }
-    }
-
-    if (defined $bwctl_ports{min_port} and defined $bwctl_ports{max_port}) {
-        $bwctl_port_range = $bwctl_ports{max_port} - $bwctl_ports{min_port} + 1;
     }
 
     my %owamp_ports = ();
@@ -456,9 +411,6 @@ sub fill_variables_status {
     }
 
     $vars->{network_percent_used}    = sprintf "%.1d", $network_usage * 100;
-    $vars->{bwctl_ports}             = \%bwctl_ports;
-    $vars->{bwctl_port_range}        = $bwctl_port_range;
-    $vars->{bwctl_port_usage}        = $bwctl_port_usage;
     $vars->{hosts_file_matches_dns} = $hosts_file_matches_dns;
     $vars->{owamp_ports}             = \%owamp_ports;
     $vars->{owamp_port_range}        = $owamp_port_range;

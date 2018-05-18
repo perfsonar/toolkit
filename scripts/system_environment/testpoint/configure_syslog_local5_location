@@ -1,16 +1,22 @@
 #!/bin/bash
 #######################
 # Configure's the 'local5' output location to go to
-# /var/log/perfsonar/owamp_bwctl.log so that the owamp and bwctl log output
+# /var/log/perfsonar/owamp.log so that the owamp and bwctl log output
 # goes to a specific file.
 #######################
 
-# Set 'local5' output location to /var/log/perfsonar/owamp_bwctl.log
-grep ^local5 /etc/rsyslog.d/owamp_bwctl-syslog.conf &> /dev/null
+# Rename if using pre-4.1 log
+rm -f /etc/rsyslog.d/owamp_bwctl-syslog.conf
+if [ -f /var/log/perfsonar/owamp.log ]; then
+    mv /var/log/perfsonar/owamp.log /var/log/perfsonar/owamp.log.old  
+fi
+
+# Set 'local5' output location to /var/log/perfsonar/owamp.log
+grep ^local5 /etc/rsyslog.d/owamp-syslog.conf &> /dev/null
 if [ $? != 0 ]; then
-cat >> /etc/rsyslog.d/owamp_bwctl-syslog.conf <<EOF                                          
-# Save bwctl and owamp messages to /var/log/perfsonar/owamp_bwctl.log
-local5.*                                                -/var/log/perfsonar/owamp_bwctl.log
+cat >> /etc/rsyslog.d/owamp-syslog.conf <<EOF                                          
+# Save bwctl and owamp messages to /var/log/perfsonar/owamp.log
+local5.*                                                -/var/log/perfsonar/owamp.log
 EOF
 fi
 
@@ -21,10 +27,10 @@ sed -i 's/--*\/var\/log\/messages/-\/var\/log\/messages/g' /etc/rsyslog.conf.tmp
 mv /etc/rsyslog.conf.tmp /etc/rsyslog.conf
 
 # Make sure that the owamp/bwctl log file gets rotated regularly
-grep owamp_bwctl.log /etc/logrotate.d/perfsonar-toolkit &> /dev/null
+grep owamp.log /etc/logrotate.d/perfsonar-toolkit &> /dev/null
 if [ $? != 0 ]; then
 cat >>/etc/logrotate.d/perfsonar-toolkit <<EOF
-/var/log/perfsonar/owamp_bwctl.log {
+/var/log/perfsonar/owamp.log {
     sharedscripts
     postrotate
         /bin/kill -HUP \`cat /var/run/syslogd.pid 2> /dev/null\` 2> /dev/null || true
@@ -35,12 +41,12 @@ EOF
 fi
 
 # Cleanup previous implementation of log rotate
-grep owamp_bwctl.log /etc/logrotate.d/syslog &> /dev/null
+grep owamp.log /etc/logrotate.d/syslog &> /dev/null
 if [ $? == 0 ]; then
-  sed -i '/owamp_bwctl.log {$/,/^}$/d' /etc/logrotate.d/syslog
+  sed -i '/owamp.log {$/,/^}$/d' /etc/logrotate.d/syslog
 fi
 
 # The log file needs to be created initially so that the log file isn't the
 # default of root:root and only readable by root.
-touch /var/log/perfsonar/owamp_bwctl.log
-chown perfsonar:perfsonar /var/log/perfsonar/owamp_bwctl.log
+touch /var/log/perfsonar/owamp.log
+chown perfsonar:perfsonar /var/log/perfsonar/owamp.log
