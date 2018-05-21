@@ -10,7 +10,6 @@ scripts/apache-toolkit_web_gui.conf etc/apache2/conf-available/
 scripts/add_psadmin_user usr/lib/perfsonar/scripts/
 scripts/add_pssudo_user usr/lib/perfsonar/scripts/
 scripts/configure_apache_security usr/lib/perfsonar/scripts/
-scripts/logscraper.cron usr/lib/perfsonar/scripts/
 scripts/manage_users usr/lib/perfsonar/scripts/
 scripts/mod_interface_route usr/lib/perfsonar/scripts/
 scripts/ps-migrate-backup.sh usr/lib/perfsonar/scripts/
