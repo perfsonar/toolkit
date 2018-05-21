@@ -1,5 +1,5 @@
---- toolkit.orig/t/host-get_services.t	2018-05-21 12:12:33.392134874 +0200
-+++ toolkit/t/host-get_services.t	2018-05-21 12:12:44.736184806 +0200
+--- toolkit.orig/t/host-get_services.t	2018-05-21 12:43:55.856410235 +0200
++++ toolkit/t/host-get_services.t	2018-05-21 12:47:19.089307606 +0200
 @@ -26,9 +26,6 @@
  my $conf_obj = Config::General->new( -ConfigFile => $config_file );
  my %conf = $conf_obj->getall;
@@ -20,12 +20,45 @@
  $params->{'owamp_config'} = $owamp_config;
  $params->{'owamp_limits'} = $owamp_limits;
  
-@@ -119,7 +113,7 @@
+@@ -117,41 +111,6 @@
+         'services' => [
+             {
                  'is_running' => $running,
-                 'addresses' => [],
-                 'version' => $version,
+-                'addresses' => [],
+-                'version' => $version,
 -                'name' => 'bwctl',
-+                'name' => 'pscheduler',
-                 'daemon_port' => 4823,
-                 'testing_ports' => [
-                     {
+-                'daemon_port' => 4823,
+-                'testing_ports' => [
+-                    {
+-                        'min_port' => '6001',
+-                        'type' => 'peer',
+-                        'max_port' => '6200'
+-                    },
+-                    {
+-                        'min_port' => '5001',
+-                        'type' => 'iperf',
+-                        'max_port' => '5302'
+-                    },
+-                    {
+-                        'min_port' => '5301',
+-                        'type' => 'nuttcp',
+-                        'max_port' => '5602'
+-                    },
+-                    {
+-                        'min_port' => '5601',
+-                        'type' => 'owamp',
+-                        'max_port' => '5902'
+-                    },
+-                    {
+-                        'min_port' => '7001',
+-                        'type' => 'test',
+-                        'max_port' => '7900'
+-                    }
+-                ],
+-                'enabled' => $enabled
+-            },
+-            {
+-                'is_running' => $running,
+                 'addresses' => $esmond_addresses,
+                 'version' => $version,
+                 'name' => 'esmond',
