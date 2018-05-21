@@ -1,0 +1,31 @@
+--- toolkit.orig/t/host-get_services.t	2018-05-21 12:12:33.392134874 +0200
++++ toolkit/t/host-get_services.t	2018-05-21 12:12:44.736184806 +0200
+@@ -26,9 +26,6 @@
+ my $conf_obj = Config::General->new( -ConfigFile => $config_file );
+ my %conf = $conf_obj->getall;
+ 
+-my $bwctl_config = 't/etc/bwctl-server.conf';
+-my $bwctl_limits = 't/etc/bwctl-server.limits';
+-
+ my $owamp_config = 't/etc/owamp-server.conf';
+ my $owamp_limits = 't/etc/owamp-server.limits';
+ 
+@@ -38,9 +35,6 @@
+ $params->{'load_ls_registration'} = 1;
+ $params->{'ls_config_file'} = $ls_file;
+ 
+-$params->{'bwctl_config'} = $bwctl_config;
+-$params->{'bwctl_limits'} = $bwctl_limits;
+-
+ $params->{'owamp_config'} = $owamp_config;
+ $params->{'owamp_limits'} = $owamp_limits;
+ 
+@@ -119,7 +113,7 @@
+                 'is_running' => $running,
+                 'addresses' => [],
+                 'version' => $version,
+-                'name' => 'bwctl',
++                'name' => 'pscheduler',
+                 'daemon_port' => 4823,
+                 'testing_ports' => [
+                     {
