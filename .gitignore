@@ -9,3 +9,4 @@ debian/patches/*~
 # Ignore unit test output
 tap_output/
 cover_db/
+node_modules
