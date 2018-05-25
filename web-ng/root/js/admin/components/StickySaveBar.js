@@ -97,6 +97,10 @@ StickySaveBar.showValidationError = function( ) {
     StickySaveBar.showError( message );
 };
 
+StickySaveBar.showCustomValidationError = function( message ) {
+    StickySaveBar.showError( message );
+};
+
 StickySaveBar.showError = function( message ) {
     StickySaveBar._enableButtons();
     $("#admin_info_save_button").prop("value", "Save");
