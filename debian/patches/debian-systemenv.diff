@@ -1,7 +1,5 @@
-Index: toolkit/scripts/system_environment/configure_esmond
-===================================================================
---- toolkit.orig/scripts/system_environment/configure_esmond	2018-03-03 17:57:55.000000000 +0000
-+++ toolkit/scripts/system_environment/configure_esmond	2018-03-04 22:12:12.000000000 +0000
+--- toolkit.orig/scripts/system_environment/configure_esmond	2018-05-25 16:34:31.000000000 +0000
++++ toolkit/scripts/system_environment/configure_esmond	2018-05-25 16:37:43.000000000 +0000
 @@ -1,8 +1,4 @@
  #!/bin/bash
 -PG_VERSION=9.5
@@ -112,10 +110,8 @@ Index: toolkit/scripts/system_environment/configure_esmond
  
  #setup localhost measurement archives in meshconfig-agent-tasks.conf
  if [ -n "$KEY" ]; then
-Index: toolkit/scripts/system_environment/configure_fail2ban
-===================================================================
---- toolkit.orig/scripts/system_environment/configure_fail2ban	2018-03-03 17:57:55.000000000 +0000
-+++ toolkit/scripts/system_environment/configure_fail2ban	2018-03-04 22:12:12.000000000 +0000
+--- toolkit.orig/scripts/system_environment/configure_fail2ban	2018-05-25 16:34:31.000000000 +0000
++++ toolkit/scripts/system_environment/configure_fail2ban	2018-05-25 16:37:43.000000000 +0000
 @@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
@@ -123,21 +119,17 @@ Index: toolkit/scripts/system_environment/configure_fail2ban
 -    /sbin/service fail2ban restart
 +    service fail2ban restart
  fi
-Index: toolkit/scripts/system_environment/upgrade_configdaemon
-===================================================================
---- toolkit.orig/scripts/system_environment/upgrade_configdaemon	2018-03-03 17:57:55.000000000 +0000
-+++ toolkit/scripts/system_environment/upgrade_configdaemon	2018-03-04 22:12:12.000000000 +0000
-@@ -86,5 +86,5 @@
+--- toolkit.orig/scripts/system_environment/upgrade_configdaemon	2018-05-25 16:37:25.000000000 +0000
++++ toolkit/scripts/system_environment/upgrade_configdaemon	2018-05-25 16:37:43.000000000 +0000
+@@ -92,5 +92,5 @@
  EOF
  
  #centos 7 should not need this
 -/sbin/service perfsonar-configdaemon restart
 +service perfsonar-configdaemon restart
  fi
-Index: toolkit/scripts/system_environment/upgrade_fix_permissions
-===================================================================
---- toolkit.orig/scripts/system_environment/upgrade_fix_permissions	2018-03-03 17:57:55.000000000 +0000
-+++ toolkit/scripts/system_environment/upgrade_fix_permissions	2018-03-04 22:12:12.000000000 +0000
+--- toolkit.orig/scripts/system_environment/upgrade_fix_permissions	2018-05-25 16:34:31.000000000 +0000
++++ toolkit/scripts/system_environment/upgrade_fix_permissions	2018-05-25 16:37:43.000000000 +0000
 @@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
@@ -161,10 +153,8 @@ Index: toolkit/scripts/system_environment/upgrade_fix_permissions
  #Try cacti data, but don't complain if it's not there
 -chown -R apache /var/lib/cacti/rra 2> /dev/null
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
-Index: toolkit/scripts/configure_apache_security
-===================================================================
---- toolkit.orig/scripts/configure_apache_security	2018-03-03 17:57:55.000000000 +0000
-+++ toolkit/scripts/configure_apache_security	2018-03-04 22:12:12.000000000 +0000
+--- toolkit.orig/scripts/configure_apache_security	2018-05-25 16:34:31.000000000 +0000
++++ toolkit/scripts/configure_apache_security	2018-05-25 16:37:43.000000000 +0000
 @@ -5,14 +5,29 @@
  # 'upgrade' or 'new install' context.
  #######################
@@ -201,10 +191,8 @@ Index: toolkit/scripts/configure_apache_security
 +       sed -i 's/DocumentRoot \/var\/www\(\/html\)\?$/DocumentRoot \/var\/www\/perfsonar/' $CONF
 +    fi
 +done
-Index: toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location
-===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-03-03 18:26:22.000000000 +0000
-+++ toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-03-04 22:12:12.000000000 +0000
+--- toolkit.orig/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-05-25 16:34:31.000000000 +0000
++++ toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-05-25 16:37:43.000000000 +0000
 @@ -8,27 +8,21 @@
  # Set 'local5' output location to /var/log/perfsonar/owamp_bwctl.log
  grep ^local5 /etc/rsyslog.d/owamp_bwctl-syslog.conf &> /dev/null
