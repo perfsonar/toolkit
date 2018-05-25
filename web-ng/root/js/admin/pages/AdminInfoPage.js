@@ -19,7 +19,14 @@ AdminInfoPage.initialize = function() {
             if(e.namespace != 'abide.fndtn') {
                 return;
             }
-            StickySaveBar.showValidationError();
+            var checkbox = $("#privacyPolicySwitch");
+            if ( checkbox.prop("checked") ) {
+                StickySaveBar.showValidationError();
+            } else {
+                var message = "You must accept our privacy policy to save this information.";
+                StickySaveBar.showCustomValidationError( message );
+
+            }
         });
     $('#loading-modal').foundation('reveal', 'open');
 };
