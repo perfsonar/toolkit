@@ -1,5 +1,7 @@
---- toolkit.orig/bin/config_daemon.pl	2018-05-18 11:08:39.000000000 +0000
-+++ toolkit/bin/config_daemon.pl	2018-05-25 16:31:59.000000000 +0000
+Index: toolkit/bin/config_daemon.pl
+===================================================================
+--- toolkit.orig/bin/config_daemon.pl	2018-05-25 16:32:26.000000000 +0000
++++ toolkit/bin/config_daemon.pl	2018-05-25 16:34:29.000000000 +0000
 @@ -29,7 +29,7 @@
  use Log::Log4perl qw/:easy/;
  
@@ -18,8 +20,10 @@
  }
  
  ( $status, $res ) = lockPIDFile( $PIDFILE );
---- toolkit.orig/etc/configdaemon.conf	2018-05-25 16:31:37.000000000 +0000
-+++ toolkit/etc/configdaemon.conf	2018-05-25 16:31:59.000000000 +0000
+Index: toolkit/etc/configdaemon.conf
+===================================================================
+--- toolkit.orig/etc/configdaemon.conf	2018-05-25 16:32:26.000000000 +0000
++++ toolkit/etc/configdaemon.conf	2018-05-25 16:34:29.000000000 +0000
 @@ -1,6 +1,6 @@
  address	        127.0.0.1	
  port		9000
