@@ -1,7 +1,7 @@
 MANIFEST
 Makefile
 bin/config_daemon.pl
-doc/LICENSE
+LICENSE
 doc/iptables-config.example
 etc/administrative_info
 etc/apache-perfsonar-security.conf
