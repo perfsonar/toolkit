@@ -313,6 +313,16 @@
                             <small class="error">Must be an integer of 0 or greater</small>
                         </div>
                     </div>  <!-- end row -->
+                    <div class="row">
+                        <div class="medium-6 columns">
+                            <label for="singleEnded" class="space">Single-ended testing (for testing to iperf hosts that are not running pscheduler)</label>
+                            <div class="switch round small">
+                                <input id="singleEndedSwitch" type="checkbox" {{#if parameters.single_ended}}checked{{/if}}>
+                                <label for="singleEndedSwitch"></label>
+                                <span for="singleEndedSwitch" class="switch_label">{{#if parameters.single_ended}}Enabled{{else}}Disabled{{/if}}</span>
+                            </div>
+                        </div>
+                    </div> <!-- end row -->
 
 {{/if}}
 
