@@ -1,7 +1,7 @@
 MANIFEST
 Makefile
 bin/config_daemon.pl
-doc/LICENSE
+LICENSE
 doc/iptables-config.example
 etc/administrative_info
 etc/apache-perfsonar-security.conf
@@ -50,6 +50,7 @@ scripts/configure_ntpd
 scripts/configure_sysctl
 scripts/cron-clean_esmond_db
 scripts/cron-service_watcher
+scripts/find_bwctl_measurements
 scripts/install-optional-packages.py
 scripts/manage_users
 scripts/mod_interface_route

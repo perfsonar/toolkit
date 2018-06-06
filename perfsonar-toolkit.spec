@@ -20,7 +20,7 @@ Name:           perfsonar-toolkit
 Version:        4.1
 Release:        %{relnum}%{?dist}
 Summary:        perfSONAR Toolkit
-License:        Distributable, see LICENSE
+License:        ASL 2.0
 Group:          Applications/Communications
 URL:            http://www.perfsonar.net/
 Source0:        perfsonar-toolkit-%{version}.%{relnum}.tar.gz
@@ -562,6 +562,7 @@ fi
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
+%license LICENSE
 %config(noreplace) %{config_base}/*
 %exclude %{config_base}/default_system_firewall_settings.conf
 %exclude %{config_base}/perfsonar_firewall_settings.conf
@@ -599,19 +600,23 @@ fi
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/find_bwctl_measurements
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
 
 %files systemenv-testpoint
+%license LICENSE
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/testpoint/*
 
 %files systemenv
+%license LICENSE
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
 %exclude %{install_base}/scripts/system_environment/configure_esmond 
 %exclude %{install_base}/scripts/system_environment/testpoint
 
 %files security
+%license LICENSE
 %config %{config_base}/default_system_firewall_settings.conf
 %config %{config_base}/perfsonar_firewall_settings.conf
 %config %{config_base}/perfsonar_firewalld_settings.conf
@@ -622,6 +627,7 @@ fi
 /usr/lib/firewalld/services/*.xml
 
 %files install
+%license LICENSE
 %config(noreplace) %{config_base}/perfsonar_ulimit.conf
 %config(noreplace) %{config_base}/perfsonar_ulimit_apache.conf
 %attr(0644,root,root) %{config_base}/perfsonar_ulimit.conf
@@ -633,27 +639,32 @@ fi
 %attr(0644,root,root) %{config_base}/default_service_configs/pscheduler_limits.conf
 
 %files sysctl
+%license LICENSE
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_sysctl
 
 %files ntp
+%license LICENSE
 %config %{config_base}/ntp_known_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/autoselect_ntp_servers
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/configure_ntpd
 %{config_base}/templates/ntp_conf.tmpl
 
 %files library
+%license LICENSE
 %{install_base}/lib/perfSONAR_PS/*
 %{install_base}/lib/OWP/*
 %{install_base}/python_lib/*
 %doc %{install_base}/doc/*
 
 %files servicewatcher
+%license LICENSE
 %config(noreplace) %{config_base}/servicewatcher.conf
 %config(noreplace) %{config_base}/servicewatcher-logger.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
 %files compat-database
+%license LICENSE
 %config(noreplace) %{config_base}/clean_esmond_db.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_esmond 
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh

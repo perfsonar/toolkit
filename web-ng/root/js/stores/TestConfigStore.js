@@ -291,6 +291,11 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             } else {
                 delete test.parameters.zero_copy;
             }
+            if ( settings.single_ended ) {
+                test.parameters.single_ended = settings.single_ended;
+            } else {
+                delete test.parameters.single_ended;
+            }
             if ( settings.send_only ) {
                 test.parameters.send_only = settings.send_only;
             } else {
