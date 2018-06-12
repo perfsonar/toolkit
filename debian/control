@@ -91,7 +91,7 @@ Description: perfSONAR Toolkit system tuning
 
 Package: perfsonar-toolkit-systemenv-testpoint
 Architecture: all
-Depends: nscd, bwctl-server (>= 1.6.0), owamp-server (>= 3.5.0),
+Depends: nscd, owamp-server (>= 3.5.0),
  perfsonar-psconfig-pscheduler, ${misc:Depends}
 Description: perfSONAR Testpoint system tuning
  Tunes and configures the system according to performance
