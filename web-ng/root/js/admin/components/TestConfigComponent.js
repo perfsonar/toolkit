@@ -86,7 +86,7 @@ TestConfigComponent.initialize = function() {
         // look for loopbacks and add a note about them
         if ( ifname == "lo" || ifname.startsWith("lo:") ) {
             hostnames_string += "  [note: loopbacks are not normally used in tests]";
-        }    
+        }
 
         return hostnames_string;
     });
@@ -334,7 +334,6 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
         testConfig.added_by_mesh = false;
     } else {
         testConfig = TestConfigStore.getTestConfig( testID );
-
     }
     testConfig.newTest = newTest;
 
@@ -634,6 +633,14 @@ TestConfigComponent._drawConfigForm = function( ) {
             $('#windowSize').attr('pattern', 'positive_integer');
             $('#windowSizeLabel').show();
         }
+    });
+
+    $('#useZeroCopySwitch').change( function() {
+        TestConfigComponent._setSwitch( '#useZeroCopySwitch' );
+    });
+
+    $('#singleEndedSwitch').change( function() {
+        TestConfigComponent._setSwitch( '#singleEndedSwitch' );
     });
 
     TestConfigComponent._showAddHostByCommunity( 'testConfigAddHostByCommunityContainer' );
@@ -955,8 +962,11 @@ TestConfigComponent._getUserValues = function( testConfig ) {
             var omit_interval = $('#omit_interval').val();
             settings.omit_interval = omit_interval;
 
-            var zero_copy  = $('#useZeroCopySwitch').prop('checked');
+            var zero_copy = TestConfigComponent._boolToInt( $('#useZeroCopySwitch').prop('checked') );
             settings.zero_copy = zero_copy;
+
+            var single_ended = TestConfigComponent._boolToInt( $('#singleEndedSwitch').prop('checked') );
+            settings.single_ended = single_ended;
 
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
@@ -1190,6 +1200,10 @@ TestConfigComponent.toggle_advPing = function(e) {
     if (!TestConfigComponent._invalid_in_advanced()) {
         $('#advPingDiv').toggle();
     }
+};
+TestConfigComponent._boolToInt = function( value ) {
+    var ret = ( value ? 1 : 0 );
+    return ret;
 };
 TestConfigComponent.toggle_advOwamp = function(e) {
     e.preventDefault(); 
