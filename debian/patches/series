@@ -6,4 +6,3 @@ debian-install.diff
 debian-systemenv.diff
 debian-sysctl.diff
 debian-unittest.diff
-bwctl-unittest.diff
