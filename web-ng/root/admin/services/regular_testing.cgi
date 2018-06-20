@@ -15,6 +15,9 @@ my $basedir = "$RealBin/../../../";
 
 use lib "$RealBin/../../../../lib";
 
+# workaround JSON boolean loading issues on jessie and trusty
+use perfSONAR_PS::Client::Utils;
+
 use perfSONAR_PS::NPToolkit::WebService::ParameterTypes qw($parameter_types);
 
 use perfSONAR_PS::NPToolkit::DataService::RegularTesting;
