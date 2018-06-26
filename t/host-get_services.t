@@ -25,9 +25,6 @@ my $ls_file = $basedir . '/etc/lsregistrationdaemon.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 my %conf = $conf_obj->getall;
 
-my $bwctl_config = 't/etc/bwctl-server.conf';
-my $bwctl_limits = 't/etc/bwctl-server.limits';
-
 my $owamp_config = 't/etc/owamp-server.conf';
 my $owamp_limits = 't/etc/owamp-server.limits';
 
@@ -36,9 +33,6 @@ my $params = {};
 $params->{'config_file'} = $config_file;
 $params->{'load_ls_registration'} = 1;
 $params->{'ls_config_file'} = $ls_file;
-
-$params->{'bwctl_config'} = $bwctl_config;
-$params->{'bwctl_limits'} = $bwctl_limits;
 
 $params->{'owamp_config'} = $owamp_config;
 $params->{'owamp_limits'} = $owamp_limits;
@@ -114,41 +108,6 @@ sub get_expected_services {
 
     my $expected_services = {
         'services' => [
-            {
-                'is_running' => $running,
-                'addresses' => [],
-                'version' => $version,
-                'name' => 'bwctl',
-                'daemon_port' => 4823,
-                'testing_ports' => [
-                    {
-                        'min_port' => '6001',
-                        'type' => 'peer',
-                        'max_port' => '6200'
-                    },
-                    {
-                        'min_port' => '5001',
-                        'type' => 'iperf',
-                        'max_port' => '5302'
-                    },
-                    {
-                        'min_port' => '5301',
-                        'type' => 'nuttcp',
-                        'max_port' => '5602'
-                    },
-                    {
-                        'min_port' => '5601',
-                        'type' => 'owamp',
-                        'max_port' => '5902'
-                    },
-                    {
-                        'min_port' => '7001',
-                        'type' => 'test',
-                        'max_port' => '7900'
-                    }
-                ],
-                'enabled' => $enabled
-            },
             {
                 'is_running' => $running,
                 'addresses' => $esmond_addresses,
