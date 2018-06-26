@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Valentin Vidic <Valentin.Vidic@CARNet.hr>
 Build-Depends: debhelper (>= 9.0.0), quilt, dh-exec,
- libperfsonar-perl, libperfsonar-toolkit-perl,
+ libperfsonar-perl (>= 4.1~0), libperfsonar-toolkit-perl (>= 4.1~0),
  perfsonar-psconfig-pscheduler-dev, perfsonar-psconfig-pscheduler,
  libtest-mockobject-perl, libfile-copy-recursive-perl,
  libtest-deep-perl, libcgi-pm-perl
@@ -14,7 +14,7 @@ Vcs-Browser: https://github.com/perfsonar/toolkit
 
 Package: perfsonar-toolkit
 Architecture: all
-Depends: libperfsonar-perl, apache2, apache2-utils, ssl-cert,
+Depends: libperfsonar-perl (>= 4.1~0), apache2, apache2-utils, ssl-cert,
  perl, libxml-simple-perl, libcgi-pm-perl,
  libsys-statistics-linux-perl, libperfsonar-sls-perl,
  perfsonar-toolkit-library, liblog-dispatch-filerotate-perl,
@@ -32,7 +32,7 @@ Description: perfSONAR Toolkit web
 
 Package: perfsonar-toolkit-library
 Architecture: all
-Depends: libperfsonar-perl, ${misc:Depends}
+Depends: libperfsonar-perl (>= 4.1~0), ${misc:Depends}
 Description: perfSONAR Toolkit library
  Perl libraries for perfSONAR Toolkit.
 
@@ -45,7 +45,7 @@ Description: perfSONAR Toolkit firewall configuration
 
 Package: perfsonar-toolkit-sysctl
 Architecture: all
-Depends: libperfsonar-perl, ${misc:Depends}
+Depends: libperfsonar-perl (>= 4.1~0), ${misc:Depends}
 Description: perfSONAR Toolkit sysctl configuration
  Configures sysctl settings for perfSONAR Toolkit.
 

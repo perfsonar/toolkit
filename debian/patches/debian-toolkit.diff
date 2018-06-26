@@ -1,5 +1,7 @@
---- toolkit.orig/scripts/apache-toolkit_web_gui.conf	2018-01-08 10:29:15.000000000 +0000
-+++ toolkit/scripts/apache-toolkit_web_gui.conf	2018-03-03 16:31:28.000000000 +0000
+Index: toolkit/scripts/apache-toolkit_web_gui.conf
+===================================================================
+--- toolkit.orig/scripts/apache-toolkit_web_gui.conf	2018-06-26 17:45:53.000000000 +0000
++++ toolkit/scripts/apache-toolkit_web_gui.conf	2018-06-26 18:10:46.000000000 +0000
 @@ -46,6 +46,9 @@
  # But, allow anonymous access via port 80 (http)
  # NOTE: Need to set non-https re-write rules and redirects here
@@ -66,8 +68,10 @@
  </Directory>
  
  ##
---- toolkit.orig/scripts/add_pssudo_user	2018-01-08 10:29:15.000000000 +0000
-+++ toolkit/scripts/add_pssudo_user	2018-03-03 16:31:28.000000000 +0000
+Index: toolkit/scripts/add_pssudo_user
+===================================================================
+--- toolkit.orig/scripts/add_pssudo_user	2018-06-26 17:45:53.000000000 +0000
++++ toolkit/scripts/add_pssudo_user	2018-06-26 18:10:46.000000000 +0000
 @@ -59,7 +59,7 @@
      sys.exit(1)
  
@@ -86,8 +90,10 @@
  if (retVal != 0):
      print Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL
      sys.exit(1)
---- toolkit.orig/scripts/clean_esmond_db.sh	2018-01-08 10:29:15.000000000 +0000
-+++ toolkit/scripts/clean_esmond_db.sh	2018-03-03 16:31:28.000000000 +0000
+Index: toolkit/scripts/clean_esmond_db.sh
+===================================================================
+--- toolkit.orig/scripts/clean_esmond_db.sh	2018-06-26 17:45:53.000000000 +0000
++++ toolkit/scripts/clean_esmond_db.sh	2018-06-26 18:10:46.000000000 +0000
 @@ -9,15 +9,13 @@
  fi
  
@@ -110,8 +116,10 @@
  
  #force a compaction
  if [ "$ESMOND_CLEANER_MULTI_NODE" != "1" ]; then
---- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-03-03 16:29:53.000000000 +0000
-+++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-03-03 16:31:28.000000000 +0000
+Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
+===================================================================
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-06-26 17:45:53.000000000 +0000
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-06-26 18:10:46.000000000 +0000
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -149,8 +157,10 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- toolkit.orig/init_scripts/perfsonar-generate_motd	2018-01-08 10:29:15.000000000 +0000
-+++ toolkit/init_scripts/perfsonar-generate_motd	2018-03-03 16:31:28.000000000 +0000
+Index: toolkit/init_scripts/perfsonar-generate_motd
+===================================================================
+--- toolkit.orig/init_scripts/perfsonar-generate_motd	2018-06-26 17:45:53.000000000 +0000
++++ toolkit/init_scripts/perfsonar-generate_motd	2018-06-26 18:10:46.000000000 +0000
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -174,8 +184,10 @@
  
  use strict;
  use warnings;
---- toolkit.orig/web-ng/root/gui/reverse_traceroute.cgi	2018-03-03 16:29:53.000000000 +0000
-+++ toolkit/web-ng/root/gui/reverse_traceroute.cgi	2018-03-03 16:31:28.000000000 +0000
+Index: toolkit/web-ng/root/gui/reverse_traceroute.cgi
+===================================================================
+--- toolkit.orig/web-ng/root/gui/reverse_traceroute.cgi	2018-06-26 17:45:53.000000000 +0000
++++ toolkit/web-ng/root/gui/reverse_traceroute.cgi	2018-06-26 18:10:46.000000000 +0000
 @@ -268,7 +268,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -185,8 +197,10 @@
    @Tropts="";
  }
  #########################################################################
---- toolkit.orig/etc/perfsonar_ulimit.conf	2018-02-06 22:45:32.000000000 +0000
-+++ toolkit/etc/perfsonar_ulimit.conf	2018-03-03 16:31:28.000000000 +0000
+Index: toolkit/etc/perfsonar_ulimit.conf
+===================================================================
+--- toolkit.orig/etc/perfsonar_ulimit.conf	2018-06-26 17:45:53.000000000 +0000
++++ toolkit/etc/perfsonar_ulimit.conf	2018-06-26 18:10:46.000000000 +0000
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
