@@ -29,11 +29,9 @@ case "$1" in
         # directory setup
         rm -rf /var/log/perfsonar/web_admin
 
-        rm -rf /var/lib/perfsonar/db_backups/bwctl
         rm -rf /var/lib/perfsonar/db_backups/owamp
         rm -rf /var/lib/perfsonar/db_backups/traceroute
 
-        rm -rf /var/lib/perfsonar/log_view/bwctl
         rm -rf /var/lib/perfsonar/log_view/owamp
 
         # Removing ald log_view/ndt directory if present
