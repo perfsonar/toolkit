@@ -100,6 +100,8 @@ Description: perfSONAR Testpoint system tuning
 Package: perfsonar-toolkit-compat-database
 Architecture: all
 Depends: drop-in, esmond (>= 2.1), ${misc:Depends}
+Breaks: perfsonar-toolkit (<< 4.1)
+Replaces: perfsonar-toolkit (<< 4.1)
 Description: perfSONAR Database Migration
  Provides necessary bridge to 4.0 that ensures old esmond data is migrated
  prior to the initialization of the postgresql 9.5 data directory by
