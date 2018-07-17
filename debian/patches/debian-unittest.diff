@@ -1,5 +1,5 @@
---- toolkit.orig/t/host-get_metadata.t	2018-07-17 12:24:31.344843328 +0200
-+++ toolkit/t/host-get_metadata.t	2018-07-17 12:24:31.332843161 +0200
+--- toolkit.orig/t/host-get_metadata.t	2018-07-17 12:31:45.606922916 +0200
++++ toolkit/t/host-get_metadata.t	2018-07-17 12:31:45.590922692 +0200
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -8,8 +8,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- toolkit.orig/t/host-get_services.t	2018-07-17 12:24:31.344843328 +0200
-+++ toolkit/t/host-get_services.t	2018-07-17 12:25:00.917257297 +0200
+--- toolkit.orig/t/host-get_services.t	2018-07-17 12:31:45.606922916 +0200
++++ toolkit/t/host-get_services.t	2018-07-17 12:31:52.275016277 +0200
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -18,30 +18,22 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
-@@ -131,6 +132,21 @@
-                 'testing_ports' => [
-                     {
-                         'min_port' => '9760',
-+                        'type' => 'test',
-+                        'max_port' => '10960'
-+                    }
-+                ],
-+                'enabled' => $enabled
-+            },
-+            {
+@@ -138,6 +139,13 @@
+                 'enabled' => $enabled
+             },
+             {
 +                'is_running' => $running,
 +                'addresses' => [],
 +                'version' => $version,
 +                'name' => 'twamp',
-+                'daemon_port' => 862,
-+                'testing_ports' => [
-+                    {
-+                        'min_port' => '9760',
-                         'type' => 'test',
-                         'max_port' => '10960'
-                     }
---- toolkit.orig/t/host-get_system_health.t	2018-07-17 12:24:31.344843328 +0200
-+++ toolkit/t/host-get_system_health.t	2018-07-17 12:24:31.332843161 +0200
++                'enabled' => $enabled
++            },
++            {
+                 'is_running' => $running,
+                 'addresses' => $pscheduler_addresses,
+                 'version' => $version,
+--- toolkit.orig/t/host-get_system_health.t	2018-07-17 12:31:45.606922916 +0200
++++ toolkit/t/host-get_system_health.t	2018-07-17 12:31:45.594922748 +0200
 @@ -9,6 +9,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -50,8 +42,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- toolkit.orig/t/host-update_metadata.t	2018-07-17 12:24:31.344843328 +0200
-+++ toolkit/t/host-update_metadata.t	2018-07-17 12:24:31.332843161 +0200
+--- toolkit.orig/t/host-update_metadata.t	2018-07-17 12:31:45.606922916 +0200
++++ toolkit/t/host-update_metadata.t	2018-07-17 12:31:45.594922748 +0200
 @@ -13,6 +13,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
