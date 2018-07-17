@@ -33,7 +33,6 @@ lib/OWP/Conf.pm
 lib/OWP/Helper.pm
 lib/perfSONAR_PS/Config/OWP/Conf.pm
 lib/perfSONAR_PS/Config/OWP/Helper.pm
-lib/perfSONAR_PS/Utils/Config/BWCTL.pm
 lib/perfSONAR_PS/Utils/Config/NTP.pm
 lib/perfSONAR_PS/Utils/Config/OWAMP.pm
 python_lib/Internet2Consts.py
