@@ -1,7 +1,5 @@
-Index: toolkit/t/host-get_metadata.t
-===================================================================
---- toolkit.orig/t/host-get_metadata.t	2018-06-26 17:45:52.000000000 +0000
-+++ toolkit/t/host-get_metadata.t	2018-06-26 18:10:48.000000000 +0000
+--- toolkit.orig/t/host-get_metadata.t	2018-07-17 12:24:31.344843328 +0200
++++ toolkit/t/host-get_metadata.t	2018-07-17 12:24:31.332843161 +0200
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -10,10 +8,8 @@ Index: toolkit/t/host-get_metadata.t
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
-Index: toolkit/t/host-get_services.t
-===================================================================
---- toolkit.orig/t/host-get_services.t	2018-06-26 17:45:52.000000000 +0000
-+++ toolkit/t/host-get_services.t	2018-06-26 18:10:48.000000000 +0000
+--- toolkit.orig/t/host-get_services.t	2018-07-17 12:24:31.344843328 +0200
++++ toolkit/t/host-get_services.t	2018-07-17 12:25:00.917257297 +0200
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -22,10 +18,30 @@ Index: toolkit/t/host-get_services.t
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
-Index: toolkit/t/host-get_system_health.t
-===================================================================
---- toolkit.orig/t/host-get_system_health.t	2018-06-26 17:45:52.000000000 +0000
-+++ toolkit/t/host-get_system_health.t	2018-06-26 18:10:48.000000000 +0000
+@@ -131,6 +132,21 @@
+                 'testing_ports' => [
+                     {
+                         'min_port' => '9760',
++                        'type' => 'test',
++                        'max_port' => '10960'
++                    }
++                ],
++                'enabled' => $enabled
++            },
++            {
++                'is_running' => $running,
++                'addresses' => [],
++                'version' => $version,
++                'name' => 'twamp',
++                'daemon_port' => 862,
++                'testing_ports' => [
++                    {
++                        'min_port' => '9760',
+                         'type' => 'test',
+                         'max_port' => '10960'
+                     }
+--- toolkit.orig/t/host-get_system_health.t	2018-07-17 12:24:31.344843328 +0200
++++ toolkit/t/host-get_system_health.t	2018-07-17 12:24:31.332843161 +0200
 @@ -9,6 +9,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -34,10 +50,8 @@ Index: toolkit/t/host-get_system_health.t
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
-Index: toolkit/t/host-update_metadata.t
-===================================================================
---- toolkit.orig/t/host-update_metadata.t	2018-06-26 17:45:52.000000000 +0000
-+++ toolkit/t/host-update_metadata.t	2018-06-26 18:10:48.000000000 +0000
+--- toolkit.orig/t/host-update_metadata.t	2018-07-17 12:24:31.344843328 +0200
++++ toolkit/t/host-update_metadata.t	2018-07-17 12:24:31.332843161 +0200
 @@ -13,6 +13,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
