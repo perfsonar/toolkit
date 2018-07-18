@@ -55,6 +55,9 @@ deleteFirewallRules(){
 }
 
 addFirewalldRules(){
+        # Load new XML service files
+        firewall-cmd --quiet --reload &> /dev/null
+
         # The BWCTL and OWAMP rules come first for performance reasons
         p=`echo ${BWCTLPARAMS[@]}`;
         d=`echo ${BWCTLDEFAULTS[@]}`
