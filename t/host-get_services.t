@@ -150,7 +150,23 @@ sub get_expected_services {
                 'version' => $version,
                 'name' => 'psconfig',
                 'enabled' => $enabled
+            },
+            {
+                'is_running' => $running,
+                'addresses' => [],
+                'version' => $version,
+                'name' => 'twamp',
+                'daemon_port' => 862,
+                'testing_ports' => [
+                     {
+                       'min_port' => '18760',
+                       'type' => 'test',
+                       'max_port' => '19960'
+                     }
+                ],
+                'enabled' => $enabled
             }
+
         ]
     };
 
