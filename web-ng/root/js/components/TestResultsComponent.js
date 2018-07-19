@@ -304,14 +304,17 @@ function SortBySrcDst(a, b){
 }
 
 TestResultsComponent._setTestListError = function( topic, errorThrown ) {
+    var ma_url = TestResultsComponent.ma_url;
 
     $("span#testDataErrorBox").show();
-    var error = "Error loading test listing: ";
-    error += errorThrown;
+    var error = "Error loading test listing; ";
+    //error += errorThrown;
     if ( errorThrown == "timeout" ) {
         error += " (this usually means you have too many results to show the list)";
     }
-    $("span#testDataErrorMessage").text(error);
+    error += "measurement archive unreachable: <p>";
+    error += '<a href="' + ma_url + '" target="_blank">' + ma_url + '</a></p>';
+    $("span#testDataErrorMessage").html(error);
     TestResultsComponent.testListError = true;
     $('#test-loading-modal').hide();
 
