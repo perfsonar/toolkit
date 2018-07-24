@@ -103,23 +103,6 @@ my $services_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 
 $router->add_method($services_method);
 
-my $communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            =>  "get_communities",
-    description     =>  "Retrieves host communities information",
-    callback        =>  sub { $host_info->get_communities(@_); }
-    );
-
-$router->add_method($communities_method);
-
-#TODO: more testing on the get_all_communities method
-my $all_communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            =>  "get_all_communities",
-    description     =>  "Retrieves all available communities",
-    callback        =>  sub { $host_info->get_all_communities(@_); }
-    );
-
-$router->add_method($all_communities_method);
-
 my $templates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_templates",
     description     =>  "Retrieves list of pSConfig templates in use",

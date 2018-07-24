@@ -46,7 +46,7 @@ if ( $conf{debug} ) {
 }
 
 my $data;
-my $communities_info = perfSONAR_PS::NPToolkit::DataService::Communities->new( { 'config_file' => $config_file  } );
+my $communities_info = perfSONAR_PS::NPToolkit::DataService::Communities->new( { 'config_file' => $config_file, load_ls_registration => 1  } );
 
 my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
 
