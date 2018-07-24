@@ -27,6 +27,8 @@ my %conf = $conf_obj->getall;
 
 my $owamp_config = 't/etc/owamp-server.conf';
 my $owamp_limits = 't/etc/owamp-server.limits';
+my $twamp_config = 't/etc/twamp-server.conf';
+my $twamp_limits = 't/etc/twamp-server.limits';
 
 my $data;
 my $params = {};
@@ -36,6 +38,8 @@ $params->{'ls_config_file'} = $ls_file;
 
 $params->{'owamp_config'} = $owamp_config;
 $params->{'owamp_limits'} = $owamp_limits;
+$params->{'twamp_config'} = $twamp_config;
+$params->{'twamp_limits'} = $twamp_limits;
 
 # check the services
 # we want to check these 4 conditions
@@ -150,7 +154,23 @@ sub get_expected_services {
                 'version' => $version,
                 'name' => 'psconfig',
                 'enabled' => $enabled
+            },
+            {
+                'is_running' => $running,
+                'addresses' => [],
+                'version' => $version,
+                'name' => 'twamp',
+                'daemon_port' => 862,
+                'testing_ports' => [
+                     {
+                       'min_port' => '18760',
+                       'type' => 'test',
+                       'max_port' => '19960'
+                     }
+                ],
+                'enabled' => $enabled
             }
+
         ]
     };
 
