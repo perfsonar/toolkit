@@ -91,14 +91,6 @@ TestResultsComponent._setTestList = function( ) {
     // When it's finished, _handleTestData/_setTestData will be executed.
     TestResultsComponent._askForTestData();
 
-    // add traceroute links (ask for test data first, so ajax can get started)
-    for (var i in data.test_results) {
-        var row = data.test_results[i];
-        var container_id = "trace_" + TestResultsComponent.ipToID(row.source_ip) + "_"
-            + TestResultsComponent.ipToID(row.destination_ip);
-        TestResultsComponent.setTracerouteLink(row.source_ip, row.destination_ip, container_id);
-    }
-
     // After a change of the table page, sorting, or search, additional test data may need to be obtained
     $('#testResultsTable').on( 'draw.dt', function() {
         TestResultsComponent._askForTestData();
@@ -133,7 +125,20 @@ TestResultsComponent._askForTestData = function() {
         }
     } );
     TestStore.retrieveNeededTestAvgs(sources, destinations);
+    TestResultsComponent._queryTraceroutes();
 }
+
+// Retrieve traceroute data/creteat links
+TestResultsComponent._queryTraceroutes = function() {
+    var data = TestResultsComponent.data;
+    for (var i in data.test_results) {
+        var row = data.test_results[i];
+        var container_id = "trace_" + TestResultsComponent.ipToID(row.source_ip) + "_"
+            + TestResultsComponent.ipToID(row.destination_ip);
+        TestResultsComponent.setTracerouteLink(row.source_ip, row.destination_ip, container_id);
+    }
+
+};
 
 // When avg values have been obtained by TestStore, put them in the table.
 TestResultsComponent._handleTestData = function( ) {
