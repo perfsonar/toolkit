@@ -4,15 +4,14 @@ owamp.salt.net.internet2.edu:Internet2 - Salt Lake City, UT USA
 owamp.losa.net.internet2.edu:Internet2 - Los Angeles, CA USA
 chronos.es.net:ESnet - New York, NY USA
 saturn.es.net:ESnet - Sunnyvale, CA USA
+time-c-g.nist.gov:NIST - Gaithersburg, Maryland
 utcnist2.colorado.edu:JILA - University of Colorado
+time-c-wwv.nist.gov:WWV, Fort Collins, Colorado
 nist1-chi.ustiming.org:NIST - NIST, Chicago, IL USA
-nist-time-server.eoni.com:NIST - NIST, La Grande, OR USA
 time-a.timefreq.bldrdoc.gov:NIST - NIST, Boulder, CO USA
 ntp-gatech.usno.navy.mil:Naval Observatory - GATech
-navobs1.oar.net:Naval Observatory - Columbus, OH USA
 ntp-ucla.usno.navy.mil:Naval Observatory - Los Angeles, CA USA
 ntp-uw.usno.navy.mil:Naval Observatory - Seattle, WA USA
-ntp-ua.usno.navy.mil:Naval Observatory - Fairbanks, AK USA
 time1.chpc.utah.edu:UTAH - Server #1, University of Utah, Salt Lake City, UT USA
 time2.chpc.utah.edu:UTAH - Server #2, University of Utah, Salt Lake City, UT USA
 time3.chpc.utah.edu:UTAH - Server #3, University of Utah, Salt Lake City, UT USA
@@ -24,7 +23,7 @@ c.ntp.monipe.rnp.br:RNP Time Server #3 - Brazil
 ntp1.cais.rnp.br:RNP Time Server #6 - Brazil
 time1.ethz.ch:ETH Zurich - Zurich, Switzerland
 time2.ethz.ch:ETH Zurich - Zurich, Switzerland
-vega.cbk.poznan.pl:PIONIER - Poland, EU 
+vega.cbk.poznan.pl:PIONIER - Poland, EU
 tempus1.gum.gov.pl:PIONIER - Poland, EU
 ntp.itl.waw.pl:PIONIER - Poland, EU
 ntp1.oma.be:Royal Observatory of Belgium - Belgium, EU
