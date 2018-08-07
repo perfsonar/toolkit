@@ -100,9 +100,16 @@ NTPConfigComponent.save = function() {
     var enabled = {};
     var disabled = {};
 
-    options.each(function(i) {
-        var hostname = $(this).val();
-        var selected = $(this).prop("selected");
+    for( var i in options ) {
+        if ( isNaN( i ) ) {
+            continue;
+        }
+        var option = options[i];
+        if ( typeof $(option) == "undefined" ) {
+            break;
+        }
+        var hostname = $(option).val();
+        var selected = $(option).prop("selected");
         var row = {};
         var index = NTPConfigComponent.objectFindByKey(servers, 'id', hostname);
         if (index !== null) {
@@ -116,7 +123,7 @@ NTPConfigComponent.save = function() {
             //disabled.push(hostname);
             disabled[hostname] = description;
         }
-    });
+    };
 
     data.enabled_servers = enabled;
     data.disabled_servers = disabled;
@@ -211,13 +218,27 @@ NTPConfigComponent._setEventHandlers = function() {
     // Applies the changes to the main server list
     var add_button_el = $('#ntp_server_add_button');
     add_button_el.click(function(e) {
+        //var data = {};
+        //data.servers = NTPConfigComponent.modalData.servers;
         var add_hostname_el = $('#ntp_server_add_hostname');
         var add_description_el = $('#ntp_server_add_description');
         var add_hostname = add_hostname_el.val();
-        var add_description = add_description_el.val();
+        var add_description = add_description_el.val() || '';
+
+        if ( NTPConfigComponent._isDuplicate( add_hostname ) ) {
+            $('#ntp_server_duplicate').show();
+            return;
+
+        } else {
+            $('#ntp_server_duplicate').hide();
+
+        }
+
+        
         if (typeof add_hostname != undefined && add_hostname != '') {
             add_hostname_el.val('');
             add_description_el.val('');
+
             NTPConfigComponent._addServerModal(add_hostname, add_description);
             NTPConfigComponent._showSaveBar();
         }
@@ -254,11 +275,13 @@ NTPConfigComponent._setEventHandlers = function() {
             NTPConfigComponent._addServer(val.id, val.description);
 
         });
-        
-        // TODO: Remove the removed servers
+
+        // Remove the removed servers
         $.each(NTPConfigComponent.modalData.serversToRemove, function(i, val) {
             NTPConfigComponent._removeServer(val);
         });
+
+
 
 
         NTPConfigComponent._initModalData();
@@ -266,6 +289,28 @@ NTPConfigComponent._setEventHandlers = function() {
         $('#ntpModal').foundation('reveal', 'close');
 
     });
+
+};
+
+NTPConfigComponent._isDuplicate = function (hostname) {
+    var valid = false;
+    if ( hostname == "" || (typeof hostname == "undefined") ) {
+        return valid;
+    }
+    var data = NTPConfigComponent.modalData.servers;
+    var servers = {};
+    for(var i in NTPConfigComponent.modalData.servers ) {
+        var server = NTPConfigComponent.modalData.servers[i].id;
+        servers[ server ] = 1; 
+    }
+    if ( hostname in servers ) {
+        // This server is already in the list
+        valid = true;
+
+    }
+
+
+    return valid;
 
 };
 
@@ -307,12 +352,6 @@ NTPConfigComponent._removeServerModal = function( hostname ) {
     var servers = NTPConfigComponent.modalData.servers;
 
     // Find hostname in 'servers' object (find a row where id: == hostname)
-    /*
-    var result = $.grep( servers, function(e) { 
-        return e.id === hostname;
-
-    });
-    */
     var index = NTPConfigComponent.objectFindByKey(servers, 'id', hostname);
 
     // Delete the item from the array
@@ -339,9 +378,7 @@ NTPConfigComponent._addServer = function ( hostname, description) {
     var data = NTPConfigComponent.data.servers;
     var row = {};
     row.id = hostname;
-    if (typeof description != "undefined" && description != "") {
-        row.description = description; // NTPConfigComponent._formatServer(hostname, description);
-    }
+    row.description = description || "";
     row.text = NTPConfigComponent._formatServer(hostname, description);
     row.selected = true;
     data.unshift(row);
