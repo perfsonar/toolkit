@@ -4,6 +4,7 @@
 var CommunityAllStore = {
     communityDetails: null,
     communityAllTopic: 'store.change.communities_all',
+    communityAllErrorTopic: 'store.change.communities_all_error',
 };
 
 CommunityAllStore.initialize = function() {
@@ -23,6 +24,7 @@ CommunityAllStore._retrieveCommunities = function() {
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
+                Dispatcher.publish(CommunityAllStore.communityAllErrorTopic);
             }
         });
 };
