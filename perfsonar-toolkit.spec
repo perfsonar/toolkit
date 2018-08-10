@@ -14,7 +14,7 @@
 %define crontab_1     cron-service_watcher
 %define crontab_3     cron-clean_esmond_db
 
-%define relnum   0.3.b1 
+%define relnum   1 
 
 Name:           perfsonar-toolkit
 Version:        4.1
