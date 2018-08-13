@@ -15,6 +15,8 @@ var CommunityUpdateComponent = {
 CommunityUpdateComponent.initialize = function() {
     Dispatcher.subscribe(CommunityUpdateComponent.metadataTopic, CommunityUpdateComponent._setHostCommunities);
     Dispatcher.subscribe(CommunityUpdateComponent.allTopic, CommunityUpdateComponent._setAllCommunities);
+    Dispatcher.subscribe(CommunityAllStore.communityAllErrorTopic, CommunityUpdateComponent._setAllCommunitiesError);
+
     var addButton = $('#community_add_button');
     var addName = $('#community_add_name');
     var sel = $('#update_communities');
@@ -34,6 +36,7 @@ CommunityUpdateComponent.initialize = function() {
     });
 
 };
+
 
 CommunityUpdateComponent._setHostCommunities = function( topic ) {
     /* Sets the host communities in the format {name: selected} */
@@ -56,6 +59,15 @@ CommunityUpdateComponent._setHostCommunities = function( topic ) {
     if (CommunityUpdateComponent.allSet && CommunityUpdateComponent.hostSet) {
         CommunityUpdateComponent._selectCommunities();
     }
+};
+
+CommunityUpdateComponent._setAllCommunitiesError = function( topic ) {
+
+    CommunityUpdateComponent.allSet = true;
+    if (CommunityUpdateComponent.allSet && CommunityUpdateComponent.hostSet) {
+        CommunityUpdateComponent._selectCommunities();
+    }
+
 };
 
 CommunityUpdateComponent._setAllCommunities = function( topic ) {

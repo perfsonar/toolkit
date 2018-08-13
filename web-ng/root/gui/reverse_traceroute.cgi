@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -wT
 ###############################################################################
 use strict;
 $ENV{PATH}='/bin:/usr/bin:/sbin:/usr/local/bin:/usr/local/etc:/usr/sbin:/usr/local/sbin';#For untainting
@@ -9,8 +9,7 @@ my $t00=time();
 # setenv REQUEST_URI /cgi-wrap/traceroute.pl
 # setenv QUERY_STRING 'target=www.slac.stanford.edu&function=ping'
 #For IPv4
-# setenv REMOTE_ADDR 72.14.204.105; setenv SERVER_NAME www.slac.stanford.edu
-# setenv QUERY_STRING www.cern.ch;  setenv REMOTE_HOST www.google.com
+# setenv REMOTE_ADDR 72.14.204.105; setenv SERVER_NAME www.slac.stanford.edu; setenv REMOTE_HOST www.google.com
 #For IPv6
 # setenv REMOTE_ADDR 2a00:1450:8007::6a;        setenv SERVER_NAME ui2-4.dir.garr.it
 # setenv QUERY_STRING 'target=ipv6.google.com'; setenv REMOTE_HOST ipv6.google.com 
@@ -41,10 +40,8 @@ if ($0 =~ /nph-/) {
 }
 #Get this out first so can get out error messages
 print $msg."Content-type: text/html\n\n";
-my $version="7.4, 2/26/2018, Les Cottrell";
-#  Sanitized input to defend against cross site scripting (XSS),
-#  See https://www.perl.com/pub/2002/02/20/css.html/
-#  and https://wiki.sei.cmu.edu/confluence/display/perl/IDS33-PL.+Sanitize+untrusted+data+passed+across+a+trust+boundary
+my $version="7.7, 8/9/2018, Les Cottrell";
+# Fixed problem with the -i option.
 ##########################################################################
 #Understand the local environment
 use Cwd;
@@ -226,7 +223,15 @@ foreach my $pair (@pairs) {
     my @arguments=(split/%20/,$value);
     for my $arg(@arguments) {
       if($arg=~/^(-\w+)$/) {#option name
-        push(@options, $1);
+        $temp=$1;
+        if($1 =~ /i/ && $function ne 'ping') {
+          $err.="Special option=$value, not available for $function, "
+              . "remove from QUERY_STRING, or use function=ping.\n";
+          last;
+        }
+        else {
+          push(@options, $temp);
+        }
       }
       elsif ($arg=~/^(\d*\.*\d*)$/) {#option value
         push(@options, $1);
@@ -467,8 +472,18 @@ $msg = "$function from $ipaddr ($ENV{SERVER_NAME}) "
 if($host eq "") {$host="host with no DNS entry";}
 ###############Put out header etc.#####################
 print "<html>\n<head>\n<title>$msg</title>\n"
-    . "<meta name='robots' content='noindex,nofollow'>\n"
-    . "</head>\n<body>\n";
+    . "<meta name='robots' content='noindex,nofollow'>\n";
+################# Framekiller see https://en.wikipedia.org/wiki/Framekiller ##
+print "<style> html{display:none;} </style>\n"
+    . "<script>\n"
+    . "   if(self == top) {\n"
+    . "     document.documentElement.style.display = 'block';\n" 
+    . "   } else {\n"
+    . "       top.location = self.location;\n"
+    . "   }\n"
+    . "</script>\n";
+########## End of framekiller, finish off header #############################
+print "</head>\n<body>\n";
 #######################################################
 # *** Sites may want to tailor the following statement to meet their needs. ******
 if (defined($ENV{'QUERY_STRING'}) && $ENV{'QUERY_STRING'} ne '') {
@@ -1165,3 +1180,11 @@ __END__
 #  7.31 12/16/2017
 #  Accomodated how Solaris differs from Linux in its interpretation of exec(@args).
 #  Improved diagnostic for bad target address or name.
+#my $version="7.4, 2/26/2018, Les Cottrell";
+#  Sanitized input to defend against cross site scripting (XSS),
+#  See https://www.perl.com/pub/2002/02/20/css.html/
+#  and https://wiki.sei.cmu.edu/confluence/display/perl/IDS33-PL.+Sanitize+untrusted+data+passed+across+a+trust+boundary
+#my $version="7.5, 5/28/2018, Les Cottrell";
+#my $version="7.6, 7/20/2018, Les Cottrell";
+# Added fix for Clickjacking - Framable page: using info from https://en.wikipedia.org/wiki/Framekiller
+
