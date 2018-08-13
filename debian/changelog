@@ -1,12 +1,13 @@
-perfsonar-toolkit (4.1~3.b1-6) perfsonar-jessie-staging; urgency=low
+perfsonar-toolkit (4.1-1) perfsonar-release; urgency=low
 
   * New upstream version.
-  * Removing dependencies to bwctl
+  * Adding TWAMP support
   * Adding dependencies to perfsonar-psconfig-* packages
   * Adding package perfsonar-toolkit-compat-database for PostgreSQL migration
   * Make sure configdaemon is listening on 127.0.0.1
+  * Removing dependencies to bwctl
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 17 Jul 2018 14:26:13 +0200
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Mon, 13 Aug 2018 18:20:20 +0000
 
 perfsonar-toolkit (4.0.2.3-2) perfsonar-jessie-release; urgency=low
 

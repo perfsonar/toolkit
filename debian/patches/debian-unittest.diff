@@ -1,5 +1,7 @@
---- toolkit.orig/t/host-get_metadata.t	2018-07-17 13:45:35.264999366 +0200
-+++ toolkit/t/host-get_metadata.t	2018-07-17 13:45:35.252999198 +0200
+Index: toolkit/t/host-get_metadata.t
+===================================================================
+--- toolkit.orig/t/host-get_metadata.t	2018-06-26 18:10:48.000000000 +0000
++++ toolkit/t/host-get_metadata.t	2018-08-13 18:20:23.000000000 +0000
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -8,8 +10,10 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- toolkit.orig/t/host-get_services.t	2018-07-17 13:45:35.264999366 +0200
-+++ toolkit/t/host-get_services.t	2018-07-17 13:45:54.437268386 +0200
+Index: toolkit/t/host-get_services.t
+===================================================================
+--- toolkit.orig/t/host-get_services.t	2018-08-13 18:15:48.000000000 +0000
++++ toolkit/t/host-get_services.t	2018-08-13 18:20:23.000000000 +0000
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -18,8 +22,10 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- toolkit.orig/t/host-get_system_health.t	2018-07-17 13:45:35.264999366 +0200
-+++ toolkit/t/host-get_system_health.t	2018-07-17 13:45:35.252999198 +0200
+Index: toolkit/t/host-get_system_health.t
+===================================================================
+--- toolkit.orig/t/host-get_system_health.t	2018-06-26 18:10:48.000000000 +0000
++++ toolkit/t/host-get_system_health.t	2018-08-13 18:20:23.000000000 +0000
 @@ -9,6 +9,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -28,8 +34,10 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- toolkit.orig/t/host-update_metadata.t	2018-07-17 13:45:35.264999366 +0200
-+++ toolkit/t/host-update_metadata.t	2018-07-17 13:45:35.252999198 +0200
+Index: toolkit/t/host-update_metadata.t
+===================================================================
+--- toolkit.orig/t/host-update_metadata.t	2018-06-26 18:10:48.000000000 +0000
++++ toolkit/t/host-update_metadata.t	2018-08-13 18:20:23.000000000 +0000
 @@ -13,6 +13,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
