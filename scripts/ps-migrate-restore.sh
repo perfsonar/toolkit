@@ -232,7 +232,7 @@ else
 fi
 
 #If moving from 4.0 to 4.1 on CentOS 7, then we need to migrate pSConfig files
-if [ -e "/usr/lib/perfsonar/bin/psconfig_commands/pscheduler-migrate" ];
+if [ -e "/usr/lib/perfsonar/bin/psconfig_commands/pscheduler-migrate" ]; then
     printf "Migrating MeshConfig agent to pSConfig pScheduler Agent..."
     psconfig pscheduler-migrate 
     if [ "$?" != "0" ]; then
@@ -242,7 +242,7 @@ if [ -e "/usr/lib/perfsonar/bin/psconfig_commands/pscheduler-migrate" ];
         echo ""
     fi
 fi
-if [ -e "/usr/lib/perfsonar/bin/psconfig_commands/maddash-migrate" ];
+if [ -e "/usr/lib/perfsonar/bin/psconfig_commands/maddash-migrate" ]; then
     printf "Migrating MeshConfig GUI agent to pSConfig MaDDash agent..."
     psconfig maddash-migrate 
     if [ "$?" != "0" ]; then
