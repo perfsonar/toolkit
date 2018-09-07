@@ -253,6 +253,18 @@ if [ -e "/usr/lib/perfsonar/bin/psconfig_commands/maddash-migrate" ]; then
     fi
 fi
 
+#make sure esmond auth-token is set correctly
+if [ -e "/usr/lib/perfsonar/scripts/system_environment/configure_esmond" ]; then
+    printf "Configuring esmond..."
+    /usr/lib/perfsonar/scripts/system_environment/configure_esmond --force
+    if [ "$?" != "0" ]; then
+        echo "Error configuring esmond"
+    else
+        printf "[SUCCESS]"
+        echo ""
+    fi
+fi
+
 #Clean up temp directory
 rm -rf $TEMP_RST_DIR
 echo "Restore complete."
