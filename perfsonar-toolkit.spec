@@ -17,7 +17,7 @@
 %define relnum   1 
 
 Name:           perfsonar-toolkit
-Version:        4.1.1
+Version:        4.1.2
 Release:        %{relnum}%{?dist}
 Summary:        perfSONAR Toolkit
 License:        ASL 2.0
