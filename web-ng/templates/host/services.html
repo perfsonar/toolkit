@@ -4,9 +4,14 @@
 ******************************************** -->
 
 <div class="module services">
-    <header class="module-header">
-        <h2 class="module-header__title color-bg-accent">Services</h2>
-    </header>
+    <header class ="module-header">
+        <h2 class="module-header__title color-bg-accent ">Services
+		<span style="float:right">
+			<a href="/toolkit/auth/admin/logs/" target="_blank">View service logs<i class="fa fa-external-link"></i></a>
+		</span>
+	</h2>
+ 
+   </header>
 <div id="host_services"></div>
 <script id="host-services-template" type="text/x-handlebars-template">
     <table>
@@ -16,7 +21,7 @@
                 <th>Status</th>
                 <th>Version</th>
                 <th>Ports</th>
-                <th>Service logs</th>
+               
             </tr>
         </thead>
         <tbody>
@@ -41,10 +46,8 @@
                 <td><span class="{{status_class}}">{{status}}</span></td>
                 <td>{{version}}</td>
                 <td>{{daemon_port}}</td>
-                <td><a href="/toolkit/auth/admin/logs/" target="_blank">
-                        View
-                        <i class="fa fa-external-link"></i>
-                    </a></td>
+                
+
             </tr>
                 {{/if}}
             {{/each}}

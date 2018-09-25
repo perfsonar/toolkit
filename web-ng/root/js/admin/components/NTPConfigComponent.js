@@ -77,7 +77,7 @@ NTPConfigComponent._drawServerSelector = function() {
         placeholder: NTPConfigComponent.placeholder,
     });
     //NTPConfigComponent.select2Set = true;
-
+    //NTPConfigComponent.closeEventSet = true;
     if (! NTPConfigComponent.closeEventSet ) {
         sel.on('select2:unselect', function(e) {
                 var unselectedName = e.params.data.text;
