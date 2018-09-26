@@ -607,7 +607,8 @@ TestConfigComponent._drawConfigForm = function( ) {
     if ( newTest ) {
         $('#configureTestForm .new_test_only').show();
         $('#configureTestForm .existing_test_type_only').hide();
-        $('#addTestMemberPanel').show();
+        //$('#testAdd').find('i').toggleClass('fa-plus fa-minus');
+	$('#addTestMemberPanel').show();
     } else {
         $('#configureTestForm .new_test_only').hide();
         $('#configureTestForm .existing_test_type_only').show();
@@ -650,25 +651,38 @@ TestConfigComponent._drawConfigForm = function( ) {
         $('#testAddHostByCommunityDiv').show();
         $('#addHostManually').hide();
     });
+	
+//for toggling the add test members field
+   $('#testAdd').click(function(){
+
+	$(this).find('i').toggleClass('fa-plus fa-minus');	
+   }); 
 
     $('#advanced_traceroute_button').click( function( e ) {
-        TestConfigComponent.toggle_advTraceroute(e);
+        $(this).find('i').toggleClass('fa-plus fa-minus');
+	TestConfigComponent.toggle_advTraceroute(e);
     });
 
     $('#advanced_throughput_button').click( function( e ) {
-        TestConfigComponent.toggle_advThroughput(e);
+        $(this).find('i').toggleClass('fa-plus fa-minus');
+	TestConfigComponent.toggle_advThroughput(e);
     });
 
     $('#advanced_ping_button').click( function( e ) {
-        TestConfigComponent.toggle_advPing(e);
+        $(this).find('i').toggleClass('fa-plus fa-minus');
+	TestConfigComponent.toggle_advPing(e);
     });
 
     $('#advanced_owamp_button').click( function( e ) {
-        TestConfigComponent.toggle_advOwamp(e);
+        
+	$(this).find('i').toggleClass('fa-plus fa-minus');
+	TestConfigComponent.toggle_advOwamp(e);
+	
     });
 
     $('#member_add_button').click( function( e ) {
-        TestConfigComponent.addTestMember(e);
+        //$(this).find('i').toggleClass('fa-plus fa-minus');
+	TestConfigComponent.addTestMember(e);
     });
 
     this.testConfig = testConfig;
@@ -1134,7 +1148,7 @@ TestConfigComponent._addMemberWithSettings = function(settings) {
 
 TestConfigComponent.addTestMember = function(e) {
     e.preventDefault();
-
+    //$(this).find('i').toggleClass('fa-plus fa-minus');
     var hostname = $('#new-host-name').val();
 
     var valid = SharedUIFunctions.validHost( hostname );
