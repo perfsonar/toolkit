@@ -1622,14 +1622,20 @@ S2.define('select2/selection/multiple',[
       'click',
       '.select2-selection__choice__remove',
       function (evt) {
+<<<<<<< HEAD
         // Ignore the event if it is disabled
         if (self.options.get('disabled')) {
           return;
         }
+=======
+      var $remove = $(this);
+      var $selection = $remove.parent();
+>>>>>>> a6d0f2e876949934e2d12ac2481cbff8fa259f6f
 
         var $remove = $(this);
         var $selection = $remove.parent();
 
+<<<<<<< HEAD
         var data = $selection.data('data');
 
         self.trigger('unselect', {
@@ -1638,6 +1644,13 @@ S2.define('select2/selection/multiple',[
         });
       }
     );
+=======
+      self.trigger('unselect', {
+        originalEvent: evt,
+        data: data
+      });
+    });
+>>>>>>> a6d0f2e876949934e2d12ac2481cbff8fa259f6f
   };
 
   MultipleSelection.prototype.clear = function () {
