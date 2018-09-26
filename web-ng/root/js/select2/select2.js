@@ -1540,8 +1540,6 @@ S2.define('select2/selection/multiple',[
 
     this.$selection.on('click', '.select2-selection__choice__remove',
       function (evt) {
-     
-     
       var $remove = $(this);
       var $selection = $remove.parent();
 
@@ -1551,14 +1549,11 @@ S2.define('select2/selection/multiple',[
         originalEvent: evt,
         data: data
       });
-      //Hide dropdown
-      $('#select_ntp_servers').hide();
     });
   };
 
   MultipleSelection.prototype.clear = function () {
     this.$selection.find('.select2-selection__rendered').empty();
-    
   };
 
   MultipleSelection.prototype.display = function (data) {
