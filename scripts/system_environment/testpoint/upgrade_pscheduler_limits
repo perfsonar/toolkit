@@ -1,3 +1,21 @@
+#!/bin/bash
+
+# Check and replace limits file that caps TCP bandwidth to 50mbps introduced in 4.1
+
+
+#New installs should be safe
+if [ "$1" == "new" ]; then
+    exit 0;
+fi
+
+#if not limits file, then exit
+if [ ! -f /etc/pscheduler/limits.conf ]; then
+    exit 0
+fi
+
+#Create a temp of the old dile
+TEMPFILE=$(mktemp)
+cat >$TEMPFILE <<EOF
 {
     "#": "-------------------------------------------------------------------",
     "#": "                 PSCHEDULER LIMIT CONFIGURATION                    ",
@@ -101,11 +119,10 @@
             ".",
 
 	    "# Hold this for use later.",
-	    "| .test.type as $testtype",
+	    "| .test.type as \$testtype",
 
-            "# Throttle non-friendlies wanting UDP throughput to 50 Mb/s",
-            "| if $testtype == \"throughput\"",
-            "    and .test.spec.udp",
+            "# Throttle non-friendlies to 50 Mb/s for throughput",
+            "| if \$testtype == \"throughput\"",
             "    and (",
             "      (.test.spec.bandwidth == null)",
             "      or (.test.spec.bandwidth > 50000000)",
@@ -113,14 +130,14 @@
             "    and (classifiers | contains([\"friendlies\"]) | not)",
             "  then",
             "    .test.spec.bandwidth = 50000000",
-            "    | change(\"Throttled UDP bandwidth to 50 Mb/s\")",
+            "    | change(\"Throttled bandwidth to 50 Mb/s\")",
             "  else",
             "    .",
             "  end",
 
             "# Make some tests run a minimum of 5 seconds",
             "| if ( [\"idle\", \"idlebgm\", \"idleex\", \"latency\", \"latencybg\", \"throughput\" ]",
-	    "       | contains([$testtype]) )",
+	    "       | contains([\$testtype]) )",
             "    and .test.spec.duration != null",
             "    and iso::duration_as_seconds(.test.spec.duration) < 5",
             "  then",
@@ -247,3 +264,11 @@
 	}
     ]
 }
+EOF
+
+#compare and replace if same
+cmp --quiet /etc/pscheduler/limits.conf $TEMPFILE
+if [ $? -eq 0 ]; then
+    cp -f /etc/perfsonar/toolkit/default_service_configs/pscheduler_limits.conf /etc/pscheduler/limits.conf
+fi
+rm -f $TEMPFILE
