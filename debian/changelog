@@ -1,8 +1,14 @@
-perfsonar-toolkit (4.2~0-1) perfsonar-release; urgency=low
+perfsonar-toolkit (4.1.2-1) perfsonar-release; urgency=low
 
   * New upstream version.
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Mon, 13 Aug 2018 18:20:20 +0000
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Thu, 13 Sep 2018 08:03:18 +0200
+
+perfsonar-toolkit (4.1.1-1) perfsonar-release; urgency=low
+
+  * New upstream version.
+
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Fri, 24 Aug 2018 17:31:50 +0000
 
 perfsonar-toolkit (4.1-1) perfsonar-release; urgency=low
 
