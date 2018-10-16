@@ -1,7 +1,7 @@
 Index: toolkit/scripts/system_environment/configure_esmond
 ===================================================================
---- toolkit.orig/scripts/system_environment/configure_esmond	2018-06-26 18:10:48.000000000 +0000
-+++ toolkit/scripts/system_environment/configure_esmond	2018-08-13 18:20:22.000000000 +0000
+--- toolkit.orig/scripts/system_environment/configure_esmond	2018-09-13 02:03:23.091535000 -0400
++++ toolkit/scripts/system_environment/configure_esmond	2018-10-16 14:47:47.497010956 -0400
 @@ -1,8 +1,4 @@
  #!/bin/bash
 -PG_VERSION=9.5
@@ -114,8 +114,8 @@ Index: toolkit/scripts/system_environment/configure_esmond
  if [ -n "$KEY" ]; then
 Index: toolkit/scripts/system_environment/configure_fail2ban
 ===================================================================
---- toolkit.orig/scripts/system_environment/configure_fail2ban	2018-06-26 18:10:48.000000000 +0000
-+++ toolkit/scripts/system_environment/configure_fail2ban	2018-08-13 18:20:22.000000000 +0000
+--- toolkit.orig/scripts/system_environment/configure_fail2ban	2018-09-13 02:03:23.091535000 -0400
++++ toolkit/scripts/system_environment/configure_fail2ban	2018-10-16 14:47:47.501106963 -0400
 @@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
@@ -125,8 +125,8 @@ Index: toolkit/scripts/system_environment/configure_fail2ban
  fi
 Index: toolkit/scripts/system_environment/upgrade_configdaemon
 ===================================================================
---- toolkit.orig/scripts/system_environment/upgrade_configdaemon	2018-06-26 18:10:48.000000000 +0000
-+++ toolkit/scripts/system_environment/upgrade_configdaemon	2018-08-13 18:20:22.000000000 +0000
+--- toolkit.orig/scripts/system_environment/upgrade_configdaemon	2018-09-13 02:03:23.091535000 -0400
++++ toolkit/scripts/system_environment/upgrade_configdaemon	2018-10-16 14:47:47.502949587 -0400
 @@ -87,5 +87,5 @@
  EOF
  
@@ -136,8 +136,8 @@ Index: toolkit/scripts/system_environment/upgrade_configdaemon
  fi
 Index: toolkit/scripts/system_environment/upgrade_fix_permissions
 ===================================================================
---- toolkit.orig/scripts/system_environment/upgrade_fix_permissions	2018-06-26 18:10:48.000000000 +0000
-+++ toolkit/scripts/system_environment/upgrade_fix_permissions	2018-08-13 18:20:22.000000000 +0000
+--- toolkit.orig/scripts/system_environment/upgrade_fix_permissions	2018-09-13 02:03:23.091535000 -0400
++++ toolkit/scripts/system_environment/upgrade_fix_permissions	2018-10-16 14:47:47.505445105 -0400
 @@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
@@ -163,8 +163,8 @@ Index: toolkit/scripts/system_environment/upgrade_fix_permissions
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
 Index: toolkit/scripts/configure_apache_security
 ===================================================================
---- toolkit.orig/scripts/configure_apache_security	2018-06-26 18:10:48.000000000 +0000
-+++ toolkit/scripts/configure_apache_security	2018-08-13 18:20:22.000000000 +0000
+--- toolkit.orig/scripts/configure_apache_security	2018-09-13 02:03:23.091535000 -0400
++++ toolkit/scripts/configure_apache_security	2018-10-16 14:47:47.507334261 -0400
 @@ -5,14 +5,29 @@
  # 'upgrade' or 'new install' context.
  #######################
@@ -203,8 +203,8 @@ Index: toolkit/scripts/configure_apache_security
 +done
 Index: toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location
 ===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-06-26 18:10:48.000000000 +0000
-+++ toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-08-13 18:20:22.000000000 +0000
+--- toolkit.orig/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-09-13 02:03:23.091535000 -0400
++++ toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-10-16 14:47:47.509813388 -0400
 @@ -17,15 +17,10 @@
  cat >> /etc/rsyslog.d/owamp-syslog.conf <<EOF                                          
  # Save bwctl and owamp messages to /var/log/perfsonar/owamp.log
