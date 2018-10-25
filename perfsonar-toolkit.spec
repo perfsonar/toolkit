@@ -116,6 +116,11 @@ Requires:       nagios-plugins-all
 BuildRequires:  systemd
 %{?systemd_requires: %systemd_requires}
 
+# SELinux support
+BuildRequires: selinux-policy-devel
+Requires: policycoreutils, libselinux-utils
+Requires(post): selinux-policy-targeted, policycoreutils
+Requires(postun): policycoreutils
 
 # Unit test mock library
 BuildRequires: perl-Test-MockObject
@@ -348,6 +353,7 @@ rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_local
 %setup -q -n perfsonar-toolkit-%{version}.%{relnum}
 
 %build
+make -f /usr/share/selinux/devel/Makefile -C selinux perfsonar-toolkit.pp
 
 %install
 rm -rf %{buildroot}
@@ -368,6 +374,10 @@ mkdir -p %{buildroot}/usr/lib/firewalld/services/
 mv etc/firewalld/services/* %{buildroot}/usr/lib/firewalld/services/
 rm -rf etc/firewalld
 
+mkdir -p %{buildroot}/usr/share/selinux/packages/
+mv selinux/*.pp %{buildroot}/usr/share/selinux/packages/
+rm -rf %{buildroot}/usr/lib/perfsonar/selinux
+
 mv etc/* %{buildroot}/%{config_base}
 
 # Clean up unnecessary files
@@ -381,6 +391,11 @@ rm -rf %{buildroot}/%{install_base}/init_scripts
 rm -rf %{buildroot}
 
 %post
+semodule -n -i %{_datadir}/selinux/packages/perfsonar-toolkit.pp
+if /usr/sbin/selinuxenabled; then
+    /usr/sbin/load_policy
+fi
+
 # Add a group of users who can login to the web ui
 touch /etc/perfsonar/toolkit/psadmin.htpasswd
 chgrp apache /etc/perfsonar/toolkit/psadmin.htpasswd
@@ -461,6 +476,14 @@ systemctl restart psconfig-pscheduler-agent &>/dev/null || :
 systemctl restart %{init_script_1} &>/dev/null || :
 /etc/init.d/%{init_script_2} start &>/dev/null || :
 /etc/init.d/%{init_script_3} start &>/dev/null || :
+
+%postun
+if [ $1 -eq 0 ]; then
+    semodule -n -r perfsonar-toolkit
+    if /usr/sbin/selinuxenabled; then
+       /usr/sbin/load_policy
+    fi
+fi
 
 %post systemenv-testpoint
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
@@ -580,6 +603,7 @@ fi
 %{install_base}/web-ng/*
 /etc/httpd/conf.d/*
 %attr(0640,root,root) /etc/sudoers.d/*
+%attr(0644,root,root) /usr/share/selinux/packages/*
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/administrative_info/index.cgi
