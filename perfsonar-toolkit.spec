@@ -4,6 +4,8 @@
 %define config_base /etc/perfsonar/toolkit
 %define graphs_base %{install_base}/graphs
 
+%define webng_config web-ng/etc
+
 %define apacheconf apache-toolkit_web_gui.conf
 %define sudoerconf perfsonar_sudo
 
@@ -563,6 +565,7 @@ fi
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
 %license LICENSE
+%config(noreplace) %{webng_config}/*
 %config(noreplace) %{config_base}/*
 %exclude %{config_base}/default_system_firewall_settings.conf
 %exclude %{config_base}/perfsonar_firewall_settings.conf
