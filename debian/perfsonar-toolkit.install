@@ -1,4 +1,6 @@
-web-ng usr/lib/perfsonar
+web-ng/etc/* etc/perfsonar/toolkit
+web-ng/root usr/lib/perfsonar/web-ng
+web-ng/templates usr/lib/perfsonar/web-ng
 etc/administrative_info etc/perfsonar/toolkit
 etc/default_service_configs/jail.local etc/perfsonar/toolkit/default_service_configs/
 etc/perfsonar_sudo etc/sudoers.d

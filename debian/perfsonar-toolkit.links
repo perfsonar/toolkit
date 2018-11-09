@@ -1,1 +1,2 @@
 /var/log/perfsonar /usr/lib/perfsonar/web-ng/root/admin/logs
+/etc/perfsonar/toolkit /usr/lib/perfsonar/web-ng/etc
