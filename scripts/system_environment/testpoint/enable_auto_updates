@@ -13,7 +13,7 @@ REST=${PREV_VERSION/${MAJOR}\.}
 MINOR=${REST%%\.*}
 
 # Need to activate if new install or if they were previously running 3.3.2 or older
-if [[ "$1" == "new" || $MAJOR -lt 3 || ( $MAJOR -eq 3 && $MINOR -lt 4 ) ]]; then
+if [ "$1" == "new" ]; then
     echo "Enabling Automatic Updates"
     if type systemctl &>/dev/null; then
         systemctl enable yum-cron
@@ -21,10 +21,10 @@ if [[ "$1" == "new" || $MAJOR -lt 3 || ( $MAJOR -eq 3 && $MINOR -lt 4 ) ]]; then
         chkconfig --add yum-cron
         chkconfig yum-cron on
     fi
+    # Make sure download_updates and apply_updates are on in centos 7
+    if [ -f "/etc/yum/yum-cron.conf" ]; then
+        sed -i "s/download_updates = .*/download_updates = yes/g" /etc/yum/yum-cron.conf
+        sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/yum/yum-cron.conf
+    fi
 fi
 
-# Make sure download_updates and apply_updates are on in centos 7
-if [ -f "/etc/yum/yum-cron.conf" ]; then
-    sed -i "s/download_updates = .*/download_updates = yes/g" /etc/yum/yum-cron.conf
-    sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/yum/yum-cron.conf
-fi
