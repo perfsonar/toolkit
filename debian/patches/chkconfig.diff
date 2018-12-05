@@ -1,7 +1,5 @@
-Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
-===================================================================
---- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-10-16 14:47:45.935459607 -0400
-+++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-10-16 14:47:46.578589792 -0400
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-12-05 15:23:21.932455323 +0100
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-12-05 15:23:21.924455203 +0100
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -80,10 +78,8 @@ Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
          start
          RETVAL=$?
          ;;
-Index: toolkit/scripts/system_environment/disable_unwanted_services
-===================================================================
---- toolkit.orig/scripts/system_environment/disable_unwanted_services	2018-09-13 02:03:23.326446000 -0400
-+++ toolkit/scripts/system_environment/disable_unwanted_services	2018-10-16 14:47:46.581129789 -0400
+--- toolkit.orig/scripts/system_environment/disable_unwanted_services	2018-12-05 15:23:21.932455323 +0100
++++ toolkit/scripts/system_environment/disable_unwanted_services	2018-12-05 15:23:21.924455203 +0100
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -96,21 +92,17 @@ Index: toolkit/scripts/system_environment/disable_unwanted_services
      fi
  }
  
-Index: toolkit/scripts/system_environment/testpoint/enable_auto_updates
-===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2018-09-13 02:03:23.326446000 -0400
-+++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2018-10-16 14:47:46.583798097 -0400
-@@ -11,20 +11,20 @@
+--- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2018-12-05 15:23:21.932455323 +0100
++++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2018-12-05 15:25:49.046669270 +0100
+@@ -11,20 +11,18 @@
  MAJOR=${PREV_VERSION%%\.*}
  REST=${PREV_VERSION/${MAJOR}\.}
  MINOR=${REST%%\.*}
 +CONFIG=/etc/apt/apt.conf.d/60unattended-upgrades-perfsonar
  
  # Need to activate if new install or if they were previously running 3.3.2 or older
--if [[ "$1" == "new" || $MAJOR -lt 3 || ( $MAJOR -eq 3 && $MINOR -lt 4 ) ]]; then
-+if [[ "$1" == "new" || $MAJOR -lt 3 || ( $MAJOR -eq 3 && $MINOR -lt 4 ) ]] \
-+	|| ! grep -qs Download-Upgradeable-Packages $CONFIG
-+then
+-if [ "$1" == "new" ]; then
++if [ "$1" == "new" ] || ! grep -qs Download-Upgradeable-Packages $CONFIG; then
      echo "Enabling Automatic Updates"
 -    if type systemctl &>/dev/null; then
 -        systemctl enable yum-cron
@@ -118,14 +110,13 @@ Index: toolkit/scripts/system_environment/testpoint/enable_auto_updates
 -        chkconfig --add yum-cron
 -        chkconfig yum-cron on
 -    fi
+-    # Make sure download_updates and apply_updates are on in centos 7
+-    if [ -f "/etc/yum/yum-cron.conf" ]; then
+-        sed -i "s/download_updates = .*/download_updates = yes/g" /etc/yum/yum-cron.conf
+-        sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/yum/yum-cron.conf
+-    fi
 -fi
  
--# Make sure download_updates and apply_updates are on in centos 7
--if [ -f "/etc/yum/yum-cron.conf" ]; then
--    sed -i "s/download_updates = .*/download_updates = yes/g" /etc/yum/yum-cron.conf
--    sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/yum/yum-cron.conf
--fi
-\ No newline at end of file
 +    cat <<EOF >$CONFIG
 +APT::Periodic::Update-Package-Lists "1";
 +APT::Periodic::Download-Upgradeable-Packages "1";
@@ -135,10 +126,8 @@ Index: toolkit/scripts/system_environment/testpoint/enable_auto_updates
 +EOF
 +
 +fi
-Index: toolkit/scripts/system_environment/testpoint/enable_nscd
-===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2018-09-13 02:03:23.326446000 -0400
-+++ toolkit/scripts/system_environment/testpoint/enable_nscd	2018-10-16 14:47:46.585376029 -0400
+--- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2018-12-05 15:23:21.932455323 +0100
++++ toolkit/scripts/system_environment/testpoint/enable_nscd	2018-12-05 15:23:21.924455203 +0100
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
      systemctl enable nscd
