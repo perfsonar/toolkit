@@ -541,7 +541,11 @@ systemctl enable fail2ban
 %{install_base}/scripts/configure_memcached_security
 
 #configure apache
-%{install_base}/scripts/configure_apache_security install
+if [ $1 -eq 1 ] ; then
+    %{install_base}/scripts/configure_apache_security new
+else
+    %{install_base}/scripts/configure_apache_security upgrade
+fi
 systemctl restart httpd &>/dev/null || :
 
 %post sysctl
