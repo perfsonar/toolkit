@@ -43,41 +43,6 @@ mkdir -p $TEMP_BAK_DIR/etc
 mkdir -p $TEMP_BAK_DIR/cassandra_data
 mkdir -p $TEMP_BAK_DIR/postgresql_data
 
-#get users and groups
-printf "Backing-up users..."
-UGIDLIMIT=500
-awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534)' /etc/passwd | grep -v "perfsonar" | grep -v "npad" > $TEMP_BAK_DIR/etc/passwd
-if [ "$?" != "0" ]; then
-    printf "[SUCCESS]"
-    echo ""
-    echo " - Note: No users found to be migrated. This may be normal if you have not setup any non-root users"
-else
-    printf "[SUCCESS]"
-    echo ""
-fi
-
-printf "Backing-up groups..."
-awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534)' /etc/group | grep -v "perfsonar" | grep -v "npad" > $TEMP_BAK_DIR/etc/group
-if [ "$?" != "0" ]; then
-    printf "[SUCCESS]"
-    echo ""
-    echo " - Note: No groups found to be migrated. This may be normal if you have not setup any non-root users"
-else
-    printf "[SUCCESS]"
-    echo ""
-fi
-
-printf "Backing-up passwords..."
-awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534) {print $1}' /etc/passwd | grep -v "perfsonar" | grep -v "npad" | tee - | egrep -f - /etc/shadow > $TEMP_BAK_DIR/etc/shadow
-if [ "$?" != "0" ]; then
-    printf "[SUCCESS]"
-    echo ""
-    echo " - Note: No user account passwords found to be migrated. This may be normal if you have not setup any non-root users"
-else
-    printf "[SUCCESS]"
-    echo ""
-fi
-
 #get perfsonar files
 printf "Backing-up perfsonar configuration..."
 cp -a /etc/perfsonar $TEMP_BAK_DIR/etc

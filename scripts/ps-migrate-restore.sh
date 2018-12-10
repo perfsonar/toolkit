@@ -57,51 +57,6 @@ else
     exit 1
 fi
 
-#get users
-EXISTING_USERS=`awk -v LIMIT=500 -F: '($3>=LIMIT) && ($3!=65534)' /etc/passwd`
-if [ -n "$EXISTING_USERS" ]; then
-    echo "WARN: Looks like non-root user accounts were created prior to running this script. Skipping user account restoration to avoid conflicts"
-else
-    printf "Restoring users..."
-    if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd" ]; then
-        cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd >> /etc/passwd 
-        if [ "$?" != "0" ]; then
-            echo "Unable to restore /etc/passwd"
-            exit 1
-        fi
-        awk -F: '{ print $6 }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd | xargs --no-run-if-empty mkdir
-    fi
-    printf "[SUCCESS]"
-    echo ""
-
-    #get groups
-    printf "Restoring groups..."
-    if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group" ]; then
-        cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/group >> /etc/group
-        if [ "$?" != "0" ]; then
-            echo "Unable to restore /etc/group"
-            exit 1
-        else
-            #finish setting permission on home directories now that groups are created
-            awk -F: '{ system("chown "$1":"$1" "$6) }' $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/passwd
-        fi
-    fi
-    printf "[SUCCESS]"
-    echo ""
-
-    #get shadow file
-    printf "Restoring passwords..."
-    if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow" ]; then
-        cat $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/shadow >> /etc/shadow 
-        if [ "$?" != "0" ]; then
-            echo "Unable to restore /etc/shadow"
-            exit 1
-        fi
-    fi
-    printf "[SUCCESS]"
-    echo ""
-fi
-
 #get administrative info
 printf "Restoring perfsonar configuration..."
 cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/etc/perfsonar/* /etc/perfsonar
