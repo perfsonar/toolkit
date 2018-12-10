@@ -4,6 +4,8 @@
 %define config_base /etc/perfsonar/toolkit
 %define graphs_base %{install_base}/graphs
 
+%define webng_config /usr/lib/perfsonar/web-ng/etc
+
 %define apacheconf apache-toolkit_web_gui.conf
 %define sudoerconf perfsonar_sudo
 
