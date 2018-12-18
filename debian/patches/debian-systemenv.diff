@@ -1,7 +1,7 @@
 Index: toolkit/scripts/system_environment/configure_esmond
 ===================================================================
---- toolkit.orig/scripts/system_environment/configure_esmond	2018-09-13 02:03:23.091535000 -0400
-+++ toolkit/scripts/system_environment/configure_esmond	2018-10-16 14:47:47.497010956 -0400
+--- toolkit.orig/scripts/system_environment/configure_esmond	2018-12-18 21:23:20.799755000 +0000
++++ toolkit/scripts/system_environment/configure_esmond	2018-12-18 21:25:08.807087251 +0000
 @@ -1,8 +1,4 @@
  #!/bin/bash
 -PG_VERSION=9.5
@@ -114,8 +114,8 @@ Index: toolkit/scripts/system_environment/configure_esmond
  if [ -n "$KEY" ]; then
 Index: toolkit/scripts/system_environment/configure_fail2ban
 ===================================================================
---- toolkit.orig/scripts/system_environment/configure_fail2ban	2018-09-13 02:03:23.091535000 -0400
-+++ toolkit/scripts/system_environment/configure_fail2ban	2018-10-16 14:47:47.501106963 -0400
+--- toolkit.orig/scripts/system_environment/configure_fail2ban	2018-12-18 21:23:20.799755000 +0000
++++ toolkit/scripts/system_environment/configure_fail2ban	2018-12-18 21:25:08.807704890 +0000
 @@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
@@ -125,8 +125,8 @@ Index: toolkit/scripts/system_environment/configure_fail2ban
  fi
 Index: toolkit/scripts/system_environment/upgrade_configdaemon
 ===================================================================
---- toolkit.orig/scripts/system_environment/upgrade_configdaemon	2018-09-13 02:03:23.091535000 -0400
-+++ toolkit/scripts/system_environment/upgrade_configdaemon	2018-10-16 14:47:47.502949587 -0400
+--- toolkit.orig/scripts/system_environment/upgrade_configdaemon	2018-12-18 21:23:20.799755000 +0000
++++ toolkit/scripts/system_environment/upgrade_configdaemon	2018-12-18 21:25:08.808133967 +0000
 @@ -87,5 +87,5 @@
  EOF
  
@@ -136,8 +136,8 @@ Index: toolkit/scripts/system_environment/upgrade_configdaemon
  fi
 Index: toolkit/scripts/system_environment/upgrade_fix_permissions
 ===================================================================
---- toolkit.orig/scripts/system_environment/upgrade_fix_permissions	2018-09-13 02:03:23.091535000 -0400
-+++ toolkit/scripts/system_environment/upgrade_fix_permissions	2018-10-16 14:47:47.505445105 -0400
+--- toolkit.orig/scripts/system_environment/upgrade_fix_permissions	2018-12-18 21:23:20.799755000 +0000
++++ toolkit/scripts/system_environment/upgrade_fix_permissions	2018-12-18 21:25:08.808518082 +0000
 @@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
@@ -163,30 +163,33 @@ Index: toolkit/scripts/system_environment/upgrade_fix_permissions
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
 Index: toolkit/scripts/configure_apache_security
 ===================================================================
---- toolkit.orig/scripts/configure_apache_security	2018-09-13 02:03:23.091535000 -0400
-+++ toolkit/scripts/configure_apache_security	2018-10-16 14:47:47.507334261 -0400
-@@ -5,14 +5,29 @@
- # 'upgrade' or 'new install' context.
+--- toolkit.orig/scripts/configure_apache_security	2018-12-18 21:23:20.799755000 +0000
++++ toolkit/scripts/configure_apache_security	2018-12-18 21:25:08.808951158 +0000
+@@ -5,16 +5,31 @@
+ # updates. Settings will be in apache-security.conf but if someone wants 
+ # to override those settings then they can do so in ssl.comnf after first install
  #######################
- 
--sed -i 's|SSLProtocol.*|SSLProtocol -ALL +TLSv1.2 +TLSv1.1 +TLSv1|g' /etc/httpd/conf.d/ssl.conf
 +if [ -e /etc/apache2/sites-available/default-ssl.conf ]; then
 +    SSLCONF=/etc/apache2/sites-available/default-ssl.conf
 +else
 +    SSLCONF=/etc/apache2/sites-available/default-ssl
 +fi
- 
--sed -i 's|SSLCipherSuite.*|SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS|g'  /etc/httpd/conf.d/ssl.conf
-+grep -q '^[[:space:]]*SSLProtocol' $SSLCONF || \
-+  sed -i '/^[[:space:]]*<\/VirtualHost>/i \
-+		SSLProtocol' $SSLCONF
-+sed -i 's|SSLProtocol.*|SSLProtocol -ALL +TLSv1.2 +TLSv1.1 +TLSv1|g' $SSLCONF
 +
-+grep -q '^[[:space:]]*SSLCipherSuite' $SSLCONF || \
-+  sed -i '/^[[:space:]]*<\/VirtualHost>/i \
+ ###TODO: Will add if-statements in 4.1.6 to only update on install. This will get
+ ##### updaters to 4.1.5 on new system. 
+ #if [ "$1" == "new" ]; then
+-    sed -i 's|^SSLProtocol\(.*\)|#SSLProtocol\1|g' /etc/httpd/conf.d/ssl.conf
+-    sed -i 's|^SSLCipherSuite\(.*\)|#SSLCipherSuite\1|g'  /etc/httpd/conf.d/ssl.conf
++    grep -q '^[[:space:]]*SSLProtocol' $SSLCONF || \
++        sed -i '/^[[:space:]]*<\/VirtualHost>/i \
++    		SSLProtocol' $SSLCONF
++    sed -i 's|^SSLProtocol\(.*\)|#SSLProtocol\1|g' $SSLCONF
++
++    grep -q '^[[:space:]]*SSLCipherSuite' $SSLCONF || \
++        sed -i '/^[[:space:]]*<\/VirtualHost>/i \
 +		SSLCipherSuite' $SSLCONF
-+sed -i 's|SSLCipherSuite.*|SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS|g' $SSLCONF
- 
++    sed -i 's|^SSLCipherSuite\(.*\)|#SSLCipherSuite\1|g' $SSLCONF
+ #fi
  
  #######################
  # Get rid of default welcome page
@@ -195,7 +198,6 @@ Index: toolkit/scripts/configure_apache_security
 -    mv -f /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.bak
 -fi
 \ No newline at end of file
-+mkdir -p /var/www/perfsonar
 +for CONF in /etc/apache2/sites-available/{default,default-ssl,000-default.conf,default-ssl.conf}; do
 +    if [ -f $CONF ]; then
 +       sed -i 's/DocumentRoot \/var\/www\(\/html\)\?$/DocumentRoot \/var\/www\/perfsonar/' $CONF
@@ -203,8 +205,8 @@ Index: toolkit/scripts/configure_apache_security
 +done
 Index: toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location
 ===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-09-13 02:03:23.091535000 -0400
-+++ toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-10-16 14:47:47.509813388 -0400
+--- toolkit.orig/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-12-18 21:23:20.799755000 +0000
++++ toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location	2018-12-18 21:25:08.809385063 +0000
 @@ -17,15 +17,10 @@
  cat >> /etc/rsyslog.d/owamp-syslog.conf <<EOF                                          
  # Save bwctl and owamp messages to /var/log/perfsonar/owamp.log

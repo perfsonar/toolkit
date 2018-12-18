@@ -1,5 +1,7 @@
---- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-12-05 15:23:21.932455323 +0100
-+++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-12-05 15:23:21.924455203 +0100
+Index: toolkit/init_scripts/perfsonar-configure_nic_parameters
+===================================================================
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2018-12-18 21:25:07.932208145 +0000
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2018-12-18 21:25:08.287744340 +0000
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -78,8 +80,10 @@
          start
          RETVAL=$?
          ;;
---- toolkit.orig/scripts/system_environment/disable_unwanted_services	2018-12-05 15:23:21.932455323 +0100
-+++ toolkit/scripts/system_environment/disable_unwanted_services	2018-12-05 15:23:21.924455203 +0100
+Index: toolkit/scripts/system_environment/disable_unwanted_services
+===================================================================
+--- toolkit.orig/scripts/system_environment/disable_unwanted_services	2018-12-18 21:23:20.925982000 +0000
++++ toolkit/scripts/system_environment/disable_unwanted_services	2018-12-18 21:25:08.288296268 +0000
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -92,8 +96,10 @@
      fi
  }
  
---- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2018-12-05 15:23:21.932455323 +0100
-+++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2018-12-05 15:25:49.046669270 +0100
+Index: toolkit/scripts/system_environment/testpoint/enable_auto_updates
+===================================================================
+--- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2018-12-18 21:23:20.925982000 +0000
++++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2018-12-18 21:25:08.288947077 +0000
 @@ -11,20 +11,18 @@
  MAJOR=${PREV_VERSION%%\.*}
  REST=${PREV_VERSION/${MAJOR}\.}
@@ -126,8 +132,10 @@
 +EOF
 +
 +fi
---- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2018-12-05 15:23:21.932455323 +0100
-+++ toolkit/scripts/system_environment/testpoint/enable_nscd	2018-12-05 15:23:21.924455203 +0100
+Index: toolkit/scripts/system_environment/testpoint/enable_nscd
+===================================================================
+--- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2018-12-18 21:23:20.925982000 +0000
++++ toolkit/scripts/system_environment/testpoint/enable_nscd	2018-12-18 21:25:08.289362039 +0000
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
      systemctl enable nscd

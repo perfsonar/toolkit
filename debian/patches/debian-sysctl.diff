@@ -1,7 +1,7 @@
 Index: toolkit/scripts/configure_sysctl
 ===================================================================
---- toolkit.orig/scripts/configure_sysctl	2018-09-13 02:03:22.964521000 -0400
-+++ toolkit/scripts/configure_sysctl	2018-10-16 14:47:48.114693349 -0400
+--- toolkit.orig/scripts/configure_sysctl	2018-12-18 21:23:20.738539000 +0000
++++ toolkit/scripts/configure_sysctl	2018-12-18 21:25:09.140441374 +0000
 @@ -70,7 +70,6 @@
              #set if centos 6 and 10Gbps or higher
              $default_sysctl_settings{'net.core.netdev_max_backlog'} = 250000 if($max_speed >= 10000000000);

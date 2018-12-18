@@ -1,7 +1,7 @@
 Index: toolkit/scripts/nptoolkit-configure.py
 ===================================================================
---- toolkit.orig/scripts/nptoolkit-configure.py	2018-09-13 02:03:23.213996000 -0400
-+++ toolkit/scripts/nptoolkit-configure.py	2018-10-16 14:47:47.075699104 -0400
+--- toolkit.orig/scripts/nptoolkit-configure.py	2018-12-18 21:23:20.863345000 +0000
++++ toolkit/scripts/nptoolkit-configure.py	2018-12-18 21:25:08.570502716 +0000
 @@ -99,7 +99,7 @@
                      },
                      {
@@ -22,8 +22,8 @@ Index: toolkit/scripts/nptoolkit-configure.py
          item = toolkitItem(item["description"], item["command"], item["isConfiguredFunction"], item["required"], item["requiresReboot"])
 Index: toolkit/scripts/install-optional-packages.py
 ===================================================================
---- toolkit.orig/scripts/install-optional-packages.py	2018-09-13 02:03:23.213996000 -0400
-+++ toolkit/scripts/install-optional-packages.py	2018-10-16 14:47:47.078414325 -0400
+--- toolkit.orig/scripts/install-optional-packages.py	2018-12-18 21:23:20.863345000 +0000
++++ toolkit/scripts/install-optional-packages.py	2018-12-18 21:25:08.571143074 +0000
 @@ -12,7 +12,7 @@
  
  sys.path.append(libdir)
