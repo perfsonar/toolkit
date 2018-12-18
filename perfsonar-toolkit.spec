@@ -4,6 +4,8 @@
 %define config_base /etc/perfsonar/toolkit
 %define graphs_base %{install_base}/graphs
 
+%define webng_config /usr/lib/perfsonar/web-ng/etc
+
 %define apacheconf apache-toolkit_web_gui.conf
 %define sudoerconf perfsonar_sudo
 
@@ -17,7 +19,7 @@
 %define relnum   1 
 
 Name:           perfsonar-toolkit
-Version:        4.1.4
+Version:        4.1.5
 Release:        %{relnum}%{?dist}
 Summary:        perfSONAR Toolkit
 License:        ASL 2.0
@@ -539,7 +541,11 @@ systemctl enable fail2ban
 %{install_base}/scripts/configure_memcached_security
 
 #configure apache
-%{install_base}/scripts/configure_apache_security install
+if [ $1 -eq 1 ] ; then
+    %{install_base}/scripts/configure_apache_security new
+else
+    %{install_base}/scripts/configure_apache_security upgrade
+fi
 systemctl restart httpd &>/dev/null || :
 
 %post sysctl
@@ -563,6 +569,7 @@ fi
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
 %license LICENSE
+%config(noreplace) %{webng_config}/*
 %config(noreplace) %{config_base}/*
 %exclude %{config_base}/default_system_firewall_settings.conf
 %exclude %{config_base}/perfsonar_firewall_settings.conf
