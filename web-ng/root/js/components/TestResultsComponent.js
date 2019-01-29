@@ -413,6 +413,7 @@ TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_
     var ma_url = TestResultsComponent.ma_url;
     var container = $('#' + container_id);
     var link = $('#' + container_id + ' a.traceroute_link');
+    var tt_link = $('#' + container_id + ' a.tracetree_link');
     var tr_url = '/perfsonar-graphs/cgi-bin/graphData.cgi?action=has_traceroute_data&url=' + ma_url
             + '&source=' + source_ip + '&dest=' + dest_ip;
     $.ajax({
@@ -429,12 +430,18 @@ TestResultsComponent.setTracerouteLink = function(source_ip, dest_ip, container_
                     //trace_url += '&tzselect='; // Commented out (allow default to be used)
                     trace_url += '&epselect=' + trace_data.traceroute_uri;
                     trace_url += '';
-
                     link.attr("href", trace_url);
+
+                    var ma = new URL(trace_data.ma_url)
+                    var tt_url = '/perfsonar-tracetree/?';
+                    tt_url += 'mahost=' + ma.origin + trace_data.traceroute_uri;
+                    tt_link.attr("href", tt_url);
+
                     container.addClass('has_traceroute');
                 } else {
                     container.removeClass('has_traceroute');
                     link.attr("href", "");
+                    tt_link.attr("href", "");
                 }
             }
 
