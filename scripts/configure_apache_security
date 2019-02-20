@@ -5,12 +5,10 @@
 # updates. Settings will be in apache-security.conf but if someone wants 
 # to override those settings then they can do so in ssl.comnf after first install
 #######################
-###TODO: Will add if-statements in 4.1.6 to only update on install. This will get
-##### updaters to 4.1.5 on new system. 
-#if [ "$1" == "new" ]; then
+if [ "$1" == "new" ]; then
     sed -i 's|^SSLProtocol\(.*\)|#SSLProtocol\1|g' /etc/httpd/conf.d/ssl.conf
     sed -i 's|^SSLCipherSuite\(.*\)|#SSLCipherSuite\1|g'  /etc/httpd/conf.d/ssl.conf
-#fi
+fi
 
 #######################
 # Get rid of default welcome page
