@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+adduser --disabled-password --gecos autopkgtest autopkgtest
+adduser autopkgtest pssudo
+echo autopkgtest:autopkgpass | chpasswd
+
+cat > $AUTOPKGTEST_TMP/askpass <<EOF
+#!/bin/sh
+echo autopkgpass
+EOF
+chmod +x $AUTOPKGTEST_TMP/askpass
+
+su -c "SUDO_ASKPASS=$AUTOPKGTEST_TMP/askpass sudo -A id" autopkgtest 2>&1 \
+| grep root

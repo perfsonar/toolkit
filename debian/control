@@ -1,0 +1,108 @@
+Source: perfsonar-toolkit
+Section: net
+Priority: optional
+Maintainer: Valentin Vidic <Valentin.Vidic@CARNet.hr>
+Build-Depends: debhelper (>= 9.0.0), quilt, dh-exec,
+ libperfsonar-perl (>= 4.1~0), libperfsonar-toolkit-perl (>= 4.1~0),
+ perfsonar-psconfig-pscheduler-dev, perfsonar-psconfig-pscheduler,
+ libtest-mockobject-perl, libfile-copy-recursive-perl,
+ libtest-deep-perl, libcgi-pm-perl
+Standards-Version: 3.9.6
+Homepage: http://www.perfsonar.net/
+Vcs-Git: git://github.com/perfsonar/toolkit
+Vcs-Browser: https://github.com/perfsonar/toolkit
+
+Package: perfsonar-toolkit
+Architecture: all
+Depends: libperfsonar-perl (>= 4.1~0), apache2, apache2-utils, ssl-cert,
+ perl, libxml-simple-perl, libcgi-pm-perl,
+ libsys-statistics-linux-perl, libperfsonar-sls-perl,
+ perfsonar-toolkit-library, liblog-dispatch-filerotate-perl,
+ libcgi-ajax-perl, libcgi-session-perl, libjson-xs-perl, nscd,
+ perfsonar-common, unattended-upgrades, ntp, ethtool, iproute2,
+ libperfsonar-toolkit-perl, perfsonar-lsregistrationdaemon,
+ libperfsonar-psconfig-perl, perfsonar-psconfig-pscheduler,
+ perfsonar-psconfig-publisher,
+ perfsonar-toolkit-config-daemon, perfsonar-core,
+ perfsonar-lscachedaemon, perfsonar-traceroute-viewer,
+ perfsonar-toolkit-graphs, perfsonar-toolkit-install,
+ perfsonar-toolkit-systemenv, ${misc:Depends}
+Description: perfSONAR Toolkit web
+ perfSONAR Toolkit web GUI and associated services.
+
+Package: perfsonar-toolkit-library
+Architecture: all
+Depends: libperfsonar-perl (>= 4.1~0), ${misc:Depends}
+Description: perfSONAR Toolkit library
+ Perl libraries for perfSONAR Toolkit.
+
+Package: perfsonar-toolkit-security
+Architecture: all
+Depends: firewalld (>= 0.3.12), fail2ban, ${misc:Depends}
+Conflicts: iptables-persistent, netfilter-persistent
+Description: perfSONAR Toolkit firewall configuration
+ Configures IPTables rules and installs fail2ban for perfSONAR Toolkit.
+
+Package: perfsonar-toolkit-sysctl
+Architecture: all
+Depends: libperfsonar-perl (>= 4.1~0), ${misc:Depends}
+Description: perfSONAR Toolkit sysctl configuration
+ Configures sysctl settings for perfSONAR Toolkit.
+
+Package: perfsonar-toolkit-servicewatcher
+Architecture: all
+Depends: libperfsonar-toolkit-perl, perfsonar-common,
+ ${misc:Depends}
+Description: perfSONAR Toolkit service watcher
+ Installs the service-watcher cron job.
+
+Package: perfsonar-toolkit-ntp
+Architecture: all
+Depends: ntp, perfsonar-toolkit-library,
+ libperfsonar-toolkit-perl, ${misc:Depends}
+Description: perfSONAR Toolkit ntp configuration
+ Configures ntp servers for perfSONAR Toolkit.
+
+Package: perfsonar-toolkit-config-daemon
+Architecture: all
+Depends: perfsonar-toolkit-library, perfsonar-common,
+ libnet-server-perl, libperfsonar-toolkit-perl,
+ liblog-dispatch-filerotate-perl, ${misc:Depends}
+Description: perfSONAR Toolkit configuration daemon
+ Manages configuration file and services for perfSONAR Toolkit.
+
+Package: perfsonar-toolkit-install
+Architecture: all
+Depends: perfsonar-toolkit-library, python-apt, ${misc:Depends}
+Description: perfSONAR Toolkit core scripts
+ Contains Toolkit installation scripts.
+
+Package: perfsonar-toolkit-systemenv
+Architecture: all
+Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
+ perfsonar-toolkit-servicewatcher, perfsonar-toolkit-ntp,
+ perfsonar-toolkit-library, perfsonar-psconfig-pscheduler,
+ perfsonar-toolkit-systemenv-testpoint, perfsonar-toolkit-config-daemon,
+ perfsonar-lsregistrationdaemon, perfsonar-toolkit-compat-database,
+ ${misc:Depends}
+Description: perfSONAR Toolkit system tuning
+ Tunes and configures the system according to performance
+ and security best practices.
+
+Package: perfsonar-toolkit-systemenv-testpoint
+Architecture: all
+Depends: nscd, owamp-server (>= 3.5.0),
+ perfsonar-psconfig-pscheduler, ${misc:Depends}
+Description: perfSONAR Testpoint system tuning
+ Tunes and configures the system according to performance
+ and security best practices.
+
+Package: perfsonar-toolkit-compat-database
+Architecture: all
+Depends: drop-in, esmond (>= 2.1), ${misc:Depends}
+Breaks: perfsonar-toolkit (<< 4.1~3.b1)
+Replaces: perfsonar-toolkit (<< 4.1~3.b1)
+Description: perfSONAR Database Migration
+ Provides necessary bridge to 4.0 that ensures old esmond data is migrated
+ prior to the initialization of the postgresql 9.5 data directory by
+ pScheduler.
