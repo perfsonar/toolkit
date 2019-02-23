@@ -1,7 +1,8 @@
 # Ignore mac hidden file
 .DS_Store
-# Ignore quilt cache directory
+# Ignore quilt cache directory and backup files
 .pc/
+debian/patches/*~
 .*.swn
 .*.swo
 .*.swp

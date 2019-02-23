@@ -1,0 +1,48 @@
+Index: toolkit/t/host-get_metadata.t
+===================================================================
+--- toolkit.orig/t/host-get_metadata.t	2019-02-23 17:28:43.604001000 +0000
++++ toolkit/t/host-get_metadata.t	2019-02-23 17:29:32.064172975 +0000
+@@ -6,6 +6,7 @@
+ use FindBin qw($Bin);
+ use lib "$Bin/lib";
+ use lib "$Bin/../lib";
++use lib "/usr/lib/perfsonar/lib";
+ use Log::Log4perl qw(:easy);
+ Log::Log4perl->easy_init( {level => 'OFF'} );
+ 
+Index: toolkit/t/host-get_services.t
+===================================================================
+--- toolkit.orig/t/host-get_services.t	2019-02-23 17:28:43.604001000 +0000
++++ toolkit/t/host-get_services.t	2019-02-23 17:29:32.064783367 +0000
+@@ -6,6 +6,7 @@
+ use FindBin qw($Bin);
+ use lib "$Bin/lib";
+ use lib "$Bin/../lib";
++use lib "/usr/lib/perfsonar/lib";
+ use Log::Log4perl qw(:easy);
+ Log::Log4perl->easy_init( {level => 'OFF'} );
+ 
+Index: toolkit/t/host-get_system_health.t
+===================================================================
+--- toolkit.orig/t/host-get_system_health.t	2019-02-23 17:28:43.604001000 +0000
++++ toolkit/t/host-get_system_health.t	2019-02-23 17:29:32.065221720 +0000
+@@ -9,6 +9,7 @@
+ use FindBin qw($Bin);
+ use lib "$Bin/lib";
+ use lib "$Bin/../lib";
++use lib "/usr/lib/perfsonar/lib";
+ use Log::Log4perl qw(:easy);
+ Log::Log4perl->easy_init( {level => 'OFF'} );
+ 
+Index: toolkit/t/host-update_metadata.t
+===================================================================
+--- toolkit.orig/t/host-update_metadata.t	2019-02-23 17:28:43.604001000 +0000
++++ toolkit/t/host-update_metadata.t	2019-02-23 17:29:32.065657817 +0000
+@@ -13,6 +13,7 @@
+ use FindBin qw($Bin);
+ use lib "$Bin/lib";
+ use lib "$Bin/../lib";
++use lib "/usr/lib/perfsonar/lib";
+ use Log::Log4perl qw(:easy);
+ Log::Log4perl->easy_init( {level => 'OFF'} );
+ 

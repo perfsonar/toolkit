@@ -1,0 +1,5 @@
+etc/default_service_configs/pscheduler_limits.conf etc/perfsonar/toolkit/default_service_configs/
+etc/perfsonar_ulimit.conf etc/security/limits.d
+etc/perfsonar_ulimit_apache.conf etc/security/limits.d
+scripts/install-optional-packages.py usr/lib/perfsonar/scripts/
+scripts/nptoolkit-configure.py usr/lib/perfsonar/scripts/
