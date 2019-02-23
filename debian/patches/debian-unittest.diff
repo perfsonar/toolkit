@@ -1,7 +1,7 @@
 Index: toolkit/t/host-get_metadata.t
 ===================================================================
---- toolkit.orig/t/host-get_metadata.t	2018-12-18 21:23:20.676216000 +0000
-+++ toolkit/t/host-get_metadata.t	2018-12-18 21:25:09.356705031 +0000
+--- toolkit.orig/t/host-get_metadata.t	2019-02-23 17:28:43.604001000 +0000
++++ toolkit/t/host-get_metadata.t	2019-02-23 17:29:32.064172975 +0000
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -12,8 +12,8 @@ Index: toolkit/t/host-get_metadata.t
  
 Index: toolkit/t/host-get_services.t
 ===================================================================
---- toolkit.orig/t/host-get_services.t	2018-12-18 21:23:20.676216000 +0000
-+++ toolkit/t/host-get_services.t	2018-12-18 21:25:09.357296098 +0000
+--- toolkit.orig/t/host-get_services.t	2019-02-23 17:28:43.604001000 +0000
++++ toolkit/t/host-get_services.t	2019-02-23 17:29:32.064783367 +0000
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -24,8 +24,8 @@ Index: toolkit/t/host-get_services.t
  
 Index: toolkit/t/host-get_system_health.t
 ===================================================================
---- toolkit.orig/t/host-get_system_health.t	2018-12-18 21:23:20.676216000 +0000
-+++ toolkit/t/host-get_system_health.t	2018-12-18 21:25:09.357716747 +0000
+--- toolkit.orig/t/host-get_system_health.t	2019-02-23 17:28:43.604001000 +0000
++++ toolkit/t/host-get_system_health.t	2019-02-23 17:29:32.065221720 +0000
 @@ -9,6 +9,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -36,8 +36,8 @@ Index: toolkit/t/host-get_system_health.t
  
 Index: toolkit/t/host-update_metadata.t
 ===================================================================
---- toolkit.orig/t/host-update_metadata.t	2018-12-18 21:23:20.676216000 +0000
-+++ toolkit/t/host-update_metadata.t	2018-12-18 21:25:09.358160291 +0000
+--- toolkit.orig/t/host-update_metadata.t	2019-02-23 17:28:43.604001000 +0000
++++ toolkit/t/host-update_metadata.t	2019-02-23 17:29:32.065657817 +0000
 @@ -13,6 +13,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
