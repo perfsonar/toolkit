@@ -16,16 +16,17 @@
 %define crontab_1     cron-service_watcher
 %define crontab_3     cron-clean_esmond_db
 
-%define relnum   1 
+%define perfsonar_auto_version 4.1.6
+%define perfsonar_auto_relnum 1
 
 Name:           perfsonar-toolkit
-Version:        4.1.5
-Release:        %{relnum}%{?dist}
+Version:        %{perfsonar_auto_version}
+Release:        %{perfsonar_auto_relnum}%{?dist}
 Summary:        perfSONAR Toolkit
 License:        ASL 2.0
 Group:          Applications/Communications
 URL:            http://www.perfsonar.net/
-Source0:        perfsonar-toolkit-%{version}.%{relnum}.tar.gz
+Source0:        perfsonar-toolkit-%{version}.%{perfsonar_auto_relnum}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Requires:       perl
@@ -347,7 +348,7 @@ mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %prep
-%setup -q -n perfsonar-toolkit-%{version}.%{relnum}
+%setup -q -n perfsonar-toolkit-%{version}.%{perfsonar_auto_relnum}
 
 %build
 

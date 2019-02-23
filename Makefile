@@ -1,8 +1,10 @@
 PACKAGE=perfsonar-toolkit
 ROOTPATH=/usr/lib/perfsonar
 CONFIGPATH=/etc/perfsonar/toolkit
-VERSION=4.1.5
-RELEASE=1
+PERFSONAR_AUTO_VERSION=4.1.6
+PERFSONAR_AUTO_RELNUM=1
+VERSION=${PERFSONAR_AUTO_VERSION}
+RELEASE=${PERFSONAR_AUTO_RELNUM}
 
 default:
 	@echo No need to build the package. Just run \"make install\"
