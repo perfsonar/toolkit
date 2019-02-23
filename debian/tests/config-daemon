@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -e
+
+service perfsonar-toolkit-config-daemon status
