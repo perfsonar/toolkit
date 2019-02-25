@@ -14,6 +14,7 @@ var TestResultsComponent = {
     testListError: false,
     testDataSet: false,
     testsDataError: false,
+    timeframe: "1d",
     data: {},
 };
 
@@ -28,6 +29,7 @@ $.urlParam = function(name){
 };
 
 TestResultsComponent.initialize = function() {
+    
     TestResultsComponent.data = {};
     $('#test-loading-modal').show();
     var ma_url = TestStore.getMAURL();
@@ -37,6 +39,7 @@ TestResultsComponent.initialize = function() {
     Dispatcher.subscribe(TestResultsComponent.tests_error_topic, TestResultsComponent._setTestDataError);
     Dispatcher.subscribe(TestResultsComponent.tests_topic, TestResultsComponent._handleTestData);
     Dispatcher.subscribe(TestResultsComponent.test_list_error_topic, TestResultsComponent._setTestListError);
+	
 };
 
 // When the test list has been obtained by TestStore, put it in the table, then have TestStore get the test results.
@@ -66,6 +69,26 @@ TestResultsComponent._setTestList = function( ) {
     var test_results_template = $("#test-results-template").html();
     var template = Handlebars.compile(test_results_template);
     data.summaryDataError = TestResultsComponent.testsDataError;
+    
+    //Adding timeframe attribute to the data to make it available to results.html
+    //The variable is used to make sure that the timeframe shown on graphs matches the option selected in "Results for the last..." on toolkit page
+    data.timeframe = TestResultsComponent.timeframe;
+    
+    if(TestResultsComponent.timeframe == "3600,0"){
+        data.timeframe = "1h";
+    } else if(TestResultsComponent.timeframe == "86400,3600"){
+        data.timeframe = "1d";
+    } else if(TestResultsComponent.timeframe == "604800,86400"){
+        data.timeframe = "1w";
+    } else if(TestResultsComponent.timeframe == "1209600,86400"){
+        data.timeframe = "2w";
+    } else if(TestResultsComponent.timeframe == "1814400,86400"){
+        data.timeframe = "3w";
+    } else if(TestResultsComponent.timeframe == "2592000,86400"){
+        data.timeframe = "30d";
+    }
+    //console.log(data);
+    
     var test_results = template(data);
     // put the list of tests on the page
     $("#test_results").html(test_results);
@@ -105,8 +128,8 @@ TestResultsComponent._setTestList = function( ) {
         // reload the list of tests (and their averages)
         var timeperiod = $('#summary_timeperiod').val();
         TestStore.reloadTestTable( timeperiod );  
-    } );
-
+        TestResultsComponent.timeframe = timeperiod;   
+	} );	
 };
 
 // Ask TestStore to get test results/averages for those tests on the currently showing pg. 
@@ -375,7 +398,7 @@ TestResultsComponent.showResultsGraph = function(container, src, dst, ma_url, ro
     TestResultsComponent.clearContainer(container);
     var url = "/perfsonar-graphs/?source=" + src;
     url += "&dest=" + dst + "&url=" + ma_url;
-
+	//console.log(ma_url);
      $('<iframe />', {
         name: 'Graph Frame',
         id:   'test-results-graph-iframe-' + rowID,
