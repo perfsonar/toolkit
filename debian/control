@@ -1,7 +1,9 @@
 Source: perfsonar-toolkit
 Section: net
 Priority: optional
-Maintainer: Valentin Vidic <Valentin.Vidic@CARNet.hr>
+Maintainer: perfSONAR developers <debian@perfsonar.net>
+Uploaders: Antoine Delvaux <antoine.delvaux@man.poznan.pl>,
+ Valentin Vidic <Valentin.Vidic@CARNet.hr>
 Build-Depends: debhelper (>= 9.0.0), quilt, dh-exec,
  libperfsonar-perl (>= 4.1~0), libperfsonar-toolkit-perl (>= 4.1~0),
  perfsonar-psconfig-pscheduler-dev, perfsonar-psconfig-pscheduler,
