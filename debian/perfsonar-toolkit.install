@@ -12,7 +12,6 @@ scripts/add_pssudo_user usr/lib/perfsonar/scripts/
 scripts/configure_apache_security usr/lib/perfsonar/scripts/
 scripts/find_bwctl_measurements usr/lib/perfsonar/scripts/
 scripts/manage_users usr/lib/perfsonar/scripts/
-scripts/mod_interface_route usr/lib/perfsonar/scripts/
 scripts/ps-migrate-backup.sh usr/lib/perfsonar/scripts/
 scripts/ps-migrate-restore.sh usr/lib/perfsonar/scripts/
 scripts/remove_home_partition usr/lib/perfsonar/scripts/

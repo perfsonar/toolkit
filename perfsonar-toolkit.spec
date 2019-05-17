@@ -634,12 +634,12 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/find_bwctl_measurements
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
 
 %files systemenv-testpoint
 %license LICENSE
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/testpoint/*
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
 
 %files systemenv
 %license LICENSE
