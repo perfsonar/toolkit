@@ -154,7 +154,7 @@
         </div>
     </li>
     {{/if}}
-
+    
     {{#each status_values}}
     <li class="sidebar-list__item"{{#if id}} id="{{id}}"{{/if}}>
         <div class="sidebar-list__parameter">{{label}}</div>
@@ -188,6 +188,12 @@
               {{/each}}
            </ul>
         </div>
+    </li>
+    {{/if}}
+
+    {{#if pn_text}}
+    <li class="sidebar-list__item">
+        <a href={{pn_link}} target="_blank">{{pn_text}} <i class="fa fa-external-link"></i></a>
     </li>
     {{/if}}
 	
