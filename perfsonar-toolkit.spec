@@ -403,7 +403,7 @@ fi
 touch /etc/perfsonar/toolkit/psadmin.htpasswd
 chgrp apache /etc/perfsonar/toolkit/psadmin.htpasswd
 chmod 0640 /etc/perfsonar/toolkit/psadmin.htpasswd
-/usr/sbin/groupadd pssudo 2> /dev/null || :
+/usr/sbin/groupadd -r pssudo 2> /dev/null || :
 
 mkdir -p /var/log/perfsonar/web_admin
 chown apache:perfsonar /var/log/perfsonar/web_admin
