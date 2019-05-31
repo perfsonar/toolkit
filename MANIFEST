@@ -80,6 +80,7 @@ scripts/system_environment/testpoint/enable_nscd
 scripts/system_environment/testpoint/increase_owamp_limits
 scripts/system_environment/testpoint/increase_owamp_port_range
 scripts/system_environment/testpoint/upgrade_pscheduler_limits
+selinux/perfsonar-toolkit.te
 web-ng/etc/logger.conf
 web-ng/etc/web_admin.conf
 web-ng/etc/test_config_defaults.conf

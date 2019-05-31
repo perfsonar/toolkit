@@ -49,15 +49,32 @@ my $params = {};
 $params->{'config_file'} = $config_file;
 $params->{'load_ls_registration'} = 1;
 
-my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
+
 
 my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
+
+#if(($router->get_version())==2){
+#   $params->{'version'} = 2;
+#}
+#else{
+#   $params->{'version'} = 1; 
+#}
+################################################################################
+my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
 
 my $summary_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_summary",
     description     =>  "Retrieves host summary",
-    callback        =>  sub { $host_info->get_summary(@_); }
+    callback        =>  sub { $host_info->get_summary(@_); },
+    #request_methods => ['POST'],
     );
+
+#adding a parameter version to restructure the json data and make the fields consistent
+$summary_method->add_input_parameter( name => "version",
+                                type => "text",
+                                pattern => "([^&]*)", 
+                                required => 0,
+                                description => "version specified");
 
 $router->add_method($summary_method);
 

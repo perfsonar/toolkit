@@ -12,7 +12,7 @@ var TestConfigStore = new DataStore("store.change.test_config", "services/regula
 TestConfigStore.testTypes = [
     {
         raw: "pinger",
-        formatted: "Ping (RTT)",
+        formatted: "Round-trip latency",
     },
     {
         raw: "bwctl/throughput",
