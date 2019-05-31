@@ -39,13 +39,19 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
         data.ntp_classes = 'color-red';
     }
 
-    data.registered = (data.globally_registered == 1 ? "Yes" : "No");
-    if (data.globally_registered == 1 ) {
-        data.registered_classes = 'color-green';
-    } else {
-        data.registered_classes = 'color-red';
+    if(data.disable_ls_lookups != 1){
+    	data.registered = (data.globally_registered == 1 ? "Yes" : "No");
+    	if (data.globally_registered == 0 ) {
+        	data.registered_classes = 'color-red';
+    	} else {
+        	data.registered_classes = 'color-green';
+    	}
     }
-
+    else{
+    	data.registered = "Disabled";
+	data.registered_classes = 'color-red';
+    }
+    
     var primary_interface = data.external_address.iface;
     if (typeof primary_interface != "undefined") {
         data.primary_interface = primary_interface;
