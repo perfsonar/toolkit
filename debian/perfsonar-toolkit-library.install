@@ -1,0 +1,4 @@
+lib/perfSONAR_PS/Utils/Config/* usr/lib/perfsonar/lib/perfSONAR_PS/Utils/Config
+lib/perfSONAR_PS/Config/OWP/* usr/lib/perfsonar/lib/perfSONAR_PS/Config/OWP
+lib/OWP/* usr/lib/perfsonar/lib/OWP
+python_lib/* usr/lib/perfsonar/python_lib/

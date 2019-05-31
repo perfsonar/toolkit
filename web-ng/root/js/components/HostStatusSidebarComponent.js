@@ -133,6 +133,17 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
         status_more_values.push( {label: "perfSONAR version", value: toolkit_version} );
     }
 
+    var tcp_info = data.tcp_info;
+    if (tcp_info !== null) {
+        status_more_values.push( {label: "TCP Tuning Info:", value: " "} );
+	status_more_values.push( {label: "Algorithm", value: tcp_info.tcp_cc_algorithm} );
+	status_more_values.push( {label: "Max Autotuning (Receive) ", value: tcp_info.tcp_autotune_max_buffer_recv} );
+	status_more_values.push( {label: "Max Autotuning (Send)", value: tcp_info.tcp_autotune_max_buffer_send} );
+	status_more_values.push( {label: "TCP Max Backlog", value: tcp_info.tcp_max_backlog} );
+	status_more_values.push( {label: "Max Buffer (Send)", value: tcp_info.tcp_max_buffer_send} );
+	status_more_values.push( {label: "Max Buffer (Receive)", value: tcp_info.tcp_max_buffer_recv} );
+    }
+
     data.status_values = status_values;
     data.status_more_values = status_more_values;
 
