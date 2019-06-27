@@ -4,8 +4,6 @@ var HostMetadataComponent = {
     saveMetadataTopic: 'store.host_metadata.save',
     saveMetadataErrorTopic: 'store.host_metadata.save_error',
     rolePlaceholder: 'Select a node role',
-    privacylinkPlaceholder: 'Your privacy policy link',
-    privacytextPlaceholder: 'Your privacy policy text',
     policyPlaceholder: 'Select an access policy',
 };
 
@@ -50,11 +48,6 @@ HostMetadataComponent._setMetadata = function( topic ) {
     var policyNotes = data.config.access_policy_notes;
     policyNotesText.val(policyNotes);
 
-    var privacyText = $('#pn_text');
-    privacyText.val(data.config.pn_text);
-    var privacyLink = $('#pn_link');
-    privacyLink.val(data.config.pn_link);
-
 };
 
 HostMetadataComponent.save = function() {
@@ -62,14 +55,10 @@ HostMetadataComponent.save = function() {
     var accessPolicySel = $('#access_policy');
     var policyNotesText = $('#node_access_policy_notes');
 
-    var policyText = $('#pn_text');
-    var policyLink = $('#pn_link');
     var data = {};
     data.access_policy = accessPolicySel.val();
     data.access_policy_notes = policyNotesText.val();
     data.role = roleSel.val();
-    data.pn_text = policyText.val();
-    data.pn_link = policyLink.val();
     data.communities = CommunityUpdateComponent.getSelectedCommunities();
 
     var adminInfoData = HostMetadataComponent.getAdminInfoData();
