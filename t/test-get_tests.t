@@ -18,7 +18,7 @@ use perfSONAR_PS::NPToolkit::DataService::RegularTesting;
 use perfSONAR_PS::NPToolkit::UnitTests::Util qw( test_result );
 use perfSONAR_PS::NPToolkit::UnitTests::Util qw( compare_PStests );
 
-my $basedir = 't';
+my $basedir = './t';
 my $regtesting_file    = $basedir.'/etc/regulartesting.conf';
 my $expected_data_file = $basedir.'/expected/test-get_tests.txt';
 

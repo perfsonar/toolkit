@@ -1,0 +1,100 @@
+Index: toolkit/scripts/nptoolkit-configure.py
+===================================================================
+--- toolkit.orig/scripts/nptoolkit-configure.py	2019-02-23 17:28:43.798323000 +0000
++++ toolkit/scripts/nptoolkit-configure.py	2019-02-23 17:29:31.278836466 +0000
+@@ -99,7 +99,7 @@
+                     },
+                     {
+                          "description": "Change Timezone",
+-                         "command": "/usr/bin/tzselect",
++                         "command": "/usr/sbin/dpkg-reconfigure tzdata",
+                          "isConfiguredFunction": None,
+                          "required": False,
+                          "requiresReboot": True,
+@@ -130,7 +130,7 @@
+ 
+     for item in known_items:
+         # Skip the item if it's associated command isn't available.
+-        if (not os.path.exists(item["command"])):
++        if (not os.path.exists(item["command"].split(" ")[0])):
+             continue
+ 
+         item = toolkitItem(item["description"], item["command"], item["isConfiguredFunction"], item["required"], item["requiresReboot"])
+Index: toolkit/scripts/install-optional-packages.py
+===================================================================
+--- toolkit.orig/scripts/install-optional-packages.py	2019-02-23 17:28:43.798323000 +0000
++++ toolkit/scripts/install-optional-packages.py	2019-02-23 17:29:31.279586242 +0000
+@@ -12,7 +12,7 @@
+ 
+ sys.path.append(libdir)
+ 
+-import yum
++import apt
+ import Internet2Lib
+ import Internet2Consts
+ 
+@@ -24,47 +24,49 @@
+     'perfsonar-toolkit-systemenv-testpoint'
+ ]
+ 
+-def installPackages(yumHandle, packageNames):
++def installPackages(apt_cache, packageNames):
+     userChoice=[]
+     for package in packageNames:
+         print "\nWould you like to install "+package+"?"
+         choice = raw_input("\nEnter y|N: ")
+         if(choice == 'y' or choice == 'Y'):
+             userChoice.append(package)
+-    
++
+     for package in userChoice:
+         print "Installing "+package
+-        try:
+-            yumHandle.install(name=package)
+-        except yum.Errors.InstallError, err:
+-            print "Error installing package"+str(err)
++        apt_cache[package].mark_install()
+ 
+     if userChoice:
+-        yumHandle.resolveDeps()
+-        yumHandle.processTransaction()
++        try:
++            apt_cache.commit()
++        except Exception, err:
++            print "Error installing package: "+str(err)
++
+         print "\n Installed the following packages: \n"
+         for package in userChoice:
+             print package
+ 
+-def findInstalledPackages(yumHandle, packageNames):
++def findInstalledPackages(apt_cache, packageNames):
+     toInstall = []
+     for package in packageNames:
+-        if not yumHandle.rpmdb.searchNevra(name=package):
++        if not apt_cache[package].is_installed:
+             toInstall.append(package)
+             print package
+     return toInstall
+-    
+-###MAIN 
+-yHandle = yum.YumBase();
++
++###MAIN
+ if not Internet2Lib.isRoot():
+     print Internet2Consts.YELLOW + "You must run the perfSONAR install-optional-packages script as root." + Internet2Consts.NORMAL
+     sys.exit(1)
+ 
++apt_cache = apt.cache.Cache()
++apt_cache.update()
++
+ #find what packages need to be installed
+-packagesToInstall = findInstalledPackages(yHandle, optionalPackages)
++packagesToInstall = findInstalledPackages(apt_cache, optionalPackages)
+ 
+ if packagesToInstall:
+-    installPackages(yHandle, packagesToInstall)
++    installPackages(apt_cache, packagesToInstall)
+ else:
+     print "All optional packages have been installed \n"
+     for package in optionalPackages:

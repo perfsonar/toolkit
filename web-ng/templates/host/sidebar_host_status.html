@@ -190,7 +190,12 @@
         </div>
     </li>
     {{/if}}
-	
+
+    {{#if privacy_link}}
+    <li class="sidebar-list__item">
+        <a href={{privacy_link}} target="_blank">{{privacy_text}} <i class="fa fa-external-link"></i></a>
+    </li>
+    {{/if}}	
 </ul>
 </script>
 

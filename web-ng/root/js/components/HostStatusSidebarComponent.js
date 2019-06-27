@@ -39,13 +39,19 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
         data.ntp_classes = 'color-red';
     }
 
-    data.registered = (data.globally_registered == 1 ? "Yes" : "No");
-    if (data.globally_registered == 1 ) {
-        data.registered_classes = 'color-green';
-    } else {
-        data.registered_classes = 'color-red';
+    if(data.disable_ls_lookups != 1){
+    	data.registered = (data.globally_registered == 1 ? "Yes" : "No");
+    	if (data.globally_registered == 0 ) {
+        	data.registered_classes = 'color-red';
+    	} else {
+        	data.registered_classes = 'color-green';
+    	}
     }
-
+    else{
+    	data.registered = "Disabled";
+	data.registered_classes = 'color-red';
+    }
+    
     var primary_interface = data.external_address.iface;
     if (typeof primary_interface != "undefined") {
         data.primary_interface = primary_interface;
@@ -131,6 +137,17 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
     var toolkit_version = data.toolkit_version;
     if (toolkit_version !== null) {
         status_more_values.push( {label: "perfSONAR version", value: toolkit_version} );
+    }
+
+    var tcp_info = data.tcp_info;
+    if (tcp_info !== null) {
+        status_more_values.push( {label: "TCP Tuning Info:", value: " "} );
+	status_more_values.push( {label: "Algorithm", value: tcp_info.tcp_cc_algorithm} );
+	status_more_values.push( {label: "Max Autotuning (Receive) ", value: tcp_info.tcp_autotune_max_buffer_recv} );
+	status_more_values.push( {label: "Max Autotuning (Send)", value: tcp_info.tcp_autotune_max_buffer_send} );
+	status_more_values.push( {label: "TCP Max Backlog", value: tcp_info.tcp_max_backlog} );
+	status_more_values.push( {label: "Max Buffer (Send)", value: tcp_info.tcp_max_buffer_send} );
+	status_more_values.push( {label: "Max Buffer (Receive)", value: tcp_info.tcp_max_buffer_recv} );
     }
 
     data.status_values = status_values;

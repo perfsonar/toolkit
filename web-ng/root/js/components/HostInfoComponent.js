@@ -12,7 +12,13 @@ HostInfoComponent.initialize = function() {
 
 HostInfoComponent._setDetails = function( topic ) {
     var data = HostDetailsStore.getHostDetails();
-    var hostNameOrIP = data.external_address.dns_name || data.external_address.ipv4_address || data.external_address.ipv6_address || data.toolkit_name;
+    var hostNameOrIP;
+    if(data.force_toolkit_name){
+	hostNameOrIP = data.toolkit_name;
+    }	
+    else{	
+	hostNameOrIP = data.external_address.dns_name || data.external_address.ipv4_address || data.external_address.ipv6_address || data.toolkit_name;
+    }
     var primaryHostName="";
     if(data.external_address.dns_name){
         primaryHostName += data.external_address.dns_name + '<span class="ip_address"> at ';
