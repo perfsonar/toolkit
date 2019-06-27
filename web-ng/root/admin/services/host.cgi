@@ -115,6 +115,22 @@ $metadata_update_method->add_input_parameter(
     );
 
 $metadata_update_method->add_input_parameter(
+    name            => "pn_text",
+    description     => "Freeform text field describing the privacy policy",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "pn_link",
+    description     => "Freeform text field providing link to privacy policy",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
     name            => "communities",
     description     => "A list of enabled communities, disabled communities and deleted communities",
     required        => 0,

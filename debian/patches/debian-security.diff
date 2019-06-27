@@ -1,0 +1,13 @@
+Index: toolkit/scripts/configure_firewall
+===================================================================
+--- toolkit.orig/scripts/configure_firewall	2019-02-23 17:28:44.075424000 +0000
++++ toolkit/scripts/configure_firewall	2019-02-23 17:29:30.403408404 +0000
+@@ -38,7 +38,7 @@
+     if type firewall-cmd &>/dev/null; then
+         firewall-cmd --quiet --runtime-to-permanent
+     else
+-        for iptables_cmd in "iptables" "ip6tables"; do
++        for iptables_cmd in "iptables-persistent"; do
+             service $iptables_cmd save
+         done
+     fi
