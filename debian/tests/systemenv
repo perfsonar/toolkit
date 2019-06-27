@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -e
+
+bash -l -c 'echo $PATH' | grep /usr/lib/perfsonar/scripts
