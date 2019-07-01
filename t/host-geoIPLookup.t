@@ -65,7 +65,7 @@ my $expected_results = {
           'latitude' => '45.4225',
           'longitude' => '-75.7026',
           'time_zone' => 'America/Toronto',
-          'code' => 'k1p 1a4'
+          'code' => 'K1P'
     },
     "2001:410:102:b81b::2" => {
           'country' => 'CA',
@@ -77,10 +77,10 @@ my $expected_results = {
           'latitude' => '47.4102',
           'time_zone' => 'Europe/Zurich',
           'country_full' => 'Switzerland',
-          'state_abbr' => '01',
-          'state' => 'Aargau',
-          'city' => 'Muhen',
-          'code' => '5037'
+          'state_abbr' => '05',
+          'state' => 'Bern',
+          'city' => 'Ittigen',
+          'code' => '3063'
      },
     "2a02:a90:ffff:ffff::c:1d" => {
           'country' => 'CH',
