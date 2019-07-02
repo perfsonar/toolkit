@@ -1,0 +1,24 @@
+Tests: web, webauth, pssudo
+Depends: perfsonar-toolkit, curl, sudo
+Restrictions: needs-root
+
+Tests: config-daemon
+Depends: perfsonar-toolkit-config-daemon
+Restrictions: needs-root
+
+Tests: servicewatcher
+Depends: perfsonar-toolkit-servicewatcher
+Restrictions: needs-root
+
+Tests: security
+Depends: perfsonar-toolkit-security
+Restrictions: needs-root
+
+Tests: ntp
+Depends: perfsonar-toolkit-ntp
+
+Tests: sysctl
+Depends: perfsonar-toolkit-sysctl
+
+Tests: systemenv
+Depends: perfsonar-toolkit-systemenv

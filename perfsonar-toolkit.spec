@@ -16,16 +16,17 @@
 %define crontab_1     cron-service_watcher
 %define crontab_3     cron-clean_esmond_db
 
-%define relnum   1 
+%define perfsonar_auto_version 4.2.0 
+%define perfsonar_auto_relnum 0.0.a1
 
 Name:           perfsonar-toolkit
-Version:        4.1.3
-Release:        %{relnum}%{?dist}
+Version:        %{perfsonar_auto_version}
+Release:        %{perfsonar_auto_relnum}%{?dist}
 Summary:        perfSONAR Toolkit
 License:        ASL 2.0
 Group:          Applications/Communications
 URL:            http://www.perfsonar.net/
-Source0:        perfsonar-toolkit-%{version}.%{relnum}.tar.gz
+Source0:        perfsonar-toolkit-%{version}.%{perfsonar_auto_relnum}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Requires:       perl
@@ -118,6 +119,11 @@ Requires:       nagios-plugins-all
 BuildRequires:  systemd
 %{?systemd_requires: %systemd_requires}
 
+# SELinux support
+BuildRequires: selinux-policy-devel
+Requires: policycoreutils, libselinux-utils
+Requires(post): selinux-policy-targeted, policycoreutils
+Requires(postun): policycoreutils
 
 # Unit test mock library
 BuildRequires: perl-Test-MockObject
@@ -347,9 +353,10 @@ mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %prep
-%setup -q -n perfsonar-toolkit-%{version}.%{relnum}
+%setup -q -n perfsonar-toolkit-%{version}.%{perfsonar_auto_relnum}
 
 %build
+make -f /usr/share/selinux/devel/Makefile -C selinux perfsonar-toolkit.pp
 
 %install
 rm -rf %{buildroot}
@@ -370,6 +377,10 @@ mkdir -p %{buildroot}/usr/lib/firewalld/services/
 mv etc/firewalld/services/* %{buildroot}/usr/lib/firewalld/services/
 rm -rf etc/firewalld
 
+mkdir -p %{buildroot}/usr/share/selinux/packages/
+mv selinux/*.pp %{buildroot}/usr/share/selinux/packages/
+rm -rf %{buildroot}/usr/lib/perfsonar/selinux
+
 mv etc/* %{buildroot}/%{config_base}
 
 # Clean up unnecessary files
@@ -383,11 +394,16 @@ rm -rf %{buildroot}/%{install_base}/init_scripts
 rm -rf %{buildroot}
 
 %post
+semodule -n -i %{_datadir}/selinux/packages/perfsonar-toolkit.pp
+if /usr/sbin/selinuxenabled; then
+    /usr/sbin/load_policy
+fi
+
 # Add a group of users who can login to the web ui
 touch /etc/perfsonar/toolkit/psadmin.htpasswd
 chgrp apache /etc/perfsonar/toolkit/psadmin.htpasswd
 chmod 0640 /etc/perfsonar/toolkit/psadmin.htpasswd
-/usr/sbin/groupadd pssudo 2> /dev/null || :
+/usr/sbin/groupadd -r pssudo 2> /dev/null || :
 
 mkdir -p /var/log/perfsonar/web_admin
 chown apache:perfsonar /var/log/perfsonar/web_admin
@@ -463,6 +479,14 @@ systemctl restart psconfig-pscheduler-agent &>/dev/null || :
 systemctl restart %{init_script_1} &>/dev/null || :
 /etc/init.d/%{init_script_2} start &>/dev/null || :
 /etc/init.d/%{init_script_3} start &>/dev/null || :
+
+%postun
+if [ $1 -eq 0 ]; then
+    semodule -n -r perfsonar-toolkit
+    if /usr/sbin/selinuxenabled; then
+       /usr/sbin/load_policy
+    fi
+fi
 
 %post systemenv-testpoint
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
@@ -541,7 +565,11 @@ systemctl enable fail2ban
 %{install_base}/scripts/configure_memcached_security
 
 #configure apache
-%{install_base}/scripts/configure_apache_security install
+if [ $1 -eq 1 ] ; then
+    %{install_base}/scripts/configure_apache_security new
+else
+    %{install_base}/scripts/configure_apache_security upgrade
+fi
 systemctl restart httpd &>/dev/null || :
 
 %post sysctl
@@ -583,6 +611,7 @@ fi
 %{install_base}/web-ng/*
 /etc/httpd/conf.d/*
 %attr(0640,root,root) /etc/sudoers.d/*
+%attr(0644,root,root) /usr/share/selinux/packages/*
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/administrative_info/index.cgi
@@ -605,12 +634,12 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/find_bwctl_measurements
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
 
 %files systemenv-testpoint
 %license LICENSE
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/testpoint/*
+%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/mod_interface_route
 
 %files systemenv
 %license LICENSE
