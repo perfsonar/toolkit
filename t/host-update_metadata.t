@@ -217,7 +217,10 @@ sub get_updated_metadata {
         'config' => {
             'access_policy' => 'private',
             'role' => 'regional',
-            'access_policy_notes' => 'New node'
+            'access_policy_notes' => 'New node',
+            'domain' => 'examplez.com',
+            'site_name' => 'Test Sitez',
+            'organization' => 'Test Orgz',
         }
     };
     return $data;
@@ -233,7 +236,7 @@ sub get_original_metadata {
         'administrator' => {
             'email' => 'admin@test.com',
             'name' => 'Node Admin',
-            'organization' => 'Test Org'
+            'organization' => 'ORG'
         },
         'location' => {
             'country' => 'US',
@@ -246,6 +249,9 @@ sub get_original_metadata {
         'config' => {
             'access_policy' => 'public',
             'role' => 'test-host',
+            'domain' => 'example.com',
+            'site_name' => 'Test Site',
+            'organization' => 'ORG',
             'access_policy_notes' => 'This is a unit test, but feel free to test to it if you like.'
         }
     };

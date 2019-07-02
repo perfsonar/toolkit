@@ -2,8 +2,14 @@
     <script id="host-overview-template" type="text/x-handlebars-template">
         <h2 class="overview--title"><i class="fa fa-map-marker"></i> <span id="primary_hostname">&nbsp;</span> </h2> 
         <dl class="overview--list">
-            <dt>Organization:</dt>
-                <dd><span id="host_organization">{{administrator.organization}}</span></dd>
+{{#if org_or_site}}
+            <dt>{{#if config.site_name}}Site{{/if}} {{#if org_and_site}}/{{/if}} {{#if config.organization}} Organization{{/if}}:</dt>
+                <dd><span id="host_sitename">{{config.site_name}} {{#if org_and_site}} / {{/if}} </span>
+                <span id="host_organization">{{administrator.organization}}</span>
+</dd>
+{{else}}
+   <dt>Organization: </dt>
+{{/if}}
                 <dt>Address:</dt>
                 <dd>
                 <span id="host_street_address">

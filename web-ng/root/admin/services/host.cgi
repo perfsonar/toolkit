@@ -115,6 +115,22 @@ $metadata_update_method->add_input_parameter(
     );
 
 $metadata_update_method->add_input_parameter(
+    name            => "site_name",
+    description     => "Freeform text field describing the site name of the node",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
+    name            => "domain",
+    description     => "Freeform text field describing the domain of the node",
+    required        => 0,
+    allow_empty     => 1,
+    type            => 'text',
+    );
+
+$metadata_update_method->add_input_parameter(
     name            => "communities",
     description     => "A list of enabled communities, disabled communities and deleted communities",
     required        => 0,

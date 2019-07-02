@@ -4,6 +4,8 @@ var HostMetadataComponent = {
     saveMetadataTopic: 'store.host_metadata.save',
     saveMetadataErrorTopic: 'store.host_metadata.save_error',
     rolePlaceholder: 'Select a node role',
+    sitePlaceholder: 'Your sitename',
+    domainPlaceholder: 'Your domain',
     policyPlaceholder: 'Select an access policy',
 };
 
@@ -47,15 +49,23 @@ HostMetadataComponent._setMetadata = function( topic ) {
     var policyNotesText = $('#node_access_policy_notes');
     var policyNotes = data.config.access_policy_notes;
     policyNotesText.val(policyNotes);
-
+    
+    var siteText = $('#location_sitename');
+    siteText.val(data.config.site_name);//HostMetadataComponent.sitePlaceholder);
+    var domainText = $('#node_domain');
+    domainText.val(data.config.domain);//HostMetadataComponent.domainPlaceholder);
 };
 
 HostMetadataComponent.save = function() {
     var roleSel = $('#node_role_select');
     var accessPolicySel = $('#access_policy');
     var policyNotesText = $('#node_access_policy_notes');
+    var siteText = $('#location_sitename');
+    var domainText = $('#node_domain');
 
     var data = {};
+    data.site_name = siteText.val();
+    data.domain = domainText.val();
     data.access_policy = accessPolicySel.val();
     data.access_policy_notes = policyNotesText.val();
     data.role = roleSel.val();
