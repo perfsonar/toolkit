@@ -8,7 +8,7 @@ var TestStore = {
     tests: null,
     ma_url: origin + '/esmond/perfsonar/archive/',
     ma_url_enc: null,
-    timeperiod: "86400,3600",
+    timeperiod: "604800,86400",
     testSummary: {}
 };
 

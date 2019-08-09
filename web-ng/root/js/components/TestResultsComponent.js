@@ -14,7 +14,7 @@ var TestResultsComponent = {
     testListError: false,
     testDataSet: false,
     testsDataError: false,
-    timeframe: "1d",
+    timeframe: "1w",
     data: {},
 };
 
