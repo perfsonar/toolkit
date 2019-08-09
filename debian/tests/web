@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -e
+
+curl -s -k https://localhost/toolkit/ | grep -C 10  'perfSONAR Toolkit'
