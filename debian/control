@@ -93,6 +93,8 @@ Description: perfSONAR Toolkit system tuning
 
 Package: perfsonar-toolkit-systemenv-testpoint
 Architecture: all
+Breaks: perfsonar-toolkit (<< 4.2~1.b1)
+Replaces: perfsonar-toolkit (<< 4.2~1.b1)
 Depends: nscd, owamp-server (>= 3.5.0),
  perfsonar-psconfig-pscheduler, ${misc:Depends}
 Description: perfSONAR Testpoint system tuning
