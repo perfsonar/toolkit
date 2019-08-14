@@ -17,7 +17,7 @@
 %define crontab_3     cron-clean_esmond_db
 
 %define perfsonar_auto_version 4.2.0
-%define perfsonar_auto_relnum 0.5.b2
+%define perfsonar_auto_relnum 0.6.b2
 
 Name:           perfsonar-toolkit
 Version:        %{perfsonar_auto_version}

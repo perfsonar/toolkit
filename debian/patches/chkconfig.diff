@@ -1,5 +1,5 @@
---- a/init_scripts/perfsonar-configure_nic_parameters	2019-08-09 13:06:17.434638122 +0000
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2019-08-09 13:06:17.548639386 +0000
+--- a/init_scripts/perfsonar-configure_nic_parameters	2019-08-14 14:34:34.938359000 +0000
++++ b/init_scripts/perfsonar-configure_nic_parameters	2019-08-14 14:34:35.094867000 +0000
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -78,8 +78,8 @@
          start
          RETVAL=$?
          ;;
---- a/scripts/system_environment/disable_unwanted_services	2019-08-09 13:06:16.578628632 +0000
-+++ b/scripts/system_environment/disable_unwanted_services	2019-08-09 13:06:17.548639386 +0000
+--- a/scripts/system_environment/disable_unwanted_services	2019-07-18 21:33:20.701412000 +0000
++++ b/scripts/system_environment/disable_unwanted_services	2019-08-14 14:34:35.095519000 +0000
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -92,8 +92,8 @@
      fi
  }
  
---- a/scripts/system_environment/testpoint/enable_auto_updates	2019-08-09 13:06:16.578628632 +0000
-+++ b/scripts/system_environment/testpoint/enable_auto_updates	2019-08-09 13:06:17.548639386 +0000
+--- a/scripts/system_environment/testpoint/enable_auto_updates	2019-07-18 21:33:20.701402000 +0000
++++ b/scripts/system_environment/testpoint/enable_auto_updates	2019-08-14 14:34:35.095929000 +0000
 @@ -11,20 +11,18 @@
  MAJOR=${PREV_VERSION%%\.*}
  REST=${PREV_VERSION/${MAJOR}\.}
@@ -126,8 +126,8 @@
 +EOF
 +
 +fi
---- a/scripts/system_environment/testpoint/enable_nscd	2019-08-09 13:06:16.578628632 +0000
-+++ b/scripts/system_environment/testpoint/enable_nscd	2019-08-09 13:06:17.548639386 +0000
+--- a/scripts/system_environment/testpoint/enable_nscd	2019-07-18 21:33:20.701389000 +0000
++++ b/scripts/system_environment/testpoint/enable_nscd	2019-08-14 14:34:35.096299000 +0000
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
      systemctl enable nscd
