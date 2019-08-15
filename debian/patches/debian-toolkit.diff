@@ -1,5 +1,5 @@
---- a/scripts/apache-toolkit_web_gui.conf	2019-07-18 21:33:20.768611000 +0000
-+++ b/scripts/apache-toolkit_web_gui.conf	2019-08-14 14:34:34.937208000 +0000
+--- a/scripts/apache-toolkit_web_gui.conf	2019-08-15 01:10:00.350816285 +0000
++++ b/scripts/apache-toolkit_web_gui.conf	2019-08-15 01:10:01.220822376 +0000
 @@ -46,6 +46,9 @@
  # But, allow anonymous access via port 80 (http)
  # NOTE: Need to set non-https re-write rules and redirects here
@@ -66,8 +66,8 @@
  </Directory>
  
  ##
---- a/scripts/add_pssudo_user	2019-07-18 21:33:20.768595000 +0000
-+++ b/scripts/add_pssudo_user	2019-08-14 14:34:34.937638000 +0000
+--- a/scripts/add_pssudo_user	2019-08-15 01:10:00.741819023 +0000
++++ b/scripts/add_pssudo_user	2019-08-15 01:10:01.220822376 +0000
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -77,8 +77,8 @@
  if (retVal != 0):
      print Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL
      sys.exit(1)
---- a/scripts/clean_esmond_db.sh	2019-07-18 21:33:20.768622000 +0000
-+++ b/scripts/clean_esmond_db.sh	2019-08-14 14:34:34.937982000 +0000
+--- a/scripts/clean_esmond_db.sh	2019-08-15 01:10:00.350816285 +0000
++++ b/scripts/clean_esmond_db.sh	2019-08-15 01:10:01.220822376 +0000
 @@ -9,15 +9,13 @@
  fi
  
@@ -101,8 +101,8 @@
  
  #force a compaction
  if [ "$ESMOND_CLEANER_MULTI_NODE" != "1" ]; then
---- a/init_scripts/perfsonar-configure_nic_parameters	2019-07-18 21:33:20.768651000 +0000
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2019-08-14 14:34:34.938359000 +0000
+--- a/init_scripts/perfsonar-configure_nic_parameters	2019-08-15 01:10:00.343816236 +0000
++++ b/init_scripts/perfsonar-configure_nic_parameters	2019-08-15 01:10:01.220822376 +0000
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -140,8 +140,8 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- a/init_scripts/perfsonar-generate_motd	2019-07-18 21:33:20.768642000 +0000
-+++ b/init_scripts/perfsonar-generate_motd	2019-08-14 14:34:34.938748000 +0000
+--- a/init_scripts/perfsonar-generate_motd	2019-08-15 01:10:00.343816236 +0000
++++ b/init_scripts/perfsonar-generate_motd	2019-08-15 01:10:01.220822376 +0000
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -165,8 +165,8 @@
  
  use strict;
  use warnings;
---- a/web-ng/root/gui/reverse_traceroute.cgi	2019-07-18 21:33:20.768663000 +0000
-+++ b/web-ng/root/gui/reverse_traceroute.cgi	2019-08-14 14:34:34.939335000 +0000
+--- a/web-ng/root/gui/reverse_traceroute.cgi	2019-08-15 01:10:00.360816355 +0000
++++ b/web-ng/root/gui/reverse_traceroute.cgi	2019-08-15 01:10:01.220822376 +0000
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -176,8 +176,8 @@
    @Tropts="";
  }
  #########################################################################
---- a/etc/perfsonar_ulimit.conf	2019-07-18 21:33:20.768632000 +0000
-+++ b/etc/perfsonar_ulimit.conf	2019-08-14 14:34:34.939784000 +0000
+--- a/etc/perfsonar_ulimit.conf	2019-08-15 01:10:00.343816236 +0000
++++ b/etc/perfsonar_ulimit.conf	2019-08-15 01:10:01.220822376 +0000
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
