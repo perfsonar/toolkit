@@ -17,6 +17,7 @@ import sys                # For stdin
 import os                 # For standard OS commands
 import readline           # Improve the usability of raw_input. Let you use those fancy "arrow" keys
 from grp import getgrnam
+from pwd import getpwnam
 from optparse import OptionParser
 
 # Must be root
@@ -59,23 +60,31 @@ if not ans:
     sys.exit(1)
 
 user = ans
-cmd = "/usr/sbin/adduser -m -G pssudo"
-cmd += " " + user
+try:
+    pw_user = getpwnam(user)
+except:
+    pw_user = None
+
+if pw_user == None:
+    cmd = "/usr/sbin/useradd -m -G pssudo " + user
+else:
+    cmd = "/usr/sbin/usermod -a -G pssudo " + user
 
 retVal = os.system(cmd)
 if (retVal != 0):
     print Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL
     sys.exit(1)
 
-done = False
-while not done:
-    print "Please specify a password for the " + Internet2Consts.MAGENTA + user + Internet2Consts.NORMAL + " account."
-    retVal = os.system("/usr/bin/passwd " + user)
-   
-    if int(retVal) != 0:
-        print Internet2Consts.YELLOW + "Couldn't set the password to what you specified. Please try again." + Internet2Consts.NORMAL
-    else:
-        done = True
+if pw_user == None:
+    done = False
+    while not done:
+        print "Please specify a password for the " + Internet2Consts.MAGENTA + user + Internet2Consts.NORMAL + " account."
+        retVal = os.system("/usr/bin/passwd " + user)
+
+        if int(retVal) != 0:
+            print Internet2Consts.YELLOW + "Couldn't set the password to what you specified. Please try again." + Internet2Consts.NORMAL
+        else:
+            done = True
 
 #disable root ssh
 buffer = ""

@@ -92,7 +92,8 @@ TestStore._retrieveList = function() {
             dataType: "json",
             success: function (data) {
                 TestStore.testList = data;
-                Dispatcher.publish('store.change.test_list');
+                //console.log(data);
+		Dispatcher.publish('store.change.test_list');
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log("Error retrieving test list: " + errorThrown);

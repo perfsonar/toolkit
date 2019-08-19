@@ -29,12 +29,12 @@
         <label for="summary_timeperiod">Results for the last...</label>
         <!-- // values are "timeperiod,summary_window" -->
         <select id="summary_timeperiod">
-            <option value="3600,0" selected>1 hour</option>
-            <option value="86400,3600" selected>1 day</option>
-            <option value="604800,86400" selected>1 week</option>
-            <option value="1209600,86400" selected>2 weeks</option>
-            <option value="1814400,86400" selected>3 weeks</option>
-            <option value="2592000,86400" selected>30 days</option>
+            <option value="3600,0">1 hour</option>
+            <option value="86400,3600">1 day</option>
+            <option value="604800,86400">1 week</option>
+            <option value="1209600,86400">2 weeks</option>
+            <option value="1814400,86400">3 weeks</option>
+            <option value="2592000,86400">30 days</option>
         </select>
     </div>
     <table class="test_results" id="testResultsTable">
@@ -59,8 +59,8 @@
 <!--
     <a href="/perfsonar-graphs/?source={{source_ip}}&dest={{destination_ip}}&url={{../ma_url}}" data-reveal-id="dialogGraph{{rowID}}" onclick="TestResultsComponent.showResultsGraph('#dialogGraph{{rowID}}', '{{source_ip}}', '{{destination_ip}}', '{{../ma_url}}', '{{rowID}}')" target="_blank">
 -->
-    <a href="/perfsonar-graphs/?source={{source_ip}}&dest={{destination_ip}}&url={{../ma_url}}" target="_blank">
-                                Details
+    <a href="/perfsonar-graphs/?source={{source_ip}}&dest={{destination_ip}}&url={{../ma_url}}&timeframe={{../timeframe}}" target="_blank">
+                               Graphs
                             </a>
                             <span id="trace_{{ipToID source_ip}}_{{ipToID destination_ip}}" class="traceroute_link_container">
 

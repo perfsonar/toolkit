@@ -1,92 +1,8 @@
-Index: toolkit/scripts/system_environment/configure_esmond
-===================================================================
---- toolkit.orig/scripts/system_environment/configure_esmond	2019-02-23 17:28:43.732943000 +0000
-+++ toolkit/scripts/system_environment/configure_esmond	2019-02-23 17:29:31.518077417 +0000
-@@ -1,8 +1,4 @@
- #!/bin/bash
--PG_VERSION=9.5
--PG_BINDIR=/usr/pgsql-${PG_VERSION}/bin
--PG_DATADIR=/var/lib/pgsql/${PG_VERSION}/data
--PG_SERVICE_NAME="postgresql-${PG_VERSION}"
- 
- #Determine install type
- # UPDATE: Don't force creation of localhost MAs
-@@ -15,97 +11,13 @@
-     INSTALL_TYPE="FORCE"
+--- a/scripts/system_environment/configure_esmond	2019-08-15 01:10:00.741819023 +0000
++++ b/scripts/system_environment/configure_esmond	2019-08-15 01:10:01.531824553 +0000
+@@ -11,16 +11,12 @@
  fi
  
--#fire-up cassandra if needed
--/sbin/service cassandra status &> /dev/null
--if [ $? -ne 0 ]; then
--    /sbin/service cassandra restart 
--    if [ $? -ne 0 ]; then
--        echo "Unable to start cassandra. Proceeding with rest of esmond configuration"
--    fi
--fi
--
--#init postgres - we shouldn't ever have to do this
--if [ -z "$(ls -A ${PG_DATADIR})" ]; then
--    su -l postgres -c "${NEW_BINDIR}/initdb  --locale='C' --encoding='sql_ascii' --pgdata='${PG_DATADIR}' --auth='trust'"
--fi
--
--#fix update error in pg_hba.conf - can remove after 4.0rcs have been out for awhile
--if [ -f "${PG_DATADIR}/pg_hba.conf" ]; then
--    # Remove #BEGIN-xxx that got jammed up onto previous lines
--    sed -i -e 's/\(.\)\(#BEGIN-\)/\1\n\2/' "${PG_DATADIR}/pg_hba.conf"
--    # Remove stock pg_hba line that got jammed up on an #END
--    sed -i -e 's/#END-esmondlocal/#END-esmond\nlocal/g' "${PG_DATADIR}/pg_hba.conf"
--fi
--
--#make sure postgresql is running
--/sbin/service ${PG_SERVICE_NAME} status &> /dev/null
--if [ $? -ne 0 ]; then
--    /sbin/service ${PG_SERVICE_NAME} restart 
--    if [ $? -ne 0 ]; then
--        echo "Unable to start ${PG_SERVICE_NAME}. Your esmond database may not be initialized"
--        exit 1
--    fi
--fi
--
--#create user if not exists or is an old user
--USER_EXISTS=$(su -l postgres -c "psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='esmond'\"" 2> /dev/null)
--if [ $? -ne 0 ]; then
--    echo "Unable to connect to postgresql to check user. Your esmond database may not be initialized"
--    exit 1
--fi
--OLD_USER_EXISTS=$(su -l postgres -c "psql -tAc \"SELECT 1 FROM pg_authid WHERE rolpassword='md5' || md5('7hc4m1' || rolname)\"" 2> /dev/null)
--if [ $? -ne 0 ]; then
--    echo "Unable to connect to postgresql to check for old users. Your esmond database may not be initialized"
--    exit 1
--fi
--if [ "$USER_EXISTS" != "1" ] || [ "$OLD_USER_EXISTS" == "1" ]; then
--    DB_PASSWORD=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c32;echo;)
--    if [ "$USER_EXISTS" == "1" ]; then
--        su -l postgres -c "psql -c \"ALTER ROLE esmond WITH PASSWORD '${DB_PASSWORD}'\"" &> /dev/null
--    else
--        su -l postgres -c "psql -c \"CREATE USER esmond WITH PASSWORD '${DB_PASSWORD}'\"" &> /dev/null
--        su -l postgres -c "psql -c \"CREATE DATABASE esmond\"" &> /dev/null
--        su -l postgres -c "psql -c \"GRANT ALL ON DATABASE esmond to esmond\"" &> /dev/null
--    fi
--    sed -i "s/sql_db_name = .*/sql_db_name = esmond/g" /etc/esmond/esmond.conf
--    sed -i "s/sql_db_user = .*/sql_db_user = esmond/g" /etc/esmond/esmond.conf
--    sed -i "s/sql_db_password = .*/sql_db_password = ${DB_PASSWORD}/g" /etc/esmond/esmond.conf
--    drop-in -n -t esmond - ${PG_DATADIR}/pg_hba.conf <<EOF
--#
--# esmond
--#
--# This user should never need to access the database from anywhere
--# other than locally.
--#
--local     esmond          esmond                            md5
--host      esmond          esmond     127.0.0.1/32           md5
--host      esmond          esmond     ::1/128                md5
--EOF
--    /sbin/service ${PG_SERVICE_NAME} restart 
--    if [ $? -ne 0 ]; then
--        echo "Unable to restart ${PG_SERVICE_NAME}. Your esmond database may not be initialized"
--    fi
--fi
--
  #set esmond env variables
 -export ESMOND_ROOT=/usr/lib/esmond
 -export ESMOND_CONF=/etc/esmond/esmond.conf
@@ -96,15 +12,7 @@ Index: toolkit/scripts/system_environment/configure_esmond
  
 -#initialize python
 -cd $ESMOND_ROOT
--if [ -e /opt/rh/python27/enable ]; then
--    source /opt/rh/python27/enable
--    /opt/rh/python27/root/usr/bin/virtualenv --prompt="(esmond)" .
--fi
 -. bin/activate
--
--#build esmond tables
--python esmond/manage.py makemigrations --noinput &> /dev/null
--python esmond/manage.py migrate --noinput &> /dev/null
 -
  #create api key
 -KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
@@ -112,10 +20,8 @@ Index: toolkit/scripts/system_environment/configure_esmond
  
  #setup localhost measurement archive
  if [ -n "$KEY" ]; then
-Index: toolkit/scripts/system_environment/configure_fail2ban
-===================================================================
---- toolkit.orig/scripts/system_environment/configure_fail2ban	2019-02-23 17:28:43.732943000 +0000
-+++ toolkit/scripts/system_environment/configure_fail2ban	2019-02-23 17:29:31.518718710 +0000
+--- a/scripts/system_environment/configure_fail2ban	2019-08-15 01:10:00.353816306 +0000
++++ b/scripts/system_environment/configure_fail2ban	2019-08-15 01:10:01.531824553 +0000
 @@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
@@ -123,10 +29,8 @@ Index: toolkit/scripts/system_environment/configure_fail2ban
 -    /sbin/service fail2ban restart
 +    service fail2ban restart
  fi
-Index: toolkit/scripts/system_environment/upgrade_configdaemon
-===================================================================
---- toolkit.orig/scripts/system_environment/upgrade_configdaemon	2019-02-23 17:28:43.732943000 +0000
-+++ toolkit/scripts/system_environment/upgrade_configdaemon	2019-02-23 17:29:31.519128820 +0000
+--- a/scripts/system_environment/upgrade_configdaemon	2019-08-15 01:10:00.353816306 +0000
++++ b/scripts/system_environment/upgrade_configdaemon	2019-08-15 01:10:01.531824553 +0000
 @@ -87,5 +87,5 @@
  EOF
  
@@ -134,10 +38,8 @@ Index: toolkit/scripts/system_environment/upgrade_configdaemon
 -/sbin/service perfsonar-configdaemon restart
 +service perfsonar-configdaemon restart
  fi
-Index: toolkit/scripts/system_environment/upgrade_fix_permissions
-===================================================================
---- toolkit.orig/scripts/system_environment/upgrade_fix_permissions	2019-02-23 17:28:43.732943000 +0000
-+++ toolkit/scripts/system_environment/upgrade_fix_permissions	2019-02-23 17:29:31.519536577 +0000
+--- a/scripts/system_environment/upgrade_fix_permissions	2019-08-15 01:10:00.353816306 +0000
++++ b/scripts/system_environment/upgrade_fix_permissions	2019-08-15 01:10:01.531824553 +0000
 @@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
@@ -161,33 +63,22 @@ Index: toolkit/scripts/system_environment/upgrade_fix_permissions
  #Try cacti data, but don't complain if it's not there
 -chown -R apache /var/lib/cacti/rra 2> /dev/null
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
-Index: toolkit/scripts/configure_apache_security
-===================================================================
---- toolkit.orig/scripts/configure_apache_security	2019-02-23 17:28:43.732943000 +0000
-+++ toolkit/scripts/configure_apache_security	2019-02-23 17:29:31.519962629 +0000
-@@ -5,14 +5,29 @@
+--- a/scripts/configure_apache_security	2019-08-15 01:10:00.350816285 +0000
++++ b/scripts/configure_apache_security	2019-08-15 01:10:01.531824553 +0000
+@@ -5,14 +5,18 @@
  # updates. Settings will be in apache-security.conf but if someone wants 
  # to override those settings then they can do so in ssl.comnf after first install
  #######################
-+if [ -e /etc/apache2/sites-available/default-ssl.conf ]; then
-+    SSLCONF=/etc/apache2/sites-available/default-ssl.conf
-+else
-+    SSLCONF=/etc/apache2/sites-available/default-ssl
-+fi
-+
- if [ "$1" == "new" ]; then
+-if [ "$1" == "new" ]; then
 -    sed -i 's|^SSLProtocol\(.*\)|#SSLProtocol\1|g' /etc/httpd/conf.d/ssl.conf
 -    sed -i 's|^SSLCipherSuite\(.*\)|#SSLCipherSuite\1|g'  /etc/httpd/conf.d/ssl.conf
-+    grep -q '^[[:space:]]*SSLProtocol' $SSLCONF || \
-+        sed -i '/^[[:space:]]*<\/VirtualHost>/i \
-+    		SSLProtocol' $SSLCONF
-+    sed -i 's|^\([[:space:]]*\)SSLProtocol|\1#SSLProtocol|g' $SSLCONF
-+
-+    grep -q '^[[:space:]]*SSLCipherSuite' $SSLCONF || \
-+        sed -i '/^[[:space:]]*<\/VirtualHost>/i \
-+		SSLCipherSuite' $SSLCONF
-+    sed -i 's|^\([[:space:]]*\)SSLCipherSuite|\1#SSLCipherSuite|g' $SSLCONF
- fi
+-fi
++for CONF in /etc/apache2/sites-available/{default-ssl,default-ssl.conf}; do
++    if [ -f $CONF ]; then
++        sed -i 's|^\([[:space:]]*\)SSLProtocol|\1#SSLProtocol|g' $CONF
++        sed -i 's|^\([[:space:]]*\)SSLCipherSuite|\1#SSLCipherSuite|g' $CONF
++    fi
++done
  
  #######################
  # Get rid of default welcome page
@@ -201,10 +92,8 @@ Index: toolkit/scripts/configure_apache_security
 +       sed -i 's/DocumentRoot \/var\/www\(\/html\)\?$/DocumentRoot \/var\/www\/perfsonar/' $CONF
 +    fi
 +done
-Index: toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location
-===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/configure_syslog_local5_location	2019-02-23 17:28:43.732943000 +0000
-+++ toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location	2019-02-23 17:29:31.520486994 +0000
+--- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2019-08-15 01:10:00.353816306 +0000
++++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2019-08-15 01:10:01.531824553 +0000
 @@ -17,15 +17,10 @@
  cat >> /etc/rsyslog.d/owamp-syslog.conf <<EOF                                          
  # Save bwctl and owamp messages to /var/log/perfsonar/owamp.log

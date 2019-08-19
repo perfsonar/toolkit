@@ -55,7 +55,7 @@
                             <option value="">-- Choose type --</option>
                             <option value="bwctl/throughput" {{#compare type "bwctl/throughput"}}selected{{/compare}}>Throughput</option>
                             <option value="owamp" {{#compare type "owamp"}}selected{{/compare}}>One-way latency</option>
-                            <option value="pinger" {{#compare type "pinger"}}selected{{/compare}}>Ping</option>
+                            <option value="pinger" {{#compare type "pinger"}}selected{{/compare}}>Round-trip latency</option>
                             <option value="traceroute" {{#compare type "traceroute"}}selected{{/compare}}>Traceroute</option>
                         </select>
                     </div>
@@ -353,13 +353,13 @@
 
                 <!-- *** Add new test members panel *** -->
 
-                <a href="#" onclick="return TestConfigComponent.addTestMember" class="add_panel_heading"><i class="fa fa-plus"></i> Add Test Member(s)</a>
+                <a href="#" id = "testAdd" onclick="return TestConfigComponent.addTestMember" class="add_panel_heading"><i class="fa fa-plus"></i> Add Test Member(s)</a>
 
                 <div id="addTestMemberPanel" class="add_panel">
                     <div id="addHostManually">
                         <fieldset>
                             <p>Enter host information below to add new test members,
-                               or <a href="#" id="browseCommunitiesLink">browse communities</a> to add more test members.</p>
+                               or <a href="#" id="browseCommunitiesLink">browse communities</a> to find more test members.</p>
 
 
                                 <div class="row">

@@ -29,16 +29,20 @@ StickySaveBar.initialize = function() {
 StickySaveBar._formChange = function( topic ) {
     $("#sticky-unsaved-message").fadeIn("fast");
     $("#sticky-unsaved-message").text(StickySaveBar.unsavedText);
+    //$("#sticky-bar").css('background-color', '').css('background-color', 'black');
+    //$("#unnsave").css('background-color', '').css('background-color', 'black');
     StickySaveBar._enableButtons();
     StickySaveBar._enableUnsavedWarning();
 };
 
 StickySaveBar._enableButtons = function() {
     $("#sticky-bar input.admin-action-button").prop("disabled", false);
+    $("#unnsave").css('background-color', '').css('background-color', 'black');
 };
 
 StickySaveBar._disableButtons = function() {
     $("#sticky-bar input.admin-action-button").prop("disabled", true);
+    $("#unnsave").css('background-color', '').css('background-color', 'gray');
 };
 
 StickySaveBar._enableUnsavedWarning = function() {
@@ -65,6 +69,7 @@ StickySaveBar._disableUnsavedWarning = function() {
 StickySaveBar._formSubmit = function( topic, message ) {
     $("#sticky-unsaved-message").fadeOut("fast");
     $("#admin_info_save_button").prop("value", "Saving ...");
+    $("#saved").css('background-color', '').css('background-color', 'gray');
     StickySaveBar._disableButtons();    
     $("#sticky-unsaved-message").text(StickySaveBar.unsavedText);
 };
@@ -113,6 +118,7 @@ StickySaveBar.showError = function( message ) {
 
 StickySaveBar._formCancel = function( topic ) {
     StickySaveBar._init();
+    $("#unnsave").css('background-color', '').css('background-color', 'gray');
 };
 
 StickySaveBar._init = function() {

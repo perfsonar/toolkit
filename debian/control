@@ -1,13 +1,15 @@
 Source: perfsonar-toolkit
 Section: net
 Priority: optional
-Maintainer: Valentin Vidic <Valentin.Vidic@CARNet.hr>
+Maintainer: perfSONAR developers <debian@perfsonar.net>
+Uploaders: Antoine Delvaux <antoine.delvaux@man.poznan.pl>,
+ Valentin Vidic <Valentin.Vidic@CARNet.hr>
 Build-Depends: debhelper (>= 9.0.0), quilt, dh-exec,
  libperfsonar-perl (>= 4.1~0), libperfsonar-toolkit-perl (>= 4.1~0),
  perfsonar-psconfig-pscheduler-dev, perfsonar-psconfig-pscheduler,
  libtest-mockobject-perl, libfile-copy-recursive-perl,
- libtest-deep-perl, libcgi-pm-perl
-Standards-Version: 3.9.6
+ libtest-deep-perl, libcgi-pm-perl, libperfsonar-sls-perl
+Standards-Version: 3.9.8
 Homepage: http://www.perfsonar.net/
 Vcs-Git: git://github.com/perfsonar/toolkit
 Vcs-Browser: https://github.com/perfsonar/toolkit
@@ -91,6 +93,8 @@ Description: perfSONAR Toolkit system tuning
 
 Package: perfsonar-toolkit-systemenv-testpoint
 Architecture: all
+Breaks: perfsonar-toolkit (<< 4.2~1.b1)
+Replaces: perfsonar-toolkit (<< 4.2~1.b1)
 Depends: nscd, owamp-server (>= 3.5.0),
  perfsonar-psconfig-pscheduler, ${misc:Depends}
 Description: perfSONAR Testpoint system tuning

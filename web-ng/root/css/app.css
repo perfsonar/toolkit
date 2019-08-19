@@ -2239,7 +2239,8 @@ input[type='button']:disabled.button-primary--hollow:hover {
 }
 
 .sticky-bar--saved {
-  background-color: #32a066;
+  background: rgba(0, 0, 0, 0.85);
+  background-color: #000000;
   color: #fff;
   display: none;
   padding-top: 1.5em;

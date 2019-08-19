@@ -77,10 +77,10 @@ my $expected_results = {
           'latitude' => '47.4102',
           'time_zone' => 'Europe/Zurich',
           'country_full' => 'Switzerland',
-          'state_abbr' => 25,
-	  'state' => 'Zurich',
-	  'city' => 'Oberengstringen',
-	  'code' => '8102'
+          'state_abbr' => '05',
+          'state' => 'Bern',
+          'city' => 'Ittigen',
+          'code' => '3063'
      },
     "2a02:a90:ffff:ffff::c:1d" => {
           'country' => 'CH',

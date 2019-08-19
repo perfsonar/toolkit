@@ -70,6 +70,10 @@ HostMetadataStore._setRole = function( data  ) {
     data.access_policy = access_policy;
     var access_policy_notes = data.config.access_policy_notes;
     data.access_policy_notes = access_policy_notes;
+    var site_name = data.config.site_name;
+    data.site_name = site_name;
+    var domain = data.config.domain;
+    data.domain = domain;
     data.show_access_policy = access_policy || access_policy_notes;
 
     return data;
