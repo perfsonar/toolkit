@@ -4,6 +4,12 @@ perfsonar-toolkit (4.3.0~a1.0-1) perfsonar-4.3-snapshot; urgency=low
 
  -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Sun, 25 Aug 2019 15:27:49 +0000
 
+perfsonar-toolkit (4.2.3~a0.0-1) perfsonar-4.2-snapshot; urgency=low
+
+  * New upstream version.
+
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Wed, 16 Oct 2019 11:51:15 +0200
+
 perfsonar-toolkit (4.2.2-1) perfsonar-4.2; urgency=low
 
   * New upstream version.

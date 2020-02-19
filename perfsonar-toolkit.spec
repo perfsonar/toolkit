@@ -512,12 +512,14 @@ if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
 fi
 
 for script in %{install_base}/scripts/system_environment/*; do
-    if [ $1 -eq 1 ] ; then
-        echo "Running: $script new"
-        $script new
-    else
-        echo "Running: $script upgrade ${PREV_VERSION}"
-        $script upgrade ${PREV_VERSION}
+    if [ -f $script ]; then
+        if [ $1 -eq 1 ] ; then
+            echo "Running: $script new"
+            $script new
+        else
+            echo "Running: $script upgrade ${PREV_VERSION}"
+            $script upgrade ${PREV_VERSION}
+        fi
     fi
 done
 
