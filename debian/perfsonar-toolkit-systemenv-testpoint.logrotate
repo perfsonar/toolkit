@@ -1,0 +1,7 @@
+/var/log/perfsonar/owamp.log {
+    sharedscripts
+    create 664 perfsonar adm
+    postrotate
+        invoke-rc.d rsyslog rotate > /dev/null
+    endscript
+}

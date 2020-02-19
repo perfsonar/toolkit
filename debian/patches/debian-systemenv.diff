@@ -1,5 +1,5 @@
---- a/scripts/system_environment/configure_esmond	2019-10-11 11:03:03.523723962 -0400
-+++ b/scripts/system_environment/configure_esmond	2019-10-11 11:03:07.817117003 -0400
+--- a/scripts/system_environment/configure_esmond	2020-02-19 15:37:03.724920596 +0000
++++ b/scripts/system_environment/configure_esmond	2020-02-19 15:37:05.325942926 +0000
 @@ -11,16 +11,12 @@
  fi
  
@@ -20,8 +20,8 @@
  
  #setup localhost measurement archive
  if [ -n "$KEY" ]; then
---- a/scripts/system_environment/configure_fail2ban	2019-10-11 11:03:03.523888019 -0400
-+++ b/scripts/system_environment/configure_fail2ban	2019-10-11 11:03:07.817578307 -0400
+--- a/scripts/system_environment/configure_fail2ban	2020-02-19 15:37:03.724920596 +0000
++++ b/scripts/system_environment/configure_fail2ban	2020-02-19 15:37:05.325942926 +0000
 @@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
@@ -29,8 +29,8 @@
 -    /sbin/service fail2ban restart
 +    service fail2ban restart
  fi
---- a/scripts/system_environment/upgrade_configdaemon	2019-10-11 11:03:03.525740595 -0400
-+++ b/scripts/system_environment/upgrade_configdaemon	2019-10-11 11:03:07.817879324 -0400
+--- a/scripts/system_environment/upgrade_configdaemon	2020-02-19 15:37:03.726920624 +0000
++++ b/scripts/system_environment/upgrade_configdaemon	2020-02-19 15:37:05.325942926 +0000
 @@ -87,5 +87,5 @@
  EOF
  
@@ -38,8 +38,8 @@
 -/sbin/service perfsonar-configdaemon restart
 +service perfsonar-configdaemon restart
  fi
---- a/scripts/system_environment/upgrade_fix_permissions	2019-10-11 11:03:03.525864531 -0400
-+++ b/scripts/system_environment/upgrade_fix_permissions	2019-10-11 11:03:07.818206276 -0400
+--- a/scripts/system_environment/upgrade_fix_permissions	2020-02-19 15:37:03.726920624 +0000
++++ b/scripts/system_environment/upgrade_fix_permissions	2020-02-19 15:37:05.325942926 +0000
 @@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
@@ -63,8 +63,8 @@
  #Try cacti data, but don't complain if it's not there
 -chown -R apache /var/lib/cacti/rra 2> /dev/null
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
---- a/scripts/configure_apache_security	2019-10-11 11:03:03.520573890 -0400
-+++ b/scripts/configure_apache_security	2019-10-11 11:03:07.818585897 -0400
+--- a/scripts/configure_apache_security	2020-02-19 15:37:03.723920582 +0000
++++ b/scripts/configure_apache_security	2020-02-19 15:37:05.325942926 +0000
 @@ -5,14 +5,18 @@
  # updates. Settings will be in apache-security.conf but if someone wants 
  # to override those settings then they can do so in ssl.comnf after first install
@@ -92,32 +92,53 @@
 +       sed -i 's/DocumentRoot \/var\/www\(\/html\)\?$/DocumentRoot \/var\/www\/perfsonar/' $CONF
 +    fi
 +done
---- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2019-10-11 11:03:03.524984361 -0400
-+++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2019-10-11 11:03:07.819024921 -0400
-@@ -17,15 +17,10 @@
- cat >> /etc/rsyslog.d/owamp-syslog.conf <<EOF                                          
- # Save bwctl and owamp messages to /var/log/perfsonar/owamp.log
- local5.*                                                -/var/log/perfsonar/owamp.log
-+& stop
- EOF
+--- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2020-02-19 15:37:03.726920624 +0000
++++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2020-02-19 15:37:05.325942926 +0000
+@@ -11,32 +11,17 @@
+     mv /var/log/perfsonar/owamp.log /var/log/perfsonar/owamp.log.old  
  fi
  
++# Rename if using pre-4.2.3 log
++rm -f /etc/rsyslog.d/owamp-syslog.conf
++rm -f /etc/logrotate.d/perfsonar-toolkit
++
+ # Set 'local5' output location to /var/log/perfsonar/owamp.log
+-grep ^local5 /etc/rsyslog.d/owamp-syslog.conf &> /dev/null
++grep ^local5 /etc/rsyslog.d/30-owamp-syslog.conf &> /dev/null
+ if [ $? != 0 ]; then
+-cat >> /etc/rsyslog.d/owamp-syslog.conf <<EOF                                          
+-# Save bwctl and owamp messages to /var/log/perfsonar/owamp.log
++cat >> /etc/rsyslog.d/30-owamp-syslog.conf <<EOF
++# Save owamp and twamp messages to /var/log/perfsonar/owamp.log
+ local5.*                                                -/var/log/perfsonar/owamp.log
+-EOF
+-fi
+-
 -# Disable sync on /var/log/messages to save IO
 -sed 's/ \/var\/log\/messages/ -\/var\/log\/messages/g' /etc/rsyslog.conf > /etc/rsyslog.conf.tmp
 -# Cleanup any incorrect --/var/log/messages entries from earlier versions
 -sed -i 's/--*\/var\/log\/messages/-\/var\/log\/messages/g' /etc/rsyslog.conf.tmp
 -mv /etc/rsyslog.conf.tmp /etc/rsyslog.conf
 -
- # Make sure that the owamp/bwctl log file gets rotated regularly
- grep owamp.log /etc/logrotate.d/perfsonar-toolkit &> /dev/null
- if [ $? != 0 ]; then
-@@ -33,8 +28,7 @@
- /var/log/perfsonar/owamp.log {
-     sharedscripts
-     postrotate
+-# Make sure that the owamp/bwctl log file gets rotated regularly
+-grep owamp.log /etc/logrotate.d/perfsonar-toolkit &> /dev/null
+-if [ $? != 0 ]; then
+-cat >>/etc/logrotate.d/perfsonar-toolkit <<EOF
+-/var/log/perfsonar/owamp.log {
+-    sharedscripts
+-    postrotate
 -        /bin/kill -HUP \`cat /var/run/syslogd.pid 2> /dev/null\` 2> /dev/null || true
 -        /bin/kill -HUP \`cat /var/run/rsyslogd.pid 2> /dev/null\` 2> /dev/null || true
-+        invoke-rc.d rsyslog rotate > /dev/null
-     endscript
- }
+-    endscript
+-}
++& stop
  EOF
+ fi
+ 
+@@ -49,4 +34,5 @@
+ # The log file needs to be created initially so that the log file isn't the
+ # default of root:root and only readable by root.
+ touch /var/log/perfsonar/owamp.log
+-chown perfsonar:perfsonar /var/log/perfsonar/owamp.log
++chmod 664 /var/log/perfsonar/owamp.log
++chown perfsonar:adm /var/log/perfsonar/owamp.log

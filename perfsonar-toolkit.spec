@@ -16,7 +16,7 @@
 %define crontab_1     cron-service_watcher
 %define crontab_3     cron-clean_esmond_db
 
-%define perfsonar_auto_version 4.2.2
+%define perfsonar_auto_version 4.2.3
 %define perfsonar_auto_relnum 1
 
 Name:           perfsonar-toolkit
@@ -512,12 +512,14 @@ if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
 fi
 
 for script in %{install_base}/scripts/system_environment/*; do
-    if [ $1 -eq 1 ] ; then
-        echo "Running: $script new"
-        $script new
-    else
-        echo "Running: $script upgrade ${PREV_VERSION}"
-        $script upgrade ${PREV_VERSION}
+    if [ -f $script ]; then
+        if [ $1 -eq 1 ] ; then
+            echo "Running: $script new"
+            $script new
+        else
+            echo "Running: $script upgrade ${PREV_VERSION}"
+            $script upgrade ${PREV_VERSION}
+        fi
     fi
 done
 
