@@ -1,8 +1,6 @@
-Index: toolkit/scripts/system_environment/configure_esmond
-===================================================================
---- toolkit.orig/scripts/system_environment/configure_esmond
-+++ toolkit/scripts/system_environment/configure_esmond
-@@ -11,16 +11,12 @@ elif [ "$1" == "--force" ]; then
+--- a/scripts/system_environment/configure_esmond	2020-02-19 15:37:03.724920596 +0000
++++ b/scripts/system_environment/configure_esmond	2020-02-19 15:37:05.325942926 +0000
+@@ -11,16 +11,12 @@
  fi
  
  #set esmond env variables
@@ -22,33 +20,27 @@ Index: toolkit/scripts/system_environment/configure_esmond
  
  #setup localhost measurement archive
  if [ -n "$KEY" ]; then
-Index: toolkit/scripts/system_environment/configure_fail2ban
-===================================================================
---- toolkit.orig/scripts/system_environment/configure_fail2ban
-+++ toolkit/scripts/system_environment/configure_fail2ban
-@@ -10,5 +10,5 @@ if [ $? -ne 0 ]; then
+--- a/scripts/system_environment/configure_fail2ban	2020-02-19 15:37:03.724920596 +0000
++++ b/scripts/system_environment/configure_fail2ban	2020-02-19 15:37:05.325942926 +0000
+@@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
      echo "enabled = true" >> /etc/fail2ban/jail.local
 -    /sbin/service fail2ban restart
 +    service fail2ban restart
  fi
-Index: toolkit/scripts/system_environment/upgrade_configdaemon
-===================================================================
---- toolkit.orig/scripts/system_environment/upgrade_configdaemon
-+++ toolkit/scripts/system_environment/upgrade_configdaemon
-@@ -87,5 +87,5 @@ firewall_script /usr/lib/perfsonar/scrip
+--- a/scripts/system_environment/upgrade_configdaemon	2020-02-19 15:37:03.726920624 +0000
++++ b/scripts/system_environment/upgrade_configdaemon	2020-02-19 15:37:05.325942926 +0000
+@@ -87,5 +87,5 @@
  EOF
  
  #centos 7 should not need this
 -/sbin/service perfsonar-configdaemon restart
 +service perfsonar-configdaemon restart
  fi
-Index: toolkit/scripts/system_environment/upgrade_fix_permissions
-===================================================================
---- toolkit.orig/scripts/system_environment/upgrade_fix_permissions
-+++ toolkit/scripts/system_environment/upgrade_fix_permissions
-@@ -8,10 +8,10 @@ mkdir -p /var/log/perfsonar
+--- a/scripts/system_environment/upgrade_fix_permissions	2020-02-19 15:37:03.726920624 +0000
++++ b/scripts/system_environment/upgrade_fix_permissions	2020-02-19 15:37:05.325942926 +0000
+@@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
  mkdir -p /var/log/cacti
@@ -61,7 +53,7 @@ Index: toolkit/scripts/system_environment/upgrade_fix_permissions
  
  # Make sure that the various /var/lib/perfsonar directories are correct.
  mkdir -p /var/lib/perfsonar
-@@ -22,7 +22,7 @@ chown -R owamp:owamp /var/lib/owamp
+@@ -22,7 +22,7 @@
  
  # Toolkit odds and ends
  mkdir -p /var/run/web_admin_sessions
@@ -71,10 +63,8 @@ Index: toolkit/scripts/system_environment/upgrade_fix_permissions
  #Try cacti data, but don't complain if it's not there
 -chown -R apache /var/lib/cacti/rra 2> /dev/null
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
-Index: toolkit/scripts/configure_apache_security
-===================================================================
---- toolkit.orig/scripts/configure_apache_security
-+++ toolkit/scripts/configure_apache_security
+--- a/scripts/configure_apache_security	2020-02-19 15:37:03.723920582 +0000
++++ b/scripts/configure_apache_security	2020-02-19 15:37:05.325942926 +0000
 @@ -5,14 +5,18 @@
  # updates. Settings will be in apache-security.conf but if someone wants 
  # to override those settings then they can do so in ssl.comnf after first install
@@ -102,11 +92,9 @@ Index: toolkit/scripts/configure_apache_security
 +       sed -i 's/DocumentRoot \/var\/www\(\/html\)\?$/DocumentRoot \/var\/www\/perfsonar/' $CONF
 +    fi
 +done
-Index: toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location
-===================================================================
---- toolkit.orig/scripts/system_environment/testpoint/configure_syslog_local5_location
-+++ toolkit/scripts/system_environment/testpoint/configure_syslog_local5_location
-@@ -11,32 +11,17 @@ if [ -f /var/log/perfsonar/owamp.log ]; 
+--- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2020-02-19 15:37:03.726920624 +0000
++++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2020-02-19 15:37:05.325942926 +0000
+@@ -11,32 +11,17 @@
      mv /var/log/perfsonar/owamp.log /var/log/perfsonar/owamp.log.old  
  fi
  
@@ -147,7 +135,7 @@ Index: toolkit/scripts/system_environment/testpoint/configure_syslog_local5_loca
  EOF
  fi
  
-@@ -49,4 +34,5 @@ fi
+@@ -49,4 +34,5 @@
  # The log file needs to be created initially so that the log file isn't the
  # default of root:root and only readable by root.
  touch /var/log/perfsonar/owamp.log
