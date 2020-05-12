@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
 # This script should be called late in the boot process.  It
 # will check to see if any of the AMI tools need to be customized
@@ -24,7 +24,7 @@ sys.path.append(libdir)
 import os.path             # For file IO
 import sys                 # For stdin
 import select              # Timeouts/non-blocking IO
-import readline            # Improve the usability of raw_input. Let you use those fancy "arrow" keys
+import readline            # Improve the usability of input. Let you use those fancy "arrow" keys
 import Internet2Lib        # Library functions 
 import Internet2Consts     # Constants
 
@@ -144,15 +144,13 @@ def initialize():
 # MUST be called after itialize (it accesses the NPTools list)
 # ** Does NOT modify the NPTools list
 def displayMenu():
-    print "\nperfSONAR Toolkit customization script"
-#    print "Options in " + Internet2Consts.MAGENTA + "MAGENTA" + Internet2Consts.NORMAL + " have yet to be configured"
-#    print "Options in " + Internet2Consts.GREEN + "GREEN" + Internet2Consts.NORMAL + " have already been configured"
-    print ""
+    print("\nperfSONAR Toolkit customization script")
+    print("")
     
     for i, tool in enumerate(NPTools):
-        print str(i+1) + ". " + tool.showColor() + Internet2Consts.NORMAL
+        print(str(i+1) + ". " + tool.showColor() + Internet2Consts.NORMAL)
         
-    print "0. exit\n"
+    print("0. exit\n")
     
     return
 # End displayMenu
@@ -182,19 +180,19 @@ def mainLoop():
                 missingRequired = True
 
         displayMenu()
-        print "Make a selection: ",
+        print("Make a selection: ")
         sys.stdout.flush() # Force display 
         
         # Process the user's input
         try:
             choice = int(sys.stdin.readline().strip())
-        except ValueError, e:
+        except ValueError:
             choice = -1 # Not valid
-        print " "
+        print(" ")
         
         # Negative numbers are invalid -- as are choices > the length of the choice list plus 2 (Exit and Reconfig are not in the thing)
         if choice < 0 or choice > len(NPTools):
-            print Internet2Consts.YELLOW + "Invalid selection" + Internet2Consts.NORMAL
+            print(Internet2Consts.YELLOW + "Invalid selection" + Internet2Consts.NORMAL)
             continue
         
         # Exit if choice is 0
@@ -208,35 +206,34 @@ def mainLoop():
             if missingRequired == False:
                 done = True
             else:
-                print Internet2Consts.YELLOW + "There are still unconfigured options that need to be configured" + Internet2Consts.NORMAL
+                print(Internet2Consts.YELLOW + "There are still unconfigured options that need to be configured" + Internet2Consts.NORMAL)
 
-                ans = raw_input("Are you sure you want to exit? Doing so might lead to unexpected results [n] ").strip().upper();
+                ans = input("Are you sure you want to exit? Doing so might lead to unexpected results [n] ").strip().upper();
                 if not ans:
                     ans = "N"
 
                 if ans[0] == "Y":
                     done = True
         else:
-	    if NPTools[choice-1].isConfigured():
-                print Internet2Consts.YELLOW + "This option has already been configured." + Internet2Consts.NORMAL
+    	    if NPTools[choice-1].isConfigured():
+                print(Internet2Consts.YELLOW + "This option has already been configured." + Internet2Consts.NORMAL)
 
-                ans = raw_input("Would you like to reconfigure? [y] ").strip().upper();
+                ans = input("Would you like to reconfigure? [y] ").strip().upper();
                 if not ans:
                     ans = "Y"
 
                 if ans[0] == "N":
                     continue
 	        
-	    os.system(NPTools[choice-1].executablePath)
-            if NPTools[choice-1].needsReboot == True:
-                needReboot = True
-    return
+        os.system(NPTools[choice-1].executablePath)
+        if NPTools[choice-1].needsReboot == True:
+            needReboot = True
 # End mainLoop
 
 ### MAIN ###
 # Must be root
 if not Internet2Lib.isRoot():
-    print Internet2Consts.YELLOW + "You must run the Internet2 pS-Performance Toolkit configuration script as root." + Internet2Consts.NORMAL
+    print(Internet2Consts.YELLOW + "You must run the Internet2 pS-Performance Toolkit configuration script as root." + Internet2Consts.NORMAL)
     sys.exit(1)
 
 
@@ -248,19 +245,19 @@ NPTools = initialize()
 mainLoop()
 
 if needReboot:
-    print "The changes you have made require a reboot. Would you like to reboot? [y] ",
+    print("The changes you have made require a reboot. Would you like to reboot? [y] ")
     sys.stdout.flush() # Force display 
         
     # Get the user's input
     try:
         choice = sys.stdin.readline().strip()
-    except ValueError, e:
+    except ValueError:
         choice = -1 # Not valid
-    print " "
+    print(" ")
 
     if choice == "" or choice[:1] == "y" or choice[:1] == "Y":
         os.system("/sbin/reboot");
     else:
-        print "You have chosen not to reboot. You should reboot as soon as possible to ensure that everything works as expected"
+        print("You have chosen not to reboot. You should reboot as soon as possible to ensure that everything works as expected")
 ### END MAIN ###
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
 # This script helps the user quickly enable standard linux tools such as SSH and IPTables
 # It also provides a way for the user to add a custom startup script
@@ -19,13 +19,13 @@ import Internet2Lib       # Library functions
 import Internet2Consts    # For constants
 import sys                # For stdin
 import os                 # For standard OS commands
-import readline           # Improve the usability of raw_input. Let you use those fancy "arrow" keys
+import readline           # Improve the usability of input. Let you use those fancy "arrow" keys
 from grp import getgrnam
 from optparse import OptionParser
 
 # Must be root
 if not Internet2Lib.isRoot():
-    print Internet2Consts.YELLOW + "You must run this script as root. Please rerun this script with root permissions." + Internet2Consts.NORMAL
+    print(Internet2Consts.YELLOW + "You must run this script as root. Please rerun this script with root permissions." + Internet2Consts.NORMAL)
     sys.exit(1)
 
 parser = OptionParser()
@@ -55,9 +55,9 @@ if options.auto:
         if non_root_user:
             sys.exit(0)
 
-    print Internet2Consts.YELLOW + "There isn't a perfSONAR Website Administrator defined." + Internet2Consts.NORMAL
+    print(Internet2Consts.YELLOW + "There isn't a perfSONAR Website Administrator defined." + Internet2Consts.NORMAL)
 
-ans = raw_input("Enter the user whose account you'd like to add. Just hit enter to exit: ").strip()
+ans = input("Enter the user whose account you'd like to add. Just hit enter to exit: ").strip()
 if not ans:
     sys.exit(1)
 
@@ -67,10 +67,10 @@ if htpasswd_exists:
     cmd = "htpasswd " + htpasswd + " " + user
     retVal = os.system(cmd)
     if (retVal != 0):
-        print Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL
+        print(Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL)
     sys.exit(retVal)
 
-ans = raw_input("Should this user be able to login via SSH? [no] ").strip().upper()
+ans = input("Should this user be able to login via SSH? [no] ").strip().upper()
 if not ans:
     ans = "NO"
 
@@ -87,16 +87,16 @@ cmd += " " + user
 
 retVal = os.system(cmd)
 if (retVal != 0):
-    print Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL
+    print(Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL)
     sys.exit(1)
 
 done = False
 while not done:
-    print "Please specify a password for the " + Internet2Consts.MAGENTA + user + Internet2Consts.NORMAL + " account."
+    print("Please specify a password for the " + Internet2Consts.MAGENTA + user + Internet2Consts.NORMAL + " account.")
     retVal = os.system("/usr/bin/passwd " + user)
    
     if int(retVal) != 0:
-        print Internet2Consts.YELLOW + "Couldn't set the password to what you specified. Please try again." + Internet2Consts.NORMAL
+        print(Internet2Consts.YELLOW + "Couldn't set the password to what you specified. Please try again." + Internet2Consts.NORMAL)
     else:
         done = True
 
@@ -111,8 +111,8 @@ for user in psadmin_grp[3]:
         root_user = True
 
 if root_user:
-    print Internet2Consts.MAGENTA + "The root user can login to the perfSONAR Web Interface. This is insecure." + Internet2Consts.NORMAL
-    ans = raw_input("Remove the root user's ability to login to the web interface? [yes] ").strip().upper()
+    print(Internet2Consts.MAGENTA + "The root user can login to the perfSONAR Web Interface. This is insecure." + Internet2Consts.NORMAL)
+    ans = input("Remove the root user's ability to login to the web interface? [yes] ").strip().upper()
     if not ans:
         ans = "YES"
 
@@ -125,9 +125,9 @@ if root_user:
 
         retVal = os.system(cmd)
         if (retVal != 0):
-            print Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL
+            print(Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL)
 
-print Internet2Consts.NORMAL + "You may now use the " + user + " account to login to the perfSONAR Web Interface on this host." + Internet2Consts.NORMAL
+print(Internet2Consts.NORMAL + "You may now use the " + user + " account to login to the perfSONAR Web Interface on this host." + Internet2Consts.NORMAL)
 
 sys.exit(0)
 ### END MAIN

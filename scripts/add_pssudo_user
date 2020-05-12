@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
 # This script helps create a sudo user and disables SSH for root.
 #
@@ -15,14 +15,14 @@ import Internet2Lib       # Library functions
 import Internet2Consts    # For constants
 import sys                # For stdin
 import os                 # For standard OS commands
-import readline           # Improve the usability of raw_input. Let you use those fancy "arrow" keys
+import readline           # Improve the usability of input. Let you use those fancy "arrow" keys
 from grp import getgrnam
 from pwd import getpwnam
 from optparse import OptionParser
 
 # Must be root
 if not Internet2Lib.isRoot():
-    print Internet2Consts.YELLOW + "You must run this script as root. Please rerun this script with root permissions." + Internet2Consts.NORMAL
+    print(Internet2Consts.YELLOW + "You must run this script as root. Please rerun this script with root permissions." + Internet2Consts.NORMAL)
     sys.exit(1)
 
 parser = OptionParser()
@@ -46,16 +46,16 @@ if options.auto:
     if non_root_user:
         sys.exit(0)
 
-    print Internet2Consts.MAGENTA + "There isn't a perfSONAR sudo user defined. It is recommended that you create a sudo user and disable SSH root login. " + Internet2Consts.NORMAL
-    print Internet2Consts.YELLOW + "WARNING: Be sure you remember the username and password you create with this script as root will no longer be able to login via SSH once this command completes. If you are using SSH as root now, your session should continue until you logout." + Internet2Consts.NORMAL    
+    print(Internet2Consts.MAGENTA + "There isn't a perfSONAR sudo user defined. It is recommended that you create a sudo user and disable SSH root login. " + Internet2Consts.NORMAL)
+    print(Internet2Consts.YELLOW + "WARNING: Be sure you remember the username and password you create with this script as root will no longer be able to login via SSH once this command completes. If you are using SSH as root now, your session should continue until you logout." + Internet2Consts.NORMAL)
     
-    ans = raw_input("Would you like to create a sudo user and disable root SSH? [yes] ").strip().upper()
+    ans = input("Would you like to create a sudo user and disable root SSH? [yes] ").strip().upper()
     if not ans:
         ans = "Y"
     if ans[0] != "Y":
         sys.exit(0)
 
-ans = raw_input("Enter the user whose account you'd like to add. Just hit enter to exit: ").strip()
+ans = input("Enter the user whose account you'd like to add. Just hit enter to exit: ").strip()
 if not ans:
     sys.exit(1)
 
@@ -72,17 +72,17 @@ else:
 
 retVal = os.system(cmd)
 if (retVal != 0):
-    print Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL
+    print(Internet2Consts.YELLOW + "Error: couldn't add user " + user + Internet2Consts.NORMAL)
     sys.exit(1)
 
 if pw_user == None:
     done = False
     while not done:
-        print "Please specify a password for the " + Internet2Consts.MAGENTA + user + Internet2Consts.NORMAL + " account."
+        print("Please specify a password for the " + Internet2Consts.MAGENTA + user + Internet2Consts.NORMAL + " account.")
         retVal = os.system("/usr/bin/passwd " + user)
 
         if int(retVal) != 0:
-            print Internet2Consts.YELLOW + "Couldn't set the password to what you specified. Please try again." + Internet2Consts.NORMAL
+            print(Internet2Consts.YELLOW + "Couldn't set the password to what you specified. Please try again." + Internet2Consts.NORMAL)
         else:
             done = True
 
@@ -97,7 +97,7 @@ with open('/etc/ssh/sshd_config', 'r') as f:
         elif line.startswith("# Added by perfSONAR Toolkit"): 
             pass
         else:
-            buffer += "%s\n" % line
+            buffer += "{0}\n".format(line)
 buffer += "# Added by perfSONAR Toolkit to disable root SSH\n"           
 buffer += "PermitRootLogin no\n" 
 with open('/etc/ssh/sshd_config', 'w') as fout:
@@ -106,10 +106,10 @@ with open('/etc/ssh/sshd_config', 'w') as fout:
 #restart ssh
 retVal = os.system("/sbin/service sshd restart")
 if (retVal != 0):
-    print Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL
+    print(Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL)
     sys.exit(1)
 
-print Internet2Consts.NORMAL + "Root SSH is disabled. You may now use account " + user + " to login and administer this host with sudo." + Internet2Consts.NORMAL
+print(Internet2Consts.NORMAL + "Root SSH is disabled. You may now use account " + user + " to login and administer this host with sudo." + Internet2Consts.NORMAL)
 
 sys.exit(0)
 ### END MAIN

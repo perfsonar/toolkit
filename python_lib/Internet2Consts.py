@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # File to hold constants used by various I2 scripts
 # Author: Dan Bracey 5/30/08
 # Revision History:

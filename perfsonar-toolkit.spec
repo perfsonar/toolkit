@@ -164,6 +164,7 @@ Group:          Development/Tools
 Requires:       perfsonar-psconfig-pscheduler
 Requires:       nscd
 Requires:       yum-cron
+Requires:       python3
 Requires(post): owamp-server    >= 3.5.0
 Requires(post): chkconfig
 Requires(post): rsyslog
@@ -184,6 +185,7 @@ Requires:       perfsonar-toolkit-servicewatcher
 Requires:       perfsonar-toolkit-ntp
 Requires:       perfsonar-toolkit-library
 Requires:       perfsonar-toolkit-systemenv-testpoint
+Requires:       python3
 Requires(post): perfsonar-common
 Requires(post): perfsonar-toolkit
 Requires(post): acpid
@@ -230,6 +232,7 @@ Summary:                perfSONAR Toolkit library
 Group:                  Development/Tools
 Requires:               perfsonar-common
 Requires:               libperfsonar-toolkit-perl
+Requires:               python3
 Obsoletes:              perl-perfSONAR_PS-Toolkit-Library
 Provides:               perl-perfSONAR_PS-Toolkit-Library
 
