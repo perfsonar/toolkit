@@ -2,8 +2,7 @@ Source: perfsonar-toolkit
 Section: net
 Priority: optional
 Maintainer: perfSONAR developers <debian@perfsonar.net>
-Uploaders: Antoine Delvaux <antoine.delvaux@man.poznan.pl>,
- Valentin Vidic <Valentin.Vidic@CARNet.hr>
+Uploaders: Antoine Delvaux <antoine.delvaux@man.poznan.pl>
 Build-Depends: debhelper (>= 9.0.0), quilt, dh-exec,
  libperfsonar-perl (>= 4.1~0), libperfsonar-toolkit-perl (>= 4.1~0),
  perfsonar-psconfig-pscheduler-dev, perfsonar-psconfig-pscheduler,
@@ -75,7 +74,7 @@ Description: perfSONAR Toolkit configuration daemon
 
 Package: perfsonar-toolkit-install
 Architecture: all
-Depends: perfsonar-toolkit-library, python-apt, ${misc:Depends}
+Depends: perfsonar-toolkit-library, python3-apt, ${misc:Depends}
 Description: perfSONAR Toolkit core scripts
  Contains Toolkit installation scripts.
 

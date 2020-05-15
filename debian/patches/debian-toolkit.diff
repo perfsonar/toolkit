@@ -1,5 +1,5 @@
---- a/scripts/apache-toolkit_web_gui.conf	2020-03-26 16:26:39.090061090 -0400
-+++ b/scripts/apache-toolkit_web_gui.conf	2020-03-26 16:27:03.997224533 -0400
+--- toolkit.orig/scripts/apache-toolkit_web_gui.conf	2020-05-15 18:09:25.222587000 +0000
++++ toolkit/scripts/apache-toolkit_web_gui.conf	2020-05-15 18:10:44.582718000 +0000
 @@ -46,6 +46,9 @@
  # But, allow anonymous access via port 80 (http)
  # NOTE: Need to set non-https re-write rules and redirects here
@@ -66,8 +66,8 @@
  </Directory>
  
  ##
---- a/scripts/add_pssudo_user	2020-03-26 16:26:39.089914800 -0400
-+++ b/scripts/add_pssudo_user	2020-03-26 16:27:03.997731680 -0400
+--- toolkit.orig/scripts/add_pssudo_user	2020-05-15 18:09:25.222991000 +0000
++++ toolkit/scripts/add_pssudo_user	2020-05-15 18:10:44.583043000 +0000
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -75,11 +75,11 @@
 -retVal = os.system("/sbin/service sshd restart")
 +retVal = os.system("service ssh restart")
  if (retVal != 0):
-     print Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL
+     print(Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL)
      sys.exit(1)
---- a/scripts/clean_esmond_db.sh	2020-03-26 16:26:39.090354940 -0400
-+++ b/scripts/clean_esmond_db.sh	2020-03-26 16:27:03.998028832 -0400
-@@ -9,15 +9,13 @@
+--- toolkit.orig/scripts/clean_esmond_db.sh	2020-05-15 18:10:44.583268000 +0000
++++ toolkit/scripts/clean_esmond_db.sh	2020-05-15 18:12:05.662714000 +0000
+@@ -9,14 +9,14 @@
  fi
  
  #run ps_remove_data.py to delete expired data
@@ -91,18 +91,18 @@
 +export ESMOND_CONF
  export DJANGO_SETTINGS_MODULE=esmond.settings
 -cd $ESMOND_ROOT
--if [ -e /opt/rh/python27/enable ]; then
--    source /opt/rh/python27/enable
--fi
 -. bin/activate
 -python ./util/ps_remove_data.py -c /etc/perfsonar/toolkit/clean_esmond_db.conf
-+
-+python /usr/share/esmond/util/ps_remove_data.py -c /etc/perfsonar/toolkit/clean_esmond_db.conf
++python3 /usr/share/esmond/util/ps_remove_data.py -c /etc/perfsonar/toolkit/clean_esmond_db.conf
  
  #force a compaction
  if [ "$ESMOND_CLEANER_MULTI_NODE" != "1" ]; then
---- a/init_scripts/perfsonar-configure_nic_parameters	2020-03-26 16:26:39.069379591 -0400
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2020-03-26 16:27:03.998355563 -0400
+     nodetool compact esmond
+-fi
+\ No newline at end of file
++fi
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2020-05-15 18:09:25.223739000 +0000
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2020-05-15 18:10:44.583545000 +0000
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -140,8 +140,8 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- a/init_scripts/perfsonar-generate_motd	2020-03-26 16:26:39.069529423 -0400
-+++ b/init_scripts/perfsonar-generate_motd	2020-03-26 16:27:03.998711227 -0400
+--- toolkit.orig/init_scripts/perfsonar-generate_motd	2020-05-15 18:09:25.224162000 +0000
++++ toolkit/init_scripts/perfsonar-generate_motd	2020-05-15 18:10:44.583756000 +0000
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -165,8 +165,8 @@
  
  use strict;
  use warnings;
---- a/web-ng/root/gui/reverse_traceroute.cgi	2020-03-26 16:26:39.114318904 -0400
-+++ b/web-ng/root/gui/reverse_traceroute.cgi	2020-03-26 16:27:03.999229667 -0400
+--- toolkit.orig/web-ng/root/gui/reverse_traceroute.cgi	2020-05-15 18:09:25.224746000 +0000
++++ toolkit/web-ng/root/gui/reverse_traceroute.cgi	2020-05-15 18:10:44.584125000 +0000
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -176,8 +176,8 @@
    @Tropts="";
  }
  #########################################################################
---- a/etc/perfsonar_ulimit.conf	2020-03-26 16:26:39.068099530 -0400
-+++ b/etc/perfsonar_ulimit.conf	2020-03-26 16:27:03.999630888 -0400
+--- toolkit.orig/etc/perfsonar_ulimit.conf	2020-05-15 18:09:25.225207000 +0000
++++ toolkit/etc/perfsonar_ulimit.conf	2020-05-15 18:10:44.584397000 +0000
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
