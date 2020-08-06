@@ -213,7 +213,7 @@ Tunes and configures the system according to performance and security best
 practices.
 
 %package esmond-utils
-Summary:        perfSONAR Database Migration
+Summary:        perfSONAR Database Management
 Group:          Development/Tools
 Requires:       esmond >= 2.1
 Requires:       drop-in
