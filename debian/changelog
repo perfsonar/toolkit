@@ -1,8 +1,10 @@
 perfsonar-toolkit (4.3.0~a1.0-1) perfsonar-4.3-snapshot; urgency=low
 
   * New upstream version.
+  * Renaming perfsonar-toolkit-compat-database to
+    perfsonar-toolkit-esmond-utils
 
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Sun, 25 Aug 2019 15:27:49 +0000
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Thu, 06 Aug 2020 18:17:33 +0000
 
 perfsonar-toolkit (4.2.3-1) perfsonar-4.2; urgency=low
 
