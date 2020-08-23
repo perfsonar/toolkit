@@ -16,7 +16,7 @@
 -
  #create api key
 -KEY=`python esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
-+KEY=`python /usr/lib/python2.7/dist-packages/esmond/manage.py add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
++KEY=`esmond_manage add_api_key_user perfsonar 2> /dev/null | grep "Key:" | cut -f2 -d " "`
  
  #setup localhost measurement archive
  if [ -n "$KEY" ]; then
