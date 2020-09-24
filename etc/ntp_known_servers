@@ -1,26 +1,12 @@
 owamp.atla.net.internet2.edu:Internet2 - Atlanta, GA USA
-owamp.chic.net.internet2.edu:Internet2 - Chicago, IL USA
-owamp.salt.net.internet2.edu:Internet2 - Salt Lake City, UT USA
-owamp.losa.net.internet2.edu:Internet2 - Los Angeles, CA USA
 chronos.es.net:ESnet - New York, NY USA
 saturn.es.net:ESnet - Sunnyvale, CA USA
 time-c-g.nist.gov:NIST - Gaithersburg, Maryland
 utcnist2.colorado.edu:JILA - University of Colorado
 time-c-wwv.nist.gov:WWV, Fort Collins, Colorado
-nist1-chi.ustiming.org:NIST - NIST, Chicago, IL USA
 time-a.timefreq.bldrdoc.gov:NIST - NIST, Boulder, CO USA
-ntp-gatech.usno.navy.mil:Naval Observatory - GATech
-ntp-ucla.usno.navy.mil:Naval Observatory - Los Angeles, CA USA
-ntp-uw.usno.navy.mil:Naval Observatory - Seattle, WA USA
-time1.chpc.utah.edu:UTAH - Server #1, University of Utah, Salt Lake City, UT USA
-time2.chpc.utah.edu:UTAH - Server #2, University of Utah, Salt Lake City, UT USA
-time3.chpc.utah.edu:UTAH - Server #3, University of Utah, Salt Lake City, UT USA
 ntp.hawaii.edu:University of Hawaii - Honolulu, HI USA
 ns2.jp.apan.net:Asia Pacific Advanced Network - Tokyo, Japan
-ns.twgrid.org: TWGrid - Taipei, Taiwan
-b.ntp.monipe.rnp.br:RNP Time Server #2 - Brazil
-c.ntp.monipe.rnp.br:RNP Time Server #3 - Brazil
-ntp1.cais.rnp.br:RNP Time Server #6 - Brazil
 time1.ethz.ch:ETH Zurich - Zurich, Switzerland
 time2.ethz.ch:ETH Zurich - Zurich, Switzerland
 vega.cbk.poznan.pl:PIONIER - Poland, EU
@@ -33,7 +19,30 @@ ntp2.gbg.netnod.se:Netnod - Sweden, EU
 canon.inria.fr:INRIA - France, EU
 ntp.inrim.it:INRIM - Italy, EU
 ntp2.inrim.it:INRIM - Italy, EU
-ntp1.nl.net:NLnet - Netherlands, EU
 chronos.asda.gr:ASDA - Greece, EU
 ntp.litnet.lt:LITNET - Lithuania, EU
+ntps1.pads.ufrj.br
+utcnist2.colorado.edu
+timekeeper.isi.edu
+gnomon.cc.columbia.edu
+navobs1.gatech.edu
+navobs1.wustl.edu
+now.okstate.edu
+ntp-s1.cise.ufl.edu
+time-a-g.nist.gov
+time-b-g.nist.gov
+time-c-wwv.nist.gov
+time-d-wwv.nist.gov
+time-a-b.nist.gov
+time-b-b.nist.gov
+time.nist.gov
+utcnist.colorado.edu
+utcnist2.colorado.edu
+ntp1.stratum2.ru
+ntp2.stratum2.ru
+ntp3.stratum2.ru
+ntp4.stratum2.ru
+tick.usask.ca
+tock.usask.ca
+ntp.nict.jp
 
