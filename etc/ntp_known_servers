@@ -1,17 +1,19 @@
 owamp.atla.net.internet2.edu:Internet2 - Atlanta, GA USA
-chronos.es.net:ESnet - New York, NY USA
-saturn.es.net:ESnet - Sunnyvale, CA USA
 time-c-g.nist.gov:NIST - Gaithersburg, Maryland
 utcnist2.colorado.edu:JILA - University of Colorado
 time-c-wwv.nist.gov:WWV, Fort Collins, Colorado
 time-a.timefreq.bldrdoc.gov:NIST - NIST, Boulder, CO USA
 ntp.hawaii.edu:University of Hawaii - Honolulu, HI USA
 ns2.jp.apan.net:Asia Pacific Advanced Network - Tokyo, Japan
+chronos.es.net:ESnet - New York, NY USA
+saturn.es.net:ESnet - Sunnyvale, CA USA
 time1.ethz.ch:ETH Zurich - Zurich, Switzerland
 time2.ethz.ch:ETH Zurich - Zurich, Switzerland
 vega.cbk.poznan.pl:PIONIER - Poland, EU
 tempus1.gum.gov.pl:PIONIER - Poland, EU
 ntp.itl.waw.pl:PIONIER - Poland, EU
+tick.usask.ca:University of Saskatchewan Tick
+tock.usask.ca:University of Saskatchewan Tock
 ntp1.oma.be:Royal Observatory of Belgium - Belgium, EU
 time.belnet.be:BELNET - Belgium, EU
 ntp3.fau.de:FAU - Germany, EU
@@ -21,28 +23,25 @@ ntp.inrim.it:INRIM - Italy, EU
 ntp2.inrim.it:INRIM - Italy, EU
 chronos.asda.gr:ASDA - Greece, EU
 ntp.litnet.lt:LITNET - Lithuania, EU
-ntps1.pads.ufrj.br
-utcnist2.colorado.edu
-timekeeper.isi.edu
-gnomon.cc.columbia.edu
-navobs1.gatech.edu
-navobs1.wustl.edu
-now.okstate.edu
-ntp-s1.cise.ufl.edu
-time-a-g.nist.gov
-time-b-g.nist.gov
-time-c-wwv.nist.gov
-time-d-wwv.nist.gov
-time-a-b.nist.gov
-time-b-b.nist.gov
-time.nist.gov
-utcnist.colorado.edu
-utcnist2.colorado.edu
-ntp1.stratum2.ru
-ntp2.stratum2.ru
-ntp3.stratum2.ru
-ntp4.stratum2.ru
-tick.usask.ca
-tock.usask.ca
-ntp.nict.jp
+ntps1.pads.ufrj.br:ufrj.br
+utcnist2.colorado.edu: NIST, Colorado
+timekeeper.isi.edu:isi.edu
+gnomon.cc.columbia.edu:columbia.edu
+navobs1.gatech.edu:gatech.edu
+navobs1.wustl.edu:wustl.edu
+now.okstate.edu:okstate.edu
+ntp-s1.cise.ufl.edu:ufl.edu
+time-a-g.nist.gov:NIST, Gaithersburg, Maryland A
+time-b-g.nist.gov:NIST, Gaithersburg, Maryland B
+time-c-wwv.nist.gov:NIST, WWV, Fort Collins, Colorado, C
+time-d-wwv.nist.gov:NIST, WWV, Fort Collins, Colorado, D
+time-a-b.nist.gov:NIST, Boulder, Colorado A
+time-b-b.nist.gov:NIST, Boulder, Colorado B
+utcnist.colorado.edu:University of Colorado, Boulder 1
+utcnist2.colorado.edu:University of Colorado, Boulder 2
+ntp1.stratum2.ru:Stratum2 1
+ntp2.stratum2.ru:Stratum2 2
+ntp3.stratum2.ru:Stratum2 3
+ntp4.stratum2.ru:Stratum2 4
+ntp.nict.jp:National Institute of Information and Communications Technology (JP)
 

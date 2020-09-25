@@ -18,10 +18,6 @@ filegen clockstats file clockstats type day enable
 
 # You should have at least 4 NTP servers
 
-#server owamp.chic.net.internet2.edu iburst
-#server owamp.hous.net.internet2.edu iburst
-#server owamp.losa.net.internet2.edu iburst
-#server owamp.newy.net.internet2.edu iburst
 server owamp.atla.net.internet2.edu iburst
 server navobs1.gatech.edu iburst
 server navobs1.wustl.edu iburst
@@ -31,8 +27,15 @@ server time-a-g.nist.gov iburst
 server time-b-g.nist.gov iburst
 server time-c-wwv.nist.gov iburst
 server time-d-wwv.nist.gov iburst
-server server chronos.es.net iburst
-server server saturn.es.net iburst
+server chronos.es.net iburst
+server saturn.es.net iburst
+server time1.ethz.ch iburst
+server time2.ethz.ch iburst
+server vega.cbk.poznan.pl iburst
+server tempus1.gum.gov.pl iburst
+server tick.usask.ca iburst
+server tock.usask.ca iburst
+server ntp1.oma.be iburst
 EOF
 fi
 
@@ -67,6 +70,13 @@ time-c-wwv.nist.gov
 time-d-wwv.nist.gov
 chronos.es.net
 saturn.es.net
+time1.ethz.ch
+time2.ethz.ch
+vega.cbk.poznan.pl
+tempus1.gum.gov.pl
+tick.usask.ca
+tock.usask.ca
+ntp1.oma.be
 EOF
 fi
 
