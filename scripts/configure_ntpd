@@ -30,12 +30,12 @@ server time-d-wwv.nist.gov iburst
 server chronos.es.net iburst
 server saturn.es.net iburst
 server time1.ethz.ch iburst
-server time2.ethz.ch iburst
 server vega.cbk.poznan.pl iburst
 server tempus1.gum.gov.pl iburst
 server tick.usask.ca iburst
 server tock.usask.ca iburst
-server ntp1.oma.be iburst
+server ntp.time.nl iburst
+server ntp.se iburst
 EOF
 fi
 
@@ -71,12 +71,12 @@ time-d-wwv.nist.gov
 chronos.es.net
 saturn.es.net
 time1.ethz.ch
-time2.ethz.ch
 vega.cbk.poznan.pl
 tempus1.gum.gov.pl
 tick.usask.ca
 tock.usask.ca
-ntp1.oma.be
+ntp.time.nl
+ntp.se
 EOF
 fi
 

@@ -17,12 +17,15 @@ tock.usask.ca:University of Saskatchewan Tock
 ntp1.oma.be:Royal Observatory of Belgium - Belgium, EU
 time.belnet.be:BELNET - Belgium, EU
 ntp3.fau.de:FAU - Germany, EU
-ntp2.gbg.netnod.se:Netnod - Sweden, EU
+ntp.se:Netnod - Sweden, EU
+mmo2.ntp.se:Netnod - Sweden, EU
+sth1.ntp.se:Netnod - Sweden, EU
 canon.inria.fr:INRIA - France, EU
 ntp.inrim.it:INRIM - Italy, EU
 ntp2.inrim.it:INRIM - Italy, EU
 chronos.asda.gr:ASDA - Greece, EU
 ntp.litnet.lt:LITNET - Lithuania, EU
+ntp.time.nl:TimeNL - Netherlands, EU
 ntps1.pads.ufrj.br:ufrj.br
 utcnist2.colorado.edu: NIST, Colorado
 timekeeper.isi.edu:isi.edu
