@@ -14,7 +14,6 @@ import subprocess      # For shell commands
 import Internet2Consts # I2 constants
 import datetime        # For getting the current time
 import getpass         # For password I/O
-import commands        # For checking of the given drive is a volume group
 
 # Runs the given command - returns the results as a list (delimited by newlines)
 # @param command The command to run
@@ -35,7 +34,7 @@ def runCommand(command):
 # @return True on success, false otherwise
 def saveConfig():
     # Now run our special saveconfig script!
-    print "running "+Internet2Consts.SAVECONFIG + " >/dev/null 2>&1"
+    print("running "+Internet2Consts.SAVECONFIG + " >/dev/null 2>&1")
     retVal = os.system(Internet2Consts.SAVECONFIG + " >/dev/null 2>&1")
 
     # Now return true/false depending on the retVal
@@ -50,9 +49,9 @@ def saveConfig():
 # @param mnt The mount point
 def forceMount(dev, mnt):
     # Mount the HDD (try to conceal it in black text
-    print Internet2Consts.BLACK ,
-    os.system("cd / >/dev/null 2>&1; mount " + dev + " " + mnt + " >/dev/null 2>&1; cd - >/dev/null 2>&1")
-    print Internet2Consts.NORMAL ,
+    print(Internet2Consts.BLACK)
+    print(os.system("cd / >/dev/null 2>&1; mount " + dev + " " + mnt + " >/dev/null 2>&1; cd - >/dev/null 2>&1"))
+    print(Internet2Consts.NORMAL)
     return
 # End forceMount
 
@@ -60,9 +59,9 @@ def forceMount(dev, mnt):
 # @param mnt The mount point
 def unmount(mnt):
     # unmount the HDD (try to conceal it in black text
-    print Internet2Consts.BLACK ,
-    os.system("cd / >/dev/null 2>&1; umount " + mnt + " >/dev/null 2>&1; cd - >/dev/null 2>&1")
-    print Internet2Consts.NORMAL ,
+    print(Internet2Consts.BLACK)
+    print(os.system("cd / >/dev/null 2>&1; umount " + mnt + " >/dev/null 2>&1; cd - >/dev/null 2>&1"))
+    print(Internet2Consts.NORMAL)
     return
 # End unmount
 
@@ -101,8 +100,8 @@ class userData:
             fileHandle.close()
             if not res:
                 raise IOError
-        except IOError, e:
-            print Internet2Consts.YELLOW + "Failed to write to file: " + file + " -- site info not saved. (Check file/folder permissions)" + Internet2Consts.NORMAL
+        except IOError:
+            print(Internet2Consts.YELLOW + "Failed to write to file: " + file + " -- site info not saved. (Check file/folder permissions)" + Internet2Consts.NORMAL)
         
         return
     # End writeUserInfo
@@ -210,7 +209,7 @@ def parseUserInfo(file):
             user = userData(full_name, site_name, location, link_spd, email_usr+"@"+email_hst, email_sub, projects)
         
         fileHandle.close()
-    except IOError, e:
+    except IOError:
         # Not readable
         return None
         # End not readable
@@ -245,7 +244,7 @@ def removeFile(file):
     try:
         os.remove(file)
         return True
-    except OSError, e:
+    except OSError:
         return False
     
     return False
@@ -322,7 +321,7 @@ def searchLines(needle, haystack, deep=False):
     
     try:
         idx = haystack.index(needle)
-    except ValueError, e:
+    except ValueError:
         pass
     
     if not deep:
@@ -349,7 +348,7 @@ def readFile(fileHandle):
             line = line.strip()
             fileLines.append(line)
     
-    except IOError, e:
+    except IOError:
         return (fileHandle, None)
     
     return (fileHandle, fileLines)
@@ -371,7 +370,7 @@ def writeLines(fileHandle, lines):
         
         try:
             fileHandle.write(line)
-        except IOError, e:
+        except IOError:
             return (fileHandle, False)
         
     # If we get all the way through, return true
@@ -403,7 +402,7 @@ def checkPasswords(accounts):
 def saveConfigDriver(timeout=-1, prompt=True):
     # If no prompt - fire the script off without the other stuff
     if prompt:
-        print Internet2Consts.RED_BACK + Internet2Consts.WHITE + "**IMPORTANT**" + Internet2Consts.NORMAL + "  Would you like to save your configuration changes so they persist across reboots? [yes]: " ,
+        print(Internet2Consts.RED_BACK + Internet2Consts.WHITE + "**IMPORTANT**" + Internet2Consts.NORMAL + "  Would you like to save your configuration changes so they persist across reboots? [yes]: ")
         sys.stdout.flush() # Force display 
  
         # Might timeout

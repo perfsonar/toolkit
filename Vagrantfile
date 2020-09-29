@@ -46,7 +46,7 @@ Vagrant.configure("2") do |config|
     #Install all requirements and perform initial setup
     toolkit.vm.provision "shell", inline: <<-SHELL
         yum install -y epel-release
-        yum install -y  http://software.internet2.edu/rpms/el7/x86_64/RPMS.main/perfSONAR-repo-0.8-1.noarch.rpm
+        yum install -y  http://software.internet2.edu/rpms/el7/x86_64/RPMS.main/perfSONAR-repo-0.9-1.noarch.rpm
         yum clean all
         yum install -y perfSONAR-repo-staging perfSONAR-repo-nightly
         yum clean all
@@ -65,9 +65,9 @@ Vagrant.configure("2") do |config|
         ##
         # Now make install the shared directory
         cd /vagrant/shared
+        make install
         ##
         # Make install the toolkit source
-        make install
         cd /vagrant
         make install
     SHELL

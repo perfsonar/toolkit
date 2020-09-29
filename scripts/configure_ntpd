@@ -18,12 +18,24 @@ filegen clockstats file clockstats type day enable
 
 # You should have at least 4 NTP servers
 
-server owamp.chic.net.internet2.edu iburst
-server owamp.hous.net.internet2.edu iburst
-server owamp.losa.net.internet2.edu iburst
-server owamp.newy.net.internet2.edu iburst
+server owamp.atla.net.internet2.edu iburst
+server navobs1.gatech.edu iburst
+server navobs1.wustl.edu iburst
+server now.okstate.edu iburst
+server ntp-s1.cise.ufl.edu iburst
+server time-a-g.nist.gov iburst
+server time-b-g.nist.gov iburst
+server time-c-wwv.nist.gov iburst
+server time-d-wwv.nist.gov iburst
 server chronos.es.net iburst
 server saturn.es.net iburst
+server time1.ethz.ch iburst
+server vega.cbk.poznan.pl iburst
+server tempus1.gum.gov.pl iburst
+server tick.usask.ca iburst
+server tock.usask.ca iburst
+server ntp.time.nl iburst
+server ntp.se iburst
 EOF
 fi
 
@@ -47,12 +59,24 @@ file=/etc/ntp/step-tickers
 
 if [ ! -s $file ]; then
 cat >$file <<EOF
-owamp.chic.net.internet2.edu 
-owamp.hous.net.internet2.edu
-owamp.losa.net.internet2.edu
-owamp.newy.net.internet2.edu 
+owamp.atla.net.internet2.edu
+navobs1.gatech.edu
+navobs1.wustl.edu
+now.okstate.edu
+ntp-s1.cise.ufl.edu
+time-a-g.nist.gov
+time-b-g.nist.gov
+time-c-wwv.nist.gov
+time-d-wwv.nist.gov
 chronos.es.net
 saturn.es.net
+time1.ethz.ch
+vega.cbk.poznan.pl
+tempus1.gum.gov.pl
+tick.usask.ca
+tock.usask.ca
+ntp.time.nl
+ntp.se
 EOF
 fi
 

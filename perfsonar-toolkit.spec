@@ -16,8 +16,8 @@
 %define crontab_1     cron-service_watcher
 %define crontab_3     cron-clean_esmond_db
 
-%define perfsonar_auto_version 4.2.4
-%define perfsonar_auto_relnum 1
+%define perfsonar_auto_version 4.3.0
+%define perfsonar_auto_relnum 0.b1.1
 
 Name:           perfsonar-toolkit
 Version:        %{perfsonar_auto_version}
@@ -98,7 +98,7 @@ Requires:       perfsonar-lscachedaemon
 Requires:       perfsonar-graphs
 Requires:       perfsonar-psconfig-publisher
 Requires:       perfsonar-traceroute-viewer
-Requires:       perfsonar-toolkit-compat-database
+Requires:       perfsonar-toolkit-esmond-utils
 Requires:       libperfsonar-esmond-perl
 Requires:       libperfsonar-perl
 Requires:       libperfsonar-regulartesting-perl
@@ -107,7 +107,6 @@ Requires:       libperfsonar-toolkit-perl
 Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
 Requires:       esmond >= 2.1
-Requires:       esmond-database-postgresql95
 
 # Misc performance/performance-related tools
 Requires:       tcptrace
@@ -145,7 +144,6 @@ Requires(post): perfsonar-psconfig-pscheduler
 
 Requires(post): perfsonar-common
 Requires(post): esmond          >= 2.1
-Requires(post): esmond-database-postgresql95
 Requires(post): owamp-client    >= 3.5.0
 Requires(post): owamp-server    >= 3.5.0
 Requires(post): coreutils
@@ -164,6 +162,7 @@ Group:          Development/Tools
 Requires:       perfsonar-psconfig-pscheduler
 Requires:       nscd
 Requires:       yum-cron
+Requires:       python3
 Requires(post): owamp-server    >= 3.5.0
 Requires(post): chkconfig
 Requires(post): rsyslog
@@ -184,6 +183,7 @@ Requires:       perfsonar-toolkit-servicewatcher
 Requires:       perfsonar-toolkit-ntp
 Requires:       perfsonar-toolkit-library
 Requires:       perfsonar-toolkit-systemenv-testpoint
+Requires:       python3
 Requires(post): perfsonar-common
 Requires(post): perfsonar-toolkit
 Requires(post): acpid
@@ -198,7 +198,7 @@ Requires(post): nfs-utils
 Requires(post): pcsc-lite
 Requires(post): rootfiles
 Requires(post): drop-in
-Requires(post): perfsonar-toolkit-compat-database
+Requires(post): perfsonar-toolkit-esmond-utils
 Requires(pre):  rpm
 Requires(post): rsyslog
 Requires(post): setup
@@ -212,24 +212,23 @@ Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 Tunes and configures the system according to performance and security best
 practices.
 
-%package compat-database
-Summary:        perfSONAR Database Migration
+%package esmond-utils
+Summary:        perfSONAR Database Management
 Group:          Development/Tools
-Requires:       esmond-database-postgresql95
+Requires:       esmond >= 2.1
 Requires:       drop-in
-Requires(post): esmond-database-postgresql95
-Provides:       pscheduler-database-init
-Obsoletes:      perfsonar-toolkit-systemenv < 4.0
+Provides:       perfsonar-toolkit-compat-database
+Obsoletes:      perfsonar-toolkit-compat-database
 
-%description compat-database
-Provides necessary bridge to 4.0 that ensures old esmond data is migrated prior to the
-initialization of the postgresql 9.5 data directory by pScheduler. 
+%description esmond-utils
+Provides utilities for configuring esmond on perfSONAR hosts.
 
 %package library
 Summary:                perfSONAR Toolkit library
 Group:                  Development/Tools
 Requires:               perfsonar-common
 Requires:               libperfsonar-toolkit-perl
+Requires:               python3
 Obsoletes:              perl-perfSONAR_PS-Toolkit-Library
 Provides:               perl-perfSONAR_PS-Toolkit-Library
 
@@ -531,14 +530,6 @@ done
 #########################################################################
 service httpd reload || :
 
-%post compat-database
-
-if [ $1 -eq 1 ] ; then
-    #enable new postgresql
-    /sbin/service postgresql-9.5 restart || :
-    chkconfig postgresql-9.5 on
-fi
-
 %post ntp
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
     PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
@@ -697,7 +688,7 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
-%files compat-database
+%files esmond-utils
 %license LICENSE
 %config(noreplace) %{config_base}/clean_esmond_db.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_esmond 

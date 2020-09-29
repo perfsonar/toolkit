@@ -1,5 +1,5 @@
---- a/scripts/configure_sysctl	2020-03-26 16:26:39.090975587 -0400
-+++ b/scripts/configure_sysctl	2020-03-26 16:27:04.858006975 -0400
+--- a/scripts/configure_sysctl	2020-09-29 18:02:44.789556794 +0000
++++ b/scripts/configure_sysctl	2020-09-29 18:02:46.382446841 +0000
 @@ -70,7 +70,6 @@
              #set if centos 6 and 10Gbps or higher
              $default_sysctl_settings{'net.core.netdev_max_backlog'} = 250000 if($max_speed >= 10000000000);
