@@ -1,5 +1,5 @@
---- a/t/host-get_metadata.t	2020-09-29 18:02:44.789556794 +0000
-+++ b/t/host-get_metadata.t	2020-09-29 18:02:46.451442079 +0000
+--- a/t/host-get_metadata.t	2020-10-12 19:08:24.058323523 +0000
++++ b/t/host-get_metadata.t	2020-10-12 19:09:01.305520846 +0000
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -8,8 +8,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-get_services.t	2020-09-29 18:02:44.789556794 +0000
-+++ b/t/host-get_services.t	2020-09-29 18:02:46.451442079 +0000
+--- a/t/host-get_services.t	2020-10-12 19:08:24.058514475 +0000
++++ b/t/host-get_services.t	2020-10-12 19:09:01.306174745 +0000
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -18,8 +18,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-get_system_health.t	2020-09-29 18:02:44.789556794 +0000
-+++ b/t/host-get_system_health.t	2020-09-29 18:02:46.452442010 +0000
+--- a/t/host-get_system_health.t	2020-10-12 19:08:24.058699357 +0000
++++ b/t/host-get_system_health.t	2020-10-12 19:09:01.306777857 +0000
 @@ -9,10 +9,11 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -56,8 +56,8 @@
  ok( nonnegative_number( $data->{'cpu_util'} ), 'CPU utilization is a number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute) is a positive number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
---- a/t/host-update_metadata.t	2020-09-29 18:02:44.789556794 +0000
-+++ b/t/host-update_metadata.t	2020-09-29 18:02:46.458441596 +0000
+--- a/t/host-update_metadata.t	2020-10-12 19:08:24.058869009 +0000
++++ b/t/host-update_metadata.t	2020-10-12 19:09:01.307280310 +0000
 @@ -13,6 +13,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -66,8 +66,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-geoIPLookup.t	2020-09-29 18:02:44.789556794 +0000
-+++ b/t/host-geoIPLookup.t	2020-09-29 18:02:46.458441596 +0000
+--- a/t/host-geoIPLookup.t	2020-10-12 19:08:24.058158675 +0000
++++ b/t/host-geoIPLookup.t	2020-10-12 19:09:01.307815884 +0000
 @@ -65,7 +65,7 @@
            'latitude' => '45.4225',
            'longitude' => '-75.7026',
