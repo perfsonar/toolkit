@@ -39,6 +39,7 @@ else {
     Log::Log4perl->easy_init( { level => $DEBUG, file => "/dev/null" } );
 }
 
+
 our $logger = get_logger( "perfSONAR_PS::WebGUI::ServiceStatus" );
 if ( $conf{debug} ) {
     $logger->level( $DEBUG );
