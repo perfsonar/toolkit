@@ -62,6 +62,10 @@ my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
 #}
 ################################################################################
 my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
+#warn "host_info " . Dumper $host_info;
+if ( keys %$host_info == 0 ) {
+	return;
+}
 
 my $summary_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_summary",
