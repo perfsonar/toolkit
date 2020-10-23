@@ -18,7 +18,7 @@ HostInfoComponent._setDetails = function( topic ) {
         primaryHostName += data.external_address.dns_name + '<span class="ip_address"> at ';
     } else if ( data.all_addrs_private && !data.configuration.allow_internal_addresses) {
         primaryHostName += data.toolkit_name;
-        primaryHostName += ' <div class="ip_address">All detected addresses are in private addresses, and private addresses are disabled. To change this, edit /etc/perfsonar/toolkit/web/web_admin.conf</div>';
+        primaryHostName += ' <div class="host_note">All detected addresses are private, and private addresses are disabled. No addresses are being shown. To change this, edit <pre>/etc/perfsonar/toolkit/web/web_admin.conf</pre></div>';
     }
     if(data.external_address.ipv4_address){
         primaryHostName += data.external_address.ipv4_address;
