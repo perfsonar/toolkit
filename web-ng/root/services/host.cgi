@@ -39,6 +39,7 @@ else {
     Log::Log4perl->easy_init( { level => $DEBUG, file => "/dev/null" } );
 }
 
+
 our $logger = get_logger( "perfSONAR_PS::WebGUI::ServiceStatus" );
 if ( $conf{debug} ) {
     $logger->level( $DEBUG );
@@ -61,6 +62,10 @@ my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
 #}
 ################################################################################
 my $host_info = perfSONAR_PS::NPToolkit::DataService::Host->new( $params );
+#warn "host_info " . Dumper $host_info;
+if ( keys %$host_info == 0 ) {
+	return;
+}
 
 my $summary_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_summary",

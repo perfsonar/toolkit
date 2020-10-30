@@ -102,7 +102,7 @@ Description: perfSONAR Testpoint system tuning
 
 Package: perfsonar-toolkit-esmond-utils
 Architecture: all
-Depends: drop-in, esmond (>= 2.1), ${misc:Depends}
+Depends: drop-in, esmond (>= 4.3.0~), ${misc:Depends}
 Breaks: perfsonar-toolkit-compat-database
 Replaces: perfsonar-toolkit-compat-database
 Description: perfSONAR Database Management
