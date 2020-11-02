@@ -1,3 +1,9 @@
+perfsonar-toolkit (4.3.0-2) perfsonar-4.3; urgency=low
+
+  * Redirecting / to /toolkit/ for HTTPS too.
+
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Mon, 02 Nov 2020 22:03:48 +0000
+
 perfsonar-toolkit (4.3.0-1) perfsonar-4.3; urgency=low
 
   * New upstream version.
