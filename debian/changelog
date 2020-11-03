@@ -1,11 +1,4 @@
 perfsonar-toolkit (4.4.0~a1.0-1) perfsonar-4.4-snapshot; urgency=low\n\n  * New upstream version.\n\n -- perfSONAR developers <debian@perfsonar.net>  Tue, 03 Nov 2020 14:07:55 +0000\n
-perfsonar-toolkit (4.3.1~a1.0-1) perfsonar-4.3-snapshot; urgency=low\n\n  * New upstream version.\n\n -- perfSONAR developers <debian@perfsonar.net>  Tue, 03 Nov 2020 14:07:52 +0000\n
-perfsonar-toolkit (4.3.0-2) perfsonar-4.3; urgency=low
-
-  * Redirecting / to /toolkit/ for HTTPS too.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Mon, 02 Nov 2020 22:03:48 +0000
-
 perfsonar-toolkit (4.3.0-1) perfsonar-4.3; urgency=low
 
   * New upstream version.
