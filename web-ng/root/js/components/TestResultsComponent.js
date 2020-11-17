@@ -293,7 +293,7 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
                 //var min = values[key];
                 for(var rowID in row ) {
                     var min = row[rowID];
-                    if ( !(key in averages) ||  min < averages[key] ) {
+                    if ( ( !(key in averages) || min < averages[key] ) && min > 0 ) {
                         //sum += val;
                         averages[key] = min;
                     }
