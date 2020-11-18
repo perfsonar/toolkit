@@ -87,7 +87,6 @@ TestResultsComponent._setTestList = function( ) {
     } else if(TestResultsComponent.timeframe == "2592000,86400"){
         data.timeframe = "30d";
     }
-    //console.log(data);
     
     var test_results = template(data);
     // put the list of tests on the page
@@ -289,8 +288,20 @@ TestResultsComponent._setSingleTestData = function ( test, test_data, template )
                 sum += val;
             }
             var count = Object.keys( row ).length;
-            var avg = sum /count;
-            averages[key] = avg;
+            var avg = sum / count;
+            if ( key.match(/_min$/)  ) {
+                //var min = values[key];
+                for(var rowID in row ) {
+                    var min = row[rowID];
+                    if ( ( !(key in averages) || min < averages[key] ) && min > 0 ) {
+                        //sum += val;
+                        averages[key] = min;
+                    }
+                }
+
+            } else {
+                averages[key] = avg;
+            }
         }
 
         for(var i in types) {
