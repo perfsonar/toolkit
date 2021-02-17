@@ -46,9 +46,9 @@ Vagrant.configure("2") do |config|
     #Install all requirements and perform initial setup
     toolkit.vm.provision "shell", inline: <<-SHELL
         yum install -y epel-release
-        yum install -y  http://software.internet2.edu/rpms/el7/x86_64/RPMS.main/perfSONAR-repo-0.9-1.noarch.rpm
+        yum install -y  http://software.internet2.edu/rpms/el7/x86_64/RPMS.main/perfSONAR-repo-0.10-1.noarch.rpm
         yum clean all
-        yum install -y perfSONAR-repo-staging perfSONAR-repo-nightly
+        yum install -y perfSONAR-repo-staging perfSONAR-repo-nightly-minor
         yum clean all
         # NOTE:
         ## Install the toolkit RPM so all the setup stuff happens. May be kinda hacky
