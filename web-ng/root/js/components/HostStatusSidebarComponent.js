@@ -66,6 +66,13 @@ HostStatusSidebarComponent._setDetails = function( topic ) {
         var auto_updates_class = (auto_updates == 1 ? "color-green" : "color-red");
         status_values.push({label:"Auto Updates", value: auto_updates_value, classes: auto_updates_class });
     }
+    
+    var allow_internal_addresses = data.allow_internal_addresses;
+    if (typeof allow_internal_addresses != "undefined") {
+        var allow_internal_addresses_value = (allow_internal_addresses == 1 ? "ON" : "OFF");
+        var allow_internal_addresses_class = (allow_internal_addresses == 1 ? "color-green" : "color-red");
+        status_values.push({label:"Allow Internal Addresses", value: allow_internal_addresses_value, classes: allow_internal_addresses_class });
+    }
 
     var is_vm = data.is_vm;
     if (is_vm == 1) {

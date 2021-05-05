@@ -53,6 +53,7 @@ my $js_files = [
     $include_prefix . 'js/actions/Dispatcher.js', 
     $include_prefix . 'js/stores/HostDetailsStore.js', 
     $include_prefix . 'js/stores/HostAdminStore.js', 
+    $include_prefix . 'js/stores/HostAllowInternalAddressesStore.js', 
     $include_prefix . 'js/stores/HostGuessLatLonStore.js', 
     $include_prefix . 'js/stores/CommunityAllStore.js', 
     $include_prefix . 'js/stores/HostMetadataStore.js', 
@@ -79,4 +80,5 @@ $vars->{'https_url'} = $https_url;
 $vars->{'include_prefix'} = $include_prefix;
 
 $tt->process('page.html', $vars) || die $tt->error(), "\n";
+
 
