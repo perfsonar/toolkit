@@ -10,6 +10,24 @@ perfsonar-toolkit (4.3.4-1) perfsonar-4.3; urgency=low
 
  -- perfSONAR developers <debian@perfsonar.net>  Wed, 17 Mar 2021 01:09:22 +0000
 
+perfsonar-toolkit (4.3.3-1) perfsonar-4.3; urgency=low
+
+  * New upstream version.
+
+ -- perfSONAR developers <debian@perfsonar.net>  Tue, 02 Feb 2021 16:36:11 +0000
+
+perfsonar-toolkit (4.3.2-1) perfsonar-4.3; urgency=low
+
+  * New upstream version.
+
+ -- perfSONAR developers <debian@perfsonar.net>  Wed, 18 Nov 2020 15:41:57 +0000
+
+perfsonar-toolkit (4.3.0-2) perfsonar-4.3; urgency=low
+
+  * Redirecting / to /toolkit/ for HTTPS too.
+
+ -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Mon, 02 Nov 2020 22:03:48 +0000
+
 perfsonar-toolkit (4.3.0-1) perfsonar-4.3; urgency=low
 
   * New upstream version.
@@ -18,160 +36,6 @@ perfsonar-toolkit (4.3.0-1) perfsonar-4.3; urgency=low
 
  -- perfSONAR developers <debian@perfsonar.net>  Fri, 30 Oct 2020 13:50:25 +0000
 
-perfsonar-toolkit (4.2.3-1) perfsonar-4.2; urgency=low
-
-  * New upstream version.
-
- -- perfSONAR developers <debian@perfsonar.net>  Wed, 19 Feb 2020 15:37:04 +0000
-
-perfsonar-toolkit (4.2.2-1) perfsonar-4.2; urgency=low
-
-  * New upstream version.
-
- -- perfSONAR developers <debian@perfsonar.net>  Fri, 11 Oct 2019 11:03:05 -0400
-
-perfsonar-toolkit (4.2.1-1) perfsonar-4.2; urgency=low
-
-  * New upstream version.
-
- -- perfSONAR developers <debian@perfsonar.net>  Tue, 01 Oct 2019 09:44:31 -0400
-
-perfsonar-toolkit (4.2.0-1) perfsonar-minor-staging; urgency=low
-
-  * New upstream version.
-  * Building on stretch.
-  * Adding libperfsonar-sls-perl as a build dependency.
-  * Moving mod_interface_route from perfsonar-toolkit to
-    perfsonar-toolkit-systemenv-testpoint.
-
- -- Andy Lake <andy@es.net>  Thu, 15 Aug 2019 01:10:00 +0000
-
-perfsonar-toolkit (4.1.6-1) perfsonar-release; urgency=low
-
-  * New upstream version.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Sat, 23 Feb 2019 17:29:30 +0000
-
-perfsonar-toolkit (4.1.5-1) perfsonar-release; urgency=low
-
-  * New upstream version.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Thu, 20 Dec 2018 11:42:45 +0000
-
-perfsonar-toolkit (4.1.3-1) perfsonar-release; urgency=low
-
-  * New upstream version.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 16 Oct 2018 14:47:44 -0400
-
-perfsonar-toolkit (4.1.2-1) perfsonar-release; urgency=low
-
-  * New upstream version.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Thu, 13 Sep 2018 08:03:18 +0200
-
-perfsonar-toolkit (4.1.1-1) perfsonar-release; urgency=low
-
-  * New upstream version.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Fri, 24 Aug 2018 17:31:50 +0000
-
-perfsonar-toolkit (4.1-1) perfsonar-release; urgency=low
-
-  * New upstream version.
-  * Adding TWAMP support
-  * Adding dependencies to perfsonar-psconfig-* packages
-  * Adding package perfsonar-toolkit-compat-database for PostgreSQL migration
-  * Make sure configdaemon is listening on 127.0.0.1
-  * Removing dependencies to bwctl
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Mon, 13 Aug 2018 18:20:20 +0000
-
-perfsonar-toolkit (4.0.2.3-2) perfsonar-jessie-release; urgency=low
-
-  * Correcting installation of ulimit files.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Mon, 05 Mar 2018 08:24:24 +0000
-
-perfsonar-toolkit (4.0.2.3-1) perfsonar-jessie-release; urgency=low
-
-  * New upstream version.
-  * Locking Build-Depends: on libperfsonar-perl (= 4.0.2.2-1)
-    and libperfsonar-toolkit-perl (= 4.0.2.2-1)
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Sat, 03 Mar 2018 18:17:07 +0000
-
-perfsonar-toolkit (4.0.2.1-2) perfsonar-jessie-release; urgency=low
-
-  * New upstream version.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 19 Dec 2017 16:41:07 +0000
-
-perfsonar-toolkit (4.0.2-1) perfsonar-jessie-release; urgency=low
-
-  * New upstream version.
-  * Remove automatic changes to root .bashrc
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 07 Nov 2017 12:37:33 +0000
-
-perfsonar-toolkit (4.0.1-1) perfsonar-jessie-release; urgency=low
-
-  * New upstream version.
-  * Splitting the perfsonar-toolkit-systemenv into perfsonar-toolkit-systemenv
-    and perfsonar-toolkit-systemenv-testpoint
-  * Adding drop-in dependency (built from pscheduler repo).
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Tue, 15 Aug 2017 16:42:55 +0100
-
-perfsonar-toolkit (4.0.0.2-1) perfsonar-jessie-release; urgency=low
-
-  * New upstream version.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Fri, 05 May 2017 12:46:16 +0000
-
-perfsonar-toolkit (4.0-1) perfsonar-jessie-release; urgency=low
-
-  * New upstream version.
-  * Improving configuration scripts.
-  * Improving startup scripts.
-  * Adding dependencies: ssl-cert, ntp, libperfsonar-toolkit-perl,
-    perfsonar-lsregistrationdaemon, perfsonar-toolkit-config-daemon,
-    perfsonar-core, perfsonar-lscachedaemon, perfsonar-traceroute-viewer,
-    perfsonar-meshconfig-jsonbuilder
-  * Renaming configdaemon.pl to perfsonar-toolkit-config-daemon and improving
-    startup script.
-  * Enabling apache ssl module.
-  * Adding a lintian-overrides for incorrect JS library detection.
-  * Adding autopkgtests.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Thu, 13 Apr 2017 17:16:47 +0000
-
-perfsonar-toolkit (3.5.1.3-1) perfsonar-jessie-release; urgency=low
-
-  * New upstream version.
-
- -- Antoine Delvaux <adelvaux@man.poznan.pl>  Mon, 28 Mar 2016 19:42:59 +0000
-
-perfsonar-toolkit (3.5.1-3) debian-jessie-release; urgency=low
-
-  * Porting to Jessie
-
- -- Antoine Delvaux <adelvaux@man.poznan.pl>  Fri, 04 Mar 2016 18:07:47 +0100
-
-perfsonar-toolkit (3.5.0-1) perfsonar-wheezy-release; urgency=low
-
-  * Contains: the iptable rules and fail2ban configuration (toolkit-security)
-  * Contains: the sysctl settings (toolkit-sysctl)
-  * Contains: the service watcher (toolkit-service-watcher)
-  * Contains: the ntp configuration (toolkit-ntp)
-
- -- Antoine Delvaux <adelvaux@man.poznan.pl>  Sat, 26 Sep 2015 16:24:41 +0000
-
-perfsonar-toolkit (3.5-2) UNRELEASED; urgency=low
-
-  * Initial release.
-
- -- Valentin Vidic <Valentin.Vidic@CARNet.hr>  Wed, 15 Apr 2015 14:24:43 +0200
 perfsonar-toolkit (4.2.4-1) perfsonar-4.2; urgency=low
 
   * New upstream version.
