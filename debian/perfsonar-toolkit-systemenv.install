@@ -7,7 +7,6 @@ scripts/system_environment/add_toolkit_dirs_path usr/lib/perfsonar/scripts/syste
 scripts/system_environment/configure_tests_gui usr/lib/perfsonar/scripts/system_environment/
 #scripts/system_environment/disable_php_advertising usr/lib/perfsonar/scripts/system_environment/
 scripts/system_environment/disable_unwanted_services usr/lib/perfsonar/scripts/system_environment/
-scripts/system_environment/graphs_whitelist usr/lib/perfsonar/scripts/system_environment/
 # no zeroconf in debian
 #scripts/system_environment/disable_zeroconf usr/lib/perfsonar/scripts/system_environment/
 # redirect works by default in debian

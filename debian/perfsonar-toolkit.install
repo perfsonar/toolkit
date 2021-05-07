@@ -1,7 +1,6 @@
 web-ng usr/lib/perfsonar
 etc/administrative_info etc/perfsonar/toolkit
 etc/default_service_configs/jail.local etc/perfsonar/toolkit/default_service_configs/
-etc/default_service_configs/graphs.json usr/lib/perfsonar/graphs/etc/
 etc/perfsonar_sudo etc/sudoers.d
 etc/templates/motd.tmpl etc/perfsonar/toolkit/templates/
 etc/apache-perfsonar-security.conf etc/apache2/conf-available/
