@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#Replace if default or non-existent
-grep -q \"#url_whitelist\" /usr/lib/perfsonar/graphs/etc/graphs.json
-if [ $? -eq 0 ] || [ ! -f  /usr/lib/perfsonar/graphs/etc/graphs.json ]; then
+if [ ! -f  /usr/lib/perfsonar/graphs/etc/graphs.json  ]; then
     cp -f  /etc/perfsonar/toolkit/default_service_configs/graphs.json /usr/lib/perfsonar/graphs/etc/graphs.json
 fi
