@@ -10,6 +10,7 @@ etc/configdaemon-logger.conf
 etc/configdaemon.conf
 etc/default_service_configs/pscheduler_limits.conf
 etc/default_service_configs/jail.local
+etc/default_service_configs/graphs.json
 etc/default_system_firewall_settings.conf
 etc/firewalld/services/bwctl.xml
 etc/firewalld/services/owamp-control.xml
@@ -70,6 +71,7 @@ scripts/system_environment/disable_unwanted_services
 scripts/system_environment/disable_zeroconf
 scripts/system_environment/enable_apache_redirect
 scripts/system_environment/enable_ntp_restarts
+scripts/system_environment/graphs_whitelist
 scripts/system_environment/migrate_admininfo
 scripts/system_environment/upgrade_lsregistration
 scripts/system_environment/upgrade_fix_permissions

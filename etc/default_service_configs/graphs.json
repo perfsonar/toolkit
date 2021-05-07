@@ -1,0 +1,10 @@
+{
+    "#comment" : "ssl_cert_ignore specifies whether to validate SSL certs of remote MAs",
+    "#comment" : "set ssl_cert_ignore to false to validate SSL certs",
+    "ssl_cert_ignore" : true,
+    "url_whitelist" : [
+            "localhost",
+            "127.0.0.1",
+            "::1"
+    ]
+}

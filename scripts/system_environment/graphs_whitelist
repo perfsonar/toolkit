@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [ ! -f  /usr/lib/perfsonar/graphs/etc/graphs.json  ]; then
+    cp -f  /etc/perfsonar/toolkit/default_service_configs/graphs.json /usr/lib/perfsonar/graphs/etc/graphs.json
+fi
