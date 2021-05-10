@@ -251,12 +251,22 @@ HostStatusSidebarComponent._handleNTPInfo = function() {
 };
 
 HostStatusSidebarComponent._registerHelpers = function() {
-    Handlebars.registerHelper('formatSpeed', function(speed) {
-        var ret = null;
-        if ( speed > 0 ) {
-            ret = speed /  ( 1000000 ) + 'M';
-        }
-        return ret;
+    Handlebars.registerHelper('formatSpeed', function(speed_raw) {
+
+	const units = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+	let unit = 0;
+	let speed = parseInt(speed_raw, 10) || 0;
+
+	if (speed <= 0) {
+	    return 'Unknown'
+	}
+
+	while (speed >= 1000 && ++unit) {
+	    speed /= 1000;
+	}
+
+	// 10 or fewer of any unit gets a tenths place
+	return(speed.toFixed(speed < 10 && unit > 0 ? 1 : 0) + ' ' + units[unit] + 'b/s');
     });
 
     Handlebars.registerHelper('is_equal', function(a, b) {
