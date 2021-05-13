@@ -133,6 +133,14 @@ my $templates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 
 $router->add_method($templates_method);
 
+my $intern_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "get_allow_internal_addresses",
+    description     =>  "Retrieves allow internal addresses flag",
+    callback        =>  sub { $host_info->get_allow_internal_addresses(@_); }
+    );
+
+$router->add_method($intern_method);
+
 $router->handle_request();
 
 # vim: expandtab shiftwidth=4 tabstop=4

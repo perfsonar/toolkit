@@ -93,6 +93,7 @@ HostAdminStore.saveAllowInternalAddresses = function( data ) {
     var topic = HostAdminStore.saveAllowInternalAddressesTopic;
     var error_topic = HostAdminStore.saveAllowInternalAddressesErrorTopic;
     $.ajax({
+    //	 url: 'services/host.cgi?method=update_auto_updates',
         url: 'services/host.cgi?method=update_allow_internal_addresses',
         type: 'POST',
         data: data,

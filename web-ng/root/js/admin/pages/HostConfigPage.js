@@ -129,7 +129,7 @@ HostConfigPage._save = function() {
     Dispatcher.publish(HostConfigPage.formSubmitTopic);
     NTPConfigComponent.save();
     AutoUpdatesComponent.save();
-    // AllowInternalAddressesComponent.save();
+    AllowInternalAddressesComponent.save();
 };
 
 HostConfigPage._saveSuccess = function( topic, message ) {

@@ -297,10 +297,9 @@ $auto_updates_method->add_input_parameter(
 $router->add_method($auto_updates_method);
      
 my $get_allow_internal_addresses_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            => "get_allow_internal_addresses",
-    description     => "Gets allow internal addresses configuration",
-    auth_required   => 1,
-    callback        => sub { $host_info->get_allow_internal_addresses(@_); },
+    name            =>  "get_allow_internal_addresses",
+    description     =>  "Gets allow internal addresses configuration",
+    callback        =>  sub { $host_info->get_allow_internal_addresses(@_); }
     );
 
 $router->add_method($get_allow_internal_addresses_method);
@@ -347,6 +346,7 @@ my $all_communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     );
 
 $router->add_method($all_communities_method);
+
 
 my $templates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_templates",
