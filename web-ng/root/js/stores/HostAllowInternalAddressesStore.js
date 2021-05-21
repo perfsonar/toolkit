@@ -22,13 +22,12 @@ HostAllowInternalAddressesStore._retrieveInfo = function() {
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
-                
             }
         });
 };
 
-HostAllowInternalAddressesStore.getAllowInternalAddressesInfo = function() {
-    return HostAllowInternalAddressesStore.allowInternalAddressesInfo;
+HostAllowInternalAddressesStore.getAllowInternalAddresses = function() {
+    return HostAllowInternalAddressesStore.hostAllowInternalAddresses;
 };
 
 HostAllowInternalAddressesStore.initialize();

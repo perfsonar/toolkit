@@ -62,6 +62,21 @@ Vagrant.configure("2") do |config|
             perl-ExtUtils-MakeMaker\
             perl-Test-MockObject\
             perfsonar-toolkit
+  
+  ## sort out perl repo link - need to have ps-build running from perl first
+             
+         cat > /etc/yum.repos.d/ps-rpmbuild.repo << EOF
+[ps-rpmbuild]
+name = perfSONAR RPM Build VM
+baseurl = http://10.0.1.10/repo/
+enabled = 1
+protect = 0
+gpgcheck = 0
+proxy = _none_
+EOF
+        chmod 644 /etc/yum.repos.d/ps-rpmbuild.repo
+           
+            
         ##
         # Now make install the shared directory
         cd /vagrant/shared

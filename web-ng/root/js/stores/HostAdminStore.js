@@ -5,7 +5,7 @@
 // HostStore.js
 
 var HostAdminStore = {
-	//	 allowInternalAddressesTopic: 'store.change.host_in_add',	
+	allowInternalAddressesTopic: 'store.change.host_in_add',	
     adminInfoTopic: 'store.change.host_info',
     detailsTopic: 'store.change.host_details',
     servicesTopic: 'store.change.host_services',
@@ -93,7 +93,6 @@ HostAdminStore.saveAllowInternalAddresses = function( data ) {
     var topic = HostAdminStore.saveAllowInternalAddressesTopic;
     var error_topic = HostAdminStore.saveAllowInternalAddressesErrorTopic;
     $.ajax({
-    //	 url: 'services/host.cgi?method=update_auto_updates',
         url: 'services/host.cgi?method=update_allow_internal_addresses',
         type: 'POST',
         data: data,

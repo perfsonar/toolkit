@@ -47,7 +47,7 @@ AllowInternalAddressesComponent._getLabelText = function ( state ) {
 
 AllowInternalAddressesComponent.save = function() {
     var data = {};
-   data.enabled = AllowInternalAddressesComponent.allowInternalAddresses ? 1 : 0;
+   data.allow_internal_addresses = AllowInternalAddressesComponent.allowInternalAddresses ? 1 : 0;
 
     HostAdminStore.saveAllowInternalAddresses(data);
     

@@ -299,6 +299,7 @@ $router->add_method($auto_updates_method);
 my $get_allow_internal_addresses_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_allow_internal_addresses",
     description     =>  "Gets allow internal addresses configuration",
+    auth_required   => 1,
     callback        =>  sub { $host_info->get_allow_internal_addresses(@_); }
     );
 
