@@ -137,6 +137,7 @@ web-ng/root/images/perfSONAR-logo.png
 web-ng/root/index.cgi
 web-ng/root/js/actions/Dispatcher.js
 web-ng/root/js/admin/components/AdminInfoUpdateComponent.js
+web-ng/root/js/admin/components/AllowInternalAddressesComponent.js
 web-ng/root/js/admin/components/StickySaveBar.js
 web-ng/root/js/admin/components/AutoUpdatesComponent.js
 web-ng/root/js/admin/components/CommunityUpdateComponent.js
@@ -272,6 +273,7 @@ web-ng/root/js/select2/select2.js
 web-ng/root/js/select2/select2.min.js
 web-ng/root/js/stores/CommunityHostsStore.js
 web-ng/root/js/stores/HostAdminStore.js
+web-ng/root/js/stores/HostAllowInternalAddressesStore.js
 web-ng/root/js/stores/HostDetailsStore.js
 web-ng/root/js/stores/HostHealthStore.js
 web-ng/root/js/stores/HostServicesStore.js
