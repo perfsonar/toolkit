@@ -22,7 +22,7 @@ AllowInternalAddressesComponent.initialize = function() {
 };
 
 AllowInternalAddressesComponent._setAllowInternalAddresses = function() {
-    var allowInternalAddresses = HostAllowInternalAddressesStore.getAllowInternalAddresses();
+    var allowInternalAddresses = HostDetailsStore.getAllowInternalAddresses();
     AllowInternalAddressesComponent.allowInternalAddresses = allowInternalAddresses;
     AllowInternalAddressesComponent._setSwitch();
 
@@ -46,17 +46,13 @@ AllowInternalAddressesComponent._getLabelText = function ( state ) {
 };
 
 AllowInternalAddressesComponent.save = function() {
-    var data = {};
+   var data = {};
    data.allow_internal_addresses = AllowInternalAddressesComponent.allowInternalAddresses ? 1 : 0;
 
     HostAdminStore.saveAllowInternalAddresses(data);
     
-    //HostAdminStore.saveAutoUpdates(data);
-    
-    
-    
-    
 };
+
 AllowInternalAddressesComponent._saveSuccess = function( topic, message ) {
     Dispatcher.publish(AllowInternalAddressesComponent.formAllowInternalAddressesSuccessTopic, message);
 };

@@ -39,4 +39,8 @@ HostDetailsStore.getAutoUpdates = function() {
     return HostDetailsStore.hostDetails.auto_updates;
 };
 
+HostDetailsStore.getAllowInternalAddresses = function() {
+    return HostDetailsStore.hostDetails.allow_internal_addresses;
+};
+
 HostDetailsStore.initialize();
