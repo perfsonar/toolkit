@@ -58,7 +58,6 @@ my $js_files = [
     $include_prefix . 'js/d3/d3.min.js',
     $include_prefix . 'js/shared/TestResultUtils.js',
     $include_prefix . 'js/stores/HostDetailsStore.js', 
-    $include_prefix . 'js/stores/HostAllowInternalAddressesStore.js',
     $include_prefix . 'js/stores/HostAdminStore.js', 
     $include_prefix . 'js/components/PageHeader.js', 
     $include_prefix . 'js/admin/components/StickySaveBar.js', 

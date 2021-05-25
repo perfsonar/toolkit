@@ -23,6 +23,7 @@ AllowInternalAddressesComponent.initialize = function() {
 
 AllowInternalAddressesComponent._setAllowInternalAddresses = function() {
     var allowInternalAddresses = HostDetailsStore.getAllowInternalAddresses();
+    allowInternalAddresses = 1;
     AllowInternalAddressesComponent.allowInternalAddresses = allowInternalAddresses;
     AllowInternalAddressesComponent._setSwitch();
 

@@ -99,7 +99,7 @@ HostAdminStore.saveAllowInternalAddresses = function( data ) {
         dataType: 'json',
         contentType: 'application/x-www-form-urlencoded',
         success: function(result) {
-            HostAllowInternalAddressesStore._retrieveInfo();
+        	HostDetailsStore._retrieveDetails();
             Dispatcher.publish(topic, result.message);
 
         },
