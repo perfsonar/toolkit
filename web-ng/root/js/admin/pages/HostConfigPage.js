@@ -4,7 +4,6 @@
 var HostConfigPage = { 
     detailsTopic: 'store.change.host_details',
     adminServicesTopic: 'store.change.host_services',
-    allowInternalAddressesTopic: 'store.change.host_in_add',
     ntpConfigTopic: 'store.change.ntp_config',
     formChangeTopic: 'ui.form.change',
     formSubmitTopic:    'ui.form.submit',

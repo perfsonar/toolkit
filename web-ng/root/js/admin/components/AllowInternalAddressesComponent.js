@@ -1,6 +1,6 @@
 var AllowInternalAddressesComponent = {
 	allowInternalAddresses: null,
-    allowInternalAddressesTopic: 'store.change.host_in_add',
+	detailsTopic: 'store.change.host_details',
     saveAllowInternalAddressesTopic: 'store.in_add.save',
     saveAllowInternalAddressesErrorTopic: 'store.in_add.save_error',
     formAllowInternalAddressesChangeTopic: 'ui.form.in_add.change',
@@ -11,7 +11,7 @@ var AllowInternalAddressesComponent = {
 
 
 AllowInternalAddressesComponent.initialize = function() {
-	Dispatcher.subscribe(AllowInternalAddressesComponent.allowInternalAddressesTopic, AllowInternalAddressesComponent._setAllowInternalAddresses);
+	Dispatcher.subscribe(AllowInternalAddressesComponent.detailsTopic, AllowInternalAddressesComponent._setAllowInternalAddresses);
     Dispatcher.subscribe(AllowInternalAddressesComponent.saveAllowInternalAddressesTopic, AllowInternalAddressesComponent._saveSuccess);
     Dispatcher.subscribe(AllowInternalAddressesComponent.saveAllowInternalAddressesErrorTopic, AllowInternalAddressesComponent._saveError);
     $('#allowInternalAddressesSwitch').change( function() {

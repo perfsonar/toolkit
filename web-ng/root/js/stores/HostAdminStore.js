@@ -5,8 +5,7 @@
 // HostStore.js
 
 var HostAdminStore = {
-	allowInternalAddressesTopic: 'store.change.host_in_add',	
-    adminInfoTopic: 'store.change.host_info',
+	adminInfoTopic: 'store.change.host_info',
     detailsTopic: 'store.change.host_details',
     servicesTopic: 'store.change.host_services',
     summaryTopic: 'store.change.host_summary',
