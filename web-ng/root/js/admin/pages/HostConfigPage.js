@@ -94,11 +94,17 @@ HostConfigPage._handleSubForm = function(topic, result) {
             message += 'Auto updates and NTP saved successfully';
     
         } else {
-            if (HostConfigPage.autoUpdatesSaveCompleted) {
+        	if (HostConfigPage.autoUpdatesSaveCompleted) {
                 message += 'Auto Updates saved successfully. ';
             } else {
                 message += 'Error saving Auto Updates: ';
                 message += HostConfigPage.autoUpdatesSaveMessage;
+            }
+            if (HostConfigPage.allowInternalAddressesSaveCompleted) {
+                message += 'Allow Internal Addresses saved successfully. ';
+            } else {
+                message += 'Error saving Internal Addresses: ';
+                message += HostConfigPage.allowInternalAddressesSaveMessage;
             }
             if (HostConfigPage.ntpSaveCompleted) {
                 message += 'NTP saved successfully. ';
@@ -109,6 +115,8 @@ HostConfigPage._handleSubForm = function(topic, result) {
         }
         HostConfigPage.ntpSaveCompleted = null;
         HostConfigPage.autoUpdatesSaveCompleted = null;
+        HostConfigPage.allowInternalAddressesSaveCompleted = null;
+        HostConfigPage.allowInternalAddressesSaveMessage = '';
         HostConfigPage.ntpSaveMessage = '';
         HostConfigPage.autoUpdatesSaveMessage = '';
         HostConfigPage._saveSuccess( topic, message);
