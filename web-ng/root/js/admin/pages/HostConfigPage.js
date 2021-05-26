@@ -68,6 +68,14 @@ HostConfigPage._handleSubForm = function(topic, result) {
             HostConfigPage.ntpSaveCompleted = false;
             HostConfigPage.ntpSaveMessage = result;
             break;
+        case HostConfigPage.formAllowInternalAddressesSuccessTopic:
+            HostConfigPage.allowInternalAddressesSaveCompleted = true;
+            HostConfigPage.allowInternalAddressesSaveMessage = result;
+            break;    
+        case HostConfigPage.formAllowInternalAddressesErrorTopic:
+            HostConfigPage.allowInternalAddressesSaveCompleted = false;
+            HostConfigPage.allowInternalAddressesSaveMessage = result;
+            break;      
     }
 
     if (HostConfigPage.ntpSaveCompleted !== null && HostConfigPage.autoUpdatesSaveCompleted !== null) {
