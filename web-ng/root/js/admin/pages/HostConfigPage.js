@@ -81,9 +81,18 @@ HostConfigPage._handleSubForm = function(topic, result) {
     if (HostConfigPage.ntpSaveCompleted !== null && HostConfigPage.autoUpdatesSaveCompleted !== null && HostConfigPage.allowInternalAddressesSaveCompleted !== null) {
         // all sections save completed.
         var message = '';
-        if (HostConfigPage.ntpSaveCompleted && HostConfigPage.autoUpdatesSaveCompleted) {
+        if (HostConfigPage.ntpSaveCompleted && HostConfigPage.autoUpdatesSaveCompleted  && HostConfigPage.allowInternalAddressesSaveCompleted) {
+            message += 'Allow Internal Addresses, Auto updates and NTP saved successfully';
+            
+        } else if (HostConfigPage.autoUpdatesSaveCompleted  && HostConfigPage.allowInternalAddressesSaveCompleted) {
+            message += 'Allow Internal Addresses and Auto updates saved successfully';
+        	
+        }else if (HostConfigPage.ntpSaveCompleted && HostConfigPage.allowInternalAddressesSaveCompleted) {
+            message += 'Allow Internal Addresses and NTP saved successfully';
+            
+        }else if (HostConfigPage.ntpSaveCompleted && HostConfigPage.autoUpdatesSaveCompleted) {
             message += 'Auto updates and NTP saved successfully';
-
+    
         } else {
             if (HostConfigPage.autoUpdatesSaveCompleted) {
                 message += 'Auto Updates saved successfully. ';
