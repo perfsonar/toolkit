@@ -78,8 +78,8 @@ HostConfigPage._handleSubForm = function(topic, result) {
             break;      
     }
 
-    if (HostConfigPage.ntpSaveCompleted !== null && HostConfigPage.autoUpdatesSaveCompleted !== null) {
-        // Both sections save completed.
+    if (HostConfigPage.ntpSaveCompleted !== null && HostConfigPage.autoUpdatesSaveCompleted !== null && HostConfigPage.allowInternalAddressesSaveCompleted !== null) {
+        // all sections save completed.
         var message = '';
         if (HostConfigPage.ntpSaveCompleted && HostConfigPage.autoUpdatesSaveCompleted) {
             message += 'Auto updates and NTP saved successfully';
