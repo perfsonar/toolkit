@@ -60,6 +60,54 @@ HostConfigPage._handleSubForm = function(topic, result) {
             HostConfigPage.autoUpdatesSaveCompleted = false;
             HostConfigPage.autoUpdatesSaveMessage = result;
             break;
+        case HostConfigPage.formNTPSuccessTopic:
+            HostConfigPage.ntpSaveCompleted = true;
+            HostConfigPage.ntpSaveMessage = result;
+            break;
+        case HostConfigPage.formNTPErrorTopic:
+            HostConfigPage.ntpSaveCompleted = false;
+            HostConfigPage.ntpSaveMessage = result;
+            break;
+    }
+
+    if (HostConfigPage.ntpSaveCompleted !== null && HostConfigPage.autoUpdatesSaveCompleted !== null) {
+        // Both sections save completed.
+        var message = '';
+        if (HostConfigPage.ntpSaveCompleted && HostConfigPage.autoUpdatesSaveCompleted) {
+            message += 'Auto updates and NTP saved successfully';
+
+        } else {
+            if (HostConfigPage.autoUpdatesSaveCompleted) {
+                message += 'Auto Updates saved successfully. ';
+            } else {
+                message += 'Error saving Auto Updates: ';
+                message += HostConfigPage.autoUpdatesSaveMessage;
+            }
+            if (HostConfigPage.ntpSaveCompleted) {
+                message += 'NTP saved successfully. ';
+            } else {
+                message += 'Error saving NTP: ';
+                message += HostConfigPage.NTPSaveMessage;
+            }
+        }
+        HostConfigPage.ntpSaveCompleted = null;
+        HostConfigPage.autoUpdatesSaveCompleted = null;
+        HostConfigPage.ntpSaveMessage = '';
+        HostConfigPage.autoUpdatesSaveMessage = '';
+        HostConfigPage._saveSuccess( topic, message);
+    }
+};
+
+HostConfigPage._handleSubFormsaved = function(topic, result) {
+    switch (topic) {
+        case HostConfigPage.formAutoUpdatesSuccessTopic:
+            HostConfigPage.autoUpdatesSaveCompleted = true;
+            HostConfigPage.autoUpdatesSaveMessage = result;
+            break;
+        case HostConfigPage.formAutoUpdatesErrorTopic:
+            HostConfigPage.autoUpdatesSaveCompleted = false;
+            HostConfigPage.autoUpdatesSaveMessage = result;
+            break;
         case HostConfigPage.formAllowInternalAddressesSuccessTopic:
             HostConfigPage.allowInternalAddressesSaveCompleted = true;
             HostConfigPage.allowInternalAddressesSaveMessage = result;
@@ -143,7 +191,6 @@ HostConfigPage._cancel = function() {
     Dispatcher.publish(HostConfigPage.formCancelTopic);
     Dispatcher.publish(HostConfigPage.ntpConfigTopic);
     Dispatcher.publish(HostConfigPage.detailsTopic);
-    Dispatcher.publish(HostConfigPage.allowInternalAddressesTopic);
 };
 
 HostConfigPage._showSaveBar = function() {
