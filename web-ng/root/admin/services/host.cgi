@@ -339,7 +339,6 @@ my $all_communities_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
 
 $router->add_method($all_communities_method);
 
-
 my $templates_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "get_templates",
     description     =>  "Retrieves list of pSConfig templates in use",

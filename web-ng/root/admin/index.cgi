@@ -80,4 +80,3 @@ $vars->{'include_prefix'} = $include_prefix;
 
 $tt->process('page.html', $vars) || die $tt->error(), "\n";
 
-
