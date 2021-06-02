@@ -293,6 +293,7 @@ web-ng/templates/components/main.html
 web-ng/templates/components/page_header.html
 web-ng/templates/components/sidebar.html
 web-ng/templates/components/top.html
+web-ng/templates/components/plot.html
 web-ng/templates/host/host_overview.html
 web-ng/templates/host/services.html
 web-ng/templates/host/sidebar_host_health.html
