@@ -94,6 +94,7 @@ web-ng/root/admin/services/ntp.cgi
 web-ng/root/admin/services/communities.cgi
 web-ng/root/admin/services/regular_testing.cgi
 web-ng/root/admin/tests.cgi
+web-ng/root/admin/plot.cgi
 web-ng/root/css/app.css
 web-ng/root/css/foundation.css
 web-ng/root/css/foundation.min.css
@@ -293,7 +294,7 @@ web-ng/templates/components/main.html
 web-ng/templates/components/page_header.html
 web-ng/templates/components/sidebar.html
 web-ng/templates/components/top.html
-web-ng/templates/components/plot.html
+web-ng/templates/admin/pages/plot.html
 web-ng/templates/host/host_overview.html
 web-ng/templates/host/services.html
 web-ng/templates/host/sidebar_host_health.html
