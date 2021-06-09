@@ -1,197 +1,133 @@
  [% INCLUDE components/loader.html %]
- <div class="config-panel-wrapper">
-            <section class="dashboard-internal">
-                <div class="row">
-                    <div class="small-12 columns">
-                        <header>
-                            <nav>
-                                <ul class="nav--breadcrumbs u-list-nav">
-                                    <li><a href=".."><i class="fa fa-home fa-fw"></i>Home</a></li>
-                                    <li class="active"><a href="plot.cgi">Plot Schedule</a></li>
-                                </ul>
-                            </nav>
-                        </header>
-                    </div>
+<div class="config-panel-wrapper">
+	<section class="dashboard-internal">
+		<div class="row">
+			<div class="small-12 columns">
+				<header>
+					<nav>
+						<ul class="nav--breadcrumbs u-list-nav">
+							<li><a href=".."><i class="fa fa-home fa-fw"></i>Home</a></li>
+							<li class="active"><a href="plot.cgi">Plot Schedule</a></li>
+						</ul>
+					</nav>
+				</header>
+			</div>
+		</div>
+		
+		<div class="config">
+        <form id="plotForm">
+
+		<div class="row">
+			<div class="medium-9 columns">
+				<div class="row">
+					<p>
+						It is often desirable to view the pScheduler schedule to plan new
+						tests, debug a problem or just see how busy a host is at a
+						particular time.<br> There is a pscheduler command-line
+						client to provide this visibility, or you can generate a view by
+						entering parameters below and pressing the 'Process Graph' button.<br>
+						The pscheduler plot-schedule command asks pScheduler to fetch
+						scheduled task runs from the past, present or future and displays
+						them as box plot in a PNG image file.<br> From this screen
+						you can select a host (This will default to localhost if not
+						entered), A time period in the past where you wish the graph to
+						start, and a time period in the future where the graph is to stop.<br>
+						There are more detailed parameters available on the command line
+						option (such as entering specific start and end dates) if these
+						option do not allow you to view the required data.
+					</p>
+
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="medium-9 columns">
+				<div class="row">
+
+
+					<div class="small-12 columns">
+						<label class="config__label">HostName (if not local host)</label>
+						<input class="config__input" type="text"
+							id="plot_hostname">
+					</div>
+				</div>
+				<div class="row">
+					<div class="medium-12 columns">
+						<div class="timeperiod-plot">
+							<label for="summary_timeperiodpast">Plot time in the past
+								...</label>
+							<select id="plot_timeperiodpast">
+								<option value="PT0M">Current Time</option>
+								<option value="PT30M">30 Mins</option>
+								<option value="PT1H">1 Hour</option>
+								<option value="PT90M">1 Hour, 30 Mins</option>
+								<option value="PT2H">2 Hours</option>
+								<option value="PT6H">6 Hours</option>
+								<option value="PT1D">1 Day</option>
+								<option value="PT5D">5 Days</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+
+
+
+				<div class="row">
+					<div class="medium-12 columns">
+						<div class="timeperiod-plot">
+							<label for="summary_timeperiodforward">Plot time in the
+								furture ...</label>
+							<!-- // values are "timeperiod,summary_window" -->
+							<select id="plot_timeperiodforward">
+								<option value="PT0M">Current Time</option>
+								<option value="PT30M">30 Mins</option>
+								<option value="PT1H">1 Hour</option>
+								<option value="PT90M">1 Hour, 30 Mins</option>
+								<option value="PT2H">2 Hours</option>
+								<option value="PT6H">6 Hours</option>
+								<option value="PT1D">1 Day</option>
+								<option value="PT5D">5 Days</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="medium-12 columns">
+						<label class="config__label">Schedule specific start Date
+							/ Time</label> <input class="config__input" type="text" id="plot_starttime">
+					</div>
+				</div>
+				<div class="row">
+					<div class="medium-12 columns">
+						<label class="config__label">Schedule specific finish Date
+							/ Time</label> <input class="config__input" type="text" id="plot_endtime">
+					</div>
+				</div>
+				
+				<input type="button" value="CHANGE"	onClick=`/toolkit/admin/services/plot.cgi`;>
+				<button>Process Graph</button>
+			
+			</div>
+			<div class="medium-3 columns">
+				<aside class="aside aside--config">
+					<h3 class="aside__heading">Resources</h3>
+					<ul class="aside__list">
+						<li><a
+							href="http://docs.perfsonar.net/pscheduler_client_schedule.html#pscheduler-client-schedule-plot-schedule"
+							target="_blank">Plot Schedule</a></li>
+					</ul>
+				</aside>
+			</div>
+		</div>
+
+
+
+
+       </form>
                 </div>
 
+	</section>
 
-
-<form id="adminInfoForm" data-abide="ajax">
-
-<div class="config">
-
-    [% INCLUDE admin/components/admin_header_nav.html %]
-    <div class="row">
-        <div class="medium-9 columns">
-            <div class="config__form">
-                    <fieldset>
-<div class="row"> <!-- container row -->
-    <div class="medium-6 columns">
-                        <div class="row">
-                            <div class="small-12 columns">
-                                <label class="config__label">Organization Name</label>
-                                <input class="config__input" type="text" id="admin_organization_name">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="medium-12 columns">
-                                <label class="config__label">Administrator Name</label>
-                                <input class="config__input" type="text" id="admin_name">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="medium-12 columns">
-                                <label class="config__label">Administrator Email </label>
-                                <input class="config__input" type="email" id="admin_email">
-                                <small class="error">Must be a valid e-mail address</small>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="large-12 columns">
-                                <label class="config__label">City</label>
-                                <input class="config__input" type="text" id="admin_city">
-                            </div>
-                        </div>
-    </div><!-- first column -->
-    <!-- second column -->
-    <div class="medium-6 columns">
-        <p>
-        All the information you provide on this page will be sent, recorded and made publicly available on the global perfSONAR Lookup Service. For privacy reasons, we recommend you use a role or group name and related email address to be registered. Any personal information you would provide will be on your own responsibility and will by no means represent an obligation for the perfSONAR project. See our <a href="https://www.perfsonar.net/about/privacy-policy/" target="_blank">Privacy Policy</a> for more information.
-        </p>
-        <p>
-            <label class="config__label">
-                <input id="privacyPolicySwitch" type="checkbox" required style="margin:0 0.3em">
-                I agree to the perfSONAR Privacy Policy
-            </label>
-        </p>
-
-    </div> <!-- second column -->
-</div><!-- containter row -->
-
-                        <div class="row">
-                            <div class="large-4 columns">
-                                <label class="config__label">Country</label>
-                                <select class="config__input" id="admin_country">
-                                </select>
-                            </div>
-                            <div class="large-4 columns">
-                                <label class="config__label">State/Province</label>
-                                    <input type="text" id="admin_state" style="display:none;" />
-                                    <input type="hidden" id="previous_selected_state_val" value="" />
-                                    <select class="config__input" id="admin_states" />
-                                </select>
-                            </div>
-                            <div class="large-4 columns">
-                                <label class="config__label">ZIP/Postal Code</label>
-                                <input class="config__input" type="text" id="admin_postal_code">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="large-4 columns">
-                                <label class="config__label">Latitude</label> 
-                                <input class="config__input" type="text" pattern="number" id="admin_latitude">
-                                <small class="error">Must be a valid decimal</small>
-                            </div>
-                            <div class="large-4 columns">
-                                <label class="config__label">Longitude</label>
-                                <input class="config__input" type="text" pattern="number" id="admin_longitude">
-                                <small class="error">Must be a valid decimal</small>
-                            </div>
-                            <div class="large-4 columns">
-                                <button name="" id="guess_lat_lon_button" style="display:none;" class="button-quiet button-quiet--form-align"><i class="fa fa-globe"> &nbsp;</i>Autofill Lat/Long</button>
-                                <input type="hidden" id="guessed_latitude" value="">
-                                <input type="hidden" id="guessed_longitude" value="">
-                            </div>
-                        </div>
-                    </fieldset>
-<!-- ********************************************
-    Metadata module
-******************************************** -->
-                                <h2 class="module-header__title">Metadata</h2>
-                                <div class="metadata">
-                                    <fieldset>
-                                        
-					<div class="row">
-                                                <div class="medium-6 columns">
-                                                    <label class="config__label">Sitename</label>
-                                                    <input class="config__input" type="text" id="location_sitename">
-                                                </div>
-                                                <div class="medium-6 columns">
-                                                    <label class="config__label">Domain</label>
-                                                    <input class="config__input" type="text" id="node_domain">
-                                                </div>
-                                        </div>
-					
-					<div class="row">
-                                                <div class="medium-6 columns">
-                                                    <label class="config__label">Node Role</label> 
-                                                    <select name="node_role_select" class="js-select-multiple config__input" multiple="multiple" id="node_role_select">
-                                                    </select>
-                                                </div>
-                                                <div class="medium-6 columns">
-                                                    <label class="config__label">Node Access Policy</label> 
-                                                    <select name="access_policy" class="js-select" id="access_policy" data-allow-clear="true"><option></option></select>
-                                                </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="medium-12 columns">
-                                                    <label class="config__label">Access Policy Notes</label> 
-                                                    <input class="config__input" type="text" id="node_access_policy_notes">
-                                            </div>
-                                        </div>
-                                    </fieldset>
-                                </div>
-<!-- ********************************************
-                                    Communities module
-                                ******************************************** -->
-                                <h2 class="module-header__title">Communities</h2>
-                                <div class="communities">
-                                    <!-- New select box for choosing communities -->
-                                    <div class="row">
-                                        <div class="medium-12 columns">
-                                            <select class="js-select-multiple" multiple="multiple" id="update_communities">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <a href="#" class="communities__add"><i class="fa fa-plus"></i> Add a community</a>
-                                    <div class="communities__popular">
-                                        <fieldset>
-                                            <div class="row">
-                                                <div class="medium-8 columns">
-                                                    <input type="text" id="community_add_name" name="community_add_name" placeholder="Enter a community name">
-                                                </div>
-                                                <div class="medium-4 columns">
-                                                    <button id="community_add_button" class="button-secondary button-secondary--small" style="margin: 0; display: block; width: 100%;">Add</button>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                </div>
-                                <!-- End Communities module -->
-            </div>
-            <!-- End config__form -->
-
-
-                </div>
-                <!-- End config -->
-                    <div class="medium-3 columns">
-                            <aside class="aside aside--config">
-                                <h3 class="aside__heading">Resources</h3>
-                                <ul class="aside__list">
-                                    <li><a href="http://docs.perfsonar.net/manage_admin_info.html" target="_blank">Editing Host Information</a></li>
-                                    <li><a href="http://docs.perfsonar.net/manage_admin_info.html#adding-a-community" target="_blank">Managing Communities</a></li>
-                                    <li><a href="https://www.perfsonar.net/about/privacy-policy/" target="_blank">Privacy Policy</a></li>
-                                </ul>
-                            </aside>
-                        </div>
-                    </div>
-                    <!-- End row -->
-            </section>
-            <!-- End dashboard-internal -->
-        </div>
-        <!-- End config-panel-wrapper -->
-
-        [% INCLUDE admin/components/sticky_bar.html %]
-
-
-</form>
+</div>

@@ -1574,6 +1574,14 @@ td.test-values.loss {
     position: relative;
     z-index: 101;
     }
+    
+ .timeperiod-plot {
+    width: 170px;
+    float: left;
+    position: relative;
+    z-index: 101;
+    }
+       
 #testResultsTable_filter label input {
     height: 19px;
     margin-left: 0px;
