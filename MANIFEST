@@ -93,6 +93,7 @@ web-ng/root/admin/services/host.cgi
 web-ng/root/admin/services/ntp.cgi
 web-ng/root/admin/services/communities.cgi
 web-ng/root/admin/services/regular_testing.cgi
+web-ng/root/admin/services/plot.cgi
 web-ng/root/admin/tests.cgi
 web-ng/root/admin/plot.cgi
 web-ng/root/css/app.css
