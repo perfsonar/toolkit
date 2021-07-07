@@ -1,8 +1,8 @@
-perfsonar-toolkit (4.4.0~1.b1-1) perfsonar-4.4; urgency=low
+perfsonar-toolkit (4.4.0-1) perfsonar-4.4; urgency=low
 
   * New upstream version.
 
- -- perfSONAR developers <debian@perfsonar.net>  Tue, 18 May 2021 13:01:07 +0000
+ -- perfSONAR developers <debian@perfsonar.net>  Wed, 07 Jul 2021 15:19:04 +0000
 
 perfsonar-toolkit (4.3.4-1) perfsonar-4.3; urgency=low
 

@@ -1,5 +1,5 @@
---- a/bin/config_daemon.pl	2021-05-18 13:01:06.947982194 +0000
-+++ b/bin/config_daemon.pl	2021-05-18 13:01:07.934994636 +0000
+--- a/bin/config_daemon.pl	2021-07-07 15:19:03.759235885 +0000
++++ b/bin/config_daemon.pl	2021-07-07 15:19:05.013264422 +0000
 @@ -29,7 +29,7 @@
  use Log::Log4perl qw/:easy/;
  
@@ -18,8 +18,8 @@
  }
  
  ( $status, $res ) = lockPIDFile( $PIDFILE );
---- a/etc/configdaemon.conf	2021-05-18 13:01:06.951982245 +0000
-+++ b/etc/configdaemon.conf	2021-05-18 13:01:07.934994636 +0000
+--- a/etc/configdaemon.conf	2021-07-07 15:19:03.763235976 +0000
++++ b/etc/configdaemon.conf	2021-07-07 15:19:05.013264422 +0000
 @@ -1,6 +1,6 @@
  address     127.0.0.1
  port        9000
