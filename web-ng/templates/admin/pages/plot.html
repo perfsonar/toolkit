@@ -1,4 +1,5 @@
- [% INCLUDE components/loader.html %]
+[% INCLUDE components/loader.html %]
+
 <div class="config-panel-wrapper">
 	<section class="dashboard-internal">
 		<div class="row">
@@ -7,126 +8,290 @@
 					<nav>
 						<ul class="nav--breadcrumbs u-list-nav">
 							<li><a href=".."><i class="fa fa-home fa-fw"></i>Home</a></li>
-							<li class="active"><a href="plot.cgi">Plot Schedule</a></li>
+							<li class="active"><a href="plot.cgi">Plot Schedule
+									Graph</a></li>
 						</ul>
 					</nav>
 				</header>
 			</div>
 		</div>
-		
+
 		<div class="config">
-        <form id="plotForm" action="/toolkit/admin/plotGraph.cgi" method="post>
 
-		<div class="row">
-			<div class="medium-9 columns">
-				<div class="row">
-					<p>
-						It is often desirable to view the pScheduler schedule to plan new
-						tests, debug a problem or just see how busy a host is at a
-						particular time.<br> There is a pscheduler command-line
-						client to provide this visibility, or you can generate a view by
-						entering parameters below and pressing the 'Process Graph' button.<br>
-						The pscheduler plot-schedule command asks pScheduler to fetch
-						scheduled task runs from the past, present or future and displays
-						them as box plot in a PNG image file.<br> From this screen
-						you can select a host (This will default to localhost if not
-						entered), A time period in the past where you wish the graph to
-						start, and a time period in the future where the graph is to stop.<br>
-						There are more detailed parameters available on the command line
-						option (such as entering specific start and end dates) if these
-						option do not allow you to view the required data.
-					</p>
+			<div class="row">
 
-				</div>
-			</div>
-		</div>
+				<div class="medium-9 columns">
+					<div class="row">
+						<p>
+							It is often desirable to view the pScheduler schedule to plan new
+							tests, debug a problem or just see how busy a host is at a
+							particular time.<br> There is a pscheduler command-line
+							client to provide this visibility, or you can generate a view by
+							entering parameters below and pressing the 'Process Graph'
+							button.<br> The pscheduler plot-schedule command asks
+							pScheduler to fetch scheduled task runs from the past, present or
+							future and displays them as box plot in a PNG image file.<br>
+							This screen will default to localhost (if you wish to select a
+							different host you will need to run the CLI option)), A time
+							period in the past where you wish the graph to start, and a time
+							period in the future where the graph is to stop.<br> There
+							are more detailed parameters available on the command line option
+							(such as entering specific start and end dates) if these option
+							do not allow you to view the required data.
+						</p>
 
-		<div class="row">
-			<div class="medium-9 columns">
-				<div class="row">
-
-
-					<div class="small-12 columns">
-						<label class="config__label">HostName (if not local host)</label>
-						<input class="config__input" type="text"
-							id="plot_hostname">
 					</div>
 				</div>
-				<div class="row">
-					<div class="medium-12 columns">
-						<div class="timeperiod-plot">
-							<label for="summary_timeperiodpast">Plot time in the past
-								...</label>
-							<select id="plot_timeperiodpast">
-								<option value="PT0M">Current Time</option>
-								<option value="PT30M">30 Mins</option>
-								<option value="PT1H">1 Hour</option>
-								<option value="PT90M">1 Hour, 30 Mins</option>
-								<option value="PT2H">2 Hours</option>
-								<option value="PT6H">6 Hours</option>
-								<option value="PT1D">1 Day</option>
-								<option value="PT5D">5 Days</option>
-							</select>
+			</div>
+
+			<div class="row">
+				<div class="medium-9 columns">
+					<div class="row">
+						<div class="medium-12 columns">
+							<div class="timeperiod-plot">
+								<label for="summary_timeperiodpast">Plot time in the
+									past ...</label> <select name="plot_timeperiodpast"
+									id="plot_timeperiodpast">
+									<option value="D1" selected>Current Time</option>
+									<option value="D2">30 Mins</option>
+									<option value="D3">1 Hour</option>
+									<option value="D4">1 Hour, 30 Mins</option>
+									<option value="D5">2 Hours</option>
+									<option value="D6">3 Hours</option>
+									<option value="D7">4 Hours</option>
+									<option value="D8">5 Hours</option>
+									<option value="D9">6 Hours</option>
+									<option value="D10">7 Hours</option>
+									<option value="D11">1 Day</option>
+									<option value="D12">2 Days</option>
+								</select>
+							</div>
 						</div>
 					</div>
-				</div>
 
-
-
-
-				<div class="row">
-					<div class="medium-12 columns">
-						<div class="timeperiod-plot">
-							<label for="summary_timeperiodforward">Plot time in the
-								furture ...</label>
-							<!-- // values are "timeperiod,summary_window" -->
-							<select id="plot_timeperiodforward">
-								<option value="PT0M">Current Time</option>
-								<option value="PT30M">30 Mins</option>
-								<option value="PT1H">1 Hour</option>
-								<option value="PT90M">1 Hour, 30 Mins</option>
-								<option value="PT2H">2 Hours</option>
-								<option value="PT6H">6 Hours</option>
-								<option value="PT1D">1 Day</option>
-								<option value="PT5D">5 Days</option>
-							</select>
+					<div class="row">
+						<div class="medium-12 columns">
+							<div class="timeperiod-plot">
+								<label for="summary_timeperiodforward">Plot time in the
+									furture ...</label>
+								<!-- // values are "timeperiod,summary_window" -->
+								<select name="plot_timeperiodforward"
+									id="plot_timeperiodforward">
+									<option value="D1" selected>Current Time</option>
+									<option value="D2">30 Mins</option>
+									<option value="D3">1 Hour</option>
+									<option value="D4">1 Hour, 30 Mins</option>
+									<option value="D5">2 Hours</option>
+									<option value="D6">3 Hours</option>
+									<option value="D7">4 Hours</option>
+									<option value="D8">5 Hours</option>
+									<option value="D9">6 Hours</option>
+									<option value="D10">7 Hours</option>
+									<option value="D11">1 Day</option>
+									<option value="D12">2 Days</option>
+								</select>
+							</div>
 						</div>
 					</div>
+
+
+					<button onclick="processgraph()">Process Graph</button>
+
+					<p id="graph"></p>
+
 				</div>
-				<div class="row">
-					<div class="medium-12 columns">
-						<label class="config__label">Schedule specific start Date
-							/ Time</label> <input class="config__input" type="text" id="plot_starttime">
+				<div class="medium-3 columns">
+					<aside class="aside aside--config">
+						<h3 class="aside__heading">Resources</h3>
+						<ul class="aside__list">
+							<li><a
+								href="http://docs.perfsonar.net/pscheduler_client_schedule.html#pscheduler-client-schedule-plot-schedule"
+								target="_blank">Plot Schedule</a></li>
+						</ul>
+					</aside>
+				</div>
+			</div>
+
+			<div class="row">
+
+				<div class="medium-9 columns">
+					<div class="row">
+						<br>
+						<p>
+							For more control over your schedule plot, you can run the command
+							from a command line<br> Examples :
+						<OL>
+							<li>pscheduler plot-schedule</li>
+							<ul>
+								<li>Plot the schedule on the local host for the next hour</li>
+							</ul>
+
+							<li>pscheduler plot-schedule --host ps3.example.net</li>
+							<ul>
+								<li>Plot the schedule on ps3.example.net for the next hour</li>
+							</ul>
+
+							<li>pscheduler plot-schedule -PT1H</li>
+							<ul>
+								<li>Plot the schedule on the local host for an hour in the
+									past</li>
+							</ul>
+
+							<li>pscheduler plot-schedule +PT25M</li>
+							<ul>
+								<li>Plot the schedule on the local host for 25 minutes in
+									the future</li>
+							</ul>
+
+							<li>pscheduler plot-schedule -PT1H +PT30M</li>
+							<ul>
+								<li>Plot the schedule on the local host for an hour in the
+									past and 30 minutes into the future</li>
+							</ul>
+
+							<li>pscheduler schedule 2016-05-01T12:40:00
+								2016-05-01T12:55:00</li>
+							<ul>
+								<li>Plot the schedule on the local host between the times
+									specified.</li>
+							</ul>
+						</OL>
+						</p>
+
 					</div>
 				</div>
-				<div class="row">
-					<div class="medium-12 columns">
-						<label class="config__label">Schedule specific finish Date
-							/ Time</label> <input class="config__input" type="text" id="plot_endtime">
-					</div>
-				</div>
-				
-				<input type="button" value="CHANGE"	onClick="/toolkit/admin/plotGraph.cgi";>
-				 <button type="submit">Process Graph</button>
-			
 			</div>
-			<div class="medium-3 columns">
-				<aside class="aside aside--config">
-					<h3 class="aside__heading">Resources</h3>
-					<ul class="aside__list">
-						<li><a
-							href="http://docs.perfsonar.net/pscheduler_client_schedule.html#pscheduler-client-schedule-plot-schedule"
-							target="_blank">Plot Schedule</a></li>
-					</ul>
-				</aside>
-			</div>
+
+			<script>
+				function processgraph() {
+
+					var past = constructdate(document
+							.getElementById("plot_timeperiodpast").value, 'P');
+
+					var forward = constructdate(document
+							.getElementById("plot_timeperiodforward").value,
+							'F');
+
+					var imagesrc = '<img src="../../../pscheduler/schedule?format=png&start='
+							+ past + '&end=' + forward + '"/>'
+
+					$('#graph').html(imagesrc);
+				}
+
+				function constructdate(x, y) {
+
+					var d = new Date();
+
+					switch (x) {
+					case 'D1':
+						// return current time +/- 1 min (stops server error)
+						if (y == 'F') {
+							d.setMinutes(d.getMinutes() + 1);
+						} else {
+							d.setMinutes(d.getMinutes() - 1);
+						}
+						break;
+					case 'D2':
+						// return current time +/- 30 mins
+						if (y == 'F') {
+							d.setMinutes(d.getMinutes() + 30);
+						} else {
+							d.setMinutes(d.getMinutes() - 30);
+						}
+						break;
+					case 'D3':
+						// return current time +/- 1 hour
+						if (y == 'F') {
+							d.setHours(d.getHours() + 1);
+						} else {
+							d.setHours(d.getHours() - 1);
+						}
+						break;
+					case 'D4':
+						// return current time +/- i hour, 30 minutes
+						if (y == 'F') {
+							d.setHours(d.getHours() + 1);
+							d.setMinutes(d.getMinutes() + 30);
+						} else {
+							d.setHours(d.getHours() - 1);
+							d.setMinutes(d.getMinutes() - 30);
+						}
+						break;
+					case 'D5':
+						// return current time +/- 2 hours
+						if (y == 'F') {
+							d.setHours(d.getHours() + 2);
+						} else {
+							d.setHours(d.getHours() - 2);
+						}
+						break;
+					case 'D6':
+						// return current time +/- 3 hours
+						if (y == 'F') {
+							d.setHours(d.getHours() + 3);
+						} else {
+							d.setHours(d.getHours() - 3);
+						}
+						break;
+					case 'D7':
+						// return current time +/- 4 hours
+						if (y == 'F') {
+							d.setHours(d.getHours() + 4);
+						} else {
+							d.setHours(d.getHours() - 4);
+						}
+						break;
+					case 'D8':
+						// return current time +/- 5 hours
+						if (y == 'F') {
+							d.setHours(d.getHours() + 5);
+						} else {
+							d.setHours(d.getHours() - 5);
+						}
+						break;
+					case 'D9':
+						// return current time +/- 6 hours
+						if (y == 'F') {
+							d.setHours(d.getHours() + 6);
+						} else {
+							d.setHours(d.getHours() - 6);
+						}
+						break;
+					case 'D10':
+						// return current time +/- 7 hours
+						if (y == 'F') {
+							d.setHours(d.getHours() + 7);
+						} else {
+							d.setHours(d.getHours() - 7);
+						}
+						break;
+					case 'D11':
+						// return current time +/- 1 day
+						if (y == 'F') {
+							d.setDate(d.getDate() + 1);
+						} else {
+							d.setDate(d.getDate() - 1);
+						}
+						break;
+					case 'D12':
+						// return current time +/- 2 days
+						if (y == 'F') {
+							d.setDate(d.getDate() + 2);
+						} else {
+							d.setDate(d.getDate() - 2);
+						}
+						break;
+
+					default:
+						// return current time
+					}
+
+					return d.toISOString();
+
+				}
+			</script>
+
 		</div>
-
-
-
-
-       </form>
-                </div>
 
 	</section>
 
