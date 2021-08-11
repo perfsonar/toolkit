@@ -616,6 +616,7 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/communities.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/services/regular_testing.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/tests.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/plot.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
