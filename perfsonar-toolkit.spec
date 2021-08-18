@@ -98,7 +98,6 @@ Requires:       perfsonar-lscachedaemon
 Requires:       perfsonar-graphs
 Requires:       perfsonar-psconfig-publisher
 Requires:       perfsonar-traceroute-viewer
-Requires:       perfsonar-toolkit-esmond-utils
 Requires:       libperfsonar-esmond-perl
 Requires:       libperfsonar-perl
 Requires:       libperfsonar-regulartesting-perl
@@ -106,7 +105,7 @@ Requires:       libperfsonar-sls-perl
 Requires:       libperfsonar-toolkit-perl
 Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
-Requires:       esmond >= 2.1
+Requires:       perfsonar-archive
 
 # Misc performance/performance-related tools
 Requires:       tcptrace
@@ -143,7 +142,7 @@ Requires(post): perfsonar-graphs
 Requires(post): perfsonar-psconfig-pscheduler
 
 Requires(post): perfsonar-common
-Requires(post): esmond          >= 2.1
+Requires(post): perfsonar-archive
 Requires(post): owamp-client    >= 3.5.0
 Requires(post): owamp-server    >= 3.5.0
 Requires(post): coreutils
@@ -198,7 +197,6 @@ Requires(post): nfs-utils
 Requires(post): pcsc-lite
 Requires(post): rootfiles
 Requires(post): drop-in
-Requires(post): perfsonar-toolkit-esmond-utils
 Requires(pre):  rpm
 Requires(post): rsyslog
 Requires(post): setup
