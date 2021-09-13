@@ -1,6 +1,6 @@
-[submodule "psconfig"]
-	path = psconfig
-	url = https://github.com/perfsonar/psconfig
 [submodule "shared"]
 	path = shared
 	url = https://github.com/perfsonar/perl-shared
+[submodule "psconfig"]
+	path = psconfig
+	url = https://github.com/perfsonar/psconfig
