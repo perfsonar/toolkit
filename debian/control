@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: perfSONAR developers <debian@perfsonar.net>
 Uploaders: Antoine Delvaux <antoine.delvaux@man.poznan.pl>
-Build-Depends: debhelper (>= 9.0.0), quilt, dh-exec,
+Build-Depends: debhelper (>= 10), quilt, dh-exec,
  libperfsonar-perl (>= 4.1~0), libperfsonar-toolkit-perl (>= 4.1~0),
  perfsonar-psconfig-pscheduler-dev, perfsonar-psconfig-pscheduler,
  libtest-mockobject-perl, libfile-copy-recursive-perl,
@@ -16,7 +16,7 @@ Vcs-Browser: https://github.com/perfsonar/toolkit
 Package: perfsonar-toolkit
 Architecture: all
 Depends: libperfsonar-perl (>= 4.1~0), apache2, apache2-utils, ssl-cert,
- perl, libxml-simple-perl, libcgi-pm-perl,
+ lsb-base, libxml-simple-perl, libcgi-pm-perl,
  libsys-statistics-linux-perl, libperfsonar-sls-perl,
  perfsonar-toolkit-library, liblog-dispatch-filerotate-perl,
  libcgi-ajax-perl, libcgi-session-perl, libjson-xs-perl, nscd,
@@ -27,14 +27,15 @@ Depends: libperfsonar-perl (>= 4.1~0), apache2, apache2-utils, ssl-cert,
  perfsonar-toolkit-config-daemon, perfsonar-core,
  perfsonar-lscachedaemon, perfsonar-traceroute-viewer,
  perfsonar-toolkit-graphs, perfsonar-toolkit-install,
- perfsonar-toolkit-systemenv, ${misc:Depends}
+ perfsonar-toolkit-systemenv, python3,
+ ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Toolkit web
  perfSONAR Toolkit web GUI and associated services.
 
 Package: perfsonar-toolkit-library
 Architecture: all
 Depends: libperfsonar-perl (>= 4.1~0), ${misc:Depends}
-Description: perfSONAR Toolkit library
+Description: perfSONAR Toolkit perl libraries
  Perl libraries for perfSONAR Toolkit.
 
 Package: perfsonar-toolkit-security
@@ -46,35 +47,37 @@ Description: perfSONAR Toolkit firewall configuration
 
 Package: perfsonar-toolkit-sysctl
 Architecture: all
-Depends: libperfsonar-perl (>= 4.1~0), ${misc:Depends}
+Depends: libperfsonar-perl (>= 4.1~0), ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Toolkit sysctl configuration
  Configures sysctl settings for perfSONAR Toolkit.
 
 Package: perfsonar-toolkit-servicewatcher
 Architecture: all
 Depends: libperfsonar-toolkit-perl, perfsonar-common,
- ${misc:Depends}
+ ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Toolkit service watcher
  Installs the service-watcher cron job.
 
 Package: perfsonar-toolkit-ntp
 Architecture: all
 Depends: ntp, perfsonar-toolkit-library,
- libperfsonar-toolkit-perl, ${misc:Depends}
+ libperfsonar-toolkit-perl, ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Toolkit ntp configuration
  Configures ntp servers for perfSONAR Toolkit.
 
 Package: perfsonar-toolkit-config-daemon
 Architecture: all
 Depends: perfsonar-toolkit-library, perfsonar-common,
- libnet-server-perl, libperfsonar-toolkit-perl,
- liblog-dispatch-filerotate-perl, ${misc:Depends}
+ libperfsonar-toolkit-perl, lsb-base,
+ libnet-server-perl, liblog-dispatch-filerotate-perl,
+ ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Toolkit configuration daemon
  Manages configuration file and services for perfSONAR Toolkit.
 
 Package: perfsonar-toolkit-install
 Architecture: all
-Depends: perfsonar-toolkit-library, python3-apt, ${misc:Depends}
+Depends: perfsonar-toolkit-library, python3-apt,
+ python3, ${misc:Depends}
 Description: perfSONAR Toolkit core scripts
  Contains Toolkit installation scripts.
 
@@ -95,7 +98,7 @@ Architecture: all
 Breaks: perfsonar-toolkit (<< 4.2~1.b1)
 Replaces: perfsonar-toolkit (<< 4.2~1.b1)
 Depends: nscd, owamp-server (>= 3.5.0),
- perfsonar-psconfig-pscheduler, ${misc:Depends}
+ perfsonar-psconfig-pscheduler, ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Testpoint system tuning
  Tunes and configures the system according to performance
  and security best practices.

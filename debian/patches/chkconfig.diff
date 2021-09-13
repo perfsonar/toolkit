@@ -1,5 +1,5 @@
---- a/init_scripts/perfsonar-configure_nic_parameters	2021-08-26 02:56:35.112359693 +0100
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2021-08-26 02:56:35.425589249 +0100
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2021-09-20 15:29:29.623427924 +0100
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2021-09-20 15:31:17.397110205 +0100
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -73,13 +73,13 @@
 @@ -131,7 +125,6 @@
  
  case "$1" in
-     start)
+     start|restart|force-reload)
 -        [ -f "$VAR_SUBSYS_TCP_TUNING" ] && exit 0
          start
          RETVAL=$?
          ;;
---- a/scripts/system_environment/disable_unwanted_services	2021-08-25 17:36:33.254880000 +0100
-+++ b/scripts/system_environment/disable_unwanted_services	2021-08-26 02:56:35.427580885 +0100
+--- toolkit.orig/scripts/system_environment/disable_unwanted_services	2021-09-20 15:29:29.625601490 +0100
++++ toolkit/scripts/system_environment/disable_unwanted_services	2021-09-20 15:30:43.016148667 +0100
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -92,8 +92,8 @@
      fi
  }
  
---- a/scripts/system_environment/testpoint/enable_auto_updates	2021-08-25 17:36:33.254880000 +0100
-+++ b/scripts/system_environment/testpoint/enable_auto_updates	2021-08-26 02:56:35.428921506 +0100
+--- toolkit.orig/scripts/system_environment/testpoint/enable_auto_updates	2021-09-20 15:29:29.627623793 +0100
++++ toolkit/scripts/system_environment/testpoint/enable_auto_updates	2021-09-20 15:30:43.017230673 +0100
 @@ -11,20 +11,18 @@
  MAJOR=${PREV_VERSION%%\.*}
  REST=${PREV_VERSION/${MAJOR}\.}
@@ -126,8 +126,8 @@
 +EOF
 +
 +fi
---- a/scripts/system_environment/testpoint/enable_nscd	2021-08-25 17:36:33.254880000 +0100
-+++ b/scripts/system_environment/testpoint/enable_nscd	2021-08-26 02:56:35.430055856 +0100
+--- toolkit.orig/scripts/system_environment/testpoint/enable_nscd	2021-09-20 15:29:29.629291967 +0100
++++ toolkit/scripts/system_environment/testpoint/enable_nscd	2021-09-20 15:30:43.018261310 +0100
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
      systemctl enable nscd

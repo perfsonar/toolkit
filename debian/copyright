@@ -3,11 +3,11 @@ Upstream-Name: perfsonar-toolkit
 Source: <http://www.perfsonar.net>
 
 Files: *
-Copyright: 2000-2018 perfSONAR project
+Copyright: 2000-2021 perfSONAR project
 License: Apache-2.0
 
 Files: debian/*
-Copyright: 2015-2018 perfSONAR project
+Copyright: 2015-2021 perfSONAR project
 License: Apache-2.0
 
 License: Apache-2.0

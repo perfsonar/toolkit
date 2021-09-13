@@ -135,7 +135,7 @@ $ETHTOOL -K "$1" tso off
 
 
 case "$1" in
-    start)
+    start|restart|force-reload)
         [ -f "$VAR_SUBSYS_TCP_TUNING" ] && exit 0
         start
         RETVAL=$?

@@ -1,29 +1,32 @@
---- a/t/host-get_metadata.t	2021-08-25 17:36:33.009133000 +0100
-+++ b/t/host-get_metadata.t	2021-08-26 02:56:36.379691182 +0100
-@@ -6,6 +6,7 @@
+--- toolkit.orig/t/host-get_metadata.t	2021-09-20 13:33:59.071488000 +0100
++++ toolkit/t/host-get_metadata.t	2021-09-20 13:37:49.561544786 +0100
+@@ -6,6 +6,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
  use lib "$Bin/../lib";
++# Needed for perfsonar-psconfig-pscheduler-dev
 +use lib "/usr/lib/perfsonar/lib";
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-get_services.t	2021-08-25 17:36:33.009133000 +0100
-+++ b/t/host-get_services.t	2021-08-26 02:56:36.380826190 +0100
-@@ -6,6 +6,7 @@
+--- toolkit.orig/t/host-get_services.t	2021-09-20 13:33:59.071488000 +0100
++++ toolkit/t/host-get_services.t	2021-09-20 13:37:49.563164863 +0100
+@@ -6,6 +6,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
  use lib "$Bin/../lib";
++# Needed for perfsonar-psconfig-pscheduler-dev
 +use lib "/usr/lib/perfsonar/lib";
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-get_system_health.t	2021-08-25 17:36:33.009133000 +0100
-+++ b/t/host-get_system_health.t	2021-08-26 02:56:36.381628713 +0100
-@@ -9,10 +9,11 @@
+--- toolkit.orig/t/host-get_system_health.t	2021-09-20 13:33:59.071488000 +0100
++++ toolkit/t/host-get_system_health.t	2021-09-20 13:37:49.564581018 +0100
+@@ -9,10 +9,12 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
  use lib "$Bin/../lib";
++# Needed for perfsonar-psconfig-pscheduler-dev
 +use lib "/usr/lib/perfsonar/lib";
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
@@ -33,7 +36,7 @@
  
  use Config::General;
  use Data::Dumper;
-@@ -47,7 +48,7 @@
+@@ -47,7 +49,7 @@
  
  ok( positive_number( $data->{'mem_total'} ), 'Total memory is a positive number');
  ok( nonnegative_number ( $data->{'swap_total'} ), 'Swap memory is a positive number');
@@ -42,7 +45,7 @@
  
  
  # make sure these values are NOT defined, since we aren't authenticated
-@@ -71,11 +72,11 @@
+@@ -71,11 +73,11 @@
  # Check public values
  ok( positive_number( $data->{'mem_total'} ), 'Total memory is a positive number');
  ok( nonnegative_number ( $data->{'swap_total'} ), 'Swap memory is a positive number');
@@ -56,39 +59,14 @@
  ok( nonnegative_number( $data->{'cpu_util'} ), 'CPU utilization is a number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute) is a positive number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
---- a/t/host-update_metadata.t	2021-08-25 17:36:33.009133000 +0100
-+++ b/t/host-update_metadata.t	2021-08-26 02:56:36.382318953 +0100
-@@ -13,6 +13,7 @@
+--- toolkit.orig/t/host-update_metadata.t	2021-09-20 13:33:59.071488000 +0100
++++ toolkit/t/host-update_metadata.t	2021-09-20 13:37:49.565727684 +0100
+@@ -13,6 +13,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
  use lib "$Bin/../lib";
++# Needed for perfsonar-psconfig-pscheduler-dev
 +use lib "/usr/lib/perfsonar/lib";
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-geoIPLookup.t	2021-08-25 17:36:33.009133000 +0100
-+++ b/t/host-geoIPLookup.t	2021-08-26 02:56:36.383088984 +0100
-@@ -65,7 +65,7 @@
-           'latitude' => '45.4225',
-           'longitude' => '-75.7026',
-           'time_zone' => 'America/Toronto',
--          'code' => 'K1P'
-+          'code' => 'k1p 1a4'
-     },
-     "2001:410:102:b81b::2" => {
-           'country' => 'CA',
-@@ -77,10 +77,10 @@
-           'latitude' => '47.4102',
-           'time_zone' => 'Europe/Zurich',
-           'country_full' => 'Switzerland',
--          'state_abbr' => '05',
--          'state' => 'Bern',
--          'city' => 'Ittigen',
--          'code' => '3063'
-+          'state_abbr' => '01',
-+          'state' => 'Aargau',
-+          'city' => 'Muhen',
-+          'code' => '5037'
-      },
-     "2a02:a90:ffff:ffff::c:1d" => {
-           'country' => 'CH',

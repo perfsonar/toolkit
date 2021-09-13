@@ -56,6 +56,10 @@ elsif ( $ARGV[0] and $ARGV[0] eq "restart" ) {
     stop();
     start();
 }
+elsif ( $ARGV[0] and $ARGV[0] eq "force-reload" ) {
+    stop();
+    start();
+}
 else {
     print "Usage: $0 {start|stop|restart}\n";
 }

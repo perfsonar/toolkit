@@ -1,5 +1,5 @@
---- a/scripts/apache-toolkit_web_gui.conf	2021-08-25 17:36:33.389065000 +0100
-+++ b/scripts/apache-toolkit_web_gui.conf	2021-08-26 02:56:35.109524072 +0100
+--- toolkit.orig/scripts/apache-toolkit_web_gui.conf	2021-09-20 15:41:25.997562949 +0100
++++ toolkit/scripts/apache-toolkit_web_gui.conf	2021-09-20 15:41:30.338969283 +0100
 @@ -7,6 +7,11 @@
  # New GUI
  Alias /toolkit /usr/lib/perfsonar/web-ng/root
@@ -81,8 +81,8 @@
  </Directory>
  
  ##
---- a/scripts/add_pssudo_user	2021-08-25 17:36:33.389065000 +0100
-+++ b/scripts/add_pssudo_user	2021-08-26 02:56:35.110799581 +0100
+--- toolkit.orig/scripts/add_pssudo_user	2021-09-20 15:41:25.998590779 +0100
++++ toolkit/scripts/add_pssudo_user	2021-09-20 15:41:30.339628613 +0100
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -92,8 +92,8 @@
  if (retVal != 0):
      print(Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL)
      sys.exit(1)
---- a/scripts/clean_esmond_db.sh	2021-08-25 17:36:33.389065000 +0100
-+++ b/scripts/clean_esmond_db.sh	2021-08-26 02:56:35.111566544 +0100
+--- toolkit.orig/scripts/clean_esmond_db.sh	2021-09-20 15:41:25.999741622 +0100
++++ toolkit/scripts/clean_esmond_db.sh	2021-09-20 15:41:30.340075490 +0100
 @@ -9,14 +9,14 @@
  fi
  
@@ -116,8 +116,8 @@
 -fi
 \ No newline at end of file
 +fi
---- a/init_scripts/perfsonar-configure_nic_parameters	2021-08-25 17:36:33.389065000 +0100
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2021-08-26 02:56:35.112359693 +0100
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2021-09-20 15:41:26.001171572 +0100
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2021-09-20 15:41:30.340749649 +0100
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -155,8 +155,8 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- a/init_scripts/perfsonar-generate_motd	2021-08-25 17:36:33.389065000 +0100
-+++ b/init_scripts/perfsonar-generate_motd	2021-08-26 02:56:35.113175329 +0100
+--- toolkit.orig/init_scripts/perfsonar-generate_motd	2021-09-20 15:41:30.341757097 +0100
++++ toolkit/init_scripts/perfsonar-generate_motd	2021-09-20 15:42:43.927245225 +0100
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -180,8 +180,8 @@
  
  use strict;
  use warnings;
---- a/web-ng/root/gui/reverse_traceroute.cgi	2021-08-25 17:36:33.389065000 +0100
-+++ b/web-ng/root/gui/reverse_traceroute.cgi	2021-08-26 02:56:35.114529728 +0100
+--- toolkit.orig/web-ng/root/gui/reverse_traceroute.cgi	2021-09-20 15:41:26.005222331 +0100
++++ toolkit/web-ng/root/gui/reverse_traceroute.cgi	2021-09-20 15:41:30.343323335 +0100
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -191,8 +191,8 @@
    @Tropts="";
  }
  #########################################################################
---- a/etc/perfsonar_ulimit.conf	2021-08-25 17:36:33.389065000 +0100
-+++ b/etc/perfsonar_ulimit.conf	2021-08-26 02:56:35.115368616 +0100
+--- toolkit.orig/etc/perfsonar_ulimit.conf	2021-09-20 15:41:26.007209529 +0100
++++ toolkit/etc/perfsonar_ulimit.conf	2021-09-20 15:41:30.344119084 +0100
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
