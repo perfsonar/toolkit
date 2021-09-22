@@ -75,7 +75,7 @@ else {
 
 my @services = (
     get_service_object("httpd"),
-    get_service_object("cassandra"),
+    get_service_object("elmond"),
     get_service_object("owamp"),
     get_service_object("psconfig"),
     get_service_object("lsregistration"),

@@ -99,55 +99,6 @@ if [ -f "$TEMP_RST_DIR/$TEMP_BAK_NAME/etc/maddash/maddash-server/maddash.yaml" ]
     echo ""
 fi
 
-#restore databases
-if [ "$DATA" ]; then
-    if [ -d /var/lib/cassandra/data/esmond ]; then
-        printf "Restoring cassandra data for esmond..."
-        if ! /sbin/service cassandra stop &>/dev/null; then
-            echo "Unable to stop cassandra"
-            exit 1
-        fi
-
-        rm -f /var/lib/cassandra/commitlog/*.log /var/lib/cassandra/data/esmond/*/*.db
-        for table in $(ls $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data); do
-            cp -a $TEMP_RST_DIR/$TEMP_BAK_NAME/cassandra_data/$table/esmond_snapshot/* \
-                  /var/lib/cassandra/data/esmond/$table/
-            if [ "$?" != "0" ]; then
-                echo "Unable to restore /var/lib/cassandra/data/esmond/$table"
-                exit 1
-            fi
-        done
-
-        if ! /sbin/service cassandra start &>/dev/null; then
-            echo "Unable to start cassandra"
-            exit 1
-        fi
-        for i in {1..10}; do
-            nodetool status &>/dev/null && break
-            sleep 1
-        done
-        if ! nodetool repair &>/dev/null; then
-            echo "Unable to repair cassandra"
-            exit 1
-        fi
-        printf "[SUCCESS]"
-        echo ""
-    fi
-
-    printf "Restoring postgresql data for esmond..."
-    export PGUSER=$(sed -n -e 's/sql_db_user = //p' /etc/esmond/esmond.conf)
-    export PGPASSWORD=$(sed -n -e 's/sql_db_password = //p' /etc/esmond/esmond.conf)
-    export PGDATABASE=$(sed -n -e 's/sql_db_name = //p' /etc/esmond/esmond.conf)
-    psql --no-password < $TEMP_RST_DIR/$TEMP_BAK_NAME/postgresql_data/esmond.dump &>/dev/null
-    if [ "$?" != "0" ]; then
-        echo "Unable to restore esmond database"
-        exit 1
-    fi
-    unset PGUSER PGPASSWORD PGDATABASE
-    printf "[SUCCESS]"
-    echo ""
-fi
-
 #get pscheduler if exists
 PSCHEDULER_BACKUP=$TEMP_RST_DIR/$TEMP_BAK_NAME/pscheduler
 if [ -e $PSCHEDULER_BACKUP ] && which pscheduler > /dev/null; then
@@ -202,18 +153,6 @@ if [ -e "/usr/lib/perfsonar/bin/psconfig_commands/maddash-migrate" ]; then
     psconfig maddash-migrate 
     if [ "$?" != "0" ]; then
         echo "Unable to convert MeshConfig GUI agent to pSConfig MaDDash agent"
-    else
-        printf "[SUCCESS]"
-        echo ""
-    fi
-fi
-
-#make sure esmond auth-token is set correctly
-if [ -e "/usr/lib/perfsonar/scripts/system_environment/configure_esmond" ]; then
-    printf "Configuring esmond..."
-    /usr/lib/perfsonar/scripts/system_environment/configure_esmond --force
-    if [ "$?" != "0" ]; then
-        echo "Error configuring esmond"
     else
         printf "[SUCCESS]"
         echo ""

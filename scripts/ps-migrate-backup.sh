@@ -40,7 +40,6 @@ fi
 
 #create directory structure
 mkdir -p $TEMP_BAK_DIR/etc
-mkdir -p $TEMP_BAK_DIR/cassandra_data
 mkdir -p $TEMP_BAK_DIR/postgresql_data
 
 #get perfsonar files
@@ -81,47 +80,6 @@ if [ -f "/etc/maddash/maddash-server/maddash.yaml" ]; then
         echo "Unable to copy /etc/maddash"
         exit 1
     fi
-    printf "[SUCCESS]"
-    echo ""
-fi
-
-#backup databases
-if [ "$DATA" ]; then
-    if [ -d /var/lib/cassandra/data/esmond ]; then
-        printf "Backing-up cassandra data for esmond..."
-        nodetool clearsnapshot esmond -t esmond_snapshot &>/dev/null
-        if ! nodetool snapshot esmond -t esmond_snapshot &>/dev/null; then
-            echo "Unable to snapshot cassandra database"
-            exit 1
-        fi
-        for SNAPSHOT in /var/lib/cassandra/data/esmond/*/snapshots/esmond_snapshot; do
-            TABLE=${SNAPSHOT%/snapshots/*}
-            TABLE=${TABLE#*/esmond/}
-            mkdir $TEMP_BAK_DIR/cassandra_data/$TABLE
-            cp -a $SNAPSHOT $TEMP_BAK_DIR/cassandra_data/$TABLE/
-            if [ "$?" != "0" ]; then
-                echo "Unable to copy $TABLE snapshot"
-                exit 1
-            fi
-        done
-        nodetool clearsnapshot esmond -t esmond_snapshot &>/dev/null
-        printf "[SUCCESS]"
-        echo ""
-    fi
-
-    PG_DUMP=pg_dump
-    [ -x /usr/pgsql-9.5/bin/pg_dump ] && PG_DUMP=/usr/pgsql-9.5/bin/pg_dump
-
-    printf "Backing-up postgresql data for esmond..."
-    export PGUSER=$(sed -n -e 's/sql_db_user = //p' /etc/esmond/esmond.conf)
-    export PGPASSWORD=$(sed -n -e 's/sql_db_password = //p' /etc/esmond/esmond.conf)
-    export PGDATABASE=$(sed -n -e 's/sql_db_name = //p' /etc/esmond/esmond.conf)
-    $PG_DUMP --no-password > $TEMP_BAK_DIR/postgresql_data/esmond.dump 2>/dev/null
-    if [ "$?" != "0" ]; then
-        echo "Unable to dump esmond database"
-        exit 1
-    fi
-    unset PGUSER PGPASSWORD PGDATABASE
     printf "[SUCCESS]"
     echo ""
 fi

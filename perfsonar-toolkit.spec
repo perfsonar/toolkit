@@ -14,7 +14,6 @@
 %define init_script_3 perfsonar-configure_nic_parameters
 
 %define crontab_1     cron-service_watcher
-%define crontab_3     cron-clean_esmond_db
 
 %define perfsonar_auto_version 4.4.0
 %define perfsonar_auto_relnum 1
@@ -98,7 +97,6 @@ Requires:       perfsonar-lscachedaemon
 Requires:       perfsonar-graphs
 Requires:       perfsonar-psconfig-publisher
 Requires:       perfsonar-traceroute-viewer
-Requires:       libperfsonar-esmond-perl
 Requires:       libperfsonar-perl
 Requires:       libperfsonar-regulartesting-perl
 Requires:       libperfsonar-sls-perl
@@ -175,7 +173,6 @@ security best practices.
 %package systemenv
 Summary:        perfSONAR Toolkit System Configuration
 Group:          Development/Tools
-Requires:       perfsonar-toolkit
 Requires:       perfsonar-toolkit-security
 Requires:       perfsonar-toolkit-sysctl
 Requires:       perfsonar-toolkit-servicewatcher
@@ -184,7 +181,6 @@ Requires:       perfsonar-toolkit-library
 Requires:       perfsonar-toolkit-systemenv-testpoint
 Requires:       python3
 Requires(post): perfsonar-common
-Requires(post): perfsonar-toolkit
 Requires(post): acpid
 Requires(post): avahi
 Requires(post): chkconfig
@@ -209,17 +205,6 @@ Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 %description systemenv
 Tunes and configures the system according to performance and security best
 practices.
-
-%package esmond-utils
-Summary:        perfSONAR Database Management
-Group:          Development/Tools
-Requires:       esmond >= 2.1
-Requires:       drop-in
-Provides:       perfsonar-toolkit-compat-database
-Obsoletes:      perfsonar-toolkit-compat-database
-
-%description esmond-utils
-Provides utilities for configuring esmond on perfSONAR hosts.
 
 %package library
 Summary:                perfSONAR Toolkit library
@@ -361,7 +346,6 @@ rm -rf %{buildroot}
 make ROOTPATH=%{buildroot}/%{install_base} CONFIGPATH=%{buildroot}/%{config_base} install
 
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
-install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 install -D -m 0644 etc/apache-perfsonar-security.conf %{buildroot}/etc/httpd/conf.d/apache-perfsonar-security.conf
@@ -383,7 +367,6 @@ mv etc/* %{buildroot}/%{config_base}
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/etc
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
-rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 rm -rf %{buildroot}/%{install_base}/init_scripts
 
@@ -457,11 +440,6 @@ chkconfig %{init_script_3} on
 
 # apache needs to be on for the toolkit to work
 chkconfig --level 2345 httpd on
-
-#adding cassandra and postgres for esmond
-chkconfig --add cassandra
-chkconfig cassandra on
-chkconfig postgresql-9.5 on
 
 #Restart pscheduler daemons to make sure they got all tests, tools, and archivers
 #also psconfig-pscheduler-agent because it needs pscheduler
@@ -596,7 +574,6 @@ fi
 %exclude %{config_base}/default_service_configs/pscheduler_limits.conf
 %exclude %{config_base}/perfsonar_ulimit.conf
 %exclude %{config_base}/perfsonar_ulimit_apache.conf
-%exclude %{config_base}/clean_esmond_db.conf
 %exclude /etc/httpd/conf.d/apache-perfsonar-security.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web-ng/*
@@ -635,7 +612,6 @@ fi
 %files systemenv
 %license LICENSE
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
-%exclude %{install_base}/scripts/system_environment/configure_esmond 
 %exclude %{install_base}/scripts/system_environment/testpoint
 
 %files security
@@ -686,14 +662,10 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
-%files esmond-utils
-%license LICENSE
-%config(noreplace) %{config_base}/clean_esmond_db.conf
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_esmond 
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
-%attr(0644,root,root) /etc/cron.d/%{crontab_3}
-
 %changelog
+* Tue Sep 21 2021 daniel.neto@rnp.br
+- Removing esmond and cassandra references
+
 * Wed Apr 19 2017 andy@es.net
 - Adding back NDT firewall ports
 

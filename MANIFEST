@@ -5,7 +5,6 @@ LICENSE
 doc/iptables-config.example
 etc/administrative_info
 etc/apache-perfsonar-security.conf
-etc/clean_esmond_db.conf
 etc/configdaemon-logger.conf
 etc/configdaemon.conf
 etc/default_service_configs/pscheduler_limits.conf
@@ -41,13 +40,11 @@ scripts/add_psadmin_user
 scripts/add_pssudo_user
 scripts/apache-toolkit_web_gui.conf
 scripts/autoselect_ntp_servers
-scripts/clean_esmond_db.sh
 scripts/configure_apache_security
 scripts/configure_firewall
 scripts/configure_memcached_security
 scripts/configure_ntpd
 scripts/configure_sysctl
-scripts/cron-clean_esmond_db
 scripts/cron-service_watcher
 scripts/find_bwctl_measurements
 scripts/install-optional-packages.py
@@ -61,7 +58,6 @@ scripts/service_watcher
 scripts/system_environment/add_psadmin_pssudo
 scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path
-scripts/system_environment/configure_esmond
 scripts/system_environment/configure_fail2ban
 scripts/system_environment/configure_tests_gui
 scripts/system_environment/upgrade_configdaemon
