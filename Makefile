@@ -5,9 +5,17 @@ PERFSONAR_AUTO_VERSION=4.4.0
 PERFSONAR_AUTO_RELNUM=1
 VERSION=${PERFSONAR_AUTO_VERSION}
 RELEASE=${PERFSONAR_AUTO_RELNUM}
+DC_CMD_BASE=docker-compose
+DC_CMD=${DC_CMD_BASE} -p ${PACKAGE}
 
 default:
 	@echo No need to build the package. Just run \"make install\"
+
+centos7:
+	mkdir -p ./artifacts/centos7
+	${DC_CMD} -f docker-compose.yml up --build --no-start centos7
+	docker cp ${PACKAGE}_centos7_1:/root/rpmbuild/SRPMS ./artifacts/centos7/SRPMS
+	docker cp ${PACKAGE}_centos7_1:/root/rpmbuild/RPMS/noarch ./artifacts/centos7/RPMS
 
 dist:
 	rm -rf /tmp/$(PACKAGE)-$(VERSION).$(RELEASE)
