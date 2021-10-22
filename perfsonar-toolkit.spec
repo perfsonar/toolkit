@@ -206,6 +206,14 @@ Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 Tunes and configures the system according to performance and security best
 practices.
 
+%package archive-utils
+Summary:        perfSONAR Archive configuration
+Group:          Development/Tools
+Requires:       perfsonar-archive
+
+%description archive-utils
+Configures pscheduler and logstash on perfSONAR hosts.
+
 %package library
 Summary:                perfSONAR Toolkit library
 Group:                  Development/Tools
@@ -355,6 +363,7 @@ install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 install -D -m 0644 init_scripts/%{init_script_1}.service %{buildroot}/%{_unitdir}/%{init_script_1}.service
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
+install -D -m 0644 archive/pscheduler-default-archive.json %{buildroot}/etc/pscheduler/default-archives/http_logstash.json
 
 mkdir -p %{buildroot}/usr/lib/firewalld/services/
 mv etc/firewalld/services/* %{buildroot}/usr/lib/firewalld/services/
@@ -663,6 +672,10 @@ fi
 %config(noreplace) %{config_base}/servicewatcher-logger.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
+
+%files archive-utils
+%license LICENSE
+%config(noreplace) /etc/pscheduler/default-archives/http_logstash.json
 
 %changelog
 * Tue Sep 21 2021 daniel.neto@rnp.br

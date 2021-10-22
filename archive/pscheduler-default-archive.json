@@ -1,0 +1,11 @@
+{
+    "archiver": "http",
+    "data": {
+        "schema": 2,
+        "_url": "http://localhost:11283",
+        "op": "put",
+        "_headers": {
+            "content-type": "application/json"
+        }
+    }
+}
