@@ -678,6 +678,9 @@ fi
 %config(noreplace) /etc/pscheduler/default-archives/http_logstash.json
 
 %changelog
+* Tue Oct 22 2021 daniel.neto@rnp.br
+- Adding archive-utils package
+
 * Tue Sep 21 2021 daniel.neto@rnp.br
 - Removing esmond and cassandra references
 
