@@ -12,3 +12,4 @@ debian/patches/*~
 tap_output/
 cover_db/
 node_modules
+artifacts/

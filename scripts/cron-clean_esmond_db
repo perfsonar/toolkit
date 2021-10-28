@@ -1,1 +1,0 @@
-30 2 * * * root /usr/bin/flock -n /tmp/clean_esmond_db.lockfile /usr/lib/perfsonar/scripts/clean_esmond_db.sh &> /var/log/perfsonar/clean_esmond_db.log

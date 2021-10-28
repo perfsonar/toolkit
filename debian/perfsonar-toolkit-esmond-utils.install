@@ -1,4 +1,0 @@
-etc/clean_esmond_db.conf etc/perfsonar/toolkit
-scripts/clean_esmond_db.sh usr/lib/perfsonar/scripts/
-scripts/cron-clean_esmond_db etc/cron.d/
-scripts/system_environment/configure_esmond usr/lib/perfsonar/scripts/system_environment/

@@ -14,7 +14,6 @@
 %define init_script_3 perfsonar-configure_nic_parameters
 
 %define crontab_1     cron-service_watcher
-%define crontab_3     cron-clean_esmond_db
 
 %define perfsonar_auto_version 5.0.0
 %define perfsonar_auto_relnum 0.a1.0
@@ -98,15 +97,13 @@ Requires:       perfsonar-lscachedaemon
 Requires:       perfsonar-graphs
 Requires:       perfsonar-psconfig-publisher
 Requires:       perfsonar-traceroute-viewer
-Requires:       perfsonar-toolkit-esmond-utils
-Requires:       libperfsonar-esmond-perl
 Requires:       libperfsonar-perl
 Requires:       libperfsonar-regulartesting-perl
 Requires:       libperfsonar-sls-perl
 Requires:       libperfsonar-toolkit-perl
 Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
-Requires:       esmond >= 2.1
+Requires:       perfsonar-archive
 
 # Misc performance/performance-related tools
 Requires:       tcptrace
@@ -143,7 +140,7 @@ Requires(post): perfsonar-graphs
 Requires(post): perfsonar-psconfig-pscheduler
 
 Requires(post): perfsonar-common
-Requires(post): esmond          >= 2.1
+Requires(post): perfsonar-archive
 Requires(post): owamp-client    >= 3.5.0
 Requires(post): owamp-server    >= 3.5.0
 Requires(post): coreutils
@@ -176,7 +173,6 @@ security best practices.
 %package systemenv
 Summary:        perfSONAR Toolkit System Configuration
 Group:          Development/Tools
-Requires:       perfsonar-toolkit
 Requires:       perfsonar-toolkit-security
 Requires:       perfsonar-toolkit-sysctl
 Requires:       perfsonar-toolkit-servicewatcher
@@ -185,7 +181,6 @@ Requires:       perfsonar-toolkit-library
 Requires:       perfsonar-toolkit-systemenv-testpoint
 Requires:       python3
 Requires(post): perfsonar-common
-Requires(post): perfsonar-toolkit
 Requires(post): acpid
 Requires(post): avahi
 Requires(post): chkconfig
@@ -198,7 +193,6 @@ Requires(post): nfs-utils
 Requires(post): pcsc-lite
 Requires(post): rootfiles
 Requires(post): drop-in
-Requires(post): perfsonar-toolkit-esmond-utils
 Requires(pre):  rpm
 Requires(post): rsyslog
 Requires(post): setup
@@ -212,16 +206,13 @@ Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 Tunes and configures the system according to performance and security best
 practices.
 
-%package esmond-utils
-Summary:        perfSONAR Database Management
+%package archive-utils
+Summary:        perfSONAR Archive configuration
 Group:          Development/Tools
-Requires:       esmond >= 2.1
-Requires:       drop-in
-Provides:       perfsonar-toolkit-compat-database
-Obsoletes:      perfsonar-toolkit-compat-database
+Requires:       perfsonar-archive
 
-%description esmond-utils
-Provides utilities for configuring esmond on perfSONAR hosts.
+%description archive-utils
+Configures pscheduler and logstash on perfSONAR hosts.
 
 %package library
 Summary:                perfSONAR Toolkit library
@@ -363,14 +354,16 @@ rm -rf %{buildroot}
 make ROOTPATH=%{buildroot}/%{install_base} CONFIGPATH=%{buildroot}/%{config_base} install
 
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
-install -D -m 0600 scripts/%{crontab_3} %{buildroot}/etc/cron.d/%{crontab_3}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 install -D -m 0644 etc/apache-perfsonar-security.conf %{buildroot}/etc/httpd/conf.d/apache-perfsonar-security.conf
+install -D -m 0644 etc/apache-elastic.conf %{buildroot}/etc/httpd/conf.d/apache-elastic.conf
+install -D -m 0644 etc/apache-elmond.conf %{buildroot}/etc/httpd/conf.d/apache-elmond.conf
 install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 install -D -m 0644 init_scripts/%{init_script_1}.service %{buildroot}/%{_unitdir}/%{init_script_1}.service
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
+install -D -m 0644 archive/pscheduler-default-archive.json %{buildroot}/etc/pscheduler/default-archives/http_logstash.json
 
 mkdir -p %{buildroot}/usr/lib/firewalld/services/
 mv etc/firewalld/services/* %{buildroot}/usr/lib/firewalld/services/
@@ -385,7 +378,6 @@ mv etc/* %{buildroot}/%{config_base}
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/etc
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
-rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_3}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 rm -rf %{buildroot}/%{install_base}/init_scripts
 
@@ -459,11 +451,6 @@ chkconfig %{init_script_3} on
 
 # apache needs to be on for the toolkit to work
 chkconfig --level 2345 httpd on
-
-#adding cassandra and postgres for esmond
-chkconfig --add cassandra
-chkconfig cassandra on
-chkconfig postgresql-9.5 on
 
 #Restart pscheduler daemons to make sure they got all tests, tools, and archivers
 #also psconfig-pscheduler-agent because it needs pscheduler
@@ -598,7 +585,6 @@ fi
 %exclude %{config_base}/default_service_configs/pscheduler_limits.conf
 %exclude %{config_base}/perfsonar_ulimit.conf
 %exclude %{config_base}/perfsonar_ulimit_apache.conf
-%exclude %{config_base}/clean_esmond_db.conf
 %exclude /etc/httpd/conf.d/apache-perfsonar-security.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web-ng/*
@@ -637,7 +623,6 @@ fi
 %files systemenv
 %license LICENSE
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/*
-%exclude %{install_base}/scripts/system_environment/configure_esmond 
 %exclude %{install_base}/scripts/system_environment/testpoint
 
 %files security
@@ -688,14 +673,17 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 %attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
-%files esmond-utils
+%files archive-utils
 %license LICENSE
-%config(noreplace) %{config_base}/clean_esmond_db.conf
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/system_environment/configure_esmond 
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/clean_esmond_db.sh
-%attr(0644,root,root) /etc/cron.d/%{crontab_3}
+%config(noreplace) /etc/pscheduler/default-archives/http_logstash.json
 
 %changelog
+* Tue Oct 22 2021 daniel.neto@rnp.br
+- Adding archive-utils package
+
+* Tue Sep 21 2021 daniel.neto@rnp.br
+- Removing esmond and cassandra references
+
 * Wed Apr 19 2017 andy@es.net
 - Adding back NDT firewall ports
 

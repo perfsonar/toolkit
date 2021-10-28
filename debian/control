@@ -84,7 +84,7 @@ Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
  perfsonar-toolkit-servicewatcher, perfsonar-toolkit-ntp,
  perfsonar-toolkit-library, perfsonar-psconfig-pscheduler,
  perfsonar-toolkit-systemenv-testpoint, perfsonar-toolkit-config-daemon,
- perfsonar-lsregistrationdaemon, perfsonar-toolkit-esmond-utils,
+ perfsonar-lsregistrationdaemon,
  ${misc:Depends}
 Description: perfSONAR Toolkit system tuning
  Tunes and configures the system according to performance
@@ -99,11 +99,3 @@ Depends: nscd, owamp-server (>= 3.5.0),
 Description: perfSONAR Testpoint system tuning
  Tunes and configures the system according to performance
  and security best practices.
-
-Package: perfsonar-toolkit-esmond-utils
-Architecture: all
-Depends: drop-in, esmond (>= 4.3.0~), ${misc:Depends}
-Breaks: perfsonar-toolkit-compat-database
-Replaces: perfsonar-toolkit-compat-database
-Description: perfSONAR Database Management
- Provides utilities for configuring esmond on perfSONAR hosts.
