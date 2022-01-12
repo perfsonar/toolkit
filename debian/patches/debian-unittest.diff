@@ -1,5 +1,5 @@
---- a/t/host-get_metadata.t	2021-08-25 17:36:33.009133000 +0100
-+++ b/t/host-get_metadata.t	2021-08-26 02:56:36.379691182 +0100
+--- a/t/host-get_metadata.t	2022-01-12 09:33:16.431509584 -0500
++++ b/t/host-get_metadata.t	2022-01-12 09:33:19.732641566 -0500
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -8,8 +8,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-get_services.t	2021-08-25 17:36:33.009133000 +0100
-+++ b/t/host-get_services.t	2021-08-26 02:56:36.380826190 +0100
+--- a/t/host-get_services.t	2022-01-12 09:33:16.431646389 -0500
++++ b/t/host-get_services.t	2022-01-12 09:33:19.733199499 -0500
 @@ -6,6 +6,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -18,8 +18,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-get_system_health.t	2021-08-25 17:36:33.009133000 +0100
-+++ b/t/host-get_system_health.t	2021-08-26 02:56:36.381628713 +0100
+--- a/t/host-get_system_health.t	2022-01-12 09:33:16.431843506 -0500
++++ b/t/host-get_system_health.t	2022-01-12 09:33:19.733714358 -0500
 @@ -9,10 +9,11 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -56,8 +56,8 @@
  ok( nonnegative_number( $data->{'cpu_util'} ), 'CPU utilization is a number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute) is a positive number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
---- a/t/host-update_metadata.t	2021-08-25 17:36:33.009133000 +0100
-+++ b/t/host-update_metadata.t	2021-08-26 02:56:36.382318953 +0100
+--- a/t/host-update_metadata.t	2022-01-12 09:33:16.431992867 -0500
++++ b/t/host-update_metadata.t	2022-01-12 09:33:19.734088806 -0500
 @@ -13,6 +13,7 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -66,8 +66,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-geoIPLookup.t	2021-08-25 17:36:33.009133000 +0100
-+++ b/t/host-geoIPLookup.t	2021-08-26 02:56:36.383088984 +0100
+--- a/t/host-geoIPLookup.t	2022-01-12 09:33:16.431386196 -0500
++++ b/t/host-geoIPLookup.t	2022-01-12 09:33:19.734470493 -0500
 @@ -65,7 +65,7 @@
            'latitude' => '45.4225',
            'longitude' => '-75.7026',
