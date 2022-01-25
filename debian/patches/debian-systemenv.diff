@@ -1,5 +1,5 @@
---- a/scripts/system_environment/configure_esmond	2021-08-25 17:36:33.130696000 +0100
-+++ b/scripts/system_environment/configure_esmond	2021-08-26 02:56:35.894192420 +0100
+--- a/scripts/system_environment/configure_esmond	2022-01-12 09:33:16.427425032 -0500
++++ b/scripts/system_environment/configure_esmond	2022-01-12 09:33:19.305025821 -0500
 @@ -11,16 +11,12 @@
  fi
  
@@ -20,8 +20,8 @@
  
  #setup localhost measurement archive
  if [ -n "$KEY" ]; then
---- a/scripts/system_environment/configure_fail2ban	2021-08-25 17:36:33.130696000 +0100
-+++ b/scripts/system_environment/configure_fail2ban	2021-08-26 02:56:35.895279097 +0100
+--- a/scripts/system_environment/configure_fail2ban	2022-01-12 09:33:16.427573757 -0500
++++ b/scripts/system_environment/configure_fail2ban	2022-01-12 09:33:19.305501140 -0500
 @@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
@@ -29,8 +29,8 @@
 -    /sbin/service fail2ban restart
 +    service fail2ban restart
  fi
---- a/scripts/system_environment/upgrade_configdaemon	2021-08-25 17:36:33.130696000 +0100
-+++ b/scripts/system_environment/upgrade_configdaemon	2021-08-26 02:56:35.896010442 +0100
+--- a/scripts/system_environment/upgrade_configdaemon	2022-01-12 09:33:16.429415191 -0500
++++ b/scripts/system_environment/upgrade_configdaemon	2022-01-12 09:33:19.305826246 -0500
 @@ -87,5 +87,5 @@
  EOF
  
@@ -38,8 +38,8 @@
 -/sbin/service perfsonar-configdaemon restart
 +service perfsonar-configdaemon restart
  fi
---- a/scripts/system_environment/upgrade_fix_permissions	2021-08-25 17:36:33.130696000 +0100
-+++ b/scripts/system_environment/upgrade_fix_permissions	2021-08-26 02:56:35.896866045 +0100
+--- a/scripts/system_environment/upgrade_fix_permissions	2022-01-12 09:33:16.429529991 -0500
++++ b/scripts/system_environment/upgrade_fix_permissions	2022-01-12 09:33:19.306233748 -0500
 @@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
@@ -63,8 +63,8 @@
  #Try cacti data, but don't complain if it's not there
 -chown -R apache /var/lib/cacti/rra 2> /dev/null
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
---- a/scripts/configure_apache_security	2021-08-25 17:36:33.130696000 +0100
-+++ b/scripts/configure_apache_security	2021-08-26 02:56:35.897579866 +0100
+--- a/scripts/configure_apache_security	2022-01-12 09:33:16.424594496 -0500
++++ b/scripts/configure_apache_security	2022-01-12 09:33:19.306598226 -0500
 @@ -5,14 +5,18 @@
  # updates. Settings will be in apache-security.conf but if someone wants 
  # to override those settings then they can do so in ssl.comnf after first install
@@ -92,8 +92,8 @@
 +       sed -i 's/DocumentRoot \/var\/www\(\/html\)\?$/DocumentRoot \/var\/www\/perfsonar/' $CONF
 +    fi
 +done
---- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2021-08-25 17:36:33.130696000 +0100
-+++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2021-08-26 02:56:35.898368119 +0100
+--- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2022-01-12 09:33:16.428704329 -0500
++++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2022-01-12 09:33:19.307019873 -0500
 @@ -11,32 +11,17 @@
      mv /var/log/perfsonar/owamp.log /var/log/perfsonar/owamp.log.old  
  fi
