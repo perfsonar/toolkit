@@ -70,3 +70,29 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
+--- a/t/host-geoIPLookup.t	2022-01-12 09:33:16.431386196 -0500
++++ b/t/host-geoIPLookup.t	2022-01-12 09:33:19.734470493 -0500
+@@ -65,7 +65,7 @@
+           'latitude' => '45.4225',
+           'longitude' => '-75.7026',
+           'time_zone' => 'America/Toronto',
+-          'code' => 'K1P'
++          'code' => 'k1p 1a4'
+     },
+     "2001:410:102:b81b::2" => {
+           'country' => 'CA',
+@@ -77,10 +77,10 @@
+           'latitude' => '47.4102',
+           'time_zone' => 'Europe/Zurich',
+           'country_full' => 'Switzerland',
+-          'state_abbr' => '05',
+-          'state' => 'Bern',
+-          'city' => 'Ittigen',
+-          'code' => '3063'
++          'state_abbr' => '01',
++          'state' => 'Aargau',
++          'city' => 'Muhen',
++          'code' => '5037'
+      },
+     "2a02:a90:ffff:ffff::c:1d" => {
+           'country' => 'CH',
