@@ -1,5 +1,5 @@
---- a/scripts/apache-toolkit_web_gui.conf	2021-08-25 17:36:33.389065000 +0100
-+++ b/scripts/apache-toolkit_web_gui.conf	2021-08-26 02:56:35.109524072 +0100
+--- a/scripts/apache-toolkit_web_gui.conf	2022-01-12 09:33:16.424252366 -0500
++++ b/scripts/apache-toolkit_web_gui.conf	2022-01-12 09:33:18.598160188 -0500
 @@ -7,6 +7,11 @@
  # New GUI
  Alias /toolkit /usr/lib/perfsonar/web-ng/root
@@ -81,8 +81,8 @@
  </Directory>
  
  ##
---- a/scripts/add_pssudo_user	2021-08-25 17:36:33.389065000 +0100
-+++ b/scripts/add_pssudo_user	2021-08-26 02:56:35.110799581 +0100
+--- a/scripts/add_pssudo_user	2022-01-12 09:33:16.424088435 -0500
++++ b/scripts/add_pssudo_user	2022-01-12 09:33:18.598701704 -0500
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -92,8 +92,8 @@
  if (retVal != 0):
      print(Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL)
      sys.exit(1)
---- a/scripts/clean_esmond_db.sh	2021-08-25 17:36:33.389065000 +0100
-+++ b/scripts/clean_esmond_db.sh	2021-08-26 02:56:35.111566544 +0100
+--- a/scripts/clean_esmond_db.sh	2022-01-12 09:33:16.424482036 -0500
++++ b/scripts/clean_esmond_db.sh	2022-01-12 09:33:18.599020132 -0500
 @@ -9,14 +9,14 @@
  fi
  
@@ -116,8 +116,8 @@
 -fi
 \ No newline at end of file
 +fi
---- a/init_scripts/perfsonar-configure_nic_parameters	2021-08-25 17:36:33.389065000 +0100
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2021-08-26 02:56:35.112359693 +0100
+--- a/init_scripts/perfsonar-configure_nic_parameters	2022-01-12 09:33:16.406052114 -0500
++++ b/init_scripts/perfsonar-configure_nic_parameters	2022-01-12 09:33:18.599459197 -0500
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -155,8 +155,8 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- a/init_scripts/perfsonar-generate_motd	2021-08-25 17:36:33.389065000 +0100
-+++ b/init_scripts/perfsonar-generate_motd	2021-08-26 02:56:35.113175329 +0100
+--- a/init_scripts/perfsonar-generate_motd	2022-01-12 09:33:16.406197198 -0500
++++ b/init_scripts/perfsonar-generate_motd	2022-01-12 09:33:18.599874409 -0500
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -180,8 +180,8 @@
  
  use strict;
  use warnings;
---- a/web-ng/root/gui/reverse_traceroute.cgi	2021-08-25 17:36:33.389065000 +0100
-+++ b/web-ng/root/gui/reverse_traceroute.cgi	2021-08-26 02:56:35.114529728 +0100
+--- a/web-ng/root/gui/reverse_traceroute.cgi	2022-01-12 09:33:16.447179667 -0500
++++ b/web-ng/root/gui/reverse_traceroute.cgi	2022-01-12 09:33:18.600437802 -0500
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -191,18 +191,16 @@
    @Tropts="";
  }
  #########################################################################
---- a/etc/perfsonar_ulimit.conf	2021-08-25 17:36:33.389065000 +0100
-+++ b/etc/perfsonar_ulimit.conf	2021-08-26 02:56:35.115368616 +0100
+--- a/etc/perfsonar_ulimit.conf	2022-01-12 09:33:17.421904610 -0500
++++ b/etc/perfsonar_ulimit.conf	2022-01-12 09:33:18.600874881 -0500
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
- pscheduler  soft    nproc     4096
--apache      soft    nproc     4096
-+www-data    soft    nproc     4096
- pscheduler  soft    nofile    4096
--apache      soft    nofile    4096
-+www-data    soft    nofile    4096
- perfsonar   soft    nofile    4096
--owamp       soft    nofile    4096
-\ No newline at end of file
-+owamp       soft    nofile    4096
+ pscheduler  soft    nproc     32768
+-apache      soft    nproc     32768
++www-data    soft    nproc     32768
+ pscheduler  soft    nofile    32768
+-apache      soft    nofile    32768
++www-data    soft    nofile    32768
+ perfsonar   soft    nofile    32768
+ owamp       soft    nofile    32768
