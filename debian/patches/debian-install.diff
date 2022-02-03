@@ -1,5 +1,5 @@
---- a/scripts/nptoolkit-configure.py	2022-01-12 09:33:16.426145274 -0500
-+++ b/scripts/nptoolkit-configure.py	2022-01-12 09:33:19.123423777 -0500
+--- a/scripts/nptoolkit-configure.py	2022-02-03 15:55:02.239598029 -0500
++++ b/scripts/nptoolkit-configure.py	2022-02-03 15:55:05.159450052 -0500
 @@ -99,7 +99,7 @@
                      },
                      {
@@ -18,8 +18,8 @@
              continue
  
          item = toolkitItem(item["description"], item["command"], item["isConfiguredFunction"], item["required"], item["requiresReboot"])
---- a/scripts/install-optional-packages.py	2022-01-12 09:33:16.425653278 -0500
-+++ b/scripts/install-optional-packages.py	2022-01-12 09:33:19.124159838 -0500
+--- a/scripts/install-optional-packages.py	2022-02-03 15:55:02.239130643 -0500
++++ b/scripts/install-optional-packages.py	2022-02-03 15:55:05.160208626 -0500
 @@ -18,7 +18,7 @@
  
  sys.path.append(libdir)
