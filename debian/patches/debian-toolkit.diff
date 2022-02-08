@@ -1,5 +1,5 @@
---- toolkit.orig/scripts/apache-toolkit_web_gui.conf	2021-09-20 15:41:25.997562949 +0100
-+++ toolkit/scripts/apache-toolkit_web_gui.conf	2021-09-20 15:41:30.338969283 +0100
+--- toolkit.orig/scripts/apache-toolkit_web_gui.conf	2020-11-02 22:03:51.525097013 +0000
++++ toolkit/scripts/apache-toolkit_web_gui.conf	2022-02-08 18:48:45.133202779 +0000
 @@ -7,6 +7,11 @@
  # New GUI
  Alias /toolkit /usr/lib/perfsonar/web-ng/root
@@ -81,8 +81,8 @@
  </Directory>
  
  ##
---- toolkit.orig/scripts/add_pssudo_user	2021-09-20 15:41:25.998590779 +0100
-+++ toolkit/scripts/add_pssudo_user	2021-09-20 15:41:30.339628613 +0100
+--- toolkit.orig/scripts/add_pssudo_user	2020-11-02 22:03:51.525097013 +0000
++++ toolkit/scripts/add_pssudo_user	2022-02-08 18:48:45.134002860 +0000
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -92,32 +92,8 @@
  if (retVal != 0):
      print(Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL)
      sys.exit(1)
---- toolkit.orig/scripts/clean_esmond_db.sh	2021-09-20 15:41:25.999741622 +0100
-+++ toolkit/scripts/clean_esmond_db.sh	2021-09-20 15:41:30.340075490 +0100
-@@ -9,14 +9,14 @@
- fi
- 
- #run ps_remove_data.py to delete expired data
--export ESMOND_ROOT=/usr/lib/esmond
--export ESMOND_CONF=/etc/esmond/esmond.conf
-+
-+. /etc/default/esmond
-+export ESMOND_ROOT
-+export ESMOND_CONF
- export DJANGO_SETTINGS_MODULE=esmond.settings
--cd $ESMOND_ROOT
--. bin/activate
--python ./util/ps_remove_data.py -c /etc/perfsonar/toolkit/clean_esmond_db.conf
-+python3 /usr/share/esmond/util/ps_remove_data.py -c /etc/perfsonar/toolkit/clean_esmond_db.conf
- 
- #force a compaction
- if [ "$ESMOND_CLEANER_MULTI_NODE" != "1" ]; then
-     nodetool compact esmond
--fi
-\ No newline at end of file
-+fi
---- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2021-09-20 15:41:26.001171572 +0100
-+++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2021-09-20 15:41:30.340749649 +0100
+--- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2022-01-13 00:22:57.605510379 +0000
++++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2022-02-08 18:48:45.134559018 +0000
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -155,8 +131,8 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- toolkit.orig/init_scripts/perfsonar-generate_motd	2021-09-20 15:41:30.341757097 +0100
-+++ toolkit/init_scripts/perfsonar-generate_motd	2021-09-20 15:42:43.927245225 +0100
+--- toolkit.orig/init_scripts/perfsonar-generate_motd	2022-01-13 00:22:57.606029987 +0000
++++ toolkit/init_scripts/perfsonar-generate_motd	2022-02-08 18:48:45.135193268 +0000
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -180,8 +156,8 @@
  
  use strict;
  use warnings;
---- toolkit.orig/web-ng/root/gui/reverse_traceroute.cgi	2021-09-20 15:41:26.005222331 +0100
-+++ toolkit/web-ng/root/gui/reverse_traceroute.cgi	2021-09-20 15:41:30.343323335 +0100
+--- toolkit.orig/web-ng/root/gui/reverse_traceroute.cgi	2020-11-02 22:03:51.525097013 +0000
++++ toolkit/web-ng/root/gui/reverse_traceroute.cgi	2022-02-08 18:48:45.135944438 +0000
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -191,8 +167,8 @@
    @Tropts="";
  }
  #########################################################################
---- toolkit.orig/etc/perfsonar_ulimit.conf	2021-09-20 15:41:26.007209529 +0100
-+++ toolkit/etc/perfsonar_ulimit.conf	2021-09-20 15:41:30.344119084 +0100
+--- toolkit.orig/etc/perfsonar_ulimit.conf	2022-02-08 18:43:28.697093288 +0000
++++ toolkit/etc/perfsonar_ulimit.conf	2022-02-08 18:48:45.136623030 +0000
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
