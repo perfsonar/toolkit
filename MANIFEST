@@ -136,6 +136,7 @@ web-ng/root/images/perfSONAR-logo.png
 web-ng/root/index.cgi
 web-ng/root/js/actions/Dispatcher.js
 web-ng/root/js/admin/components/AdminInfoUpdateComponent.js
+web-ng/root/js/admin/components/AllowInternalAddressesComponent.js
 web-ng/root/js/admin/components/StickySaveBar.js
 web-ng/root/js/admin/components/AutoUpdatesComponent.js
 web-ng/root/js/admin/components/CommunityUpdateComponent.js

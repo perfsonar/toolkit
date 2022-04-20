@@ -5,7 +5,7 @@
 // HostStore.js
 
 var HostAdminStore = {
-    adminInfoTopic: 'store.change.host_info',
+	adminInfoTopic: 'store.change.host_info',
     detailsTopic: 'store.change.host_details',
     servicesTopic: 'store.change.host_services',
     summaryTopic: 'store.change.host_summary',
@@ -20,6 +20,8 @@ var HostAdminStore = {
     saveNTPConfigErrorTopic: 'store.ntp_config.save_error',
     saveAutoUpdatesTopic: 'store.auto_updates.save',
     saveAutoUpdatesErrorTopic: 'store.auto_updates.save_error',
+    saveAllowInternalAddressesTopic: 'store.in_add.save',
+    saveAllowInternalAddressesErrorTopic: 'store.in_add.save_error',
 };
 
 HostAdminStore.saveAdminInfo = function(info) {
@@ -75,6 +77,28 @@ HostAdminStore.saveAutoUpdates = function( data ) {
         contentType: 'application/x-www-form-urlencoded',
         success: function(result) {
             HostDetailsStore._retrieveDetails();
+            Dispatcher.publish(topic, result.message);
+
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            Dispatcher.publish(error_topic, errorThrown);
+        }
+    });
+
+
+};
+
+HostAdminStore.saveAllowInternalAddresses = function( data ) {
+    var topic = HostAdminStore.saveAllowInternalAddressesTopic;
+    var error_topic = HostAdminStore.saveAllowInternalAddressesErrorTopic;
+    $.ajax({
+        url: 'services/host.cgi?method=update_allow_internal_addresses',
+        type: 'POST',
+        data: data,
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded',
+        success: function(result) {
+        	HostDetailsStore._retrieveDetails();
             Dispatcher.publish(topic, result.message);
 
         },

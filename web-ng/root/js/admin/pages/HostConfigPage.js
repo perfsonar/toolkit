@@ -18,16 +18,23 @@ var HostConfigPage = {
     formNTPSuccessTopic: 'ui.form.ntp.success',
     formNTPErrorTopic: 'ui.form.ntp.error',
     formNTPCancelTopic: 'ui.form.ntp.cancel',
+    formAllowInternalAddressesChangeTopic: 'ui.form.in_add.change',
+    formAllowInternalAddressesSuccessTopic: 'ui.form.in_add.success',
+    formAllowInternalAddressesErrorTopic: 'ui.form.in_add.error',
+    formAllowInternalAddressesCancelTopic: 'ui.form.in_add.cancel',
     ntpSaveCompleted: null,
     autoUpdatesSaveCompleted: null,
+    allowInternalAddressesSaveCompleted: null,
     ntpSaveMessage: '',
     autoUpdatesSaveMessage: '',
+    allowInternalAddressesSaveMessage: '',
 };
 
 HostConfigPage.initialize = function() {
     $('#loading-modal').foundation('reveal', 'open');
     Dispatcher.subscribe(HostConfigPage.detailsTopic, HostConfigPage._setDetails);
     Dispatcher.subscribe(HostConfigPage.formAutoUpdatesSuccessTopic, HostConfigPage._handleSubForm);
+    Dispatcher.subscribe(HostConfigPage.formAllowInternalAddressesSuccessTopic, HostConfigPage._handleSubForm);
     Dispatcher.subscribe(HostConfigPage.formNTPSuccessTopic, HostConfigPage._handleSubForm);
 
     $('form#hostConfigForm input').change(HostConfigPage._showSaveBar);
@@ -61,20 +68,43 @@ HostConfigPage._handleSubForm = function(topic, result) {
             HostConfigPage.ntpSaveCompleted = false;
             HostConfigPage.ntpSaveMessage = result;
             break;
+        case HostConfigPage.formAllowInternalAddressesSuccessTopic:
+            HostConfigPage.allowInternalAddressesSaveCompleted = true;
+            HostConfigPage.allowInternalAddressesSaveMessage = result;
+            break;    
+        case HostConfigPage.formAllowInternalAddressesErrorTopic:
+            HostConfigPage.allowInternalAddressesSaveCompleted = false;
+            HostConfigPage.allowInternalAddressesSaveMessage = result;
+            break;      
     }
 
-    if (HostConfigPage.ntpSaveCompleted !== null && HostConfigPage.autoUpdatesSaveCompleted !== null) {
-        // Both sections save completed.
+    if (HostConfigPage.ntpSaveCompleted !== null && HostConfigPage.autoUpdatesSaveCompleted !== null && HostConfigPage.allowInternalAddressesSaveCompleted !== null) {
+        // all sections save completed.
         var message = '';
-        if (HostConfigPage.ntpSaveCompleted && HostConfigPage.autoUpdatesSaveCompleted) {
+        if (HostConfigPage.ntpSaveCompleted && HostConfigPage.autoUpdatesSaveCompleted  && HostConfigPage.allowInternalAddressesSaveCompleted) {
+            message += 'Allow Internal Addresses, Auto updates and NTP saved successfully';
+            
+        } else if (HostConfigPage.autoUpdatesSaveCompleted  && HostConfigPage.allowInternalAddressesSaveCompleted) {
+            message += 'Allow Internal Addresses and Auto updates saved successfully';
+        	
+        }else if (HostConfigPage.ntpSaveCompleted && HostConfigPage.allowInternalAddressesSaveCompleted) {
+            message += 'Allow Internal Addresses and NTP saved successfully';
+            
+        }else if (HostConfigPage.ntpSaveCompleted && HostConfigPage.autoUpdatesSaveCompleted) {
             message += 'Auto updates and NTP saved successfully';
-
+    
         } else {
-            if (HostConfigPage.autoUpdatesSaveCompleted) {
+        	if (HostConfigPage.autoUpdatesSaveCompleted) {
                 message += 'Auto Updates saved successfully. ';
             } else {
                 message += 'Error saving Auto Updates: ';
                 message += HostConfigPage.autoUpdatesSaveMessage;
+            }
+            if (HostConfigPage.allowInternalAddressesSaveCompleted) {
+                message += 'Allow Internal Addresses saved successfully. ';
+            } else {
+                message += 'Error saving Internal Addresses: ';
+                message += HostConfigPage.allowInternalAddressesSaveMessage;
             }
             if (HostConfigPage.ntpSaveCompleted) {
                 message += 'NTP saved successfully. ';
@@ -85,17 +115,19 @@ HostConfigPage._handleSubForm = function(topic, result) {
         }
         HostConfigPage.ntpSaveCompleted = null;
         HostConfigPage.autoUpdatesSaveCompleted = null;
+        HostConfigPage.allowInternalAddressesSaveCompleted = null;
+        HostConfigPage.allowInternalAddressesSaveMessage = '';
         HostConfigPage.ntpSaveMessage = '';
         HostConfigPage.autoUpdatesSaveMessage = '';
         HostConfigPage._saveSuccess( topic, message);
     }
 };
 
-
 HostConfigPage._save = function() {
     Dispatcher.publish(HostConfigPage.formSubmitTopic);
     NTPConfigComponent.save();
     AutoUpdatesComponent.save();
+    AllowInternalAddressesComponent.save();
 };
 
 HostConfigPage._saveSuccess = function( topic, message ) {

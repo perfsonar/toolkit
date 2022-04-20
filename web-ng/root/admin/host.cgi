@@ -62,6 +62,7 @@ my $js_files = [
     $include_prefix . 'js/components/PageHeader.js', 
     $include_prefix . 'js/admin/components/StickySaveBar.js', 
     $include_prefix . 'js/admin/components/AutoUpdatesComponent.js', 
+    $include_prefix . 'js/admin/components/AllowInternalAddressesComponent.js', 
     $include_prefix . 'js/admin/components/NTPConfigComponent.js', 
     $include_prefix . 'js/admin/pages/HostConfigPage.js'
     ];
