@@ -22,32 +22,86 @@
                 <li class="nav-dropdown">
                     <a href="/toolkit/auth/" class="login_link">Log in</a>
                 </li>
-		<!--<li class="nav-dropdown">
-                    <a href="/toolkit/" class="login_link">View public dashboard</a>
-                </li>-->
-                [% ELSE %]
-		<li class="nav-dropdown">
+	            [% ELSE %]
+            	<li class="nav-dropdown">
                     <a href="/toolkit/" class="login_link">Public dashboard</a>
                 </li>                
 
-		<li class="nav-dropdown">
+				<li class="nav-dropdown">
                     <a href="/toolkit/auth" class="login_link">Private dashboard</a>
                 </li>
-                [% END %]
-                <li class="nav-dropdown">
-                    <a href="/toolkit/auth/admin/"><i class="fa fa-cog"></i>Configuration</a>
-                </li>
-                <li class="nav-dropdown">
-                    <a class="nav-dropdown-toggle" href="#"><i class="fa fa-question"></i>Help</a>
-                    <ul class="nav-dropdown-menu">
-                        <li><a href="https://docs.perfsonar.net/" target="_blank">Configuration manual</a></li>
-                        <li><a href="https://docs.perfsonar.net/FAQ.html" target="_blank">FAQs</a></li>
-                        <li><a href="http://www.perfsonar.net/about/" target="_blank">About</a></li>
-                        <li><a href="http://www.perfsonar.net/about/who-is-involved/" target="_blank">Credits</a></li>
-                    </ul>
-                </li>
-            </ul>
+
+			<script> 
+        
+				function ClearBackButton(url) {
+					window.location.replace(url);
+					return false;
+				}
+
+				function ClearAuthentication(LogOffPage) {
+					
+					window.location = LogOffPage;
+					
+					var IsInternetExplorer = false;
+
+					try {
+						var agt = navigator.userAgent.toLowerCase();
+						if (agt.indexOf("msie") != -1) {
+							IsInternetExplorer = true;
+						}
+					} catch (e) {
+						IsInternetExplorer = false;
+					}
+					;
+
+					 if (IsInternetExplorer) 
+					{
+						// Logoff Internet Explorer
+						     document.execCommand("ClearAuthenticationCache");
+						      window.location = LogOffPage;
+					}
+					else 
+					{
+						// Logoff every other browsers
+						$.ajax({
+							username : 'unknown',
+							password : 'WrongPassword',
+							url : './',
+							type : 'GET',
+							beforeSend : function(xhr) {
+								xhr.setRequestHeader("Authorization",
+										"Basic AAAAAAAAAAAAAAAAAAA=");
+							},
+							error : function(err) {
+								window.location = LogOffPage;
+							}
+						});
+						
+						ClearBackButton(LogOffPage);
+					}
+				}
+				
+			</script>
+		
+			<li class="nav-dropdown"><a onclick="ClearAuthentication('/toolkit/')">Log out</a></li>
+			
+			
+			[% END %]
+			<li class="nav-dropdown"><a href="/toolkit/auth/admin/"><i
+					class="fa fa-cog"></i>Configuration</a></li>
+			<li class="nav-dropdown"><a class="nav-dropdown-toggle" href="#"><i
+					class="fa fa-question"></i>Help</a>
+				<ul class="nav-dropdown-menu">
+					<li><a href="https://docs.perfsonar.net/" target="_blank">Configuration
+							manual</a></li>
+					<li><a href="https://docs.perfsonar.net/FAQ.html"
+						target="_blank">FAQs</a></li>
+					<li><a href="http://www.perfsonar.net/about/" target="_blank">About</a></li>
+					<li><a href="http://www.perfsonar.net/about/who-is-involved/"
+						target="_blank">Credits</a></li>
+				</ul></li>
+		</ul>
             </nav>
         </header>
-
         
+     
