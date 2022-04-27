@@ -6,8 +6,6 @@ archive/pscheduler-default-archive.json
 doc/iptables-config.example
 etc/administrative_info
 etc/apache-perfsonar-security.conf
-etc/apache-elastic.conf
-etc/apache-elmond.conf
 etc/configdaemon-logger.conf
 etc/configdaemon.conf
 etc/default_service_configs/pscheduler_limits.conf

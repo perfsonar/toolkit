@@ -357,8 +357,6 @@ install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 install -D -m 0644 etc/apache-perfsonar-security.conf %{buildroot}/etc/httpd/conf.d/apache-perfsonar-security.conf
-install -D -m 0644 etc/apache-elastic.conf %{buildroot}/etc/httpd/conf.d/apache-elastic.conf
-install -D -m 0644 etc/apache-elmond.conf %{buildroot}/etc/httpd/conf.d/apache-elmond.conf
 install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 install -D -m 0644 init_scripts/%{init_script_1}.service %{buildroot}/%{_unitdir}/%{init_script_1}.service
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
@@ -569,6 +567,15 @@ fi
 
 %post servicewatcher
 
+
+%post archive-utils
+
+#configure http archiver
+if [ -f /etc/perfsonar/logstash/proxy_auth.json ] ; then
+    AUTH_HEADER=`cat /etc/perfsonar/logstash/proxy_auth.json`
+    sed -i "s|:11283|/logstash|g" /etc/perfsonar/psconfig/archives.d/http_logstash.json
+    sed -i "s|\"content-type\": \"application/json\"|\"content-type\": \"application/json\", ${AUTH_HEADER}|g" /etc/perfsonar/psconfig/archives.d/http_logstash.json
+fi
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
