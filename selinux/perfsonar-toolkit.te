@@ -17,6 +17,11 @@ require {
 	type var_run_t;
 	type lsregistrationdaemon_etc_t;
 	type lsregistrationdaemon_var_lib_t;
+	type lsregistrationdaemon_pid_t;
+	type owampd_etc_t;
+	type twampd_etc_t;
+	type owampd_pid_t;
+	type twampd_pid_t;
 	type sysctl_net_t;
 	class dbus { send_msg };
 	class dir { ioctl read getattr lock search open };
@@ -45,11 +50,16 @@ allow httpd_t init_t:system status;
 # remove .web_admin.log.LCK
 allow httpd_t httpd_log_t:file unlink;
 
-# read /var/lib/perfsonar/lsregistrationdaemon/client_uuid
+# read lsregistrationdaemon configs
 allow httpd_t lsregistrationdaemon_var_lib_t:file { getattr ioctl open read };
-
-# read /etc/perfsonar/lsregistrationdaemon.conf
 allow httpd_t lsregistrationdaemon_etc_t:file { getattr ioctl open read };
+allow httpd_t lsregistrationdaemon_pid_t:file { getattr ioctl open read };
+
+#read owamp and twamp configs
+allow httpd_t owampd_etc_t:file { getattr ioctl open read };
+allow httpd_t twampd_etc_t:file { getattr ioctl open read };
+allow httpd_t owampd_pid_t:file { getattr ioctl open read };
+allow httpd_t twampd_pid_t:file { getattr ioctl open read };
 
 # read rpm db
 allow httpd_t rpm_var_lib_t:dir { ioctl read getattr lock search open };
