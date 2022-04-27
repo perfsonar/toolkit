@@ -15,6 +15,8 @@ require {
 	type var_lib_t;
 	type var_log_t;
 	type var_run_t;
+	type lsregistrationdaemon_etc_t;
+	type sysctl_net_t;
 	class dbus { send_msg };
 	class dir { ioctl read getattr lock search open };
 	class file { getattr open read unlink ioctl lock execute execute_no_trans };
@@ -45,6 +47,9 @@ allow httpd_t httpd_log_t:file unlink;
 # read /var/lib/perfsonar/lsregistrationdaemon/client_uuid
 allow httpd_t init_var_lib_t:file { open read };
 
+# read /etc/perfsonar/lsregistrationdaemon.conf
+allow httpd_t lsregistrationdaemon_etc_t:file { open read };
+
 # read rpm db
 allow httpd_t rpm_var_lib_t:dir { ioctl read getattr lock search open };
 allow httpd_t rpm_var_lib_t:file { ioctl read getattr lock open };
@@ -68,3 +73,6 @@ allow httpd_t configfs_t:dir getattr;
 allow httpd_t self:rawip_socket create;
 allow httpd_t self:capability net_raw;
 allow httpd_t self:rawip_socket { getopt read setopt write };
+
+#read tcp sysctl settings
+allow httpd_t sysctl_net_t:file { open read };
