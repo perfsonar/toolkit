@@ -16,6 +16,7 @@ require {
 	type var_log_t;
 	type var_run_t;
 	type lsregistrationdaemon_etc_t;
+	type lsregistrationdaemon_var_lib_t;
 	type sysctl_net_t;
 	class dbus { send_msg };
 	class dir { ioctl read getattr lock search open };
