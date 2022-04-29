@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Remove esmond local archive definition from psconfig
+if [ -f "/etc/perfsonar/psconfig/archives.d/esmond_local.json" ]; then
+    rm -f /etc/perfsonar/psconfig/archives.d/esmond_local.json
+fi

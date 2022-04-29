@@ -64,6 +64,7 @@ scripts/system_environment/configure_tests_gui
 scripts/system_environment/upgrade_configdaemon
 scripts/system_environment/disable_php_advertising
 scripts/system_environment/disable_unwanted_services
+scripts/system_environment/disable_esmond
 scripts/system_environment/disable_zeroconf
 scripts/system_environment/enable_apache_redirect
 scripts/system_environment/enable_ntp_restarts
