@@ -1,5 +1,5 @@
---- toolkit.orig/t/host-get_metadata.t	2021-09-20 13:33:59.071488000 +0100
-+++ toolkit/t/host-get_metadata.t	2021-09-20 13:37:49.561544786 +0100
+--- toolkit.orig/t/host-get_metadata.t	2022-02-08 18:49:25.564585000 +0000
++++ toolkit/t/host-get_metadata.t	2022-05-10 15:16:33.949054202 +0000
 @@ -6,6 +6,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -9,8 +9,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- toolkit.orig/t/host-get_services.t	2021-09-20 13:33:59.071488000 +0100
-+++ toolkit/t/host-get_services.t	2021-09-20 13:37:49.563164863 +0100
+--- toolkit.orig/t/host-get_services.t	2022-05-10 15:07:36.910610260 +0000
++++ toolkit/t/host-get_services.t	2022-05-10 15:16:33.949906168 +0000
 @@ -6,6 +6,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -20,8 +20,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- toolkit.orig/t/host-get_system_health.t	2021-09-20 13:33:59.071488000 +0100
-+++ toolkit/t/host-get_system_health.t	2021-09-20 13:37:49.564581018 +0100
+--- toolkit.orig/t/host-get_system_health.t	2022-02-08 18:49:25.564585000 +0000
++++ toolkit/t/host-get_system_health.t	2022-05-10 15:16:33.951075845 +0000
 @@ -9,10 +9,12 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -59,8 +59,8 @@
  ok( nonnegative_number( $data->{'cpu_util'} ), 'CPU utilization is a number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute) is a positive number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
---- toolkit.orig/t/host-update_metadata.t	2021-09-20 13:33:59.071488000 +0100
-+++ toolkit/t/host-update_metadata.t	2021-09-20 13:37:49.565727684 +0100
+--- toolkit.orig/t/host-update_metadata.t	2022-02-08 18:49:25.564585000 +0000
++++ toolkit/t/host-update_metadata.t	2022-05-10 15:16:33.952241388 +0000
 @@ -13,6 +13,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -70,29 +70,18 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-geoIPLookup.t	2022-01-12 09:33:16.431386196 -0500
-+++ b/t/host-geoIPLookup.t	2022-01-12 09:33:19.734470493 -0500
-@@ -65,7 +65,7 @@
-           'latitude' => '45.4225',
-           'longitude' => '-75.7026',
-           'time_zone' => 'America/Toronto',
--          'code' => 'K1P'
-+          'code' => 'k1p 1a4'
-     },
-     "2001:410:102:b81b::2" => {
-           'country' => 'CA',
-@@ -77,10 +77,10 @@
+--- toolkit.orig/t/host-geoIPLookup.t	2022-02-08 18:49:25.564585000 +0000
++++ toolkit/t/host-geoIPLookup.t	2022-05-10 15:25:05.325045785 +0000
+@@ -77,9 +77,9 @@
            'latitude' => '47.4102',
            'time_zone' => 'Europe/Zurich',
            'country_full' => 'Switzerland',
 -          'state_abbr' => '05',
 -          'state' => 'Bern',
 -          'city' => 'Ittigen',
--          'code' => '3063'
 +          'state_abbr' => '01',
 +          'state' => 'Aargau',
 +          'city' => 'Muhen',
-+          'code' => '5037'
+           'code' => '3063'
       },
      "2a02:a90:ffff:ffff::c:1d" => {
-           'country' => 'CH',
