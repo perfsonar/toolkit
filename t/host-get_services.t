@@ -116,7 +116,7 @@ sub get_expected_services {
         'services' => [
             {
                 'is_running' => $running,
-                'addresses' => $esmond_addresses,
+                'addresses' => $archive_addresses,
                 'version' => $version,
                 'name' => 'archive',
                 'enabled' => $enabled
