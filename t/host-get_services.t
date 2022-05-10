@@ -102,11 +102,13 @@ sub get_expected_services {
 
     $running = "disabled" if ( !$enabled && !$running_int );
 
-    my $esmond_addresses = [];
+    my $archive_addresses = [];
     my $pscheduler_addresses = [];
 
     foreach my $addr ( @fake_interfaces ) {
-        push @$esmond_addresses, 'https://' . $addr . '/esmond/perfsonar/archive/';
+        push @$archive_addresses, 'https://' . $addr . '/opensearch';
+        push @$archive_addresses, 'https://' . $addr . '/logstash';
+        push @$archive_addresses, 'https://' . $addr . '/esmond/perfsonar/archive/';
         push @$pscheduler_addresses, 'https://' . $addr . '/pscheduler';
     }
 
@@ -116,7 +118,7 @@ sub get_expected_services {
                 'is_running' => $running,
                 'addresses' => $esmond_addresses,
                 'version' => $version,
-                'name' => 'esmond',
+                'name' => 'archive',
                 'enabled' => $enabled
             },
             {
