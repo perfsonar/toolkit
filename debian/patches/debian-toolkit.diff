@@ -1,5 +1,5 @@
---- toolkit.orig/scripts/apache-toolkit_web_gui.conf	2020-11-02 22:03:51.525097013 +0000
-+++ toolkit/scripts/apache-toolkit_web_gui.conf	2022-02-08 18:48:45.133202779 +0000
+--- a/scripts/apache-toolkit_web_gui.conf	2022-05-26 11:21:58.521049893 -0400
++++ b/scripts/apache-toolkit_web_gui.conf	2022-05-26 11:22:00.925699927 -0400
 @@ -7,6 +7,11 @@
  # New GUI
  Alias /toolkit /usr/lib/perfsonar/web-ng/root
@@ -81,8 +81,8 @@
  </Directory>
  
  ##
---- toolkit.orig/scripts/add_pssudo_user	2020-11-02 22:03:51.525097013 +0000
-+++ toolkit/scripts/add_pssudo_user	2022-02-08 18:48:45.134002860 +0000
+--- a/scripts/add_pssudo_user	2022-05-26 11:21:58.520799034 -0400
++++ b/scripts/add_pssudo_user	2022-05-26 11:22:00.926265665 -0400
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -92,8 +92,8 @@
  if (retVal != 0):
      print(Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL)
      sys.exit(1)
---- toolkit.orig/init_scripts/perfsonar-configure_nic_parameters	2022-01-13 00:22:57.605510379 +0000
-+++ toolkit/init_scripts/perfsonar-configure_nic_parameters	2022-02-08 18:48:45.134559018 +0000
+--- a/init_scripts/perfsonar-configure_nic_parameters	2022-05-26 11:21:59.761609545 -0400
++++ b/init_scripts/perfsonar-configure_nic_parameters	2022-05-26 11:22:00.926646594 -0400
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -131,8 +131,8 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- toolkit.orig/init_scripts/perfsonar-generate_motd	2022-01-13 00:22:57.606029987 +0000
-+++ toolkit/init_scripts/perfsonar-generate_motd	2022-02-08 18:48:45.135193268 +0000
+--- a/init_scripts/perfsonar-generate_motd	2022-05-26 11:21:59.761808595 -0400
++++ b/init_scripts/perfsonar-generate_motd	2022-05-26 11:22:00.927058099 -0400
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -156,8 +156,8 @@
  
  use strict;
  use warnings;
---- toolkit.orig/web-ng/root/gui/reverse_traceroute.cgi	2020-11-02 22:03:51.525097013 +0000
-+++ toolkit/web-ng/root/gui/reverse_traceroute.cgi	2022-02-08 18:48:45.135944438 +0000
+--- a/web-ng/root/gui/reverse_traceroute.cgi	2022-05-26 11:21:58.551160105 -0400
++++ b/web-ng/root/gui/reverse_traceroute.cgi	2022-05-26 11:22:00.927643832 -0400
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -167,8 +167,8 @@
    @Tropts="";
  }
  #########################################################################
---- toolkit.orig/etc/perfsonar_ulimit.conf	2022-02-08 18:43:28.697093288 +0000
-+++ toolkit/etc/perfsonar_ulimit.conf	2022-02-08 18:48:45.136623030 +0000
+--- a/etc/perfsonar_ulimit.conf	2022-05-26 11:21:58.452771499 -0400
++++ b/etc/perfsonar_ulimit.conf	2022-05-26 11:22:00.928119324 -0400
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
