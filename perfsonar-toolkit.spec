@@ -106,8 +106,6 @@ Requires:       perfsonar-toolkit-systemenv
 Requires:       perfsonar-archive
 
 # Misc performance/performance-related tools
-Requires:       tcptrace
-Requires:       xplot-tcptrace
 Requires:       coreutils
 Requires:       httpd
 Requires:       mod_ssl
