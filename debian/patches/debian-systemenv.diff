@@ -1,5 +1,5 @@
---- a/scripts/system_environment/configure_fail2ban	2022-06-16 09:04:24.590512572 -0400
-+++ b/scripts/system_environment/configure_fail2ban	2022-06-16 09:04:27.687571843 -0400
+--- a/scripts/system_environment/configure_fail2ban	2022-06-16 09:05:43.068663504 -0400
++++ b/scripts/system_environment/configure_fail2ban	2022-06-16 09:05:45.865904487 -0400
 @@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
@@ -7,8 +7,8 @@
 -    /sbin/service fail2ban restart
 +    service fail2ban restart
  fi
---- a/scripts/system_environment/upgrade_configdaemon	2022-06-16 09:04:24.592442481 -0400
-+++ b/scripts/system_environment/upgrade_configdaemon	2022-06-16 09:04:27.688111909 -0400
+--- a/scripts/system_environment/upgrade_configdaemon	2022-06-16 09:05:43.070408482 -0400
++++ b/scripts/system_environment/upgrade_configdaemon	2022-06-16 09:05:45.866289646 -0400
 @@ -87,5 +87,5 @@
  EOF
  
@@ -16,8 +16,8 @@
 -/sbin/service perfsonar-configdaemon restart
 +service perfsonar-configdaemon restart
  fi
---- a/scripts/system_environment/upgrade_fix_permissions	2022-06-16 09:04:24.592561996 -0400
-+++ b/scripts/system_environment/upgrade_fix_permissions	2022-06-16 09:04:27.688486947 -0400
+--- a/scripts/system_environment/upgrade_fix_permissions	2022-06-16 09:05:43.070570088 -0400
++++ b/scripts/system_environment/upgrade_fix_permissions	2022-06-16 09:05:45.866638134 -0400
 @@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
@@ -41,8 +41,8 @@
  #Try cacti data, but don't complain if it's not there
 -chown -R apache /var/lib/cacti/rra 2> /dev/null
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
---- a/scripts/configure_apache_security	2022-06-16 09:04:24.587660278 -0400
-+++ b/scripts/configure_apache_security	2022-06-16 09:04:27.688867632 -0400
+--- a/scripts/configure_apache_security	2022-06-16 09:05:43.065864555 -0400
++++ b/scripts/configure_apache_security	2022-06-16 09:05:45.866987901 -0400
 @@ -5,14 +5,18 @@
  # updates. Settings will be in apache-security.conf but if someone wants 
  # to override those settings then they can do so in ssl.comnf after first install
@@ -70,8 +70,8 @@
 +       sed -i 's/DocumentRoot \/var\/www\(\/html\)\?$/DocumentRoot \/var\/www\/perfsonar/' $CONF
 +    fi
 +done
---- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2022-06-16 09:04:24.591654194 -0400
-+++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2022-06-16 09:04:27.689315149 -0400
+--- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2022-06-16 09:05:43.069728639 -0400
++++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2022-06-16 09:05:45.867364883 -0400
 @@ -11,32 +11,17 @@
      mv /var/log/perfsonar/owamp.log /var/log/perfsonar/owamp.log.old  
  fi

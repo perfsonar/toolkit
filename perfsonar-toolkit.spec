@@ -16,7 +16,7 @@
 %define crontab_1     cron-service_watcher
 
 %define perfsonar_auto_version 5.0.0
-%define perfsonar_auto_relnum 0.3.b1
+%define perfsonar_auto_relnum 0.b1.2
 
 Name:           perfsonar-toolkit
 Version:        %{perfsonar_auto_version}
