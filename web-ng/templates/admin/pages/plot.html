@@ -1,3 +1,5 @@
+
+
 [% INCLUDE components/loader.html %]
 
 <div class="config-panel-wrapper">
@@ -8,8 +10,7 @@
 					<nav>
 						<ul class="nav--breadcrumbs u-list-nav">
 							<li><a href=".."><i class="fa fa-home fa-fw"></i>Home</a></li>
-							<li class="active"><a href="plot.cgi">Plot Schedule
-									Graph</a></li>
+							<li class="active"><a href="plot.cgi">Plot Schedule Graph</a></li>
 						</ul>
 					</nav>
 				</header>
@@ -172,7 +173,8 @@
 							.getElementById("plot_timeperiodforward").value,
 							'F');
 
-					var imagesrc = '<img src="../../../pscheduler/schedule?format=png&start='
+					// v//ar imagesrc = '<img src="../../../pscheduler/schedule?format=png&start='
+					var imagesrc = '<img src="/pscheduler/schedule?format=png&start='
 							+ past + '&end=' + forward + '"/>'
 
 					$('#graph').html(imagesrc);
