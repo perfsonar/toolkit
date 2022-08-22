@@ -65,6 +65,12 @@ Depends: ntp, perfsonar-toolkit-library,
 Description: perfSONAR Toolkit ntp configuration
  Configures ntp servers for perfSONAR Toolkit.
 
+Package: perfsonar-toolkit-archive-utils
+Architecture: all
+Depends: perfsonar-archive
+Description: perfSONAR Archive configuration
+ Configures pscheduler and logstash on perfSONAR hosts.
+
 Package: perfsonar-toolkit-config-daemon
 Architecture: all
 Depends: perfsonar-toolkit-library, perfsonar-common,

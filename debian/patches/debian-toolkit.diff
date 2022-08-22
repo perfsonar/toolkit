@@ -1,8 +1,10 @@
---- a/scripts/apache-toolkit_web_gui.conf	2022-06-16 09:05:43.065499698 -0400
-+++ b/scripts/apache-toolkit_web_gui.conf	2022-06-16 09:05:45.141718361 -0400
-@@ -7,6 +7,11 @@
- # New GUI
- Alias /toolkit /usr/lib/perfsonar/web-ng/root
+Index: b/scripts/apache-toolkit_web_gui.conf
+===================================================================
+--- a/scripts/apache-toolkit_web_gui.conf
++++ b/scripts/apache-toolkit_web_gui.conf
+@@ -11,6 +11,11 @@
+ Alias /toolkit/plot /usr/lib/perfsonar/web-ng/root/admin/plot.cgi
+ 
  
 +# Redirects requests to "/" to "/toolkit". It's done in this strange way to
 +# avoid confusing people who enter an IP address and would get redirected to
@@ -12,7 +14,7 @@
  # Redirect from /index.cgi?format=json to the new host summary page
  RewriteCond %{QUERY_STRING} format=json
  RewriteRule ^/toolkit/index.cgi /toolkit/services/host.cgi?method=get_summary [R,L]
-@@ -46,10 +51,8 @@
+@@ -50,10 +55,8 @@
  # But, allow anonymous access via port 80 (http)
  # NOTE: Need to set non-https re-write rules and redirects here
  <VirtualHost *:80>
@@ -25,7 +27,7 @@
  
      # Redirect from /index.cgi?format=json to the new host summary page
      RewriteCond %{QUERY_STRING} format=json
-@@ -98,23 +101,11 @@
+@@ -102,23 +105,11 @@
      Options +FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -53,7 +55,7 @@
  </Location>
  
  # Allow indexes on logs
-@@ -128,23 +119,11 @@
+@@ -132,23 +123,11 @@
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
      AllowOverride All
@@ -81,8 +83,10 @@
  </Directory>
  
  ##
---- a/scripts/add_pssudo_user	2022-06-16 09:05:43.065301177 -0400
-+++ b/scripts/add_pssudo_user	2022-06-16 09:05:45.142130830 -0400
+Index: b/scripts/add_pssudo_user
+===================================================================
+--- a/scripts/add_pssudo_user
++++ b/scripts/add_pssudo_user
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -92,8 +96,10 @@
  if (retVal != 0):
      print(Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL)
      sys.exit(1)
---- a/init_scripts/perfsonar-configure_nic_parameters	2022-06-16 09:05:44.036734049 -0400
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2022-06-16 09:05:45.142630808 -0400
+Index: b/init_scripts/perfsonar-configure_nic_parameters
+===================================================================
+--- a/init_scripts/perfsonar-configure_nic_parameters
++++ b/init_scripts/perfsonar-configure_nic_parameters
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -131,8 +137,10 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- a/init_scripts/perfsonar-generate_motd	2022-06-16 09:05:44.036879431 -0400
-+++ b/init_scripts/perfsonar-generate_motd	2022-06-16 09:05:45.143189641 -0400
+Index: b/init_scripts/perfsonar-generate_motd
+===================================================================
+--- a/init_scripts/perfsonar-generate_motd
++++ b/init_scripts/perfsonar-generate_motd
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -156,8 +164,10 @@
  
  use strict;
  use warnings;
---- a/web-ng/root/gui/reverse_traceroute.cgi	2022-06-16 09:05:43.088430246 -0400
-+++ b/web-ng/root/gui/reverse_traceroute.cgi	2022-06-16 09:05:45.143761307 -0400
+Index: b/web-ng/root/gui/reverse_traceroute.cgi
+===================================================================
+--- a/web-ng/root/gui/reverse_traceroute.cgi
++++ b/web-ng/root/gui/reverse_traceroute.cgi
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -167,8 +177,10 @@
    @Tropts="";
  }
  #########################################################################
---- a/etc/perfsonar_ulimit.conf	2022-06-16 09:05:43.045882162 -0400
-+++ b/etc/perfsonar_ulimit.conf	2022-06-16 09:05:45.144287438 -0400
+Index: b/etc/perfsonar_ulimit.conf
+===================================================================
+--- a/etc/perfsonar_ulimit.conf
++++ b/etc/perfsonar_ulimit.conf
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
