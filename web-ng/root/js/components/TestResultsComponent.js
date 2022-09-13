@@ -395,6 +395,9 @@ TestResultsComponent._registerHelpers = function() {
 
 TestResultsComponent.ipToID = function(ip) {
     var ret = ip;
+    if(ret == null){
+        return "null";
+    }
     ret = ret.replace(/\./g, '_');
     ret = ret.replace(/:/g, '_');
     return ret;
