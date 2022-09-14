@@ -5,6 +5,7 @@
         "_url": "http://localhost:11283",
         "op": "put",
         "_headers": {
+            "x-ps-observer": "{% scheduled_by_address %}",
             "content-type": "application/json"
         }
     }
