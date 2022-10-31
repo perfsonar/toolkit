@@ -25,8 +25,8 @@ Summary:        perfSONAR Toolkit
 License:        ASL 2.0
 Group:          Applications/Communications
 URL:            http://www.perfsonar.net/
-Source0:        perfsonar-toolkit-%{version}.%{perfsonar_auto_relnum}.tar.gz
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Source0:        perfsonar-toolkit-%{version}.tar.gz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Requires:       perl
 Requires:       perl(AnyEvent) >= 4.81
@@ -341,7 +341,7 @@ mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %prep
-%setup -q -n perfsonar-toolkit-%{version}.%{perfsonar_auto_relnum}
+%setup -q -n perfsonar-toolkit-%{version}
 
 %build
 make -f /usr/share/selinux/devel/Makefile -C selinux perfsonar-toolkit.pp

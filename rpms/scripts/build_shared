@@ -1,4 +1,0 @@
-#!/bin/bash
-
-psrpm_build_perl libperfsonar perl-shared
-

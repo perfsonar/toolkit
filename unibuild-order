@@ -1,0 +1,12 @@
+changequote(<!,!>)dnl
+changecom()dnl
+#
+# This file determines the order in which the package in the
+# repository are built.
+#
+# See the documentation at https://github.com/perfsonar/unibuild for
+# more information.
+#
+
+# Build primary packages
+toolkit
