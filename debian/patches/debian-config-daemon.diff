@@ -1,0 +1,30 @@
+--- a/bin/config_daemon.pl	2022-11-09 19:57:40.230724000 +0000
++++ b/bin/config_daemon.pl	2022-11-09 19:58:48.949973644 +0000
+@@ -29,7 +29,7 @@
+ use Log::Log4perl qw/:easy/;
+ 
+ # set the process name
+-$0 = "toolkit_config_daemon.pl";
++$0 = "configdaemon.pl";
+ 
+ my @child_pids = ();
+ 
+@@ -70,7 +70,7 @@
+ }
+ 
+ if ( not $PIDFILE ) {
+-    $PIDFILE = "/var/run/toolkit_config_daemon.pid";
++    $PIDFILE = "/var/run/configdaemon.pid";
+ }
+ 
+ ( $status, $res ) = lockPIDFile( $PIDFILE );
+--- a/etc/configdaemon.conf	2022-11-09 19:57:40.230724000 +0000
++++ b/etc/configdaemon.conf	2022-11-09 19:58:48.950814354 +0000
+@@ -1,6 +1,6 @@
+ address     127.0.0.1
+ port        9000
+-firewall_script /usr/lib/perfsonar/scripts/system_environment/configure_firewall
++firewall_script /usr/lib/perfsonar/scripts/configure_firewall
+ 
+ <access>
+     <service yum_cron>

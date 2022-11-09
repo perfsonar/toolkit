@@ -1,0 +1,11 @@
+--- a/scripts/configure_firewall	2022-11-09 19:57:40.132797000 +0000
++++ b/scripts/configure_firewall	2022-11-09 19:58:49.217594726 +0000
+@@ -38,7 +38,7 @@
+     if type firewall-cmd &>/dev/null; then
+         firewall-cmd --quiet --runtime-to-permanent
+     else
+-        for iptables_cmd in "iptables" "ip6tables"; do
++        for iptables_cmd in "iptables-persistent"; do
+             service $iptables_cmd save
+         done
+     fi
