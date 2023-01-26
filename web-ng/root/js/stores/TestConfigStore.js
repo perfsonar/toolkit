@@ -11,19 +11,19 @@ var TestConfigStore = new DataStore("store.change.test_config", "services/regula
 // contain invalid keyname characters
 TestConfigStore.testTypes = [
     {
-        raw: "pinger",
+        raw: "rtt",
         formatted: "Round-trip latency",
     },
     {
-        raw: "bwctl/throughput",
+        raw: "throughput",
         formatted: "Throughput",
     },
     {
-        raw: "owamp",
+        raw: "latencybg",
         formatted: "One-way latency",
     },
     {
-        raw: "traceroute",
+        raw: "trace",
         formatted: "Traceroute",
     },
 ];
@@ -117,17 +117,17 @@ TestConfigStore.setTypesToDisplay = function ( test ) {
         }
     }
 
-    if ( type == 'pinger') {
+    if ( type == 'rtt') {
         test.showPingParameters = true;
-    } else if ( type == 'bwctl/throughput' ) {
+    } else if ( type == 'throughput' ) {
         test.showThroughputParameters = true;
         if ( typeof test.parameters != 'undefined' ) {
             test.parameters.duration_formatted = SharedUIFunctions.getTimeWithUnits( test.parameters.duration );
         }
-    } else if ( type == 'owamp') {
+    } else if ( type == 'latencybg') {
         test.showOWAMPParameters = true;
         test.showTestInterval = false;
-    } else if ( type == 'traceroute') {
+    } else if ( type == 'trace') {
         test.showTracerouteParameters = true;
     }
 
@@ -168,7 +168,7 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             test.parameters.udp_bandwidth_formatted = formatted;
             test.type_formatted += ' (' + formatted + ')';
         }
-        if ( type == 'bwctl/throughput' ) {
+        if ( type == 'throughput' ) {
             if ( test.parameters.window_size > 0 ) {
                 test.showWindowSize = true;
             } else {
@@ -176,11 +176,11 @@ TestConfigStore._setAdditionalVariables = function ( ) {
             }
             test.parameters.duration_formatted = SharedUIFunctions.getTimeWithUnits( test.parameters.duration );
         }
-        if ( type == 'owamp') {
+        if ( type == 'latencybg') {
             test.parameters.packet_size = parseInt( test.parameters.packet_padding ) + 20;
             test.parameters.packet_rate = 1/test.parameters.packet_interval;
         }
-        if ( type == 'traceroute') {
+        if ( type == 'trace') {
             // TODO: remove? is there anything we need to do here
             // for traceroute tests?
             if ( test.description == TestConfigStore.defaultTracerouteDescription ) {
@@ -209,7 +209,7 @@ TestConfigStore._setDefaultVariables = function ( ) {
         var def = defaults.type[ type ];
 
         switch ( type ) {
-            case 'owamp':
+            case 'latencybg':
                 def.packet_size = parseInt( def.packet_padding ) + 20;
                 break;
         }
@@ -259,7 +259,7 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
         }
     }
     switch ( test.type ) {
-        case 'bwctl/throughput':
+        case 'throughput':
             if ( settings.protocol ) {
                 test.parameters.protocol = settings.protocol;
                 if ( settings.protocol == 'udp' && !isNaN( parseInt ( settings.udp_bandwidth ) ) ) {
@@ -327,7 +327,7 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
                 test.parameters.tool = settings.tool;
             }
             break;
-        case 'owamp':
+        case 'latencybg':
             if ( typeof settings.packet_rate != 'undefined' && settings.packet_rate > 0 ) {
                 test.parameters.packet_interval = 1 / parseInt( settings.packet_rate );
             } else {
@@ -335,8 +335,10 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             }
             var packet_rate = 1 / test.parameters.packet_interval;
 
-            var sample_count = 60 * parseInt( packet_rate ); // 1 minute
-            test.parameters.sample_count = sample_count;
+            //var sample_count = 60 * parseInt( packet_rate ); // 1 minute
+            //test.parameters.sample_count = sample_count;
+            var packet_count = 60 * parseInt( packet_rate ); // 1 minute
+            test.parameters.packet_count = packet_count;
 
             delete test.parameters.packet_rate;
             if ( typeof settings.packet_size != 'undefined' && settings.packet_size >= 20 ) {
@@ -346,7 +348,7 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
             }
             delete test.parameters.packet_size;
             break;
-        case 'traceroute':
+        case 'trace':
             if ( typeof settings.tool == 'undefined' ) {
                 test.parameters.tool = 'tracepath,traceroute';
             } else {
@@ -373,7 +375,7 @@ TestConfigStore.setTestSettings = function ( testID, settings ) {
                 test.parameters.test_interval = 600; // TODO: change to use configured default
             }
             break;
-        case 'pinger':
+        case 'rtt':
             if ( !isNaN( parseInt(settings.test_interval ) ) ) {
                 test.parameters.test_interval = settings.test_interval;
             } else {

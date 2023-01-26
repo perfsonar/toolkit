@@ -5,6 +5,7 @@ var TestConfigAdminStore = new DataStore(TestConfigStore.topic, "services/regula
 TestConfigAdminStore.save = function( tests ) {
     tests.data = $.extend( true, [], tests.test_configuration );
     var data = tests.data;
+//alert('JOVANA: ');
     for(var i in tests.data) {
         var test = tests.data[i];
         for(var j in test.members) {
@@ -20,8 +21,8 @@ TestConfigAdminStore.save = function( tests ) {
     var topic = TestConfigStore.saveTopic;
     var error_topic = TestConfigStore.saveErrorTopic;
 
-    var testsJSON = JSON.stringify(tests);
-
+//    var testsJSON = JSON.stringify(tests);
+//alert(testsJSON);
     $.ajax({
         url: TestConfigAdminStore.url,
         type: 'POST',

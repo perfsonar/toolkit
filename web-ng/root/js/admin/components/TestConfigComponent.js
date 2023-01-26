@@ -63,8 +63,10 @@ TestConfigComponent.initialize = function() {
     // hostnames[ip] = array of hostnames for that ip,  ipv4/6_addresses = array of all v4/v6 ip's. 
         var ret = [];
         for(var a=0; a<ipv4_addresses.length; a+=1) {
-            if (typeof hostnames != "undefined" && hostnames[ipv4_addresses[a]].length>0) {
+            if (( ifname == "lo" || ifname.startsWith("lo:") ) && typeof hostnames != "undefined" && hostnames[ipv4_addresses[a]].length>0) {
                 ret = ret.concat(hostnames[ipv4_addresses[a]]); // join ret and array of hostnames
+	    } else if (typeof hostnames != "undefined" && hostnames[ipv4_addresses[a]].length>0) {
+                ret = ret.concat(hostnames[ipv4_addresses[a]] + " [" + ipv4_addresses[a] + "]"); // join ret and array of hostnames
             } else {
                 ret.push(ipv4_addresses[a]); // append ip
             }
@@ -141,7 +143,12 @@ TestConfigComponent.initialize = function() {
 };
 
 TestConfigComponent.save = function(e) {
+//    alert("JOVANA");
     Dispatcher.publish(TestConfigComponent.formSubmitTopic);
+//    alert(JSON.stringify(TestConfigStore.data));
+//	var newWin = window.open();
+//	newWin.document.write(JSON.stringify(TestConfigStore.data));
+//	newWin.document.close();
     TestConfigAdminStore.save(TestConfigStore.data);
 };
 
@@ -334,6 +341,7 @@ TestConfigComponent.showTestConfigModal = function( testID ) {
         testConfig.added_by_mesh = false;
     } else {
         testConfig = TestConfigStore.getTestConfig( testID );
+	alert("JOVANA " + testID + " " + JSON.stringify(testConfig));
     }
     testConfig.newTest = newTest;
 
@@ -716,16 +724,16 @@ TestConfigComponent._drawConfigForm = function( ) {
     // (select2 orders the selections in the order they are in the options list).
     var all_options;
     var max_num_selectable;
-    if ( testConfig.type == "bwctl/throughput") {
+    if ( testConfig.type == "throughput") {
         all_options = ['iperf3','iperf', 'nuttcp'];
         max_num_selectable = 3;
     }
-    if ( testConfig.type == "traceroute") {
+    if ( testConfig.type == "trace") {
         all_options = ['tracepath', 'traceroute', 'paris-traceroute'];
         max_num_selectable = 3;
     }
 
-    if (testConfig.type == "bwctl/throughput" || testConfig.type == "traceroute")  {
+    if (testConfig.type == "throughput" || testConfig.type == "trace")  {
         $('#tools_selector').empty();
         var selectedToolsArray = [];
         // testConfig.parameters has values for this test from the defaults file,
@@ -957,7 +965,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
 
     switch ( test.type ) {
 
-        case 'bwctl/throughput':
+        case 'throughput':
             var protocol = $('#protocolSelector').val();
             settings.protocol = protocol;
 
@@ -1014,7 +1022,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
 
             break;
 
-        case 'owamp':
+        case 'latencybg':
             var packet_rate = $('#packetRateSel').val();
             settings.packet_rate = packet_rate;
 
@@ -1023,7 +1031,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
 
             break;
 
-        case 'pinger':
+        case 'rtt':
             var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
             settings.test_interval = test_interval;
 
@@ -1038,7 +1046,7 @@ TestConfigComponent._getUserValues = function( testConfig ) {
 
             break;
 
-        case 'traceroute':
+        case 'trace':
             var test_interval = TestConfigComponent._getDateValue( 'time-between-tests' );
             settings.test_interval = test_interval;
 

@@ -21,6 +21,7 @@ use perfSONAR_PS::Client::Utils;
 use perfSONAR_PS::NPToolkit::WebService::ParameterTypes qw($parameter_types);
 
 use perfSONAR_PS::NPToolkit::DataService::RegularTesting;
+use perfSONAR_PS::NPToolkit::Config::PSConfigParser;
 use perfSONAR_PS::NPToolkit::WebService::Method;
 use perfSONAR_PS::NPToolkit::WebService::Router;
 use perfSONAR_PS::NPToolkit::WebService::Auth qw( is_authenticated unauthorized_output );
@@ -34,6 +35,7 @@ if ( !$authenticated ) {
 }
 
 my $config_file = '/var/lib/perfsonar/toolkit/gui-tasks.conf';
+my $psconfig_file = '/etc/perfsonar/psconfig/pscheduler.d/toolkit-webui.json';
 my $test_config_defaults_file = $basedir . '/etc/test_config_defaults.conf';
 my $conf_obj = Config::General->new( -ConfigFile => $config_file );
 our %conf = $conf_obj->getall;
@@ -64,16 +66,43 @@ $params->{load_ls_registration} = 0;
 $params->{test_config_defaults_file} = $test_config_defaults_file;
 
 my $regular_testing_info = perfSONAR_PS::NPToolkit::DataService::RegularTesting->new( $params );
+$params->{psconfig_config_file} = $psconfig_file;
+my $psconfig_testing_info = perfSONAR_PS::NPToolkit::Config::PSConfigParser->new( $params );
+$psconfig_testing_info->init;
 
 my $router = perfSONAR_PS::NPToolkit::WebService::Router->new();
 
-my $test_configuration_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
-    name            =>  "get_test_configuration",
+my $test_configuration_method_old = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "get_test_configuration_old",
     description     =>  "Retrieves the entire testing configuration",
     callback        =>  sub { $regular_testing_info->get_test_configuration(@_); },
     auth_required   =>  1,
     );
+$router->add_method($test_configuration_method_old);
+
+#my $test_configuration_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+#    name            =>  "get_test_configuration",
+#    description     =>  "Retrieves the entire testing configuration",
+#    callback        =>  sub { $regular_testing_info->get_test_configuration(@_); },
+#    auth_required   =>  1,
+#    );
+#$router->add_method($test_configuration_method);
+
+my $test_configuration_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "get_test_configuration",
+    description     =>  "Retrieves the entire testing configuration",
+    callback        =>  sub { $psconfig_testing_info->get_test_configuration(@_); },
+    auth_required   =>  1,
+   );
 $router->add_method($test_configuration_method);
+
+my $psconfig_test_configuration_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
+    name            =>  "get_psconfig_test_configuration",
+    description     =>  "Retrieves the entire testing configuration",
+    callback        =>  sub { $psconfig_testing_info->get_test_configuration(@_); },
+    auth_required   =>  1,
+    );
+$router->add_method($psconfig_test_configuration_method);
 
 my $add_test_configuration_method = perfSONAR_PS::NPToolkit::WebService::Method->new(
     name            =>  "add_test_configuration",

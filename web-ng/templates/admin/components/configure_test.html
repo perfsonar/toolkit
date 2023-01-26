@@ -53,10 +53,10 @@
                         <label for="newTestTypeSel">Type</label>
                         <select id="newTestTypeSel">
                             <option value="">-- Choose type --</option>
-                            <option value="bwctl/throughput" {{#compare type "bwctl/throughput"}}selected{{/compare}}>Throughput</option>
-                            <option value="owamp" {{#compare type "owamp"}}selected{{/compare}}>One-way latency</option>
-                            <option value="pinger" {{#compare type "pinger"}}selected{{/compare}}>Round-trip latency</option>
-                            <option value="traceroute" {{#compare type "traceroute"}}selected{{/compare}}>Traceroute</option>
+                            <option value="throughput" {{#compare type "throughput"}}selected{{/compare}}>Throughput</option>
+                            <option value="latencybg" {{#compare type "latencybg"}}selected{{/compare}}>One-way latency</option>
+                            <option value="rtt" {{#compare type "rtt"}}selected{{/compare}}>Round-trip latency</option>
+                            <option value="trace" {{#compare type "trace"}}selected{{/compare}}>Traceroute</option>
                         </select>
                     </div>
                     <div class="medium-6 columns">
@@ -90,7 +90,7 @@
                         <select id="interfaceSelector">
                             <option value="" {{#unless parameters.local_interface}}selected{{/unless}}>Default</option>
                         {{#each interfaces}}
-                            <option value="{{iface}}" {{#compare iface ../parameters.local_interface}}selected{{/compare}}>{{iface}} - {{hostname_or_ip iface hostnames ipv4_address ipv6_address}}</option>
+			    <option value="{{iface}}" {{#compare ipv4_address "==" ../parameters.local_interface}}selected="selected"{{/compare}} {{#compare ipv6_address "==" ../parameters.local_interface}}selected="selected"{{/compare}}>{{iface}} - {{hostname_or_ip iface hostnames ipv4_address ipv6_address}}</option>
                         {{/each}}
                          </select>
                     </div>
