@@ -21,7 +21,7 @@ TestConfigAdminStore.save = function( tests ) {
     var topic = TestConfigStore.saveTopic;
     var error_topic = TestConfigStore.saveErrorTopic;
 
-//    var testsJSON = JSON.stringify(tests);
+    var testsJSON = JSON.stringify(tests);
 //alert(testsJSON);
     $.ajax({
         url: TestConfigAdminStore.url,
