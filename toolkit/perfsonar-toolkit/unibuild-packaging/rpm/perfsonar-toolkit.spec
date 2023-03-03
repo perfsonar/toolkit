@@ -104,6 +104,7 @@ Requires:       libperfsonar-sls-perl
 Requires:       libperfsonar-toolkit-perl
 Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
+Requires:       perfsonar-toolkit-web-services
 Requires:       perfsonar-archive
 
 # Misc performance/performance-related tools
@@ -404,11 +405,6 @@ rm -rf %{buildroot}/%{install_base}/init_scripts
 rm -rf %{buildroot}
 
 %post
-semodule -n -i %{_datadir}/selinux/packages/perfsonar-toolkit.pp
-if /usr/sbin/selinuxenabled; then
-    /usr/sbin/load_policy
-fi
-
 # Add a group of users who can login to the web ui
 touch /etc/perfsonar/toolkit/psadmin.htpasswd
 chgrp apache /etc/perfsonar/toolkit/psadmin.htpasswd
@@ -481,14 +477,6 @@ systemctl restart %{init_script_1} &>/dev/null || :
 /etc/init.d/%{init_script_2} start &>/dev/null || :
 /etc/init.d/%{init_script_3} start &>/dev/null || :
 
-%postun
-if [ $1 -eq 0 ]; then
-    semodule -n -r perfsonar-toolkit
-    if /usr/sbin/selinuxenabled; then
-       /usr/sbin/load_policy
-    fi
-fi
-
 %post systemenv-testpoint
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
     PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
@@ -525,6 +513,24 @@ for script in %{install_base}/scripts/system_environment/*; do
 done
 
 %post web-services
+#Enable selinux
+semodule -n -i %{_datadir}/selinux/packages/perfsonar-toolkit.pp
+if /usr/sbin/selinuxenabled; then
+    /usr/sbin/load_policy
+fi
+
+%postun web-services
+if [ $1 -eq 0 ]; then
+    semodule -n -r perfsonar-toolkit
+    if /usr/sbin/selinuxenabled; then
+       /usr/sbin/load_policy
+    fi
+fi
+
+#Create log directory
+mkdir -p /var/log/perfsonar/web_admin
+chown apache:perfsonar /var/log/perfsonar/web_admin
+
 #Restart apache to pickup config
 systemctl restart httpd &>/dev/null || :
 
