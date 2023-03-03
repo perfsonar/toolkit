@@ -1,4 +1,12 @@
-web-ng usr/lib/perfsonar
+web-ng/templates usr/lib/perfsonar/web-ng/
+web-ng/root/admin  usr/lib/perfsonar/web-ng/root/
+web-ng/root/css  usr/lib/perfsonar/web-ng/root/
+web-ng/root/data  usr/lib/perfsonar/web-ng/root/
+web-ng/root/favicon.ico  usr/lib/perfsonar/web-ng/root/
+web-ng/root/gui  usr/lib/perfsonar/web-ng/root/
+web-ng/root/images  usr/lib/perfsonar/web-ng/root/
+web-ng/root/index.cgi  usr/lib/perfsonar/web-ng/root/
+web-ng/root/js  usr/lib/perfsonar/web-ng/root/
 etc/administrative_info etc/perfsonar/toolkit
 etc/default_service_configs/jail.local etc/perfsonar/toolkit/default_service_configs/
 etc/perfsonar_sudo etc/sudoers.d

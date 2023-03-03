@@ -25,10 +25,6 @@ case "$1" in
             addgroup --system pssudo
         fi
 
-        # directory setup
-        mkdir -p /var/log/perfsonar/web_admin
-        chown www-data:perfsonar /var/log/perfsonar/web_admin
-
         mkdir -p /var/lib/perfsonar/db_backups/owamp
         chown perfsonar:perfsonar /var/lib/perfsonar/db_backups/owamp
         mkdir -p /var/lib/perfsonar/db_backups/traceroute
