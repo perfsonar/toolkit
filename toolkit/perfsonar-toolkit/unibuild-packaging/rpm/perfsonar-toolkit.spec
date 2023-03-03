@@ -600,8 +600,6 @@ fi
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
 %license LICENSE
-%config(noreplace) %{webng_config}/*
-%exclude %{webng_config}/web_admin.conf
 %config(noreplace) %{config_base}/*
 %exclude %{config_base}/default_system_firewall_settings.conf
 %exclude %{config_base}/perfsonar_firewall_settings.conf
@@ -697,7 +695,7 @@ fi
 
 %files web-services
 %defattr(0644,perfsonar,perfsonar,0755)
-%config(noreplace) %{webng_config}/web_admin.conf
+%config(noreplace) %{webng_config}/*
 %{install_base}/web-ng/root/services/*
 /etc/httpd/conf.d/%{apacheconf_webservices}
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
