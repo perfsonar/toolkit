@@ -234,6 +234,7 @@ Requires:       httpd
 Requires:       mod_ssl
 Requires:       perl(CGI)
 Requires:       perl(Log::Log4perl)
+Requires:       perl(Log::Dispatch)
 Requires:       perl(POSIX)
 Requires:       perl(Data::Dumper)
 Requires:       perl(JSON::XS)
