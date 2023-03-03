@@ -422,10 +422,6 @@ mkdir -p /var/lib/perfsonar/log_view/ndt
 mkdir -p /var/lib/perfsonar/log_view/owamp
 
 if [ $1 -eq 1 ] ; then
-    #3.5.1 fixes
-    #make sure web_admin.conf points to the right lscache directory
-    sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web-ng/etc/web_admin.conf
-    
     #make sure we trash pre-3.5.1 config_daemon
     /etc/init.d/config_daemon stop &>/dev/null || :
     chkconfig --del config_daemon &>/dev/null || :
@@ -605,6 +601,7 @@ fi
 %defattr(0644,perfsonar,perfsonar,0755)
 %license LICENSE
 %config(noreplace) %{webng_config}/*
+%exclude %{webng_config}/web_admin.conf
 %config(noreplace) %{config_base}/*
 %exclude %{config_base}/default_system_firewall_settings.conf
 %exclude %{config_base}/perfsonar_firewall_settings.conf
@@ -700,6 +697,7 @@ fi
 
 %files web-services
 %defattr(0644,perfsonar,perfsonar,0755)
+%config(noreplace) %{webng_config}/web_admin.conf
 %{install_base}/web-ng/root/services/*
 /etc/httpd/conf.d/%{apacheconf_webservices}
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
