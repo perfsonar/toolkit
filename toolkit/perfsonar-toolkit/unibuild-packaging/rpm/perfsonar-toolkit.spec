@@ -7,6 +7,7 @@
 %define webng_config /usr/lib/perfsonar/web-ng/etc
 
 %define apacheconf apache-toolkit_web_gui.conf
+%define apacheconf_webservices apache-toolkit_web_services.conf
 %define sudoerconf perfsonar_sudo
 
 %define init_script_1 perfsonar-configdaemon
@@ -224,6 +225,26 @@ Provides:               perl-perfSONAR_PS-Toolkit-Library
 %description library
 Installs the library files
 
+%package web-services
+Summary:        perfSONAR Toolkit Web Services
+Group:          Development/Tools
+Requires:       perfsonar-toolkit-library
+Requires:       httpd
+Requires:       mod_ssl
+Requires:       perl(CGI)
+Requires:       perl(Log::Log4perl)
+Requires:       perl(POSIX)
+Requires:       perl(Data::Dumper)
+Requires:       perl(JSON::XS)
+Requires:       perl(XML::Simple)
+Requires:       perl(Config::General)
+Requires:       perl(Time::HiRes)
+Requires(post): httpd
+BuildRequires:  systemd
+
+%description web-services
+Contains web service for information used in monitoring a perfSONAR host
+
 %package install
 Summary:                perfSONAR Toolkit Core Scripts
 Group:                  Development/Tools
@@ -354,6 +375,7 @@ make ROOTPATH=%{buildroot}/%{install_base} CONFIGPATH=%{buildroot}/%{config_base
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
+install -D -m 0644 scripts/%{apacheconf_webservices} %{buildroot}/etc/httpd/conf.d/%{apacheconf_webservices}
 install -D -m 0644 etc/apache-perfsonar-security.conf %{buildroot}/etc/httpd/conf.d/apache-perfsonar-security.conf
 install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 install -D -m 0644 init_scripts/%{init_script_1}.service %{buildroot}/%{_unitdir}/%{init_script_1}.service
@@ -375,6 +397,7 @@ mv etc/* %{buildroot}/%{config_base}
 rm -rf %{buildroot}/%{install_base}/etc
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
+rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf_webservices}
 rm -rf %{buildroot}/%{install_base}/init_scripts
 
 %clean
@@ -505,6 +528,9 @@ for script in %{install_base}/scripts/system_environment/*; do
     fi
 done
 
+%post web-services
+#Restart apache to pickup config
+systemctl restart httpd &>/dev/null || :
 
 #########################################################################
 # The system environment scripts monkey with the apache configuration, so
@@ -591,8 +617,10 @@ fi
 %exclude %{config_base}/perfsonar_ulimit.conf
 %exclude %{config_base}/perfsonar_ulimit_apache.conf
 %exclude /etc/httpd/conf.d/apache-perfsonar-security.conf
+%exclude /etc/httpd/conf.d/%{apacheconf_webservices}
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web-ng/*
+%exclude %{install_base}/web-ng/root/services/*
 /etc/httpd/conf.d/*
 %attr(0640,root,root) /etc/sudoers.d/*
 %attr(0644,root,root) /usr/share/selinux/packages/*
@@ -610,8 +638,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/plot.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
 %attr(0644,root,root) %{_unitdir}/%{init_script_1}.service
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
@@ -671,6 +697,13 @@ fi
 %{install_base}/lib/OWP/*
 %{install_base}/python_lib/*
 %doc %{install_base}/doc/*
+
+%files web-services
+%defattr(0644,perfsonar,perfsonar,0755)
+%{install_base}/web-ng/root/services/*
+/etc/httpd/conf.d/%{apacheconf_webservices}
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
 
 %files servicewatcher
 %license LICENSE
