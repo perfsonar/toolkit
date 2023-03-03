@@ -624,7 +624,6 @@ fi
 %exclude %{install_base}/web-ng/root/services/*
 /etc/httpd/conf.d/*
 %attr(0640,root,root) /etc/sudoers.d/*
-%attr(0644,root,root) /usr/share/selinux/packages/*
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/administrative_info/index.cgi
@@ -702,6 +701,7 @@ fi
 %files web-services
 %defattr(0644,perfsonar,perfsonar,0755)
 %config(noreplace) %{webng_config}/*
+%attr(0644,root,root) /usr/share/selinux/packages/*
 %{install_base}/web-ng/root/services/*
 /etc/httpd/conf.d/%{apacheconf_webservices}
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
