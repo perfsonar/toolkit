@@ -1,4 +1,4 @@
-web-ng/etc usr/lib/perfsonar/web-ng/etc/
+web-ng/etc usr/lib/perfsonar/web-ng/
 web-ng/root/services  usr/lib/perfsonar/web-ng/root/
 scripts/apache-toolkit_web_services.conf etc/apache2/conf-available/
 
