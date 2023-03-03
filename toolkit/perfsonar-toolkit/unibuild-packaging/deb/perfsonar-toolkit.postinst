@@ -56,6 +56,7 @@ case "$1" in
             apache2_invoke enmod rewrite
             apache2_invoke enmod proxy_http
             apache2_invoke enmod ssl
+            apache2_invoke enmod headers
             apache2_invoke ensite default-ssl
             apache2_invoke enconf apache-toolkit_web_gui
             apache2_invoke enconf apache-perfsonar-security
