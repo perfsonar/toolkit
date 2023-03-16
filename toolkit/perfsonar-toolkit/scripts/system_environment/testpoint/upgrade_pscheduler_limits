@@ -13,7 +13,7 @@ if [ ! -f /etc/pscheduler/limits.conf ]; then
     exit 0
 fi
 
-#Create a temp of the old dile
+#Create a temp of the old file
 TEMPFILE=$(mktemp)
 cat >$TEMPFILE <<EOF
 {
@@ -24,7 +24,7 @@ cat >$TEMPFILE <<EOF
     "#": "should be customized according to the needs of your site.          ",
     "#": "-------------------------------------------------------------------",
 
-    "schema": 2,
+    "schema": 3,
 
     "#": "-------------------------------------------------------------------",
     "#": "IDENTIFIERS:  WHO'S ASKING?                                        ",
@@ -121,20 +121,6 @@ cat >$TEMPFILE <<EOF
 	    "# Hold this for use later.",
 	    "| .test.type as \$testtype",
 
-            "# Throttle non-friendlies to 50 Mb/s for throughput",
-            "| if \$testtype == \"throughput\"",
-            "    and (",
-            "      (.test.spec.bandwidth == null)",
-            "      or (.test.spec.bandwidth > 50000000)",
-            "    )",
-            "    and (classifiers | contains([\"friendlies\"]) | not)",
-            "  then",
-            "    .test.spec.bandwidth = 50000000",
-            "    | change(\"Throttled bandwidth to 50 Mb/s\")",
-            "  else",
-            "    .",
-            "  end",
-
             "# Make some tests run a minimum of 5 seconds",
             "| if ( [\"idle\", \"idlebgm\", \"idleex\", \"latency\", \"latencybg\", \"throughput\" ]",
 	    "       | contains([\$testtype]) )",
@@ -217,10 +203,38 @@ cat >$TEMPFILE <<EOF
                             "lower": "PT5S",
                             "upper": "PT60S"
                         }
+                     },
+                     "udp":{
+                         "match":false
                      }
 		}
 	    }
-	}
+	},
+        {
+            "name": "throughput-default-udp",
+            "description": "Throughput UDP limits",
+            "type": "test",
+            "data": {
+                "test": "throughput",
+                "limit": {
+                    "bandwidth": {
+                        "range": {
+                            "lower": "1",
+                            "upper": "50M"
+                        }
+                     },
+                     "duration": {
+                        "range": {
+                            "lower": "PT5S",
+                            "upper": "PT60S"
+                        }
+                     },
+                     "udp":{
+                         "match":true
+                     }
+                }
+            }
+        }
     ],
 
 
@@ -256,13 +270,60 @@ cat >$TEMPFILE <<EOF
 		    "require": "any",
 		    "limits": [
 			"innocuous-tests",
-			"throughput-default-time",
+                        "throughput-default-time",
+                        "throughput-default-udp",
 			"idleex-default"
 		    ]
 		}
 	    ]
 	}
-    ]
+    ],
+
+
+    "#": "-------------------------------------------------------------------",
+    "#": "PRIORITY:  HOW DO WE PRIORITIZE RUNS OF TASKS?                     ",
+    "#": "                                                                   ",
+    "#": "This is a jq transform that examines a proposed run of a task and  ",
+    "#": "produces an integer value indicating its priority.  If this is not ",
+    "#": "present, the neutral priority value of 0 will be used.             ",
+    "#": "-------------------------------------------------------------------",
+
+    "priority": {
+	"script": [
+            ".",
+
+            "# Start with the lower of the requested and default priorities",
+            "| set(default; \"Initial priority\")",
+
+	    "# This is where decisions to change priority would be made,",
+	    "# as in this commented-out example:",
+
+	    "# # Friendly requesters get a small bump in priority.",
+	    "# | if classifiers_has(\"friendlies\")",
+            "#   then adjust(5; \"Friendly requester\") else . end",
+
+	    "# The two blocks below implement recommended standard behavior.",
+
+	    "# If the requested priority was lower than what we came up",
+	    "# with, force that.",
+	    "| if requested != null and requested < priority",
+	    "  then set(requested; \"Lower requested priority\")",
+            "  else . end",
+
+	    "# Allow at least the requested priority for those who are",
+	    "# allowed to do so.  Do this last in case things done",
+	    "# above push the priority higher than was requested",
+	    "| if requested != null",
+	    "     and requested > default",
+	    "     and requested > priority",
+	    "     and classifiers_has(\"priority-positive\")",
+	    "  then set(requested; \"Higher requested priority\")",
+            "  else . end",
+
+	    "# The end.  (This takes care of the no-comma-at-end problem)"
+        ]
+    }
+
 }
 EOF
 
