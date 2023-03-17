@@ -15,7 +15,7 @@ Vcs-Browser: https://github.com/perfsonar/toolkit
 
 Package: perfsonar-toolkit
 Architecture: all
-Depends: libperfsonar-perl (>= 4.1~0), apache2, apache2-utils, ssl-cert,
+Depends: libperfsonar-perl (>= 4.1~0),
  lsb-base, libxml-simple-perl, libcgi-pm-perl,
  libsys-statistics-linux-perl, libperfsonar-sls-perl,
  perfsonar-toolkit-library, liblog-dispatch-filerotate-perl,
@@ -27,7 +27,7 @@ Depends: libperfsonar-perl (>= 4.1~0), apache2, apache2-utils, ssl-cert,
  perfsonar-toolkit-config-daemon, perfsonar-core,
  perfsonar-lscachedaemon, perfsonar-traceroute-viewer,
  perfsonar-toolkit-graphs, perfsonar-toolkit-install,
- perfsonar-toolkit-systemenv, python3,
+ perfsonar-toolkit-systemenv, perfsonar-toolkit-web-services, python3,
  ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Toolkit web
  perfSONAR Toolkit web GUI and associated services.
@@ -37,6 +37,12 @@ Architecture: all
 Depends: libperfsonar-perl (>= 4.1~0), ${misc:Depends}
 Description: perfSONAR Toolkit perl libraries
  Perl libraries for perfSONAR Toolkit.
+
+Package: perfsonar-toolkit-web-services
+Architecture: all
+Depends: libperfsonar-perl (>= 4.1~0), perfsonar-toolkit-library, apache2, apache2-utils, ssl-cert, libcgi-pm-perl, liblog-dispatch-filerotate-perl, libjson-xs-perl, libxml-simple-perl, ${misc:Depends}, ${perl:Depends}
+Description: perfSONAR Toolkit Web Services
+ Contains web service for information used in monitoring a perfSONAR host
 
 Package: perfsonar-toolkit-security
 Architecture: all

@@ -7,6 +7,7 @@
 %define webng_config /usr/lib/perfsonar/web-ng/etc
 
 %define apacheconf apache-toolkit_web_gui.conf
+%define apacheconf_webservices apache-toolkit_web_services.conf
 %define sudoerconf perfsonar_sudo
 
 %define init_script_1 perfsonar-configdaemon
@@ -103,6 +104,7 @@ Requires:       libperfsonar-sls-perl
 Requires:       libperfsonar-toolkit-perl
 Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
+Requires:       perfsonar-toolkit-web-services
 Requires:       perfsonar-archive
 
 # Misc performance/performance-related tools
@@ -223,6 +225,27 @@ Provides:               perl-perfSONAR_PS-Toolkit-Library
 
 %description library
 Installs the library files
+
+%package web-services
+Summary:        perfSONAR Toolkit Web Services
+Group:          Development/Tools
+Requires:       perfsonar-toolkit-library
+Requires:       httpd
+Requires:       mod_ssl
+Requires:       perl(CGI)
+Requires:       perl(Log::Log4perl)
+Requires:       perl(Log::Dispatch)
+Requires:       perl(POSIX)
+Requires:       perl(Data::Dumper)
+Requires:       perl(JSON::XS)
+Requires:       perl(XML::Simple)
+Requires:       perl(Config::General)
+Requires:       perl(Time::HiRes)
+Requires(post): httpd
+BuildRequires:  systemd
+
+%description web-services
+Contains web service for information used in monitoring a perfSONAR host
 
 %package install
 Summary:                perfSONAR Toolkit Core Scripts
@@ -354,6 +377,7 @@ make ROOTPATH=%{buildroot}/%{install_base} CONFIGPATH=%{buildroot}/%{config_base
 install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
+install -D -m 0644 scripts/%{apacheconf_webservices} %{buildroot}/etc/httpd/conf.d/%{apacheconf_webservices}
 install -D -m 0644 etc/apache-perfsonar-security.conf %{buildroot}/etc/httpd/conf.d/apache-perfsonar-security.conf
 install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 install -D -m 0644 init_scripts/%{init_script_1}.service %{buildroot}/%{_unitdir}/%{init_script_1}.service
@@ -375,17 +399,13 @@ mv etc/* %{buildroot}/%{config_base}
 rm -rf %{buildroot}/%{install_base}/etc
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
+rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf_webservices}
 rm -rf %{buildroot}/%{install_base}/init_scripts
 
 %clean
 rm -rf %{buildroot}
 
 %post
-semodule -n -i %{_datadir}/selinux/packages/perfsonar-toolkit.pp
-if /usr/sbin/selinuxenabled; then
-    /usr/sbin/load_policy
-fi
-
 # Add a group of users who can login to the web ui
 touch /etc/perfsonar/toolkit/psadmin.htpasswd
 chgrp apache /etc/perfsonar/toolkit/psadmin.htpasswd
@@ -399,10 +419,6 @@ mkdir -p /var/lib/perfsonar/log_view/ndt
 mkdir -p /var/lib/perfsonar/log_view/owamp
 
 if [ $1 -eq 1 ] ; then
-    #3.5.1 fixes
-    #make sure web_admin.conf points to the right lscache directory
-    sed -i "s:/var/lib/perfsonar/ls_cache:/var/lib/perfsonar/lscache:g" %{install_base}/web-ng/etc/web_admin.conf
-    
     #make sure we trash pre-3.5.1 config_daemon
     /etc/init.d/config_daemon stop &>/dev/null || :
     chkconfig --del config_daemon &>/dev/null || :
@@ -462,14 +478,6 @@ systemctl restart %{init_script_1} &>/dev/null || :
 /etc/init.d/%{init_script_2} start &>/dev/null || :
 /etc/init.d/%{init_script_3} start &>/dev/null || :
 
-%postun
-if [ $1 -eq 0 ]; then
-    semodule -n -r perfsonar-toolkit
-    if /usr/sbin/selinuxenabled; then
-       /usr/sbin/load_policy
-    fi
-fi
-
 %post systemenv-testpoint
 if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
     PREV_VERSION=`cat %{_localstatedir}/lib/rpm-state/previous_version`
@@ -505,6 +513,27 @@ for script in %{install_base}/scripts/system_environment/*; do
     fi
 done
 
+%post web-services
+#Enable selinux
+semodule -n -i %{_datadir}/selinux/packages/perfsonar-toolkit.pp
+if /usr/sbin/selinuxenabled; then
+    /usr/sbin/load_policy
+fi
+
+%postun web-services
+if [ $1 -eq 0 ]; then
+    semodule -n -r perfsonar-toolkit
+    if /usr/sbin/selinuxenabled; then
+       /usr/sbin/load_policy
+    fi
+fi
+
+#Create log directory
+mkdir -p /var/log/perfsonar/web_admin
+chown apache:perfsonar /var/log/perfsonar/web_admin
+
+#Restart apache to pickup config
+systemctl restart httpd &>/dev/null || :
 
 #########################################################################
 # The system environment scripts monkey with the apache configuration, so
@@ -578,7 +607,6 @@ fi
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
 %license LICENSE
-%config(noreplace) %{webng_config}/*
 %config(noreplace) %{config_base}/*
 %exclude %{config_base}/default_system_firewall_settings.conf
 %exclude %{config_base}/perfsonar_firewall_settings.conf
@@ -591,11 +619,12 @@ fi
 %exclude %{config_base}/perfsonar_ulimit.conf
 %exclude %{config_base}/perfsonar_ulimit_apache.conf
 %exclude /etc/httpd/conf.d/apache-perfsonar-security.conf
+%exclude /etc/httpd/conf.d/%{apacheconf_webservices}
 %attr(0755,perfsonar,perfsonar) %{install_base}/bin/*
 %{install_base}/web-ng/*
+%exclude %{install_base}/web-ng/root/services/*
 /etc/httpd/conf.d/*
 %attr(0640,root,root) /etc/sudoers.d/*
-%attr(0644,root,root) /usr/share/selinux/packages/*
 # Make sure the cgi scripts are all executable
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/index.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/administrative_info/index.cgi
@@ -610,8 +639,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/plot.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
 %attr(0644,root,root) %{_unitdir}/%{init_script_1}.service
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
@@ -671,6 +698,15 @@ fi
 %{install_base}/lib/OWP/*
 %{install_base}/python_lib/*
 %doc %{install_base}/doc/*
+
+%files web-services
+%defattr(0644,perfsonar,perfsonar,0755)
+%config(noreplace) %{webng_config}/*
+%attr(0644,root,root) /usr/share/selinux/packages/*
+%{install_base}/web-ng/root/services/*
+/etc/httpd/conf.d/%{apacheconf_webservices}
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
+%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
 
 %files servicewatcher
 %license LICENSE
