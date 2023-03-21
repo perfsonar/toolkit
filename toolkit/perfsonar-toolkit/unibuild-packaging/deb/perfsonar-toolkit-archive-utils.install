@@ -1,1 +1,1 @@
-archive/pscheduler-default-archive.json etc/perfsonar/psconfig/archives.d/http_logstash.json
+archive/http_logstash.json etc/perfsonar/psconfig/archives.d

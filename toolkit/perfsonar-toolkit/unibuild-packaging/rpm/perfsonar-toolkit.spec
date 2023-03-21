@@ -383,7 +383,7 @@ install -D -m 0640 etc/%{sudoerconf} %{buildroot}/etc/sudoers.d/%{sudoerconf}
 install -D -m 0644 init_scripts/%{init_script_1}.service %{buildroot}/%{_unitdir}/%{init_script_1}.service
 install -D -m 0755 init_scripts/%{init_script_2} %{buildroot}/etc/init.d/%{init_script_2}
 install -D -m 0755 init_scripts/%{init_script_3} %{buildroot}/etc/init.d/%{init_script_3}
-install -D -m 0644 archive/pscheduler-default-archive.json %{buildroot}/etc/perfsonar/psconfig/archives.d/http_logstash.json
+install -D -m 0644 archive/http_logstash.json %{buildroot}/etc/perfsonar/psconfig/archives.d/http_logstash.json
 
 mkdir -p %{buildroot}/usr/lib/firewalld/services/
 mv etc/firewalld/services/* %{buildroot}/usr/lib/firewalld/services/
