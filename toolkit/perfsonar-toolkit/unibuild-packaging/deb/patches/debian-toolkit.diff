@@ -1,5 +1,5 @@
---- a/scripts/apache-toolkit_web_gui.conf	2022-10-27 10:33:49.469421909 -0400
-+++ b/scripts/apache-toolkit_web_gui.conf	2022-10-27 10:33:50.964695920 -0400
+--- a/scripts/apache-toolkit_web_gui.conf	2023-03-20 14:05:12.068956876 +0000
++++ b/scripts/apache-toolkit_web_gui.conf	2023-03-22 15:03:02.157160567 +0000
 @@ -11,6 +11,11 @@
  Alias /toolkit/plot /usr/lib/perfsonar/web-ng/root/admin/plot.cgi
  
@@ -12,7 +12,7 @@
  # Redirect from /index.cgi?format=json to the new host summary page
  RewriteCond %{QUERY_STRING} format=json
  RewriteRule ^/toolkit/index.cgi /toolkit/services/host.cgi?method=get_summary [R,L]
-@@ -50,10 +55,8 @@
+@@ -31,10 +36,8 @@
  # But, allow anonymous access via port 80 (http)
  # NOTE: Need to set non-https re-write rules and redirects here
  <VirtualHost *:80>
@@ -25,7 +25,7 @@
  
      # Redirect from /index.cgi?format=json to the new host summary page
      RewriteCond %{QUERY_STRING} format=json
-@@ -102,23 +105,11 @@
+@@ -83,23 +86,11 @@
      Options +FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -53,7 +53,7 @@
  </Location>
  
  # Allow indexes on logs
-@@ -132,23 +123,11 @@
+@@ -113,23 +104,11 @@
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
      AllowOverride All
@@ -81,8 +81,8 @@
  </Directory>
  
  ##
---- a/scripts/add_pssudo_user	2022-10-27 10:33:48.410889664 -0400
-+++ b/scripts/add_pssudo_user	2022-10-27 10:33:50.965342114 -0400
+--- a/scripts/add_pssudo_user	2023-02-28 14:03:22.631298658 +0000
++++ b/scripts/add_pssudo_user	2023-03-22 15:03:02.158432064 +0000
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -92,8 +92,8 @@
  if (retVal != 0):
      print(Internet2Consts.YELLOW + "Error: couldn't restart sshd. Root SSH will be disabled on next restart." + Internet2Consts.NORMAL)
      sys.exit(1)
---- a/init_scripts/perfsonar-configure_nic_parameters	2022-10-27 10:33:49.468510059 -0400
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2022-10-27 10:33:50.965724560 -0400
+--- a/init_scripts/perfsonar-configure_nic_parameters	2023-02-28 14:03:22.603533419 +0000
++++ b/init_scripts/perfsonar-configure_nic_parameters	2023-03-22 15:03:02.159567274 +0000
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -131,8 +131,8 @@
      *)
          echo $"Usage: $0 {start}"
          RETVAL=2
---- a/init_scripts/perfsonar-generate_motd	2022-10-27 10:33:49.468706017 -0400
-+++ b/init_scripts/perfsonar-generate_motd	2022-10-27 10:33:50.966195264 -0400
+--- a/init_scripts/perfsonar-generate_motd	2023-02-28 14:03:22.604306976 +0000
++++ b/init_scripts/perfsonar-generate_motd	2023-03-22 15:03:02.160869560 +0000
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -156,8 +156,8 @@
  
  use strict;
  use warnings;
---- a/web-ng/root/gui/reverse_traceroute.cgi	2022-10-27 10:33:48.432288730 -0400
-+++ b/web-ng/root/gui/reverse_traceroute.cgi	2022-10-27 10:33:50.966822269 -0400
+--- a/web-ng/root/gui/reverse_traceroute.cgi	2023-02-28 14:03:22.694148117 +0000
++++ b/web-ng/root/gui/reverse_traceroute.cgi	2023-03-22 15:03:02.162309350 +0000
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -167,8 +167,8 @@
    @Tropts="";
  }
  #########################################################################
---- a/etc/perfsonar_ulimit.conf	2022-10-27 10:33:48.392403532 -0400
-+++ b/etc/perfsonar_ulimit.conf	2022-10-27 10:33:50.967376751 -0400
+--- a/etc/perfsonar_ulimit.conf	2023-02-28 14:03:22.601323823 +0000
++++ b/etc/perfsonar_ulimit.conf	2023-03-22 15:03:02.164297999 +0000
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
