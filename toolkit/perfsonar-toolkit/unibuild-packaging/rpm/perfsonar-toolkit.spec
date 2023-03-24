@@ -412,9 +412,6 @@ chgrp apache /etc/perfsonar/toolkit/psadmin.htpasswd
 chmod 0640 /etc/perfsonar/toolkit/psadmin.htpasswd
 /usr/sbin/groupadd -r pssudo 2> /dev/null || :
 
-mkdir -p /var/log/perfsonar/web_admin
-chown apache:perfsonar /var/log/perfsonar/web_admin
-
 mkdir -p /var/lib/perfsonar/log_view/ndt    
 mkdir -p /var/lib/perfsonar/log_view/owamp
 
@@ -519,6 +516,9 @@ semodule -n -i /usr/share/selinux/packages/perfsonar-toolkit.pp
 if /usr/sbin/selinuxenabled; then
     /usr/sbin/load_policy
 fi
+#log directory
+mkdir -p /var/log/perfsonar/web_admin
+chown apache:perfsonar /var/log/perfsonar/web_admin
 
 %postun web-services
 if [ $1 -eq 0 ]; then
