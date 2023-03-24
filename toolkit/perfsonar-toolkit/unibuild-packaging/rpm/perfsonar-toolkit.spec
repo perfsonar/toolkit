@@ -515,7 +515,7 @@ done
 
 %post web-services
 #Enable selinux
-semodule -n -i %{_datadir}/selinux/packages/perfsonar-toolkit.pp
+semodule -n -i /usr/share/selinux/packages/perfsonar-toolkit.pp
 if /usr/sbin/selinuxenabled; then
     /usr/sbin/load_policy
 fi
