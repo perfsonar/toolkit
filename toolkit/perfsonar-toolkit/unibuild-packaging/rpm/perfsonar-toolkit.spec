@@ -598,10 +598,14 @@ fi
 %post archive-utils
 
 #configure http archiver
+#Note: This should likely be in a script
 if [ -f /etc/perfsonar/logstash/proxy_auth.json ] ; then
     AUTH_HEADER=`cat /etc/perfsonar/logstash/proxy_auth.json`
-    sed -i "s|http://localhost:11283|https://{% scheduled_by_address %}/logstash|g" /etc/perfsonar/psconfig/archives.d/http_logstash.json
-    sed -i "s|\"content-type\": \"application/json\"|\"content-type\": \"application/json\", ${AUTH_HEADER}|g" /etc/perfsonar/psconfig/archives.d/http_logstash.json
+    HAS_AUTH=$(grep "$AUTH_HEADER" /etc/perfsonar/psconfig/archives.d/http_logstash.json)
+    if [ -z $HAS_AUTH ]; then
+        sed -i "s|http://localhost:11283|https://{% scheduled_by_address %}/logstash|g" /etc/perfsonar/psconfig/archives.d/http_logstash.json
+        sed -i "s|\"content-type\": \"application/json\"|\"content-type\": \"application/json\", ${AUTH_HEADER}|g" /etc/perfsonar/psconfig/archives.d/http_logstash.json
+    fi
 fi
 
 %files
