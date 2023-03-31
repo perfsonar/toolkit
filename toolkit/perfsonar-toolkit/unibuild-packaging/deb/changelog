@@ -1,9 +1,9 @@
-perfsonar-toolkit (5.0.0~b2.5-1) perfsonar-5.0; urgency=low
+perfsonar-toolkit (5.0.0~b2.6-2) perfsonar-5.0; urgency=low
 
   * New upstream version.
   * Building on buster.
 
- -- perfSONAR developers <debian@perfsonar.net>  Wed, 22 Mar 2023 11:23:58 -0400
+ -- perfSONAR developers <debian@perfsonar.net>  Fri, 31 Mar 2023 13:24:39 +0000
 
 perfsonar-toolkit (4.4.6-1) perfsonar-4.4; urgency=low
 

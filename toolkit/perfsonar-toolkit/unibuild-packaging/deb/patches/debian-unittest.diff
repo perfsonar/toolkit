@@ -1,5 +1,5 @@
---- a/t/host-get_metadata.t	2022-10-27 10:33:48.418089215 -0400
-+++ b/t/host-get_metadata.t	2022-10-27 10:33:52.115445767 -0400
+--- a/t/host-get_metadata.t	2023-03-22 15:04:55.518698000 +0000
++++ b/t/host-get_metadata.t	2023-03-31 13:24:42.184375601 +0000
 @@ -6,6 +6,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -9,8 +9,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-get_services.t	2022-10-27 10:33:49.470870190 -0400
-+++ b/t/host-get_services.t	2022-10-27 10:33:52.115925210 -0400
+--- a/t/host-get_services.t	2023-03-22 15:04:55.518698000 +0000
++++ b/t/host-get_services.t	2023-03-31 13:24:42.185549592 +0000
 @@ -6,6 +6,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -20,8 +20,8 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-get_system_health.t	2022-10-27 10:33:48.418321090 -0400
-+++ b/t/host-get_system_health.t	2022-10-27 10:33:52.116378339 -0400
+--- a/t/host-get_system_health.t	2023-03-22 15:04:55.518698000 +0000
++++ b/t/host-get_system_health.t	2023-03-31 13:24:42.186861963 +0000
 @@ -9,10 +9,12 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -59,8 +59,8 @@
  ok( nonnegative_number( $data->{'cpu_util'} ), 'CPU utilization is a number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute) is a positive number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
---- a/t/host-update_metadata.t	2022-10-27 10:33:48.418437802 -0400
-+++ b/t/host-update_metadata.t	2022-10-27 10:33:52.116750698 -0400
+--- a/t/host-update_metadata.t	2023-03-22 15:04:55.518698000 +0000
++++ b/t/host-update_metadata.t	2023-03-31 13:24:42.188174038 +0000
 @@ -13,6 +13,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";

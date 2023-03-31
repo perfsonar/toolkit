@@ -1,5 +1,5 @@
---- a/init_scripts/perfsonar-configure_nic_parameters	2022-10-27 10:33:50.965724560 -0400
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2022-10-27 10:33:51.237129826 -0400
+--- a/init_scripts/perfsonar-configure_nic_parameters	2023-03-31 13:24:40.532851769 +0000
++++ b/init_scripts/perfsonar-configure_nic_parameters	2023-03-31 13:24:40.905439828 +0000
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -78,8 +78,8 @@
          start
          RETVAL=$?
          ;;
---- a/scripts/system_environment/disable_unwanted_services	2022-10-27 10:33:48.413957634 -0400
-+++ b/scripts/system_environment/disable_unwanted_services	2022-10-27 10:33:51.237580645 -0400
+--- a/scripts/system_environment/disable_unwanted_services	2023-03-22 15:04:56.065558000 +0000
++++ b/scripts/system_environment/disable_unwanted_services	2023-03-31 13:24:40.906859927 +0000
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -92,8 +92,8 @@
      fi
  }
  
---- a/scripts/system_environment/testpoint/enable_auto_updates	2022-10-27 10:33:48.414977721 -0400
-+++ b/scripts/system_environment/testpoint/enable_auto_updates	2022-10-27 10:33:51.238080973 -0400
+--- a/scripts/system_environment/testpoint/enable_auto_updates	2023-03-22 15:04:56.065558000 +0000
++++ b/scripts/system_environment/testpoint/enable_auto_updates	2023-03-31 13:24:40.908074143 +0000
 @@ -11,20 +11,18 @@
  MAJOR=${PREV_VERSION%%\.*}
  REST=${PREV_VERSION/${MAJOR}\.}
@@ -126,8 +126,8 @@
 +EOF
 +
 +fi
---- a/scripts/system_environment/testpoint/enable_nscd	2022-10-27 10:33:48.415107574 -0400
-+++ b/scripts/system_environment/testpoint/enable_nscd	2022-10-27 10:33:51.238440522 -0400
+--- a/scripts/system_environment/testpoint/enable_nscd	2023-03-22 15:04:56.065558000 +0000
++++ b/scripts/system_environment/testpoint/enable_nscd	2023-03-31 13:24:40.910313077 +0000
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
      systemctl enable nscd

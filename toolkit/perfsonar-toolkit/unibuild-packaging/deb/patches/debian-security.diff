@@ -1,5 +1,5 @@
---- a/scripts/configure_firewall	2022-10-27 10:33:48.411433692 -0400
-+++ b/scripts/configure_firewall	2022-10-27 10:33:50.802792722 -0400
+--- a/scripts/configure_firewall	2023-03-22 15:04:56.482761000 +0000
++++ b/scripts/configure_firewall	2023-03-31 13:24:40.288948659 +0000
 @@ -38,7 +38,7 @@
      if type firewall-cmd &>/dev/null; then
          firewall-cmd --quiet --runtime-to-permanent
