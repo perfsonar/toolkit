@@ -1,4 +1,4 @@
-perfsonar-toolkit (5.0.0~b2.2-1) perfsonar-5.0; urgency=low
+perfsonar-toolkit (5.0.0~b2.5-1) perfsonar-5.0; urgency=low
 
   * New upstream version.
   * Building on buster.
