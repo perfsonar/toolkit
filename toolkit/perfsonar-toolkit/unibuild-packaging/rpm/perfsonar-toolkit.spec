@@ -229,6 +229,12 @@ Installs the library files
 %package web-services
 Summary:        perfSONAR Toolkit Web Services
 Group:          Development/Tools
+
+# Needed for SELinux to configure properly
+Requires:       perfsonar-lsregistrationdaemon
+Requires:       owamp-server
+Requires:       twamp-server
+
 Requires:       perfsonar-toolkit-library
 Requires:       httpd
 Requires:       mod_ssl
@@ -242,6 +248,9 @@ Requires:       perl(XML::Simple)
 Requires:       perl(Config::General)
 Requires:       perl(Time::HiRes)
 Requires(post): httpd
+Requires(post): perfsonar-lsregistrationdaemon
+Requires(post): owamp-server
+Requires(post): twamp-server
 BuildRequires:  systemd
 
 %description web-services
