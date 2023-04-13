@@ -1,5 +1,7 @@
---- a/t/host-get_metadata.t	2023-03-22 15:04:55.518698000 +0000
-+++ b/t/host-get_metadata.t	2023-03-31 13:24:42.184375601 +0000
+Index: b/t/host-get_metadata.t
+===================================================================
+--- a/t/host-get_metadata.t	2023-04-13 16:56:27.122548496 -0400
++++ b/t/host-get_metadata.t	2023-04-13 16:56:28.278644680 -0400
 @@ -6,6 +6,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -9,8 +11,10 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-get_services.t	2023-03-22 15:04:55.518698000 +0000
-+++ b/t/host-get_services.t	2023-03-31 13:24:42.185549592 +0000
+Index: b/t/host-get_services.t
+===================================================================
+--- a/t/host-get_services.t	2023-04-13 16:56:27.122612870 -0400
++++ b/t/host-get_services.t	2023-04-13 16:56:28.278944554 -0400
 @@ -6,6 +6,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -20,8 +24,10 @@
  use Log::Log4perl qw(:easy);
  Log::Log4perl->easy_init( {level => 'OFF'} );
  
---- a/t/host-get_system_health.t	2023-03-22 15:04:55.518698000 +0000
-+++ b/t/host-get_system_health.t	2023-03-31 13:24:42.186861963 +0000
+Index: b/t/host-get_system_health.t
+===================================================================
+--- a/t/host-get_system_health.t	2023-04-13 16:56:27.122686703 -0400
++++ b/t/host-get_system_health.t	2023-04-13 16:56:28.279166719 -0400
 @@ -9,10 +9,12 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -59,8 +65,10 @@
  ok( nonnegative_number( $data->{'cpu_util'} ), 'CPU utilization is a number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_15'} ), 'Load average (15 minute) is a positive number');
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
---- a/t/host-update_metadata.t	2023-03-22 15:04:55.518698000 +0000
-+++ b/t/host-update_metadata.t	2023-03-31 13:24:42.188174038 +0000
+Index: b/t/host-update_metadata.t
+===================================================================
+--- a/t/host-update_metadata.t	2023-04-13 16:56:27.122768786 -0400
++++ b/t/host-update_metadata.t	2023-04-13 16:56:28.279364635 -0400
 @@ -13,6 +13,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
