@@ -1,3 +1,13 @@
+perfsonar-toolkit (5.0.0-2) perfsonar-5.0; urgency=medium
+
+  * Adding conflict between perfsonar-toolkit-archive-utils and
+    perfsonar-toolkit-esmond-utils to avoid issue with upgrade to
+    OpenJDK-11 and Cassandra.
+  * Add a Breaks: perfsonar-toolkit (<< 5.0.0~b2.2) to introduce the new
+    perfsonar-toolkit-web-services package.
+
+ -- Lætitia Delvaux <adelvaux@man.poznan.pl>  Tue, 18 Apr 2023 16:07:10 +0200 
+
 perfsonar-toolkit (5.0.0-1) perfsonar-5.0; urgency=low
 
   * New upstream version.
