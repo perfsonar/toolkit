@@ -689,7 +689,6 @@ fi
 %attr(0644,root,root) %{config_base}/perfsonar_ulimit.conf
 %attr(0644,root,root) %{config_base}/perfsonar_ulimit_apache.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-migrate-backup.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-migrate-restore.sh
 %attr(0644,root,root) %{config_base}/default_service_configs/pscheduler_limits.conf

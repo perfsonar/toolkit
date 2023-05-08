@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # Function lib for Internet2-NPT script
 # Author: Dan Bracey 5/30/08
 # Revision History:

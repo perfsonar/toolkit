@@ -48,7 +48,6 @@ scripts/configure_ntpd
 scripts/configure_sysctl
 scripts/cron-service_watcher
 scripts/find_bwctl_measurements
-scripts/install-optional-packages.py
 scripts/manage_users
 scripts/mod_interface_route
 scripts/nptoolkit-configure.py
