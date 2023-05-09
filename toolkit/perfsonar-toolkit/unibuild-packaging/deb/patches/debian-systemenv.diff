@@ -1,7 +1,7 @@
 Index: b/scripts/system_environment/configure_fail2ban
 ===================================================================
---- a/scripts/system_environment/configure_fail2ban	2023-04-18 21:28:06.872342481 +0200
-+++ b/scripts/system_environment/configure_fail2ban	2023-04-18 21:28:25.786929530 +0200
+--- a/scripts/system_environment/configure_fail2ban	2023-04-19 15:50:39.952619506 -0400
++++ b/scripts/system_environment/configure_fail2ban	2023-04-19 15:50:41.367529556 -0400
 @@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
@@ -11,8 +11,8 @@ Index: b/scripts/system_environment/configure_fail2ban
  fi
 Index: b/scripts/system_environment/upgrade_configdaemon
 ===================================================================
---- a/scripts/system_environment/upgrade_configdaemon	2023-04-18 21:28:06.879993558 +0200
-+++ b/scripts/system_environment/upgrade_configdaemon	2023-04-18 21:28:25.787816636 +0200
+--- a/scripts/system_environment/upgrade_configdaemon	2023-04-19 15:50:39.953460177 -0400
++++ b/scripts/system_environment/upgrade_configdaemon	2023-04-19 15:50:41.367883558 -0400
 @@ -87,5 +87,5 @@
  EOF
  
@@ -22,8 +22,8 @@ Index: b/scripts/system_environment/upgrade_configdaemon
  fi
 Index: b/scripts/system_environment/upgrade_fix_permissions
 ===================================================================
---- a/scripts/system_environment/upgrade_fix_permissions	2023-04-18 21:28:06.880230532 +0200
-+++ b/scripts/system_environment/upgrade_fix_permissions	2023-04-18 21:28:25.788363737 +0200
+--- a/scripts/system_environment/upgrade_fix_permissions	2023-04-19 15:50:39.953513052 -0400
++++ b/scripts/system_environment/upgrade_fix_permissions	2023-04-19 15:50:41.368071476 -0400
 @@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
@@ -49,8 +49,8 @@ Index: b/scripts/system_environment/upgrade_fix_permissions
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
 Index: b/scripts/configure_apache_security
 ===================================================================
---- a/scripts/configure_apache_security	2023-04-18 21:28:06.867267218 +0200
-+++ b/scripts/configure_apache_security	2023-04-18 21:28:25.789232548 +0200
+--- a/scripts/configure_apache_security	2023-04-19 15:50:39.951355582 -0400
++++ b/scripts/configure_apache_security	2023-04-19 15:50:41.368260935 -0400
 @@ -5,14 +5,18 @@
  # updates. Settings will be in apache-security.conf but if someone wants 
  # to override those settings then they can do so in ssl.comnf after first install
@@ -80,8 +80,8 @@ Index: b/scripts/configure_apache_security
 +done
 Index: b/scripts/system_environment/testpoint/configure_syslog_local5_location
 ===================================================================
---- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2023-04-18 21:28:06.876040834 +0200
-+++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2023-04-18 21:28:25.790275878 +0200
+--- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2023-04-19 15:50:39.953157925 -0400
++++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2023-04-19 15:50:41.368475853 -0400
 @@ -11,32 +11,17 @@
      mv /var/log/perfsonar/owamp.log /var/log/perfsonar/owamp.log.old  
  fi
