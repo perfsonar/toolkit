@@ -30,8 +30,6 @@ Source0:        perfsonar-toolkit-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Requires:       perl
-Requires:       perl(AnyEvent) >= 4.81
-Requires:       perl(AnyEvent::HTTP)
 Requires:       perl(CGI)
 Requires:       perl(CGI::Ajax)
 Requires:       perl(CGI::Carp)
