@@ -177,7 +177,12 @@ Group:          Development/Tools
 Requires:       perfsonar-toolkit-security
 Requires:       perfsonar-toolkit-sysctl
 Requires:       perfsonar-toolkit-servicewatcher
+#TODO: Revisit this
+%if 0%{?el7}
 Requires:       perfsonar-toolkit-ntp
+%else
+Requires:       chrony
+%endif
 Requires:       perfsonar-toolkit-library
 Requires:       perfsonar-toolkit-systemenv-testpoint
 Requires:       python3
@@ -313,7 +318,12 @@ Configures sysctl for the Toolkit
 Summary:                perfSONAR Toolkit ntp configuration
 Group:                  Development/Tools
 Requires:               coreutils
+#TODO: This will get it to build, but scripts do not yet work with chrony
+%if 0%{?el7}
 Requires:               ntp
+%else
+Requires:               chrony
+%endif
 Requires:               libperfsonar-toolkit-perl
 Requires:               perfsonar-toolkit-library
 Requires(pre):          rpm
@@ -330,7 +340,9 @@ Configures ntp servers for the Toolkit
 Summary:                perfSONAR Toolkit service watcher
 Group:                  Development/Tools
 Requires:               coreutils
+%if 0%{?el7}
 Requires:               ntp
+%endif
 Requires:               perfsonar-toolkit-library
 Requires:               libperfsonar-toolkit-perl
 Requires(pre):          rpm
