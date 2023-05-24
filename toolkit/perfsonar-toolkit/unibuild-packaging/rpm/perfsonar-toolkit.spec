@@ -283,7 +283,9 @@ Requires:               mod_ssl
 Requires(pre):          rpm
 Requires(post):         perfsonar-common
 Requires(post):         coreutils
+%if 0%{?el7}
 Requires(post):         system-config-firewall-base
+%endif
 Requires(post):         kernel-devel
 Requires(post):         kernel
 Requires(post):         kernel-headers
