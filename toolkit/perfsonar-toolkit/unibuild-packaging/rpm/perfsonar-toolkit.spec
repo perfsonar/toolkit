@@ -155,7 +155,11 @@ Summary:        perfSONAR Testpoint System Configuration
 Group:          Development/Tools
 Requires:       perfsonar-psconfig-pscheduler
 Requires:       nscd
+%if 0%{?el7}
 Requires:       yum-cron
+%else
+Requires:       dnf-automatic
+%endif
 Requires:       python3
 Requires(post): owamp-server    >= 3.5.0
 Requires(post): chkconfig

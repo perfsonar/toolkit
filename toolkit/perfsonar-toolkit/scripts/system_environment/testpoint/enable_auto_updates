@@ -15,16 +15,18 @@ MINOR=${REST%%\.*}
 # Need to activate if new install or if they were previously running 3.3.2 or older
 if [ "$1" == "new" ]; then
     echo "Enabling Automatic Updates"
-    if type systemctl &>/dev/null; then
-        systemctl enable yum-cron
-    else
-        chkconfig --add yum-cron
-        chkconfig yum-cron on
-    fi
     # Make sure download_updates and apply_updates are on in centos 7
     if [ -f "/etc/yum/yum-cron.conf" ]; then
         sed -i "s/download_updates = .*/download_updates = yes/g" /etc/yum/yum-cron.conf
         sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/yum/yum-cron.conf
+        systemctl enable --now yum-cron
+    elif [ -f "/etc/dnf/automatic.conf" ]; then
+        sed -i "s/download_updates = .*/download_updates = yes/g" /etc/dnf/automatic.conf
+        sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/dnf/automatic.conf
+        systemctl enable --now dnf-automatic.timer
+    else
+        echo "Unable to find a recognized automatic updater."
     fi
+    
 fi
 
