@@ -183,7 +183,6 @@ Requires(post): avahi
 Requires(post): chkconfig
 Requires(post): cups
 Requires(post): httpd
-Requires(post): irda-utils
 Requires(post): irqbalance
 Requires(post): mdadm
 Requires(post): nfs-utils
