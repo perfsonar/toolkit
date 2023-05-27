@@ -1,7 +1,7 @@
 Index: b/init_scripts/perfsonar-configure_nic_parameters
 ===================================================================
---- a/init_scripts/perfsonar-configure_nic_parameters	2023-05-17 17:32:05.509481382 +0200
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2023-05-17 17:34:46.452650146 +0200
+--- a/init_scripts/perfsonar-configure_nic_parameters	2023-05-27 19:57:23.375004658 +0200
++++ b/init_scripts/perfsonar-configure_nic_parameters	2023-05-27 19:57:24.161461611 +0200
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -83,8 +83,8 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
          ;;
 Index: b/scripts/system_environment/disable_unwanted_services
 ===================================================================
---- a/scripts/system_environment/disable_unwanted_services	2023-04-18 21:28:27.621663000 +0200
-+++ b/scripts/system_environment/disable_unwanted_services	2023-05-17 17:32:07.382930926 +0200
+--- a/scripts/system_environment/disable_unwanted_services	2023-05-27 19:56:25.677066000 +0200
++++ b/scripts/system_environment/disable_unwanted_services	2023-05-27 19:57:24.162720327 +0200
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -99,9 +99,9 @@ Index: b/scripts/system_environment/disable_unwanted_services
  
 Index: b/scripts/system_environment/testpoint/enable_auto_updates
 ===================================================================
---- a/scripts/system_environment/testpoint/enable_auto_updates	2023-04-18 21:28:27.621406000 +0200
-+++ b/scripts/system_environment/testpoint/enable_auto_updates	2023-05-17 17:32:07.384902977 +0200
-@@ -11,20 +11,18 @@
+--- a/scripts/system_environment/testpoint/enable_auto_updates	2023-05-27 19:56:25.676893000 +0200
++++ b/scripts/system_environment/testpoint/enable_auto_updates	2023-05-27 19:57:51.332028443 +0200
+@@ -11,22 +11,19 @@
  MAJOR=${PREV_VERSION%%\.*}
  REST=${PREV_VERSION/${MAJOR}\.}
  MINOR=${REST%%\.*}
@@ -111,19 +111,19 @@ Index: b/scripts/system_environment/testpoint/enable_auto_updates
 -if [ "$1" == "new" ]; then
 +if [ "$1" == "new" ] || ! grep -qs Download-Upgradeable-Packages $CONFIG; then
      echo "Enabling Automatic Updates"
--    if type systemctl &>/dev/null; then
--        systemctl enable yum-cron
--    else
--        chkconfig --add yum-cron
--        chkconfig yum-cron on
--    fi
 -    # Make sure download_updates and apply_updates are on in centos 7
 -    if [ -f "/etc/yum/yum-cron.conf" ]; then
 -        sed -i "s/download_updates = .*/download_updates = yes/g" /etc/yum/yum-cron.conf
 -        sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/yum/yum-cron.conf
+-        systemctl enable --now yum-cron
+-    elif [ -f "/etc/dnf/automatic.conf" ]; then
+-        sed -i "s/download_updates = .*/download_updates = yes/g" /etc/dnf/automatic.conf
+-        sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/dnf/automatic.conf
+-        systemctl enable --now dnf-automatic.timer
+-    else
+-        echo "Unable to find a recognized automatic updater."
 -    fi
--fi
- 
+     
 +    cat <<EOF >$CONFIG
 +APT::Periodic::Update-Package-Lists "1";
 +APT::Periodic::Download-Upgradeable-Packages "1";
@@ -132,11 +132,12 @@ Index: b/scripts/system_environment/testpoint/enable_auto_updates
 +Unattended-Upgrade::Origins-Pattern:: "origin=perfSONAR";
 +EOF
 +
-+fi
+ fi
+ 
 Index: b/scripts/system_environment/testpoint/enable_nscd
 ===================================================================
---- a/scripts/system_environment/testpoint/enable_nscd	2023-04-18 21:28:27.621170000 +0200
-+++ b/scripts/system_environment/testpoint/enable_nscd	2023-05-17 17:32:07.386641578 +0200
+--- a/scripts/system_environment/testpoint/enable_nscd	2023-05-27 19:56:25.676721000 +0200
++++ b/scripts/system_environment/testpoint/enable_nscd	2023-05-27 19:57:24.164946701 +0200
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
      systemctl enable nscd
