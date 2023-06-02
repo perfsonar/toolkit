@@ -1,7 +1,7 @@
 Index: b/init_scripts/perfsonar-configure_nic_parameters
 ===================================================================
---- a/init_scripts/perfsonar-configure_nic_parameters	2023-04-19 15:50:41.074036770 -0400
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2023-04-19 15:50:41.188211000 -0400
+--- a/init_scripts/perfsonar-configure_nic_parameters	2023-06-02 09:01:10.293888882 -0700
++++ b/init_scripts/perfsonar-configure_nic_parameters	2023-06-02 09:01:10.405890836 -0700
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -11,10 +11,11 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
  
  # always set these on perfsonar hosts
  DISABLE_TCP_OFFLOAD=1
-@@ -32,14 +32,8 @@
+@@ -31,15 +31,8 @@
+ fi
  
  # find all the interfaces besides loopback.
- # ignore aliases, alternative configurations, and editor backup files
+-# ignore aliases, alternative configurations, and editor backup files
 -interfaces=$(ls /etc/sysconfig/network-scripts/ifcfg* | \
 -            LANG=C sed -e "$__sed_discard_ignored_files" \
 -                       -e '/\(ifcfg-lo\|:\|ifcfg-.*-range\)/d' \
@@ -23,12 +24,12 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
 -            LANG=C sed 's/ //' | \
 -            LANG=C cut -d/ -f 5 | \
 -        LANG=C sed -e 's/ifcfg-//g' )
-+interfaces=$(/sbin/ifquery --all --list | grep -v -w lo)
-+interfaces="$interfaces $(/sbin/ifquery --allow hotplug --list)"
++# Similar code to what is used in get_ethernet_interfaces() from perfSONAR_PS/Util/Host.pm
++interfaces=$(/sbin/ip addr show | grep -v LOOPBACK | awk -F ':' '/^[0-9]+:.*state (UP|UNKNOWN).*/ { sub("@.*","",$2); sub(" ","",$2); print $2 }')
  
  start() {
  ret=0
-@@ -57,34 +51,34 @@
+@@ -57,34 +50,34 @@
          RETVAL=$?
          if [ $RETVAL -eq 0 ]; then
              # apply multi-ethtool settings
@@ -72,7 +73,7 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
          fi
      fi
  done
-@@ -131,7 +125,6 @@
+@@ -132,7 +125,6 @@
  
  case "$1" in
      start|restart|force-reload)
@@ -82,8 +83,8 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
          ;;
 Index: b/scripts/system_environment/disable_unwanted_services
 ===================================================================
---- a/scripts/system_environment/disable_unwanted_services	2023-04-19 15:50:39.952814882 -0400
-+++ b/scripts/system_environment/disable_unwanted_services	2023-04-19 15:50:41.188531544 -0400
+--- a/scripts/system_environment/disable_unwanted_services	2023-06-02 09:01:03.706068084 -0700
++++ b/scripts/system_environment/disable_unwanted_services	2023-06-02 09:01:10.406213074 -0700
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -98,9 +99,9 @@ Index: b/scripts/system_environment/disable_unwanted_services
  
 Index: b/scripts/system_environment/testpoint/enable_auto_updates
 ===================================================================
---- a/scripts/system_environment/testpoint/enable_auto_updates	2023-04-19 15:50:39.953207300 -0400
-+++ b/scripts/system_environment/testpoint/enable_auto_updates	2023-04-19 15:50:41.188811753 -0400
-@@ -11,20 +11,18 @@
+--- a/scripts/system_environment/testpoint/enable_auto_updates	2023-06-02 09:01:07.425879857 -0700
++++ b/scripts/system_environment/testpoint/enable_auto_updates	2023-06-02 09:01:10.406538187 -0700
+@@ -11,22 +11,19 @@
  MAJOR=${PREV_VERSION%%\.*}
  REST=${PREV_VERSION/${MAJOR}\.}
  MINOR=${REST%%\.*}
@@ -110,19 +111,19 @@ Index: b/scripts/system_environment/testpoint/enable_auto_updates
 -if [ "$1" == "new" ]; then
 +if [ "$1" == "new" ] || ! grep -qs Download-Upgradeable-Packages $CONFIG; then
      echo "Enabling Automatic Updates"
--    if type systemctl &>/dev/null; then
--        systemctl enable yum-cron
--    else
--        chkconfig --add yum-cron
--        chkconfig yum-cron on
--    fi
 -    # Make sure download_updates and apply_updates are on in centos 7
 -    if [ -f "/etc/yum/yum-cron.conf" ]; then
 -        sed -i "s/download_updates = .*/download_updates = yes/g" /etc/yum/yum-cron.conf
 -        sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/yum/yum-cron.conf
+-        systemctl enable --now yum-cron
+-    elif [ -f "/etc/dnf/automatic.conf" ]; then
+-        sed -i "s/download_updates = .*/download_updates = yes/g" /etc/dnf/automatic.conf
+-        sed -i "s/apply_updates = .*/apply_updates = yes/g" /etc/dnf/automatic.conf
+-        systemctl enable --now dnf-automatic.timer
+-    else
+-        echo "Unable to find a recognized automatic updater."
 -    fi
--fi
- 
+     
 +    cat <<EOF >$CONFIG
 +APT::Periodic::Update-Package-Lists "1";
 +APT::Periodic::Download-Upgradeable-Packages "1";
@@ -131,14 +132,15 @@ Index: b/scripts/system_environment/testpoint/enable_auto_updates
 +Unattended-Upgrade::Origins-Pattern:: "origin=perfSONAR";
 +EOF
 +
-+fi
+ fi
+ 
 Index: b/scripts/system_environment/testpoint/enable_nscd
 ===================================================================
---- a/scripts/system_environment/testpoint/enable_nscd	2023-04-19 15:50:39.953256259 -0400
-+++ b/scripts/system_environment/testpoint/enable_nscd	2023-04-19 15:50:41.189023921 -0400
+--- a/scripts/system_environment/testpoint/enable_nscd	2023-06-02 09:01:07.425971728 -0700
++++ b/scripts/system_environment/testpoint/enable_nscd	2023-06-02 09:01:10.406763845 -0700
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
-     systemctl enable nscd
+     systemctl enable --now nscd
  else
 -    /sbin/chkconfig nscd on
 +    /usr/sbin/update-rc.d nscd enable

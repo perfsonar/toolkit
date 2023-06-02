@@ -30,8 +30,6 @@ Source0:        perfsonar-toolkit-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Requires:       perl
-Requires:       perl(AnyEvent) >= 4.81
-Requires:       perl(AnyEvent::HTTP)
 Requires:       perl(CGI)
 Requires:       perl(CGI::Ajax)
 Requires:       perl(CGI::Carp)
@@ -54,7 +52,7 @@ Requires:       perl(FindBin)
 Requires:       perl(Getopt::Long)
 Requires:       perl(IO::File)
 Requires:       perl(IO::Socket)
-Requires:       perl(JSON::XS)
+Requires:       perl-JSON-XS
 Requires:       perl(LWP::Simple)
 Requires:       perl(LWP::UserAgent)
 Requires:       perl(Log::Log4perl)
@@ -69,7 +67,6 @@ Requires:       perl(Params::Validate)
 Requires:       perl(RPC::XML::Client)
 Requires:       perl(RPC::XML::Server)
 Requires:       perl(RPM2)
-Requires:       perl(Readonly)
 Requires:       perl(Regexp::Common)
 Requires:       perl(Scalar::Util)
 Requires:       perl(Socket)
@@ -158,7 +155,11 @@ Summary:        perfSONAR Testpoint System Configuration
 Group:          Development/Tools
 Requires:       perfsonar-psconfig-pscheduler
 Requires:       nscd
+%if 0%{?el7}
 Requires:       yum-cron
+%else
+Requires:       dnf-automatic
+%endif
 Requires:       python3
 Requires(post): owamp-server    >= 3.5.0
 Requires(post): chkconfig
@@ -176,7 +177,12 @@ Group:          Development/Tools
 Requires:       perfsonar-toolkit-security
 Requires:       perfsonar-toolkit-sysctl
 Requires:       perfsonar-toolkit-servicewatcher
+#TODO: Revisit this
+%if 0%{?el7}
 Requires:       perfsonar-toolkit-ntp
+%else
+Requires:       chrony
+%endif
 Requires:       perfsonar-toolkit-library
 Requires:       perfsonar-toolkit-systemenv-testpoint
 Requires:       python3
@@ -186,7 +192,6 @@ Requires(post): avahi
 Requires(post): chkconfig
 Requires(post): cups
 Requires(post): httpd
-Requires(post): irda-utils
 Requires(post): irqbalance
 Requires(post): mdadm
 Requires(post): nfs-utils
@@ -243,7 +248,7 @@ Requires:       perl(Log::Log4perl)
 Requires:       perl(Log::Dispatch)
 Requires:       perl(POSIX)
 Requires:       perl(Data::Dumper)
-Requires:       perl(JSON::XS)
+Requires:       perl-JSON-XS
 Requires:       perl(XML::Simple)
 Requires:       perl(Config::General)
 Requires:       perl(Time::HiRes)
@@ -278,7 +283,9 @@ Requires:               mod_ssl
 Requires(pre):          rpm
 Requires(post):         perfsonar-common
 Requires(post):         coreutils
+%if 0%{?el7}
 Requires(post):         system-config-firewall-base
+%endif
 Requires(post):         kernel-devel
 Requires(post):         kernel
 Requires(post):         kernel-headers
@@ -313,7 +320,12 @@ Configures sysctl for the Toolkit
 Summary:                perfSONAR Toolkit ntp configuration
 Group:                  Development/Tools
 Requires:               coreutils
+#TODO: This will get it to build, but scripts do not yet work with chrony
+%if 0%{?el7}
 Requires:               ntp
+%else
+Requires:               chrony
+%endif
 Requires:               libperfsonar-toolkit-perl
 Requires:               perfsonar-toolkit-library
 Requires(pre):          rpm
@@ -330,7 +342,9 @@ Configures ntp servers for the Toolkit
 Summary:                perfSONAR Toolkit service watcher
 Group:                  Development/Tools
 Requires:               coreutils
+%if 0%{?el7}
 Requires:               ntp
+%endif
 Requires:               perfsonar-toolkit-library
 Requires:               libperfsonar-toolkit-perl
 Requires(pre):          rpm
@@ -689,7 +703,6 @@ fi
 %attr(0644,root,root) %{config_base}/perfsonar_ulimit.conf
 %attr(0644,root,root) %{config_base}/perfsonar_ulimit_apache.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/nptoolkit-configure.py
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/install-optional-packages.py
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-migrate-backup.sh
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/ps-migrate-restore.sh
 %attr(0644,root,root) %{config_base}/default_service_configs/pscheduler_limits.conf

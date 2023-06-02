@@ -5,7 +5,7 @@
 #######################
 
 if type systemctl &>/dev/null; then
-    systemctl enable nscd
+    systemctl enable --now nscd
 else
     /sbin/chkconfig nscd on
 fi

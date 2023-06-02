@@ -108,9 +108,10 @@ IC_RET=0
 if [ "${RX_FRAMES-unset}" = "unset" ]; then
     DRIVER=$(ethtool -i $1 | sed -n 's/^driver: //p')
     case $DRIVER in
-        igb) RX_FRAMES=;  RX_USECS=1;;
-        tg3) RX_FRAMES=1; RX_USECS=1;;
-          *) RX_FRAMES=1; RX_USECS=0;;
+        igb)     RX_FRAMES=;  RX_USECS=1;;
+        tg3)     RX_FRAMES=1; RX_USECS=1;;
+        vmxnet3) RX_FRAMES=;  RX_USECS=;;
+        *)       RX_FRAMES=1; RX_USECS=0;;
     esac
 fi
 

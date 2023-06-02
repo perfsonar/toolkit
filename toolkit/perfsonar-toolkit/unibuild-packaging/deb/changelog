@@ -4,6 +4,12 @@ perfsonar-toolkit (5.1.0~a1.0-1) perfsonar-5.1-snapshot; urgency=low
 
  -- Lætitia Delvaux <adelvaux@man.poznan.pl>  Wed, 19 Apr 2023 08:23:45 +0200
 
+perfsonar-toolkit (5.0.2-1) perfsonar-5.0; urgency=low
+
+  * New upstream version.
+
+ -- perfSONAR developers <debian@perfsonar.net>  Fri, 02 Jun 2023 09:01:10 -0700
+
 perfsonar-toolkit (5.0.1-1) perfsonar-5.0; urgency=low
 
   * New upstream version.
