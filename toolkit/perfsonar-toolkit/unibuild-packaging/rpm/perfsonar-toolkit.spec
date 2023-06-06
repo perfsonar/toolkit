@@ -87,6 +87,7 @@ Requires:       perl(utf8)
 Requires:       perl(vars)
 Requires:       perl(version)
 Requires:       perl(warnings)
+Patch0:         remove_host_admin_gui.patch
 
 #perfSONAR packages
 Requires:       perfsonar-common
@@ -388,6 +389,12 @@ rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_local
 
 %prep
 %setup -q -n perfsonar-toolkit-%{version}
+#remove hosts admin page for non-el7
+%if 0%{?el7}
+%else
+%patch0 -p3
+%endif
+
 
 %build
 make -f /usr/share/selinux/devel/Makefile -C selinux perfsonar-toolkit.pp
