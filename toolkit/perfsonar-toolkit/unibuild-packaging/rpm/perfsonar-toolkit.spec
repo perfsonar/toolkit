@@ -88,6 +88,7 @@ Requires:       perl(vars)
 Requires:       perl(version)
 Requires:       perl(warnings)
 Patch0:         remove_host_admin_gui.patch
+Patch1:         remove_ntp_configdaemon.patch
 
 #perfSONAR packages
 Requires:       perfsonar-common
@@ -393,6 +394,7 @@ rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_local
 %if 0%{?el7}
 %else
 %patch0 -p3
+%patch1 -p3
 %endif
 
 
@@ -479,7 +481,9 @@ ln -sT /usr/lib/perfsonar/web-ng/etc /etc/perfsonar/toolkit/web 2> /dev/null
 # should be how they read these, but that'd require a fair number of changes,
 # so we'll put that in the "maybe" category.
 chmod o+r /etc/perfsonar/lsregistrationdaemon.conf
+%if 0%{?el7}
 chmod o+r %{config_base}/ntp_known_servers
+%endif
 chmod o+r /etc/owamp-server/owamp-server.limits 2> /dev/null
 chmod o+r /etc/owamp-server/owamp-server.pfs 2> /dev/null
 chkconfig --add %{init_script_2}
