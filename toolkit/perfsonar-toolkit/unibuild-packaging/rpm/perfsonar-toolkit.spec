@@ -307,6 +307,12 @@ Requires:               coreutils
 Requires:               perfsonar-common
 Requires:               libperfsonar-perl
 Requires:               initscripts
+%if 0%{?el7}
+%else
+#The following are needed to get htcp cc algorithm
+Requires:               kernel-modules-extra
+Requires(post):         kernel-modules-extra
+%endif
 Requires(pre):          rpm
 Requires(post):         coreutils
 Requires(post):         perfsonar-common
