@@ -1,0 +1,32 @@
+diff --git a/toolkit/perfsonar-toolkit/etc/configdaemon.conf b/toolkit/perfsonar-toolkit/etc/configdaemon.conf
+index 76b39f95..5159d855 100644
+--- a/toolkit/perfsonar-toolkit/etc/configdaemon.conf
++++ b/toolkit/perfsonar-toolkit/etc/configdaemon.conf
+@@ -18,27 +18,10 @@ firewall_script /usr/lib/perfsonar/scripts/system_environment/configure_firewall
+         start       1
+         stop        1
+     </service>
+-    <service ntp>
+-        start       1
+-        stop        1
+-        restart     1
+-    </service>
+-    <file "/etc/ntp.conf">
+-        read    1
+-        write   1
+-    </file>
+     <file "/etc/perfsonar/lsregistrationdaemon.conf">
+         read    1
+         write   1
+     </file>
+-    <file "/etc/perfsonar/toolkit/ntp_known_servers">
+-        read    1
+-        write   1
+-    </file>
+-    <file "/etc/ntp/step-tickers">
+-            read    1
+-            write   1
+-    </file>
+     <file "/var/lib/perfsonar/toolkit/gui-tasks.conf">
+             read    1
+             write   1
