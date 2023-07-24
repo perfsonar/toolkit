@@ -1,1 +1,0 @@
-../../../../shared/lib/SimpleLookupService/QueryObjects/Directory/PersonQueryObject.pm

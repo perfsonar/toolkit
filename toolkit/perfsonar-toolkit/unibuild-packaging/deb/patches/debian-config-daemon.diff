@@ -1,7 +1,7 @@
 Index: b/bin/config_daemon.pl
 ===================================================================
---- a/bin/config_daemon.pl	2023-06-16 12:43:55.971378254 -0400
-+++ b/bin/config_daemon.pl	2023-06-16 12:43:56.848843072 -0400
+--- a/bin/config_daemon.pl	2023-07-24 10:39:37.286240845 -0400
++++ b/bin/config_daemon.pl	2023-07-24 10:39:38.255611725 -0400
 @@ -29,7 +29,7 @@
  use Log::Log4perl qw/:easy/;
  
@@ -22,8 +22,8 @@ Index: b/bin/config_daemon.pl
  ( $status, $res ) = lockPIDFile( $PIDFILE );
 Index: b/etc/configdaemon.conf
 ===================================================================
---- a/etc/configdaemon.conf	2023-06-16 12:43:55.971738301 -0400
-+++ b/etc/configdaemon.conf	2023-06-16 12:43:56.849198786 -0400
+--- a/etc/configdaemon.conf	2023-07-24 10:39:37.286607472 -0400
++++ b/etc/configdaemon.conf	2023-07-24 10:39:38.255986602 -0400
 @@ -1,6 +1,6 @@
  address     127.0.0.1
  port        9000

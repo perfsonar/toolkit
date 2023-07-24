@@ -75,6 +75,9 @@
                                 <h3 class="aside__heading">Resources</h3>
                                 <ul class="aside__list">
                                     <li><a href="http://docs.perfsonar.net/manage_regular_tests.html" target="_blank">Configuring Tests</a></li>
+                         [% IF authenticated %]
+                                    <li class="sidebar-list__item"><a href="/toolkit/admin/plot.cgi">Plot-Schedule Graph</a></li>
+                         [% END %]
                                 </ul>
                             </aside>
                         </div>

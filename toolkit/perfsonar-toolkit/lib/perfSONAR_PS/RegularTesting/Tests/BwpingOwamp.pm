@@ -1,1 +1,0 @@
-../../../../shared/lib/perfSONAR_PS/RegularTesting/Tests/BwpingOwamp.pm

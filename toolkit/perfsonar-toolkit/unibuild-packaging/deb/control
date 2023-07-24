@@ -28,7 +28,7 @@ Depends: libperfsonar-perl,
  perfsonar-toolkit-graphs, perfsonar-toolkit-install,
  perfsonar-toolkit-systemenv, perfsonar-toolkit-web-services, python3,
  ${perl:Depends}, ${misc:Depends}
-Description: perfSONAR Toolkit web
+Description: perfSONAR Toolkit web GUI
  perfSONAR Toolkit web GUI and associated services.
 
 Package: perfsonar-toolkit-library
@@ -41,7 +41,7 @@ Package: perfsonar-toolkit-web-services
 Architecture: all
 Depends: libperfsonar-perl, perfsonar-toolkit-library, apache2, apache2-utils, ssl-cert, libcgi-pm-perl, liblog-dispatch-filerotate-perl, libjson-xs-perl, libxml-simple-perl, ${misc:Depends}, ${perl:Depends}
 Breaks: perfsonar-toolkit (<< 5.0.0~b2.2)
-Description: perfSONAR Toolkit Web Services
+Description: perfSONAR Toolkit Web Services host API
  Contains web service for information used in monitoring a perfSONAR host
 
 Package: perfsonar-toolkit-security
