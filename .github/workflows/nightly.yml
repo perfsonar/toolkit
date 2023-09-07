@@ -5,7 +5,7 @@ jobs:
     strategy:
       #fail-fast: true
       matrix:
-          os: [  'el7' ]
+          os: [  'el7', 'el8', 'el9' ]
           #os: [  'el7', 'el8', 'el9', 'd10', 'd12', 'u18', 'u20' ]
 
       
@@ -22,12 +22,12 @@ jobs:
          if: ${{ matrix.os  == 'el7' }}
          run: yum -y install -y http://linux.mirrors.es.net/perfsonar/${{ matrix.os }}/x86_64/5/packages/perfsonar-repo-0.11-1.noarch.rpm
 
-      # - name: install deps El8
-      #   if: ${{ matrix.os  == 'el8' }}
-      #   run: dnf -y install -y http://linux.mirrors.es.net/perfsonar/${{ matrix.os }}/x86_64/5/packages/perfsonar-repo-0.11-1.noarch.rpm
-      # - name: install deps EL9
-      #   if: ${{ matrix.os  == 'el9' }}
-      #   run: dnf -y install -y http://linux.mirrors.es.net/perfsonar/${{ matrix.os }}/x86_64/5/packages/perfsonar-repo-0.11-1.noarch.rpm
+       - name: install deps El8
+         if: ${{ matrix.os  == 'el8' }}
+         run: dnf -y install -y http://linux.mirrors.es.net/perfsonar/${{ matrix.os }}/x86_64/5/packages/perfsonar-repo-0.11-1.noarch.rpm
+       - name: install deps EL9
+         if: ${{ matrix.os  == 'el9' }}
+         run: dnf -y install -y http://linux.mirrors.es.net/perfsonar/${{ matrix.os }}/x86_64/5/packages/perfsonar-repo-0.11-1.noarch.rpm
       # - name: install deps d10
       #   if: ${{ matrix.os  == 'd10' }} 
       #   run: export DEBIAN_FRONTEND=noninteractive && curl -s http://downloads.perfsonar.net/debian/perfsonar-minor-snapshot.gpg.key | apt-key add - && curl -s -o /etc/apt/sources.list.d/perfsonar-minor-snapshot.list http://downloads.perfsonar.net/debian/perfsonar-minor-snapshot.list && apt-get update && echo && echo 
