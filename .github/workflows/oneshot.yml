@@ -11,6 +11,9 @@ jobs:
    
     container: 
       image: ghcr.io/perfsonar/unibuild/${{ matrix.os }}:latest
+      volumes:
+      - ${{ github.workspace }}:/app
+        
         
     steps:
        - name: Check out Repo
