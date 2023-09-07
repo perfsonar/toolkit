@@ -1,0 +1,34 @@
+name: nightly
+on: push
+jobs:
+  setup-containers:
+    strategy:
+      #fail-fast: true
+      matrix:
+          os: [  'el7']
+  
+    runs-on: ubuntu-latest
+   
+    #container: 
+     # image: ghcr.io/perfsonar/unibuild/${{ matrix.os }}:latest
+        
+    steps:
+       - name: Check out Repo
+         uses: actions/checkout@v3
+ 
+       - name: install dependancies repo
+         if: ${{ matrix.os  == 'el7' }}
+         run: yum -y install -y http://linux.mirrors.es.net/perfsonar/${{ matrix.os }}/x86_64/5/packages/perfsonar-repo-0.11-1.noarch.rpm
+ 
+       
+       - name: make
+         run: curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - . el7
+  
+       - name: tar files
+         run: tar -cvf toolkit.tar ./unibuild-repo
+  
+       - name: Archive repo
+         uses: actions/upload-artifact@v3
+         with:
+           name: perfsonar-toolkit-${{ matrix.os }}.tar
+           path: toolkit.tar
