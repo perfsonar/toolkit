@@ -22,9 +22,7 @@ jobs:
          run: pwd
        - name: ls
          run: ls
-       - name: ls build
-         run: ls /build  
-       #- name: build
-        # run: ./toolkit:/build 
+       - name: build
+         run: make
  
         
