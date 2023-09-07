@@ -1,0 +1,17 @@
+name: oneshot-build
+on: push
+jobs:
+  setup-containers:
+    strategy:
+      #fail-fast: true
+      matrix:
+          os: [  'el7']
+ 
+    runs-on: ubuntu-latest
+   
+    container: 
+      image: ghcr.io/perfsonar/unibuild/${{ matrix.os }}:latest
+        
+    steps:
+       - name: Check out Repo
+         uses: actions/checkout@v3
