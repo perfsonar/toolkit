@@ -22,5 +22,9 @@ jobs:
          run: pwd
        - name: ls
          run: ls
+       - name: Log the node version
+         run: node -v
+       - name: release
+         run: cat /etc/os-release  
  
         
