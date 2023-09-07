@@ -18,7 +18,9 @@ jobs:
     steps:
        - name: Check out Repo
          uses: actions/checkout@v3
-       - name: make
-         run: make
+       - name: pwd
+         run: pwd
+       - name: ls
+         run: ls
  
         
