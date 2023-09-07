@@ -24,5 +24,7 @@ jobs:
          run: ls
        - name: release
          run: cat /etc/os-release  
+       - name: build
+         run: ./toolkit:/build 
  
         
