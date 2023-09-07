@@ -16,9 +16,9 @@ jobs:
        - name: Check out Repo
          uses: actions/checkout@v3
  
-       - name: install dependancies repo
-         if: ${{ matrix.os  == 'el7' }}
-         run: yum -y install -y http://linux.mirrors.es.net/perfsonar/${{ matrix.os }}/x86_64/5/packages/perfsonar-repo-0.11-1.noarch.rpm
+      # - name: install dependancies repo
+      #   if: ${{ matrix.os  == 'el7' }}
+       #  run: yum -y install -y http://linux.mirrors.es.net/perfsonar/${{ matrix.os }}/x86_64/5/packages/perfsonar-repo-0.11-1.noarch.rpm
  
        
        - name: make
