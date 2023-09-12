@@ -5,7 +5,7 @@ jobs:
     strategy:
       #fail-fast: true
       matrix:
-          os: [ 'el7', 'el8',  'd10', 'u18', 'u20' ]
+          os: [ 'el7', 'el8',  'd10', 'u18']
  
     runs-on: ubuntu-latest
    
