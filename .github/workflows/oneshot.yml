@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
    
     container: 
+      options: --privileged
       #image: ghcr.io/perfsonar/unibuild/${{ matrix.os }}:latest
       image: ghcr.io/perfsonar/docker-oneshot-builder/${{ matrix.os }}:latest
       volumes:
