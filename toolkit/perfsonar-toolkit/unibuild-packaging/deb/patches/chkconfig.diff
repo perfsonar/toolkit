@@ -1,7 +1,7 @@
 Index: b/init_scripts/perfsonar-configure_nic_parameters
 ===================================================================
---- a/init_scripts/perfsonar-configure_nic_parameters	2023-07-24 10:39:38.404266145 -0400
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2023-07-24 10:39:38.513813677 -0400
+--- a/init_scripts/perfsonar-configure_nic_parameters	2023-09-27 10:28:40.305915990 -0400
++++ b/init_scripts/perfsonar-configure_nic_parameters	2023-09-27 10:28:40.415837876 -0400
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -83,8 +83,8 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
          ;;
 Index: b/scripts/system_environment/disable_unwanted_services
 ===================================================================
---- a/scripts/system_environment/disable_unwanted_services	2023-07-24 10:39:37.301776033 -0400
-+++ b/scripts/system_environment/disable_unwanted_services	2023-07-24 10:39:38.514104970 -0400
+--- a/scripts/system_environment/disable_unwanted_services	2023-09-27 10:28:39.240027365 -0400
++++ b/scripts/system_environment/disable_unwanted_services	2023-09-27 10:28:40.416150335 -0400
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -99,8 +99,8 @@ Index: b/scripts/system_environment/disable_unwanted_services
  
 Index: b/scripts/system_environment/testpoint/enable_auto_updates
 ===================================================================
---- a/scripts/system_environment/testpoint/enable_auto_updates	2023-07-24 10:39:37.302170828 -0400
-+++ b/scripts/system_environment/testpoint/enable_auto_updates	2023-07-24 10:39:38.514385931 -0400
+--- a/scripts/system_environment/testpoint/enable_auto_updates	2023-09-27 10:28:39.240426616 -0400
++++ b/scripts/system_environment/testpoint/enable_auto_updates	2023-09-27 10:28:40.416434586 -0400
 @@ -11,22 +11,19 @@
  MAJOR=${PREV_VERSION%%\.*}
  REST=${PREV_VERSION/${MAJOR}\.}
@@ -136,8 +136,8 @@ Index: b/scripts/system_environment/testpoint/enable_auto_updates
  
 Index: b/scripts/system_environment/testpoint/enable_nscd
 ===================================================================
---- a/scripts/system_environment/testpoint/enable_nscd	2023-07-24 10:39:37.302225911 -0400
-+++ b/scripts/system_environment/testpoint/enable_nscd	2023-07-24 10:39:38.514597765 -0400
+--- a/scripts/system_environment/testpoint/enable_nscd	2023-09-27 10:28:39.240473074 -0400
++++ b/scripts/system_environment/testpoint/enable_nscd	2023-09-27 10:28:40.416646794 -0400
 @@ -7,5 +7,5 @@
  if type systemctl &>/dev/null; then
      systemctl enable --now nscd
