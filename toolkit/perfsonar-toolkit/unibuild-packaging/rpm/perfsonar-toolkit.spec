@@ -431,10 +431,10 @@ mkdir -p %{buildroot}/usr/share/selinux/packages/
 mv selinux/*.pp %{buildroot}/usr/share/selinux/packages/
 rm -rf %{buildroot}/usr/lib/perfsonar/selinux
 
-mv etc/* %{buildroot}/%{config_base}
-
 mkdir -p %{buildroot}/%{install_base}/logstash/prometheus_pipeline/
 install -m 0644 etc/01-input-local_prometheus.conf %{buildroot}/%{install_base}/logstash/prometheus_pipeline/
+
+mv etc/* %{buildroot}/%{config_base}
 
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/etc
