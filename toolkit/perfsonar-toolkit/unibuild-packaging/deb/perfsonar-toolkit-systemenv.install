@@ -17,5 +17,6 @@ scripts/system_environment/migrate_admininfo usr/lib/perfsonar/scripts/system_en
 #scripts/system_environment/upgrade_apache usr/lib/perfsonar/scripts/system_environment/
 scripts/system_environment/upgrade_configdaemon usr/lib/perfsonar/scripts/system_environment/
 scripts/system_environment/upgrade_fix_permissions usr/lib/perfsonar/scripts/system_environment/
+scripts/system_environment/enable_logstash_prometheus usr/lib/perfsonar/scripts/system_environment/
 # lsregistrationdaemon.conf file is managed by the ls-registration-daemon package
 #scripts/system_environment/upgrade_lsregistration usr/lib/perfsonar/scripts/system_environment/

@@ -4,6 +4,7 @@ bin/config_daemon.pl
 LICENSE
 archive/http_logstash.json
 doc/iptables-config.example
+etc/01-input-local_prometheus.conf
 etc/administrative_info
 etc/apache-perfsonar-security.conf
 etc/configdaemon-logger.conf
@@ -47,6 +48,7 @@ scripts/configure_memcached_security
 scripts/configure_ntpd
 scripts/configure_sysctl
 scripts/cron-service_watcher
+scripts/system_environment/enable_logstash_prometheus
 scripts/find_bwctl_measurements
 scripts/manage_users
 scripts/mod_interface_route
