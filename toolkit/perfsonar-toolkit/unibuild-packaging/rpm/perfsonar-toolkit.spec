@@ -433,6 +433,9 @@ rm -rf %{buildroot}/usr/lib/perfsonar/selinux
 
 mv etc/* %{buildroot}/%{config_base}
 
+mkdir -p %{buildroot}/%{install_base}/logstash/prometheus_pipeline/
+install -m 0644 etc/01-input-local_prometheus.conf %{buildroot}/%{install_base}/logstash/prometheus_pipeline/
+
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/etc
 rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
@@ -691,6 +694,7 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/find_bwctl_measurements
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
+%attr(0644,root,root) %{install_base}/logstash/prometheus_pipeline/01-input-local_prometheus.conf
 
 %files systemenv-testpoint
 %license LICENSE
