@@ -2,7 +2,6 @@
 
 %define install_base /usr/lib/perfsonar
 %define config_base /etc/perfsonar/toolkit
-%define graphs_base %{install_base}/graphs
 
 %define webng_config /usr/lib/perfsonar/web-ng/etc
 
@@ -93,10 +92,7 @@ Patch1:         remove_ntp_configdaemon.patch
 #perfSONAR packages
 Requires:       perfsonar-common
 Requires:       perfsonar-core
-Requires:       perfsonar-lscachedaemon
-Requires:       perfsonar-graphs
 Requires:       perfsonar-psconfig-publisher
-Requires:       perfsonar-traceroute-viewer
 Requires:       libperfsonar-perl
 Requires:       libperfsonar-regulartesting-perl
 Requires:       libperfsonar-sls-perl
@@ -105,12 +101,12 @@ Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
 Requires:       perfsonar-toolkit-web-services
 Requires:       perfsonar-archive
+Requires:       perfsonar-grafana-toolkit
 
 # Misc performance/performance-related tools
 Requires:       coreutils
 Requires:       httpd
 Requires:       mod_ssl
-Requires:       nagios-plugins-all
 BuildRequires:  systemd
 %{?systemd_requires: %systemd_requires}
 
@@ -126,16 +122,10 @@ BuildRequires: perl-Test-MockObject
 # Deep object comparision
 BuildRequires: perl-Test-Deep
 
-Obsoletes:      perl-perfSONAR_PS-TopologyService
-Obsoletes:      perl-perfSONAR_PS-Toolkit
-Provides:       perl-perfSONAR_PS-Toolkit
-
 Requires(pre):  rpm
 # Anaconda requires a Requires(post) to ensure that packages are installed before the %post section is run...
 Requires(post): perl
-Requires(post): perfsonar-lscachedaemon
 Requires(post): perfsonar-lsregistrationdaemon
-Requires(post): perfsonar-graphs
 Requires(post): perfsonar-psconfig-pscheduler
 
 Requires(post): perfsonar-common
@@ -205,9 +195,6 @@ Requires(post): rsyslog
 Requires(post): setup
 Requires(post): smartmontools
 Requires(post): sudo
-Obsoletes:      perfsonar-toolkit-systemenv < 4.0
-Obsoletes:      perl-perfSONAR_PS-Toolkit-SystemEnvironment
-Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
 
 %description systemenv
 Tunes and configures the system according to performance and security best
@@ -227,8 +214,6 @@ Group:                  Development/Tools
 Requires:               perfsonar-common
 Requires:               libperfsonar-toolkit-perl
 Requires:               python3
-Obsoletes:              perl-perfSONAR_PS-Toolkit-Library
-Provides:               perl-perfSONAR_PS-Toolkit-Library
 
 %description library
 Installs the library files
@@ -267,8 +252,6 @@ Contains web service for information used in monitoring a perfSONAR host
 Summary:                perfSONAR Toolkit Core Scripts
 Group:                  Development/Tools
 Requires:               perfsonar-toolkit-library
-Obsoletes:              perl-perfSONAR_PS-Toolkit-Install-Scripts
-Provides:               perl-perfSONAR_PS-Toolkit-Install-Scripts
 
 %description install
 Installs install scripts
@@ -294,8 +277,6 @@ Requires(post):         kernel-headers
 Requires(post):         module-init-tools
 Requires(post):         httpd
 Requires(post):         mod_ssl
-Obsoletes:              perl-perfSONAR_PS-Toolkit-security
-Provides:               perl-perfSONAR_PS-Toolkit-security
 
 %description security
 Configures IPTables rules, installs fail2ban and secures apache for perfSONAR Toolkit
@@ -318,8 +299,6 @@ Requires(post):         coreutils
 Requires(post):         perfsonar-common
 Requires(post):         libperfsonar-perl
 Requires(post):         initscripts
-Obsoletes:              perl-perfSONAR_PS-Toolkit-sysctl
-Provides:               perl-perfSONAR_PS-Toolkit-sysctl
 
 %description sysctl
 Configures sysctl for the Toolkit
@@ -340,8 +319,6 @@ Requires(pre):          rpm
 Requires(post):         perfsonar-common
 Requires(post):         chkconfig
 Requires(post):         coreutils
-Obsoletes:              perl-perfSONAR_PS-Toolkit-ntp
-Provides:               perl-perfSONAR_PS-Toolkit-ntp
 
 %description ntp
 Configures ntp servers for the Toolkit
@@ -358,8 +335,6 @@ Requires:               libperfsonar-toolkit-perl
 Requires(pre):          rpm
 Requires(post):         perfsonar-common
 Requires(post):         coreutils
-Obsoletes:              perl-perfSONAR_PS-Toolkit-service-watcher
-Provides:               perl-perfSONAR_PS-Toolkit-service-watcher
 
 %description servicewatcher
 Installs the service-watcher package
@@ -691,7 +666,6 @@ fi
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/find_bwctl_measurements
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
 %attr(0644,root,root) %{install_base}/logstash/prometheus_pipeline/01-input-local_prometheus.conf

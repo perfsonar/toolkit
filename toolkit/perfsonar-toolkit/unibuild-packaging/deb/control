@@ -24,8 +24,7 @@ Depends: libperfsonar-perl,
  libperfsonar-psconfig-perl, perfsonar-psconfig-pscheduler,
  perfsonar-psconfig-publisher, 
  perfsonar-toolkit-config-daemon, perfsonar-core,
- perfsonar-lscachedaemon, perfsonar-traceroute-viewer,
- perfsonar-toolkit-graphs, perfsonar-toolkit-install,
+ perfsonar-grafana-toolkit, perfsonar-toolkit-install,
  perfsonar-toolkit-systemenv, perfsonar-toolkit-web-services, python3,
  ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Toolkit web GUI

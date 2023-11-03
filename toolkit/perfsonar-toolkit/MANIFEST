@@ -49,7 +49,6 @@ scripts/configure_ntpd
 scripts/configure_sysctl
 scripts/cron-service_watcher
 scripts/system_environment/enable_logstash_prometheus
-scripts/find_bwctl_measurements
 scripts/manage_users
 scripts/mod_interface_route
 scripts/nptoolkit-configure.py
