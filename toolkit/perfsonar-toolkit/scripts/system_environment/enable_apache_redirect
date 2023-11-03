@@ -1,8 +1,7 @@
 #!/bin/bash
 #######################
 # Setup redirects so that if clients go to "http://[host]/" or
-# "https://[host]/", they get redirected to "http://[host]/toolkit" or
-# "https://[host]/toolkit". It writes a toolkit-specific file, and modifies
+# "https://[host]/", they get redirected to Grafana or. It writes a toolkit-specific file, and modifies
 # ssl.conf only if it hasn't modified it already so it does not matter if this
 # is running in an 'upgrade' or 'new install' context.
 #######################
@@ -10,7 +9,7 @@ cat > /etc/httpd/conf.d/toolkit_root_redirect.conf <<EOF
 # Redirects requests to "/" to "/toolkit". It's done in this strange way to
 # avoid confusing people who enter an IP address and would get redirected to
 # the hostname, or vice versa.
-RedirectMatch ^/$ /toolkit/
+RedirectMatch ^/$ /grafana/d/ff439cb3-6042-43b5-a999-674681d80395/perfsonar-toolkit?orgId=1
 EOF
 
 #######################
