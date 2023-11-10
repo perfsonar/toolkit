@@ -35,6 +35,7 @@ require {
 	class rawip_socket { create };
 	class capability { net_raw };
 	class rawip_socket { getopt read setopt write };
+	class service { start stop status reload kill load enable disable };
 }
 
 #============= httpd_t ==============
