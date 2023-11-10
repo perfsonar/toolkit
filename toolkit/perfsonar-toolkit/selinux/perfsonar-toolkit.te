@@ -26,6 +26,7 @@ require {
 	type owampd_pid_t;
 	type twampd_pid_t;
 	type sysctl_net_t;
+	type systemd_unit_file_t;
 	class dbus { send_msg };
 	class dir { ioctl read getattr lock search open };
 	class file { getattr open read unlink ioctl lock execute execute_no_trans };
