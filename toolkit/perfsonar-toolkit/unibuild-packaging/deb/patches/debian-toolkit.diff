@@ -1,10 +1,10 @@
 Index: b/scripts/apache-toolkit_web_gui.conf
 ===================================================================
---- a/scripts/apache-toolkit_web_gui.conf	2023-11-10 15:31:24.486397039 -0500
-+++ b/scripts/apache-toolkit_web_gui.conf	2023-11-10 15:31:25.540017891 -0500
-@@ -11,6 +11,11 @@
+--- a/scripts/apache-toolkit_web_gui.conf	2023-11-21 14:26:23.218708083 +0100
++++ b/scripts/apache-toolkit_web_gui.conf	2023-11-21 14:26:49.931756590 +0100
+@@ -10,6 +10,11 @@
+ # New link to the plot schedule graph
  Alias /toolkit/plot /usr/lib/perfsonar/web-ng/root/admin/plot.cgi
- 
  
 +# Redirects requests to "/" to "/toolkit". It's done in this strange way to
 +# avoid confusing people who enter an IP address and would get redirected to
@@ -14,20 +14,7 @@ Index: b/scripts/apache-toolkit_web_gui.conf
  # Redirect from /index.cgi?format=json to the new host summary page
  RewriteCond %{QUERY_STRING} format=json
  RewriteRule ^/toolkit/index.cgi /toolkit/services/host.cgi?method=get_summary [R,L]
-@@ -31,10 +36,8 @@
- # But, allow anonymous access via port 80 (http)
- # NOTE: Need to set non-https re-write rules and redirects here
- <VirtualHost *:80>
--    # Redirects requests to "/" to "/toolkit". It's done in this strange way to
--    # avoid confusing people who enter an IP address and would get redirected to
--    # the hostname, or vice versa.
--    RedirectMatch ^/$ /toolkit/
-+    # Hide default index page
-+    DocumentRoot /var/www/perfsonar
- 
-     # Redirect from /index.cgi?format=json to the new host summary page
-     RewriteCond %{QUERY_STRING} format=json
-@@ -83,23 +86,11 @@
+@@ -79,23 +84,11 @@
      Options +FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -55,7 +42,7 @@ Index: b/scripts/apache-toolkit_web_gui.conf
  </Location>
  
  # Allow indexes on logs
-@@ -113,23 +104,11 @@
+@@ -109,23 +102,11 @@
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
      AllowOverride All
@@ -82,11 +69,11 @@ Index: b/scripts/apache-toolkit_web_gui.conf
 +    Require valid-user
  </Directory>
  
- ##
+ ServerTokens Prod
 Index: b/scripts/add_pssudo_user
 ===================================================================
---- a/scripts/add_pssudo_user	2023-11-10 15:31:24.486332039 -0500
-+++ b/scripts/add_pssudo_user	2023-11-10 15:31:25.540366977 -0500
+--- a/scripts/add_pssudo_user	2023-11-21 14:26:23.220006532 +0100
++++ b/scripts/add_pssudo_user	2023-11-21 14:26:49.932802774 +0100
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -98,8 +85,8 @@ Index: b/scripts/add_pssudo_user
      sys.exit(1)
 Index: b/init_scripts/perfsonar-configure_nic_parameters
 ===================================================================
---- a/init_scripts/perfsonar-configure_nic_parameters	2023-11-10 15:31:24.485255616 -0500
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2023-11-10 15:31:25.540584770 -0500
+--- a/init_scripts/perfsonar-configure_nic_parameters	2023-11-21 14:26:23.222065344 +0100
++++ b/init_scripts/perfsonar-configure_nic_parameters	2023-11-21 14:26:49.933422981 +0100
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -139,8 +126,8 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
          RETVAL=2
 Index: b/init_scripts/perfsonar-generate_motd
 ===================================================================
---- a/init_scripts/perfsonar-generate_motd	2023-11-10 15:31:24.485315450 -0500
-+++ b/init_scripts/perfsonar-generate_motd	2023-11-10 15:31:25.540802146 -0500
+--- a/init_scripts/perfsonar-generate_motd	2023-11-21 14:26:23.223683072 +0100
++++ b/init_scripts/perfsonar-generate_motd	2023-11-21 14:26:49.934235963 +0100
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -166,8 +153,8 @@ Index: b/init_scripts/perfsonar-generate_motd
  use warnings;
 Index: b/web-ng/root/gui/reverse_traceroute.cgi
 ===================================================================
---- a/web-ng/root/gui/reverse_traceroute.cgi	2023-11-10 15:31:24.501551748 -0500
-+++ b/web-ng/root/gui/reverse_traceroute.cgi	2023-11-10 15:31:25.541111731 -0500
+--- a/web-ng/root/gui/reverse_traceroute.cgi	2023-11-21 14:26:23.225381920 +0100
++++ b/web-ng/root/gui/reverse_traceroute.cgi	2023-11-21 14:26:49.935167292 +0100
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -179,8 +166,8 @@ Index: b/web-ng/root/gui/reverse_traceroute.cgi
  #########################################################################
 Index: b/etc/perfsonar_ulimit.conf
 ===================================================================
---- a/etc/perfsonar_ulimit.conf	2023-11-10 15:31:24.484799822 -0500
-+++ b/etc/perfsonar_ulimit.conf	2023-11-10 15:31:25.541381774 -0500
+--- a/etc/perfsonar_ulimit.conf	2023-11-21 14:26:23.227261286 +0100
++++ b/etc/perfsonar_ulimit.conf	2023-11-21 14:26:49.936516741 +0100
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
