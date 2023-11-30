@@ -133,15 +133,4 @@ Index: b/scripts/system_environment/testpoint/enable_auto_updates
 +EOF
 +
  fi
- 
-Index: b/scripts/system_environment/testpoint/enable_nscd
-===================================================================
---- a/scripts/system_environment/testpoint/enable_nscd	2023-11-10 15:31:24.488334008 -0500
-+++ b/scripts/system_environment/testpoint/enable_nscd	2023-11-10 15:31:25.653492438 -0500
-@@ -7,5 +7,5 @@
- if type systemctl &>/dev/null; then
-     systemctl enable --now nscd
- else
--    /sbin/chkconfig nscd on
-+    /usr/sbin/update-rc.d nscd enable
- fi
+

@@ -1,11 +1,7 @@
 #!/bin/bash
 #######################
-# Enable the Name Server Caching Daemon. Does not matter if this is running in
-# an 'upgrade' or 'new install' context.
+# Enable systemd-reloved and make sure the old nscd is disabled
 #######################
 
-if type systemctl &>/dev/null; then
-    systemctl enable --now nscd
-else
-    /sbin/chkconfig nscd on
-fi
+systemctl disable --now nscd 2> /dev/null
+systemctl enable --now systemd-resolved
