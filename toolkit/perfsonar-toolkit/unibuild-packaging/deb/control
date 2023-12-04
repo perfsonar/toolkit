@@ -4,7 +4,8 @@ Priority: optional
 Maintainer: perfSONAR developers <debian@perfsonar.net>
 Build-Depends: debhelper (>= 10), quilt, dh-exec,
  libperfsonar-perl, libperfsonar-toolkit-perl,
- perfsonar-psconfig-pscheduler-dev, perfsonar-psconfig-pscheduler,
+ libperfsonar-psconfig-perl,
+ perfsonar-psconfig-pscheduler,
  libtest-mockobject-perl, libfile-copy-recursive-perl,
  libtest-deep-perl, libcgi-pm-perl, libperfsonar-sls-perl
 Standards-Version: 3.9.8
