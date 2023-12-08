@@ -1,7 +1,7 @@
 scripts/system_environment/testpoint/configure_owamp_testports usr/lib/perfsonar/scripts/system_environment/testpoint/
 scripts/system_environment/testpoint/configure_syslog_local5_location usr/lib/perfsonar/scripts/system_environment/testpoint/
 scripts/system_environment/testpoint/enable_auto_updates usr/lib/perfsonar/scripts/system_environment/testpoint/
-scripts/system_environment/testpoint/enable_nscd usr/lib/perfsonar/scripts/system_environment/testpoint/
+scripts/system_environment/testpoint/enable_dns_caching usr/lib/perfsonar/scripts/system_environment/testpoint/
 scripts/system_environment/testpoint/upgrade_pscheduler_limits usr/lib/perfsonar/scripts/system_environment/testpoint/
 scripts/mod_interface_route usr/lib/perfsonar/scripts/
 # The default OWAMP configuration is managed by the owamp package

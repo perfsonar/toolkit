@@ -18,7 +18,7 @@ Depends: libperfsonar-perl,
  lsb-base, libxml-simple-perl, libcgi-pm-perl,
  libsys-statistics-linux-perl, libperfsonar-sls-perl,
  perfsonar-toolkit-library, liblog-dispatch-filerotate-perl,
- libcgi-ajax-perl, libcgi-session-perl, libjson-xs-perl, nscd,
+ libcgi-ajax-perl, libcgi-session-perl, libjson-xs-perl, systemd,
  perfsonar-common, unattended-upgrades, ntp, ethtool, iproute2,
  libperfsonar-toolkit-perl, perfsonar-lsregistrationdaemon,
  libperfsonar-psconfig-perl, perfsonar-psconfig-pscheduler,
@@ -109,7 +109,7 @@ Description: perfSONAR Toolkit system tuning
 
 Package: perfsonar-toolkit-systemenv-testpoint
 Architecture: all
-Depends: nscd, owamp-server,
+Depends: systemd, owamp-server,
  perfsonar-psconfig-pscheduler, ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Testpoint system tuning
  Tunes and configures the system according to performance

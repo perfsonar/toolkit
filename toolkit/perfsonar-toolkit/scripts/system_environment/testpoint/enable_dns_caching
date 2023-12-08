@@ -1,0 +1,11 @@
+#!/bin/bash
+#######################
+# Enable systemd-reloved and make sure the old nscd is disabled
+#######################
+
+systemctl disable --now nscd 2> /dev/null
+systemctl enable --now systemd-resolved
+grep -q -e '^hosts:\s\+.*resolve.*$' /etc/nsswitch.conf
+if [ $? -eq 1 ]; then
+    sed -i -E 's/^hosts:(\s+)(.+)$/hosts:\1resolve \2/g' /etc/nsswitch.conf
+fi

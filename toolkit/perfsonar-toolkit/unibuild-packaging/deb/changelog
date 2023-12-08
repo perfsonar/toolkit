@@ -1,3 +1,9 @@
+perfsonar-toolkit (5.0.7-1) perfsonar-5.0; urgency=low
+
+  * New upstream version.
+
+ -- perfSONAR developers <debian@perfsonar.net>  Fri, 08 Dec 2023 15:42:53 -0500
+
 perfsonar-toolkit (5.0.6-1) perfsonar-5.0; urgency=low
 
   * New upstream version.

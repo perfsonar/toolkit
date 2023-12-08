@@ -16,7 +16,7 @@
 
 %define crontab_1     cron-service_watcher
 
-%define perfsonar_auto_version 5.0.6
+%define perfsonar_auto_version 5.0.7
 %define perfsonar_auto_relnum 1
 
 Name:           perfsonar-toolkit
@@ -146,7 +146,7 @@ Requires(post): coreutils
 Requires(post): httpd
 Requires(post): iperf
 Requires(post): mod_ssl
-Requires(post): nscd
+Requires(post): systemd-resolved
 
 
 %description
@@ -156,7 +156,7 @@ The perfSONAR Toolkit web GUI and associated services.
 Summary:        perfSONAR Testpoint System Configuration
 Group:          Development/Tools
 Requires:       perfsonar-psconfig-pscheduler
-Requires:       nscd
+Requires:       systemd-resolved
 %if 0%{?el7}
 Requires:       yum-cron
 %else
