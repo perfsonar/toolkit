@@ -136,8 +136,12 @@ Requires(post): coreutils
 Requires(post): httpd
 Requires(post): iperf
 Requires(post): mod_ssl
-Requires(post): nscd
-
+#EL8 puts this in systemd, EL7 and EL9 in systemd-resolved
+%if 0%{?el8}
+Requires(post): systemd
+%else
+Requires(post): systemd-resolved
+%endif
 
 %description
 The perfSONAR Toolkit web GUI and associated services.
@@ -146,7 +150,12 @@ The perfSONAR Toolkit web GUI and associated services.
 Summary:        perfSONAR Testpoint System Configuration
 Group:          Development/Tools
 Requires:       perfsonar-psconfig-pscheduler
-Requires:       nscd
+#EL8 puts this in systemd, EL7 and EL9 in systemd-resolved
+%if 0%{?el8}
+Requires: systemd
+%else
+Requires: systemd-resolved
+%endif
 %if 0%{?el7}
 Requires:       yum-cron
 %else

@@ -1,9 +1,8 @@
 Index: b/scripts/apache-toolkit_web_gui.conf
 ===================================================================
---- a/scripts/apache-toolkit_web_gui.conf	2023-11-21 14:26:23.218708083 +0100
-+++ b/scripts/apache-toolkit_web_gui.conf	2023-11-21 14:26:49.931756590 +0100
-@@ -10,6 +10,11 @@
- # New link to the plot schedule graph
+--- a/scripts/apache-toolkit_web_gui.conf	2023-12-08 15:42:52.308676976 -0500
++++ b/scripts/apache-toolkit_web_gui.conf	2023-12-08 15:42:53.373099352 -0500
+@@ -11,6 +11,11 @@
  Alias /toolkit/plot /usr/lib/perfsonar/web-ng/root/admin/plot.cgi
  
 +# Redirects requests to "/" to "/toolkit". It's done in this strange way to
@@ -72,8 +71,13 @@ Index: b/scripts/apache-toolkit_web_gui.conf
  ServerTokens Prod
 Index: b/scripts/add_pssudo_user
 ===================================================================
+<<<<<<< HEAD
 --- a/scripts/add_pssudo_user	2023-11-21 14:26:23.220006532 +0100
 +++ b/scripts/add_pssudo_user	2023-11-21 14:26:49.932802774 +0100
+=======
+--- a/scripts/add_pssudo_user	2023-12-08 15:42:52.308619643 -0500
++++ b/scripts/add_pssudo_user	2023-12-08 15:42:53.373425767 -0500
+>>>>>>> 5.0.8
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -85,8 +89,13 @@ Index: b/scripts/add_pssudo_user
      sys.exit(1)
 Index: b/init_scripts/perfsonar-configure_nic_parameters
 ===================================================================
+<<<<<<< HEAD
 --- a/init_scripts/perfsonar-configure_nic_parameters	2023-11-21 14:26:23.222065344 +0100
 +++ b/init_scripts/perfsonar-configure_nic_parameters	2023-11-21 14:26:49.933422981 +0100
+=======
+--- a/init_scripts/perfsonar-configure_nic_parameters	2023-12-08 15:42:52.307580065 -0500
++++ b/init_scripts/perfsonar-configure_nic_parameters	2023-12-08 15:42:53.373624557 -0500
+>>>>>>> 5.0.8
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -126,8 +135,13 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
          RETVAL=2
 Index: b/init_scripts/perfsonar-generate_motd
 ===================================================================
+<<<<<<< HEAD
 --- a/init_scripts/perfsonar-generate_motd	2023-11-21 14:26:23.223683072 +0100
 +++ b/init_scripts/perfsonar-generate_motd	2023-11-21 14:26:49.934235963 +0100
+=======
+--- a/init_scripts/perfsonar-generate_motd	2023-12-08 15:42:52.307638523 -0500
++++ b/init_scripts/perfsonar-generate_motd	2023-12-08 15:42:53.373841348 -0500
+>>>>>>> 5.0.8
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -153,8 +167,13 @@ Index: b/init_scripts/perfsonar-generate_motd
  use warnings;
 Index: b/web-ng/root/gui/reverse_traceroute.cgi
 ===================================================================
+<<<<<<< HEAD
 --- a/web-ng/root/gui/reverse_traceroute.cgi	2023-11-21 14:26:23.225381920 +0100
 +++ b/web-ng/root/gui/reverse_traceroute.cgi	2023-11-21 14:26:49.935167292 +0100
+=======
+--- a/web-ng/root/gui/reverse_traceroute.cgi	2023-12-08 15:42:52.323786984 -0500
++++ b/web-ng/root/gui/reverse_traceroute.cgi	2023-12-08 15:42:53.374161180 -0500
+>>>>>>> 5.0.8
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -166,8 +185,13 @@ Index: b/web-ng/root/gui/reverse_traceroute.cgi
  #########################################################################
 Index: b/etc/perfsonar_ulimit.conf
 ===================================================================
+<<<<<<< HEAD
 --- a/etc/perfsonar_ulimit.conf	2023-11-21 14:26:23.227261286 +0100
 +++ b/etc/perfsonar_ulimit.conf	2023-11-21 14:26:49.936516741 +0100
+=======
+--- a/etc/perfsonar_ulimit.conf	2023-12-08 15:42:52.307127942 -0500
++++ b/etc/perfsonar_ulimit.conf	2023-12-08 15:42:53.374454928 -0500
+>>>>>>> 5.0.8
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
