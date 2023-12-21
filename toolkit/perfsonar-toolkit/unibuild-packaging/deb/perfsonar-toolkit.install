@@ -7,7 +7,6 @@ web-ng/root/gui  usr/lib/perfsonar/web-ng/root/
 web-ng/root/images  usr/lib/perfsonar/web-ng/root/
 web-ng/root/index.cgi  usr/lib/perfsonar/web-ng/root/
 web-ng/root/js  usr/lib/perfsonar/web-ng/root/
-etc/01-input-local_prometheus.conf /usr/lib/perfsonar/logstash/prometheus_pipeline/
 etc/administrative_info etc/perfsonar/toolkit
 etc/default_service_configs/jail.local etc/perfsonar/toolkit/default_service_configs/
 etc/perfsonar_sudo etc/sudoers.d
