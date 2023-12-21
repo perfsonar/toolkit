@@ -2,4 +2,3 @@
 etc/servicewatcher.conf etc/perfsonar/toolkit
 etc/servicewatcher-logger.conf etc/perfsonar/toolkit
 scripts/service_watcher usr/lib/perfsonar/scripts
-scripts/cron-service_watcher => etc/cron.d/perfsonar-toolkit-servicewatcher

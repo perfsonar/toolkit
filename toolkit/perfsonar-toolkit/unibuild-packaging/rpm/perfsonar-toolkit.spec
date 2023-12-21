@@ -13,8 +13,6 @@
 %define init_script_2 perfsonar-generate_motd
 %define init_script_3 perfsonar-configure_nic_parameters
 
-%define crontab_1     cron-service_watcher
-
 %define perfsonar_auto_version 5.1.0
 %define perfsonar_auto_relnum 0.a1.0
 
@@ -396,8 +394,6 @@ rm -rf %{buildroot}
 
 make ROOTPATH=%{buildroot}/%{install_base} CONFIGPATH=%{buildroot}/%{config_base} install
 
-install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
-
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 install -D -m 0644 scripts/%{apacheconf_webservices} %{buildroot}/etc/httpd/conf.d/%{apacheconf_webservices}
 install -D -m 0644 etc/apache-perfsonar-security.conf %{buildroot}/etc/httpd/conf.d/apache-perfsonar-security.conf
@@ -422,7 +418,6 @@ mv etc/* %{buildroot}/%{config_base}
 
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/etc
-rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf_webservices}
 rm -rf %{buildroot}/%{install_base}/init_scripts
@@ -743,7 +738,6 @@ fi
 %config(noreplace) %{config_base}/servicewatcher.conf
 %config(noreplace) %{config_base}/servicewatcher-logger.conf
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
-%attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
 %files archive-utils
 %license LICENSE

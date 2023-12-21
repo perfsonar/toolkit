@@ -1,3 +1,0 @@
-MAILTO=root
-0 * * * * root /usr/lib/perfsonar/scripts/service_watcher &> /var/log/perfsonar/servicewatcher_error.log
-5 1 1 * * root /usr/lib/perfsonar/scripts/service_watcher --regular_restart &> /var/log/perfsonar/servicewatcher_error.log
