@@ -1,5 +1,0 @@
-#!/bin/bash
-
-#execute script to enable prometheus pipeline
-/usr/lib/perfsonar/logstash/scripts/enable_prometheus_pipeline.py
-systemctl restart logstash

@@ -46,7 +46,6 @@ scripts/configure_firewall
 scripts/configure_memcached_security
 scripts/configure_ntpd
 scripts/configure_sysctl
-scripts/system_environment/enable_logstash_prometheus
 scripts/manage_users
 scripts/mod_interface_route
 scripts/nptoolkit-configure.py
