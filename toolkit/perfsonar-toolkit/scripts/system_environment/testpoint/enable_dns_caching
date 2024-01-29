@@ -1,11 +1,22 @@
 #!/bin/bash
 #######################
-# Enable systemd-reloved and make sure the old nscd is disabled
+# Enable systemd-resolved and make sure the old nscd is disabled
 #######################
 
 systemctl disable --now nscd 2> /dev/null
 systemctl enable --now systemd-resolved
-grep -q -e '^hosts:\s\+.*resolve.*$' /etc/nsswitch.conf
-if [ $? -eq 1 ]; then
-    sed -i -E 's/^hosts:(\s+)(.+)$/hosts:\1resolve \2/g' /etc/nsswitch.conf
-fi
+
+# Put resolved into the name service switch configuration.  It needs
+# to go before 'files' because, even though systemd-resolved claims to
+# synthesize entries for the local system, it doesn't.  That causes
+# problems trying to resolve the local host's name.
+
+# Steps:
+# - Remove any instance of 'resolve'
+# - If there's a 'files' insert 'resolve' after that
+# - If there's no 'files', insert 'resolve' first
+sed -i -E \
+    -e '/^hosts:/         s/resolve[[:space:]]?//' \
+    -e '/^hosts:.*files/  s/files/files resolve/' \
+    -e '/^hosts:.*files/! s/^(hosts:[[:space:]]*)/\1resolve /' \
+    /etc/nsswitch.conf
