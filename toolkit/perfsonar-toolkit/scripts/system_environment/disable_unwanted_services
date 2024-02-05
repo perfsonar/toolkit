@@ -31,7 +31,6 @@ if [ "$1" == "new" ]; then
     disable_service kudzu
     disable_service mdmonitor
     disable_service mdmpd
-    disable_service NetworkManager
     disable_service ndt
     disable_service netfs
     disable_service nfs
@@ -50,4 +49,17 @@ if [ "$1" == "new" ]; then
     disable_service tuned
     disable_service ypbind
     disable_service yum-updatesd
+
+    # NetworkManager gets disabled on EL8 and earlier and left alone
+    # on EL9+.
+
+    if [ -e /etc/redhat-release ]
+    then
+        MAJOR_VERSION=$(sed -e 's/^.*release\s\+//; s/[^0-9].*$//' /etc/redhat-release)
+        if [ "${MAJOR_VERSION}" -lt 9 ]
+        then
+            disable_service NetworkManager
+        fi
+    fi
+
 fi
