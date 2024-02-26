@@ -175,7 +175,6 @@ Summary:        perfSONAR Toolkit System Configuration
 Group:          Development/Tools
 Requires:       perfsonar-toolkit-security
 Requires:       perfsonar-toolkit-sysctl
-Requires:       perfsonar-toolkit-servicewatcher
 #TODO: Revisit this
 %if 0%{?el7}
 Requires:       perfsonar-toolkit-ntp
@@ -330,22 +329,6 @@ Requires(post):         coreutils
 %description ntp
 Configures ntp servers for the Toolkit
 
-%package servicewatcher
-Summary:                perfSONAR Toolkit service watcher
-Group:                  Development/Tools
-Requires:               coreutils
-%if 0%{?el7}
-Requires:               ntp
-%endif
-Requires:               perfsonar-toolkit-library
-Requires:               libperfsonar-toolkit-perl
-Requires(pre):          rpm
-Requires(post):         perfsonar-common
-Requires(post):         coreutils
-
-%description servicewatcher
-Installs the service-watcher package
-
 %pre systemenv-testpoint
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
@@ -367,11 +350,6 @@ mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
 %pre ntp
-rm -rf %{_localstatedir}/lib/rpm-state
-mkdir -p %{_localstatedir}/lib/rpm-state
-rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
-
-%pre servicewatcher
 rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
@@ -611,9 +589,6 @@ else
     %{install_base}/scripts/configure_sysctl upgrade ${PREV_VERSION}
 fi
 
-%post servicewatcher
-
-
 %post archive-utils
 
 #configure http archiver
@@ -635,8 +610,6 @@ fi
 %exclude %{config_base}/perfsonar_firewall_settings.conf
 %exclude %{config_base}/perfsonar_firewalld_settings.conf
 %exclude %{config_base}/ntp_known_servers
-%exclude %{config_base}/servicewatcher.conf
-%exclude %{config_base}/servicewatcher-logger.conf
 %exclude %{config_base}/templates/ntp_conf.tmpl
 %exclude %{config_base}/default_service_configs/pscheduler_limits.conf
 %exclude %{config_base}/perfsonar_ulimit.conf
@@ -728,12 +701,6 @@ fi
 /etc/httpd/conf.d/%{apacheconf_webservices}
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
-
-%files servicewatcher
-%license LICENSE
-%config(noreplace) %{config_base}/servicewatcher.conf
-%config(noreplace) %{config_base}/servicewatcher-logger.conf
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
 
 %files archive-utils
 %license LICENSE

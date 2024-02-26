@@ -21,8 +21,6 @@ etc/perfsonar_firewalld_settings.conf
 etc/perfsonar_sudo
 etc/perfsonar_ulimit.conf
 etc/perfsonar_ulimit_apache.conf
-etc/servicewatcher-logger.conf
-etc/servicewatcher.conf
 etc/templates/motd.tmpl
 etc/templates/ntp_conf.tmpl
 init_scripts/perfsonar-configdaemon
@@ -52,7 +50,6 @@ scripts/nptoolkit-configure.py
 scripts/ps-migrate-backup.sh
 scripts/ps-migrate-restore.sh
 scripts/remove_home_partition
-scripts/service_watcher
 scripts/system_environment/add_psadmin_pssudo
 scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path

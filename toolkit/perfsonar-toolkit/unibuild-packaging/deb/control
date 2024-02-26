@@ -57,13 +57,6 @@ Depends: libperfsonar-perl, ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Toolkit sysctl configuration
  Configures sysctl settings for perfSONAR Toolkit.
 
-Package: perfsonar-toolkit-servicewatcher
-Architecture: all
-Depends: libperfsonar-toolkit-perl, perfsonar-common,
- ${perl:Depends}, ${misc:Depends}
-Description: perfSONAR Toolkit service watcher
- Installs the service-watcher cron job.
-
 Package: perfsonar-toolkit-ntp
 Architecture: all
 Depends: ntp, perfsonar-toolkit-library,
@@ -98,8 +91,7 @@ Description: perfSONAR Toolkit core scripts
 Package: perfsonar-toolkit-systemenv
 Architecture: all
 Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
- perfsonar-toolkit-servicewatcher, perfsonar-toolkit-ntp,
- perfsonar-toolkit-library, perfsonar-psconfig-pscheduler,
+ perfsonar-toolkit-ntp, perfsonar-toolkit-library, perfsonar-psconfig-pscheduler,
  perfsonar-toolkit-systemenv-testpoint, perfsonar-toolkit-config-daemon,
  perfsonar-lsregistrationdaemon,
  ${misc:Depends}
