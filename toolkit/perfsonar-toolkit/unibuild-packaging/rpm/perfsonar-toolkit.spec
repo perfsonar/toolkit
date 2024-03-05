@@ -92,6 +92,7 @@ Requires:       perfsonar-common
 Requires:       perfsonar-core
 Requires:       perfsonar-psconfig-publisher
 Requires:       libperfsonar-perl
+Requires:       libperfsonar-psconfig-perl
 Requires:       libperfsonar-regulartesting-perl
 Requires:       libperfsonar-sls-perl
 Requires:       libperfsonar-toolkit-perl
