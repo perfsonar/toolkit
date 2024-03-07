@@ -29,7 +29,7 @@ require {
 	type systemd_unit_file_t;
 	class dbus { send_msg };
 	class dir { ioctl read write getattr lock search open add_name };
-	class file { getattr open read unlink ioctl lock execute execute_no_trans create };
+	class file { getattr open read unlink ioctl lock execute execute_no_trans create write };
 	class lnk_file { read getattr };
 	class system { status };
 	class rawip_socket { create };
