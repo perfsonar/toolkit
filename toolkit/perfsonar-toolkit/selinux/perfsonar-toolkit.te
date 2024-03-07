@@ -28,7 +28,7 @@ require {
 	type sysctl_net_t;
 	type systemd_unit_file_t;
 	class dbus { send_msg };
-	class dir { ioctl read write getattr lock search open };
+	class dir { ioctl read write getattr lock search open add_name; };
 	class file { getattr open read unlink ioctl lock execute execute_no_trans };
 	class lnk_file { read getattr };
 	class system { status };
@@ -101,4 +101,5 @@ allow httpd_t sysctl_net_t:file { getattr ioctl open read };
 
 #misc
 allow httpd_t httpd_sys_content_t:dir write;
+allow httpd_t httpd_sys_content_t:dir add_name
 allow httpd_t self:netlink_generic_socket create;
