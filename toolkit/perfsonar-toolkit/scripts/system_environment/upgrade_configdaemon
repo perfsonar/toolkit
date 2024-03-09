@@ -34,7 +34,7 @@ if [ $UPDATE_CONFIG -eq 1 ]; then
 
 echo "Replacing /etc/perfsonar/toolkit/configdaemon.conf"
 cat > /etc/perfsonar/toolkit/configdaemon.conf <<- EOF
-address     127.0.0.1
+address     localhost
 port        9000
 firewall_script /usr/lib/perfsonar/scripts/system_environment/configure_firewall
 
