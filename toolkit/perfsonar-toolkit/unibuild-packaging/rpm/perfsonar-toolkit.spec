@@ -635,7 +635,6 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/tests.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/plot.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
 %attr(0644,root,root) %{_unitdir}/%{init_script_1}.service
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}

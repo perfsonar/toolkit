@@ -127,7 +127,6 @@ web-ng/root/images/perfSONAR-logo-reversed-green.png
 web-ng/root/images/perfSONAR-logo-reversed.png
 web-ng/root/images/perfSONAR-logo-whitebg.png
 web-ng/root/images/perfSONAR-logo.png
-web-ng/root/index.cgi
 web-ng/root/js/actions/Dispatcher.js
 web-ng/root/js/admin/components/AdminInfoUpdateComponent.js
 web-ng/root/js/admin/components/AllowInternalAddressesComponent.js
