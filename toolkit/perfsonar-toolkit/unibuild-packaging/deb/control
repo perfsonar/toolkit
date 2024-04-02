@@ -54,8 +54,11 @@ Description: perfSONAR Toolkit firewall configuration
 Package: perfsonar-toolkit-sysctl
 Architecture: all
 Depends: libperfsonar-perl, ${perl:Depends}, ${misc:Depends}
+Conflicts: network-manager
 Description: perfSONAR Toolkit sysctl configuration
  Configures sysctl settings for perfSONAR Toolkit.
+ These settings are tuning the network stack.
+ Conflicts with network-manager.
 
 Package: perfsonar-toolkit-ntp
 Architecture: all
