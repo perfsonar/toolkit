@@ -4,7 +4,14 @@ perfsonar-toolkit (5.1.0~b1.5-1) perfsonar-5.1; urgency=low
 
  -- perfSONAR developers <debian@perfsonar.net>  Tue, 23 Apr 2024 09:50:29 -0400
 
-perfsonar-toolkit (5.0.8~a1.0-1) perfsonar-5.0-snapshot; urgency=low
+perfsonar-toolkit (5.0.8-2) perfsonar-5.0; urgency=low
+
+  * Loading Apache Rewrite config for the SSL VHost too.
+  * Adding link to pscheduler.log in /var/log/perfsonar
+
+ -- Lætitia Delvaux <adelvaux@man.poznan.pl>  Fri, 10 May 2024 00:28:53 +0200 
+
+perfsonar-toolkit (5.0.8-1) perfsonar-5.0; urgency=low
 
   * New upstream version.
 
