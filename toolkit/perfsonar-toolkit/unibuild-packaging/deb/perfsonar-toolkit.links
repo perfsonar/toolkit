@@ -1,1 +1,2 @@
 /var/log/perfsonar /usr/lib/perfsonar/web-ng/root/admin/logs
+/var/log/pscheduler/pscheduler.log /var/log/perfsonar/pscheduler.log
