@@ -3,7 +3,7 @@ perfsonar-toolkit (5.0.8-2) perfsonar-5.0; urgency=low
   * Loading Apache Rewrite config for the SSL VHost too.
   * Adding link to pscheduler.log in /var/log/perfsonar
 
- -- Lætitia Delvaux <adelvaux@man.poznan.pl>  Thu, 09 May 2024 22:29:57 +0200 
+ -- Lætitia Delvaux <adelvaux@man.poznan.pl>  Fri, 10 May 2024 00:28:53 +0200 
 
 perfsonar-toolkit (5.0.8-1) perfsonar-5.0; urgency=low
 
