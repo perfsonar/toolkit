@@ -202,6 +202,8 @@ Requires(post): rsyslog
 Requires(post): setup
 Requires(post): smartmontools
 Requires(post): sudo
+Obsoletes: perfsonar-toolkit-servicewatcher
+Provides: perfsonar-toolkit-servicewatcher
 
 %description systemenv
 Tunes and configures the system according to performance and security best
