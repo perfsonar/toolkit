@@ -98,8 +98,8 @@ Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
  perfsonar-toolkit-systemenv-testpoint, perfsonar-toolkit-config-daemon,
  perfsonar-lsregistrationdaemon,
  ${misc:Depends}
-Breaks: perfsonar-toolkit-servicewatcher (<<5.1.0-b1.1-1)
-Replaces: perfsonar-toolkit-servicewatcher (<<5.1.0-b1.1-1)
+Breaks: perfsonar-toolkit-servicewatcher (<<5.1.0~b1.1-1)
+Replaces: perfsonar-toolkit-servicewatcher (<<5.1.0~b1.1-1)
 Description: perfSONAR Toolkit system tuning
  Tunes and configures the system according to performance
  and security best practices.
