@@ -1,8 +1,8 @@
 Index: b/scripts/apache-toolkit_web_gui.conf
 ===================================================================
---- a/scripts/apache-toolkit_web_gui.conf	2024-04-23 09:50:29.046604482 -0400
-+++ b/scripts/apache-toolkit_web_gui.conf	2024-04-23 09:50:30.232001639 -0400
-@@ -10,6 +10,11 @@
+--- a/scripts/apache-toolkit_web_gui.conf	2024-06-03 10:24:51.212550392 -0400
++++ b/scripts/apache-toolkit_web_gui.conf	2024-06-03 10:24:52.312236443 -0400
+@@ -13,6 +13,11 @@
  # New link to the plot schedule graph
  Alias /toolkit/plot /usr/lib/perfsonar/web-ng/root/admin/plot.cgi
  
@@ -14,7 +14,7 @@ Index: b/scripts/apache-toolkit_web_gui.conf
  # Redirect from /index.cgi?format=json to the new host summary page
  RewriteCond %{QUERY_STRING} format=json
  RewriteRule ^/toolkit/index.cgi /toolkit/services/host.cgi?method=get_summary [R,L]
-@@ -79,23 +84,11 @@
+@@ -82,23 +87,11 @@
      Options +FollowSymLinks -MultiViews +ExecCGI
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
@@ -42,7 +42,7 @@ Index: b/scripts/apache-toolkit_web_gui.conf
  </Location>
  
  # Allow indexes on logs
-@@ -109,23 +102,11 @@
+@@ -112,23 +105,11 @@
      DirectoryIndex index.cgi index.php index.html
      AddHandler cgi-script .cgi
      AllowOverride All
@@ -72,8 +72,8 @@ Index: b/scripts/apache-toolkit_web_gui.conf
  ServerTokens Prod
 Index: b/scripts/add_pssudo_user
 ===================================================================
---- a/scripts/add_pssudo_user	2024-04-23 09:50:28.597692861 -0400
-+++ b/scripts/add_pssudo_user	2024-04-23 09:50:30.232670432 -0400
+--- a/scripts/add_pssudo_user	2024-06-03 10:24:50.780811416 -0400
++++ b/scripts/add_pssudo_user	2024-06-03 10:24:52.312871943 -0400
 @@ -104,7 +104,7 @@
      fout.write(buffer)
  
@@ -85,8 +85,8 @@ Index: b/scripts/add_pssudo_user
      sys.exit(1)
 Index: b/init_scripts/perfsonar-configure_nic_parameters
 ===================================================================
---- a/init_scripts/perfsonar-configure_nic_parameters	2024-04-23 09:50:28.596380318 -0400
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2024-04-23 09:50:30.233065224 -0400
+--- a/init_scripts/perfsonar-configure_nic_parameters	2024-06-03 10:24:50.779322667 -0400
++++ b/init_scripts/perfsonar-configure_nic_parameters	2024-06-03 10:24:52.313215317 -0400
 @@ -1,17 +1,12 @@
  #!/bin/sh
 -#
@@ -126,8 +126,8 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
          RETVAL=2
 Index: b/init_scripts/perfsonar-generate_motd
 ===================================================================
---- a/init_scripts/perfsonar-generate_motd	2024-04-23 09:50:28.596449276 -0400
-+++ b/init_scripts/perfsonar-generate_motd	2024-04-23 09:50:30.233482141 -0400
+--- a/init_scripts/perfsonar-generate_motd	2024-06-03 10:24:50.779404375 -0400
++++ b/init_scripts/perfsonar-generate_motd	2024-06-03 10:24:52.313593567 -0400
 @@ -1,11 +1,15 @@
  #!/usr/bin/perl
 -#
@@ -153,8 +153,8 @@ Index: b/init_scripts/perfsonar-generate_motd
  use warnings;
 Index: b/web-ng/root/gui/reverse_traceroute.cgi
 ===================================================================
---- a/web-ng/root/gui/reverse_traceroute.cgi	2024-04-23 09:50:28.619268097 -0400
-+++ b/web-ng/root/gui/reverse_traceroute.cgi	2024-04-23 09:50:30.234050017 -0400
+--- a/web-ng/root/gui/reverse_traceroute.cgi	2024-06-03 10:24:50.801372153 -0400
++++ b/web-ng/root/gui/reverse_traceroute.cgi	2024-06-03 10:24:52.314131234 -0400
 @@ -273,7 +273,7 @@
  #########################################################################
  # Build the executable function for tracepath
@@ -166,8 +166,8 @@ Index: b/web-ng/root/gui/reverse_traceroute.cgi
  #########################################################################
 Index: b/etc/perfsonar_ulimit.conf
 ===================================================================
---- a/etc/perfsonar_ulimit.conf	2024-04-23 09:50:28.595651733 -0400
-+++ b/etc/perfsonar_ulimit.conf	2024-04-23 09:50:30.234680352 -0400
+--- a/etc/perfsonar_ulimit.conf	2024-06-03 10:24:50.778708792 -0400
++++ b/etc/perfsonar_ulimit.conf	2024-06-03 10:24:52.314670067 -0400
 @@ -1,8 +1,8 @@
  # Increases process limit and number of files open for various perfsonar tools
  
