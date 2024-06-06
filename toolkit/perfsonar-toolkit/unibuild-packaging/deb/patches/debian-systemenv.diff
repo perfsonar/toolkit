@@ -1,7 +1,7 @@
 Index: b/scripts/system_environment/configure_fail2ban
 ===================================================================
---- a/scripts/system_environment/configure_fail2ban	2024-06-03 10:24:50.782485957 -0400
-+++ b/scripts/system_environment/configure_fail2ban	2024-06-03 10:24:53.177095392 -0400
+--- a/scripts/system_environment/configure_fail2ban	2024-06-06 11:39:50.493325038 -0400
++++ b/scripts/system_environment/configure_fail2ban	2024-06-06 11:39:52.842875696 -0400
 @@ -10,5 +10,5 @@
      echo "" >> /etc/fail2ban/jail.local
      echo "[sshd]" >> /etc/fail2ban/jail.local
@@ -11,8 +11,8 @@ Index: b/scripts/system_environment/configure_fail2ban
  fi
 Index: b/scripts/system_environment/upgrade_configdaemon
 ===================================================================
---- a/scripts/system_environment/upgrade_configdaemon	2024-06-03 10:24:51.213473767 -0400
-+++ b/scripts/system_environment/upgrade_configdaemon	2024-06-03 10:24:53.177643309 -0400
+--- a/scripts/system_environment/upgrade_configdaemon	2024-06-06 11:39:50.952257664 -0400
++++ b/scripts/system_environment/upgrade_configdaemon	2024-06-06 11:39:52.843472111 -0400
 @@ -87,5 +87,5 @@
  EOF
  
@@ -22,8 +22,8 @@ Index: b/scripts/system_environment/upgrade_configdaemon
  fi
 Index: b/scripts/system_environment/upgrade_fix_permissions
 ===================================================================
---- a/scripts/system_environment/upgrade_fix_permissions	2024-06-03 10:24:50.783796706 -0400
-+++ b/scripts/system_environment/upgrade_fix_permissions	2024-06-03 10:24:53.177931559 -0400
+--- a/scripts/system_environment/upgrade_fix_permissions	2024-06-06 11:39:50.494447076 -0400
++++ b/scripts/system_environment/upgrade_fix_permissions	2024-06-06 11:39:52.843770610 -0400
 @@ -8,10 +8,10 @@
  chown -R perfsonar:perfsonar /var/log/perfsonar
  
@@ -49,8 +49,8 @@ Index: b/scripts/system_environment/upgrade_fix_permissions
 +chown -R www-data /var/lib/cacti/rra 2> /dev/null
 Index: b/scripts/system_environment/testpoint/configure_syslog_local5_location
 ===================================================================
---- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2024-06-03 10:24:50.783267040 -0400
-+++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2024-06-03 10:24:53.178255475 -0400
+--- a/scripts/system_environment/testpoint/configure_syslog_local5_location	2024-06-06 11:39:50.494002119 -0400
++++ b/scripts/system_environment/testpoint/configure_syslog_local5_location	2024-06-06 11:39:52.844114109 -0400
 @@ -11,32 +11,17 @@
      mv /var/log/perfsonar/owamp.log /var/log/perfsonar/owamp.log.old  
  fi
