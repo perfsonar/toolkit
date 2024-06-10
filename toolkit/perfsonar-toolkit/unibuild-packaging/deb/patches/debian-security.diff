@@ -1,7 +1,7 @@
 Index: b/scripts/configure_firewall
 ===================================================================
---- a/scripts/configure_firewall	2024-05-09 23:38:58.760295000 +0200
-+++ b/scripts/configure_firewall	2024-05-10 00:28:54.207872765 +0200
+--- a/scripts/configure_firewall	2024-06-06 11:39:50.492147499 -0400
++++ b/scripts/configure_firewall	2024-06-06 11:39:51.878830186 -0400
 @@ -38,7 +38,7 @@
      if type firewall-cmd &>/dev/null; then
          firewall-cmd --quiet --runtime-to-permanent

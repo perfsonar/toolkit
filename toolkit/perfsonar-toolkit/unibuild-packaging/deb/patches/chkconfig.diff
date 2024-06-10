@@ -1,7 +1,7 @@
 Index: b/init_scripts/perfsonar-configure_nic_parameters
 ===================================================================
---- a/init_scripts/perfsonar-configure_nic_parameters	2024-05-10 00:28:54.709621996 +0200
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2024-05-10 00:28:55.455499792 +0200
+--- a/init_scripts/perfsonar-configure_nic_parameters	2024-06-06 11:39:52.098712627 -0400
++++ b/init_scripts/perfsonar-configure_nic_parameters	2024-06-06 11:39:52.476810125 -0400
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -11,25 +11,7 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
  
  # always set these on perfsonar hosts
  DISABLE_TCP_OFFLOAD=1
-@@ -31,15 +31,8 @@
- fi
- 
- # find all the interfaces besides loopback.
--# ignore aliases, alternative configurations, and editor backup files
--interfaces=$(ls /etc/sysconfig/network-scripts/ifcfg* | \
--            LANG=C sed -e "$__sed_discard_ignored_files" \
--                       -e '/\(ifcfg-lo\|:\|ifcfg-.*-range\)/d' \
--                       -e '/ifcfg-[A-Za-z0-9\._-]\+$/ { s/^ifcfg-//g;s/[0-9]/ &/}' | \
--            LANG=C sort -k 1,1 -k 2n | \
--            LANG=C sed 's/ //' | \
--            LANG=C cut -d/ -f 5 | \
--        LANG=C sed -e 's/ifcfg-//g' )
-+# Similar code to what is used in get_ethernet_interfaces() from perfSONAR_PS/Util/Host.pm
-+interfaces=$(/sbin/ip addr show | grep -v LOOPBACK | awk -F ':' '/^[0-9]+:.*state (UP|UNKNOWN).*/ { sub("@.*","",$2); sub(" ","",$2); print $2 }')
- 
- start() {
- ret=0
-@@ -57,34 +50,34 @@
+@@ -50,34 +50,34 @@
          RETVAL=$?
          if [ $RETVAL -eq 0 ]; then
              # apply multi-ethtool settings
@@ -73,7 +55,7 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
          fi
      fi
  done
-@@ -132,7 +125,6 @@
+@@ -125,7 +125,6 @@
  
  case "$1" in
      start|restart|force-reload)
@@ -83,8 +65,8 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
          ;;
 Index: b/scripts/system_environment/disable_unwanted_services
 ===================================================================
---- a/scripts/system_environment/disable_unwanted_services	2024-05-10 00:28:02.448635131 +0200
-+++ b/scripts/system_environment/disable_unwanted_services	2024-05-10 00:28:55.456166671 +0200
+--- a/scripts/system_environment/disable_unwanted_services	2024-06-06 11:39:50.493577620 -0400
++++ b/scripts/system_environment/disable_unwanted_services	2024-06-06 11:39:52.477493331 -0400
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -99,8 +81,8 @@ Index: b/scripts/system_environment/disable_unwanted_services
  
 Index: b/scripts/system_environment/testpoint/enable_auto_updates
 ===================================================================
---- a/scripts/system_environment/testpoint/enable_auto_updates	2024-05-10 00:28:02.450213082 +0200
-+++ b/scripts/system_environment/testpoint/enable_auto_updates	2024-05-10 00:28:55.456786422 +0200
+--- a/scripts/system_environment/testpoint/enable_auto_updates	2024-06-06 11:39:50.494062036 -0400
++++ b/scripts/system_environment/testpoint/enable_auto_updates	2024-06-06 11:39:52.478074371 -0400
 @@ -11,22 +11,19 @@
  MAJOR=${PREV_VERSION%%\.*}
  REST=${PREV_VERSION/${MAJOR}\.}

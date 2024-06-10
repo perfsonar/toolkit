@@ -5,7 +5,6 @@ web-ng/root/data  usr/lib/perfsonar/web-ng/root/
 web-ng/root/favicon.ico  usr/lib/perfsonar/web-ng/root/
 web-ng/root/gui  usr/lib/perfsonar/web-ng/root/
 web-ng/root/images  usr/lib/perfsonar/web-ng/root/
-web-ng/root/index.cgi  usr/lib/perfsonar/web-ng/root/
 web-ng/root/js  usr/lib/perfsonar/web-ng/root/
 etc/administrative_info etc/perfsonar/toolkit
 etc/default_service_configs/jail.local etc/perfsonar/toolkit/default_service_configs/
@@ -18,8 +17,8 @@ scripts/apache-toolkit_web_gui.conf etc/apache2/conf-available/
 scripts/add_psadmin_user usr/lib/perfsonar/scripts/
 scripts/add_pssudo_user usr/lib/perfsonar/scripts/
 scripts/configure_apache_security usr/lib/perfsonar/scripts/
-scripts/find_bwctl_measurements usr/lib/perfsonar/scripts/
 scripts/manage_users usr/lib/perfsonar/scripts/
 scripts/ps-migrate-backup.sh usr/lib/perfsonar/scripts/
 scripts/ps-migrate-restore.sh usr/lib/perfsonar/scripts/
 scripts/remove_home_partition usr/lib/perfsonar/scripts/
+

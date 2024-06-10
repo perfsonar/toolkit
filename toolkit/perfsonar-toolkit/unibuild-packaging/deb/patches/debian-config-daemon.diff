@@ -1,7 +1,7 @@
 Index: b/bin/config_daemon.pl
 ===================================================================
---- a/bin/config_daemon.pl	2024-05-09 23:38:59.145764000 +0200
-+++ b/bin/config_daemon.pl	2024-05-10 00:28:53.658750273 +0200
+--- a/bin/config_daemon.pl	2024-06-06 11:39:50.488449675 -0400
++++ b/bin/config_daemon.pl	2024-06-06 11:39:51.653092801 -0400
 @@ -29,7 +29,7 @@
  use Log::Log4perl qw/:easy/;
  
@@ -22,10 +22,10 @@ Index: b/bin/config_daemon.pl
  ( $status, $res ) = lockPIDFile( $PIDFILE );
 Index: b/etc/configdaemon.conf
 ===================================================================
---- a/etc/configdaemon.conf	2024-05-09 23:38:59.145917000 +0200
-+++ b/etc/configdaemon.conf	2024-05-10 00:28:53.659479742 +0200
+--- a/etc/configdaemon.conf	2024-06-06 11:39:50.950282586 -0400
++++ b/etc/configdaemon.conf	2024-06-06 11:39:51.653686966 -0400
 @@ -1,6 +1,6 @@
- address     127.0.0.1
+ address     localhost
  port        9000
 -firewall_script /usr/lib/perfsonar/scripts/system_environment/configure_firewall
 +firewall_script /usr/lib/perfsonar/scripts/configure_firewall

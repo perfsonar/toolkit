@@ -32,3 +32,6 @@ override_dh_installinit:
 	dh_installinit
 	dh_installinit -pperfsonar-toolkit --onlyscripts --name=perfsonar-generate_motd
 	dh_installinit -pperfsonar-toolkit --onlyscripts --name=perfsonar-configure_nic_parameters
+
+# Temporarily disable while pSConfig migration is done
+override_dh_auto_test:

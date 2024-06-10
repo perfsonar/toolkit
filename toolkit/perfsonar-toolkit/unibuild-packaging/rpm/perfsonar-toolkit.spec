@@ -2,7 +2,6 @@
 
 %define install_base /usr/lib/perfsonar
 %define config_base /etc/perfsonar/toolkit
-%define graphs_base %{install_base}/graphs
 
 %define webng_config /usr/lib/perfsonar/web-ng/etc
 
@@ -14,10 +13,8 @@
 %define init_script_2 perfsonar-generate_motd
 %define init_script_3 perfsonar-configure_nic_parameters
 
-%define crontab_1     cron-service_watcher
-
-%define perfsonar_auto_version 5.0.8
-%define perfsonar_auto_relnum 1
+%define perfsonar_auto_version 5.1.0
+%define perfsonar_auto_relnum 0.b2.7
 
 Name:           perfsonar-toolkit
 Version:        %{perfsonar_auto_version}
@@ -93,11 +90,9 @@ Patch1:         remove_ntp_configdaemon.patch
 #perfSONAR packages
 Requires:       perfsonar-common
 Requires:       perfsonar-core
-Requires:       perfsonar-lscachedaemon
-Requires:       perfsonar-graphs
 Requires:       perfsonar-psconfig-publisher
-Requires:       perfsonar-traceroute-viewer
 Requires:       libperfsonar-perl
+Requires:       libperfsonar-psconfig-perl
 Requires:       libperfsonar-regulartesting-perl
 Requires:       libperfsonar-sls-perl
 Requires:       libperfsonar-toolkit-perl
@@ -105,12 +100,12 @@ Requires:       perfsonar-toolkit-install
 Requires:       perfsonar-toolkit-systemenv
 Requires:       perfsonar-toolkit-web-services
 Requires:       perfsonar-archive
+Requires:       perfsonar-grafana-toolkit
 
 # Misc performance/performance-related tools
 Requires:       coreutils
 Requires:       httpd
 Requires:       mod_ssl
-Requires:       nagios-plugins-all
 BuildRequires:  systemd
 %{?systemd_requires: %systemd_requires}
 
@@ -126,16 +121,10 @@ BuildRequires: perl-Test-MockObject
 # Deep object comparision
 BuildRequires: perl-Test-Deep
 
-Obsoletes:      perl-perfSONAR_PS-TopologyService
-Obsoletes:      perl-perfSONAR_PS-Toolkit
-Provides:       perl-perfSONAR_PS-Toolkit
-
 Requires(pre):  rpm
 # Anaconda requires a Requires(post) to ensure that packages are installed before the %post section is run...
 Requires(post): perl
-Requires(post): perfsonar-lscachedaemon
 Requires(post): perfsonar-lsregistrationdaemon
-Requires(post): perfsonar-graphs
 Requires(post): perfsonar-psconfig-pscheduler
 
 Requires(post): perfsonar-common
@@ -187,7 +176,6 @@ Summary:        perfSONAR Toolkit System Configuration
 Group:          Development/Tools
 Requires:       perfsonar-toolkit-security
 Requires:       perfsonar-toolkit-sysctl
-Requires:       perfsonar-toolkit-servicewatcher
 #TODO: Revisit this
 %if 0%{?el7}
 Requires:       perfsonar-toolkit-ntp
@@ -214,9 +202,8 @@ Requires(post): rsyslog
 Requires(post): setup
 Requires(post): smartmontools
 Requires(post): sudo
-Obsoletes:      perfsonar-toolkit-systemenv < 4.0
-Obsoletes:      perl-perfSONAR_PS-Toolkit-SystemEnvironment
-Provides:       perl-perfSONAR_PS-Toolkit-SystemEnvironment
+Obsoletes: perfsonar-toolkit-servicewatcher
+Provides: perfsonar-toolkit-servicewatcher
 
 %description systemenv
 Tunes and configures the system according to performance and security best
@@ -236,8 +223,6 @@ Group:                  Development/Tools
 Requires:               perfsonar-common
 Requires:               libperfsonar-toolkit-perl
 Requires:               python3
-Obsoletes:              perl-perfSONAR_PS-Toolkit-Library
-Provides:               perl-perfSONAR_PS-Toolkit-Library
 
 %description library
 Installs the library files
@@ -276,8 +261,6 @@ Contains web service for information used in monitoring a perfSONAR host
 Summary:                perfSONAR Toolkit Core Scripts
 Group:                  Development/Tools
 Requires:               perfsonar-toolkit-library
-Obsoletes:              perl-perfSONAR_PS-Toolkit-Install-Scripts
-Provides:               perl-perfSONAR_PS-Toolkit-Install-Scripts
 
 %description install
 Installs install scripts
@@ -303,8 +286,6 @@ Requires(post):         kernel-headers
 Requires(post):         module-init-tools
 Requires(post):         httpd
 Requires(post):         mod_ssl
-Obsoletes:              perl-perfSONAR_PS-Toolkit-security
-Provides:               perl-perfSONAR_PS-Toolkit-security
 
 %description security
 Configures IPTables rules, installs fail2ban and secures apache for perfSONAR Toolkit
@@ -327,8 +308,6 @@ Requires(post):         coreutils
 Requires(post):         perfsonar-common
 Requires(post):         libperfsonar-perl
 Requires(post):         initscripts
-Obsoletes:              perl-perfSONAR_PS-Toolkit-sysctl
-Provides:               perl-perfSONAR_PS-Toolkit-sysctl
 
 %description sysctl
 Configures sysctl for the Toolkit
@@ -349,29 +328,9 @@ Requires(pre):          rpm
 Requires(post):         perfsonar-common
 Requires(post):         chkconfig
 Requires(post):         coreutils
-Obsoletes:              perl-perfSONAR_PS-Toolkit-ntp
-Provides:               perl-perfSONAR_PS-Toolkit-ntp
 
 %description ntp
 Configures ntp servers for the Toolkit
-
-%package servicewatcher
-Summary:                perfSONAR Toolkit service watcher
-Group:                  Development/Tools
-Requires:               coreutils
-%if 0%{?el7}
-Requires:               ntp
-%endif
-Requires:               perfsonar-toolkit-library
-Requires:               libperfsonar-toolkit-perl
-Requires(pre):          rpm
-Requires(post):         perfsonar-common
-Requires(post):         coreutils
-Obsoletes:              perl-perfSONAR_PS-Toolkit-service-watcher
-Provides:               perl-perfSONAR_PS-Toolkit-service-watcher
-
-%description servicewatcher
-Installs the service-watcher package
 
 %pre systemenv-testpoint
 rm -rf %{_localstatedir}/lib/rpm-state
@@ -398,11 +357,6 @@ rm -rf %{_localstatedir}/lib/rpm-state
 mkdir -p %{_localstatedir}/lib/rpm-state
 rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
 
-%pre servicewatcher
-rm -rf %{_localstatedir}/lib/rpm-state
-mkdir -p %{_localstatedir}/lib/rpm-state
-rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_localstatedir}/lib/rpm-state/previous_version || :
-
 %prep
 %setup -q -n perfsonar-toolkit-%{version}
 #remove hosts admin page for non-el7
@@ -420,8 +374,6 @@ make -f /usr/share/selinux/devel/Makefile -C selinux perfsonar-toolkit.pp
 rm -rf %{buildroot}
 
 make ROOTPATH=%{buildroot}/%{install_base} CONFIGPATH=%{buildroot}/%{config_base} install
-
-install -D -m 0600 scripts/%{crontab_1} %{buildroot}/etc/cron.d/%{crontab_1}
 
 install -D -m 0644 scripts/%{apacheconf} %{buildroot}/etc/httpd/conf.d/%{apacheconf}
 install -D -m 0644 scripts/%{apacheconf_webservices} %{buildroot}/etc/httpd/conf.d/%{apacheconf_webservices}
@@ -444,7 +396,6 @@ mv etc/* %{buildroot}/%{config_base}
 
 # Clean up unnecessary files
 rm -rf %{buildroot}/%{install_base}/etc
-rm -rf %{buildroot}/%{install_base}/scripts/%{crontab_1}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf}
 rm -rf %{buildroot}/%{install_base}/scripts/%{apacheconf_webservices}
 rm -rf %{buildroot}/%{install_base}/init_scripts
@@ -641,9 +592,6 @@ else
     %{install_base}/scripts/configure_sysctl upgrade ${PREV_VERSION}
 fi
 
-%post servicewatcher
-
-
 %post archive-utils
 
 #configure http archiver
@@ -651,7 +599,7 @@ fi
 if [ -f /etc/perfsonar/logstash/proxy_auth.json ] ; then
     AUTH_HEADER=`cat /etc/perfsonar/logstash/proxy_auth.json`
     HAS_AUTH=$(grep "$AUTH_HEADER" /etc/perfsonar/psconfig/archives.d/http_logstash.json)
-    if [ -z $HAS_AUTH ]; then
+    if [ -z "$HAS_AUTH" ]; then
         sed -i "s|http://localhost:11283|https://{% scheduled_by_address %}/logstash|g" /etc/perfsonar/psconfig/archives.d/http_logstash.json
         sed -i "s|\"content-type\": \"application/json\"|\"content-type\": \"application/json\", ${AUTH_HEADER}|g" /etc/perfsonar/psconfig/archives.d/http_logstash.json
     fi
@@ -665,8 +613,6 @@ fi
 %exclude %{config_base}/perfsonar_firewall_settings.conf
 %exclude %{config_base}/perfsonar_firewalld_settings.conf
 %exclude %{config_base}/ntp_known_servers
-%exclude %{config_base}/servicewatcher.conf
-%exclude %{config_base}/servicewatcher-logger.conf
 %exclude %{config_base}/templates/ntp_conf.tmpl
 %exclude %{config_base}/default_service_configs/pscheduler_limits.conf
 %exclude %{config_base}/perfsonar_ulimit.conf
@@ -691,13 +637,11 @@ fi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/tests.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/admin/plot.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/gui/reverse_traceroute.cgi
-%attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/index.cgi
 %attr(0644,root,root) %{_unitdir}/%{init_script_1}.service
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_2}
 %attr(0755,perfsonar,perfsonar) /etc/init.d/%{init_script_3}
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_psadmin_user
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/add_pssudo_user
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/find_bwctl_measurements
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/manage_users
 %attr(0755,perfsonar,perfsonar) %{install_base}/scripts/remove_home_partition
 
@@ -759,13 +703,6 @@ fi
 /etc/httpd/conf.d/%{apacheconf_webservices}
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/host.cgi
 %attr(0755,perfsonar,perfsonar) %{install_base}/web-ng/root/services/communities.cgi
-
-%files servicewatcher
-%license LICENSE
-%config(noreplace) %{config_base}/servicewatcher.conf
-%config(noreplace) %{config_base}/servicewatcher-logger.conf
-%attr(0755,perfsonar,perfsonar) %{install_base}/scripts/service_watcher
-%attr(0644,root,root) /etc/cron.d/%{crontab_1}
 
 %files archive-utils
 %license LICENSE

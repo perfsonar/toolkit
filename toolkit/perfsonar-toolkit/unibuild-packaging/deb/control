@@ -4,7 +4,8 @@ Priority: optional
 Maintainer: perfSONAR developers <debian@perfsonar.net>
 Build-Depends: debhelper (>= 10), quilt, dh-exec,
  libperfsonar-perl, libperfsonar-toolkit-perl,
- perfsonar-psconfig-pscheduler-dev, perfsonar-psconfig-pscheduler,
+ libperfsonar-psconfig-perl,
+ perfsonar-psconfig-pscheduler,
  libtest-mockobject-perl, libfile-copy-recursive-perl,
  libtest-deep-perl, libcgi-pm-perl, libperfsonar-sls-perl
 Standards-Version: 3.9.8
@@ -24,8 +25,7 @@ Depends: libperfsonar-perl,
  libperfsonar-psconfig-perl, perfsonar-psconfig-pscheduler,
  perfsonar-psconfig-publisher, 
  perfsonar-toolkit-config-daemon, perfsonar-core,
- perfsonar-lscachedaemon, perfsonar-traceroute-viewer,
- perfsonar-toolkit-graphs, perfsonar-toolkit-install,
+ perfsonar-grafana-toolkit, perfsonar-toolkit-install,
  perfsonar-toolkit-systemenv, perfsonar-toolkit-web-services, python3,
  ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Toolkit web GUI
@@ -54,15 +54,11 @@ Description: perfSONAR Toolkit firewall configuration
 Package: perfsonar-toolkit-sysctl
 Architecture: all
 Depends: libperfsonar-perl, ${perl:Depends}, ${misc:Depends}
+Conflicts: network-manager
 Description: perfSONAR Toolkit sysctl configuration
  Configures sysctl settings for perfSONAR Toolkit.
-
-Package: perfsonar-toolkit-servicewatcher
-Architecture: all
-Depends: libperfsonar-toolkit-perl, perfsonar-common,
- ${perl:Depends}, ${misc:Depends}
-Description: perfSONAR Toolkit service watcher
- Installs the service-watcher cron job.
+ These settings are tuning the network stack.
+ Conflicts with network-manager.
 
 Package: perfsonar-toolkit-ntp
 Architecture: all
@@ -98,11 +94,12 @@ Description: perfSONAR Toolkit core scripts
 Package: perfsonar-toolkit-systemenv
 Architecture: all
 Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
- perfsonar-toolkit-servicewatcher, perfsonar-toolkit-ntp,
- perfsonar-toolkit-library, perfsonar-psconfig-pscheduler,
+ perfsonar-toolkit-ntp, perfsonar-toolkit-library, perfsonar-psconfig-pscheduler,
  perfsonar-toolkit-systemenv-testpoint, perfsonar-toolkit-config-daemon,
  perfsonar-lsregistrationdaemon,
  ${misc:Depends}
+Breaks: perfsonar-toolkit-servicewatcher (<<5.1.0~b1.1-1)
+Replaces: perfsonar-toolkit-servicewatcher (<<5.1.0~b1.1-1)
 Description: perfSONAR Toolkit system tuning
  Tunes and configures the system according to performance
  and security best practices.

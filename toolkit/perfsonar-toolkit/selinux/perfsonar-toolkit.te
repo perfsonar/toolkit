@@ -4,6 +4,7 @@ require {
 	type configfs_t;
 	type cron_log_t;
 	type httpd_log_t;
+	type httpd_sys_content_t;
 	type httpd_t;
 	type init_t;
 	type init_var_lib_t;
@@ -27,14 +28,15 @@ require {
 	type sysctl_net_t;
 	type systemd_unit_file_t;
 	class dbus { send_msg };
-	class dir { ioctl read getattr lock search open };
-	class file { getattr open read unlink ioctl lock execute execute_no_trans };
+	class dir { ioctl read write getattr lock search open add_name remove_name };
+	class file { getattr open read unlink ioctl lock execute execute_no_trans create write rename };
 	class lnk_file { read getattr };
 	class system { status };
 	class rawip_socket { create };
 	class capability { net_raw };
 	class rawip_socket { getopt read setopt write };
 	class service { start stop status reload kill load enable disable };
+	class netlink_generic_socket create;
 }
 
 #============= httpd_t ==============
@@ -96,3 +98,8 @@ allow httpd_t self:rawip_socket { getopt read setopt write };
 
 #read tcp sysctl settings
 allow httpd_t sysctl_net_t:file { getattr ioctl open read };
+
+#misc
+allow httpd_t httpd_sys_content_t:dir { ioctl read write getattr lock search open add_name remove_name };
+allow httpd_t httpd_sys_content_t:file { create getattr ioctl open read write rename unlink };
+allow httpd_t self:netlink_generic_socket create;

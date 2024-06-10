@@ -21,8 +21,6 @@ etc/perfsonar_firewalld_settings.conf
 etc/perfsonar_sudo
 etc/perfsonar_ulimit.conf
 etc/perfsonar_ulimit_apache.conf
-etc/servicewatcher-logger.conf
-etc/servicewatcher.conf
 etc/templates/motd.tmpl
 etc/templates/ntp_conf.tmpl
 init_scripts/perfsonar-configdaemon
@@ -46,15 +44,12 @@ scripts/configure_firewall
 scripts/configure_memcached_security
 scripts/configure_ntpd
 scripts/configure_sysctl
-scripts/cron-service_watcher
-scripts/find_bwctl_measurements
 scripts/manage_users
 scripts/mod_interface_route
 scripts/nptoolkit-configure.py
 scripts/ps-migrate-backup.sh
 scripts/ps-migrate-restore.sh
 scripts/remove_home_partition
-scripts/service_watcher
 scripts/system_environment/add_psadmin_pssudo
 scripts/system_environment/add_sbin_path
 scripts/system_environment/add_toolkit_dirs_path
@@ -132,7 +127,6 @@ web-ng/root/images/perfSONAR-logo-reversed-green.png
 web-ng/root/images/perfSONAR-logo-reversed.png
 web-ng/root/images/perfSONAR-logo-whitebg.png
 web-ng/root/images/perfSONAR-logo.png
-web-ng/root/index.cgi
 web-ng/root/js/actions/Dispatcher.js
 web-ng/root/js/admin/components/AdminInfoUpdateComponent.js
 web-ng/root/js/admin/components/AllowInternalAddressesComponent.js
