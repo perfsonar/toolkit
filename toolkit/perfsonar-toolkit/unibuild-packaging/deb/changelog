@@ -1,4 +1,4 @@
-perfsonar-toolkit (5.1.0-1) perfsonar-5.1; urgency=low
+perfsonar-toolkit (5.1.0-2) perfsonar-5.1; urgency=low
 
   * New upstream version.
   * Deprecating perfsonar-toolkit-servicewatcher
@@ -6,7 +6,7 @@ perfsonar-toolkit (5.1.0-1) perfsonar-5.1; urgency=low
   * Streamlining apache configuration.
   * Using localhost instead of 127.0.0.1 in the configdaemon.
 
- -- perfSONAR developers <debian@perfsonar.net>  Mon, 10 Jun 2024 12:44:51 +0200
+ -- Lætitia Delvaux <adelvaux@man.poznan.pl>  Tue, 11 Jun 2024 16:59:25 +0200
 
 perfsonar-toolkit (5.0.8-2) perfsonar-5.0; urgency=low
 

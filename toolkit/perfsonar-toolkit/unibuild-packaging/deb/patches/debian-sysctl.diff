@@ -1,7 +1,7 @@
 Index: b/scripts/configure_sysctl
 ===================================================================
---- a/scripts/configure_sysctl	2024-06-10 12:44:50.266726837 +0200
-+++ b/scripts/configure_sysctl	2024-06-10 12:44:53.102228998 +0200
+--- a/scripts/configure_sysctl	2024-06-11 16:46:47.616970000 +0200
++++ b/scripts/configure_sysctl	2024-06-11 16:59:28.484438557 +0200
 @@ -70,7 +70,6 @@
              #set if centos 6 and 10Gbps or higher
              $default_sysctl_settings{'net.core.netdev_max_backlog'} = 250000 if($max_speed >= 10000000000);
