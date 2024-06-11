@@ -1,6 +1,10 @@
 perfsonar-toolkit (5.1.0-1) perfsonar-5.1; urgency=low
 
   * New upstream version.
+  * Deprecating perfsonar-toolkit-servicewatcher
+  * Removing the patch to network interfaces list as integrated upstream.
+  * Streamlining apache configuration.
+  * Using localhost instead of 127.0.0.1 in the configdaemon.
 
  -- perfSONAR developers <debian@perfsonar.net>  Mon, 10 Jun 2024 12:44:51 +0200
 
