@@ -13,8 +13,8 @@
 %define init_script_2 perfsonar-generate_motd
 %define init_script_3 perfsonar-configure_nic_parameters
 
-%define perfsonar_auto_version 5.1.1
-%define perfsonar_auto_relnum 1
+%define perfsonar_auto_version 5.1.2
+%define perfsonar_auto_relnum 0.a1.0
 
 Name:           perfsonar-toolkit
 Version:        %{perfsonar_auto_version}
