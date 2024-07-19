@@ -10,7 +10,7 @@
 #                    configuration file and services for perfSONAR Toolkit.
 ### END INIT INFO
 
-# Author: Antoine Delvaux <adelvaux@man.poznan.pl>
+# Author: Lætitia Delvaux <adelvaux@man.poznan.pl>
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
