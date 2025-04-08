@@ -548,13 +548,6 @@ if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
     rm %{_localstatedir}/lib/rpm-state/previous_version
 fi
 
-if [ $1 -eq 1 ] ; then
-    echo "Running: configure_ntpd new"
-    %{install_base}/scripts/configure_ntpd new
-else
-    echo "Running: configure_ntpd upgrade ${PREV_VERSION}"
-    %{install_base}/scripts/configure_ntpd upgrade ${PREV_VERSION}
-fi
 
 %post security
 
