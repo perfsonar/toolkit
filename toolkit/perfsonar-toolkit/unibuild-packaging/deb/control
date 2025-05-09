@@ -20,7 +20,7 @@ Depends: libperfsonar-perl,
  libsys-statistics-linux-perl, libperfsonar-sls-perl,
  perfsonar-toolkit-library, liblog-dispatch-filerotate-perl,
  libcgi-ajax-perl, libcgi-session-perl, libjson-xs-perl, systemd,
- perfsonar-common, unattended-upgrades, ntp, ethtool, iproute2,
+ perfsonar-common, unattended-upgrades, time-daemon, ethtool, iproute2,
  libperfsonar-toolkit-perl, perfsonar-lsregistrationdaemon,
  libperfsonar-psconfig-perl, perfsonar-psconfig-pscheduler,
  perfsonar-psconfig-publisher, 
@@ -62,7 +62,7 @@ Description: perfSONAR Toolkit sysctl configuration
 
 Package: perfsonar-toolkit-ntp
 Architecture: all
-Depends: ntp, perfsonar-toolkit-library,
+Depends: time-daemon, perfsonar-toolkit-library,
  libperfsonar-toolkit-perl, ${perl:Depends}, ${misc:Depends}
 Description: perfSONAR Toolkit ntp configuration
  Configures ntp servers for perfSONAR Toolkit.
