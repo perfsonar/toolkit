@@ -68,8 +68,8 @@ allow httpd_t httpd_log_t:file unlink;
 allow httpd_t lsregistrationdaemon_var_lib_t:file { getattr ioctl open read };
 allow httpd_t lsregistrationdaemon_etc_t:file { getattr ioctl open read };
 allow httpd_t lsregistrationdaemon_pid_t:file { getattr ioctl open read };
-allow lsregistrationdaemon_t tmp_t:dir write;
-allow init_t lsregistrationdaemon_etc_t:file write;
+allow lsregistrationdaemon_t tmp_t:dir { getattr search ioctl open read write };
+allow init_t lsregistrationdaemon_etc_t:file { getattr ioctl open read write };
 
 #read owamp and twamp configs
 allow httpd_t owampd_etc_t:file { getattr ioctl open read };
