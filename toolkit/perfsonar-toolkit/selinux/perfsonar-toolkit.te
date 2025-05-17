@@ -27,6 +27,7 @@ require {
 	type twampd_pid_t;
 	type sysctl_net_t;
 	type systemd_unit_file_t;
+	type tmp_t;
 	class dbus { send_msg };
 	class dir { ioctl read write getattr lock search open add_name remove_name };
 	class file { getattr open read unlink ioctl lock execute execute_no_trans create write rename };
