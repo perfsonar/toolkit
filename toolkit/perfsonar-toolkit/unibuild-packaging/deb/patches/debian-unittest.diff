@@ -1,7 +1,7 @@
 Index: b/t/host-get_metadata.t
 ===================================================================
---- a/t/host-get_metadata.t	2025-05-20 12:10:33.501716493 -0400
-+++ b/t/host-get_metadata.t	2025-05-20 12:10:36.880180208 -0400
+--- a/t/host-get_metadata.t	2025-05-20 12:19:25.095764061 -0400
++++ b/t/host-get_metadata.t	2025-05-20 12:19:29.044207546 -0400
 @@ -6,6 +6,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -13,8 +13,8 @@ Index: b/t/host-get_metadata.t
  
 Index: b/t/host-get_services.t
 ===================================================================
---- a/t/host-get_services.t	2025-05-20 12:10:33.501930702 -0400
-+++ b/t/host-get_services.t	2025-05-20 12:10:36.880800458 -0400
+--- a/t/host-get_services.t	2025-05-20 12:19:25.095879227 -0400
++++ b/t/host-get_services.t	2025-05-20 12:19:29.045299368 -0400
 @@ -6,6 +6,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -26,8 +26,8 @@ Index: b/t/host-get_services.t
  
 Index: b/t/host-get_system_health.t
 ===================================================================
---- a/t/host-get_system_health.t	2025-05-20 12:10:33.502031118 -0400
-+++ b/t/host-get_system_health.t	2025-05-20 12:10:36.881297999 -0400
+--- a/t/host-get_system_health.t	2025-05-20 12:19:25.095968643 -0400
++++ b/t/host-get_system_health.t	2025-05-20 12:19:29.046002403 -0400
 @@ -9,10 +9,12 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
@@ -67,8 +67,8 @@ Index: b/t/host-get_system_health.t
  ok( nonnegative_number( $data->{'load_avg'}->{'avg_5'} ), 'Load average (5 minute) is a positive number');
 Index: b/t/host-update_metadata.t
 ===================================================================
---- a/t/host-update_metadata.t	2025-05-20 12:10:33.502161327 -0400
-+++ b/t/host-update_metadata.t	2025-05-20 12:10:36.881674416 -0400
+--- a/t/host-update_metadata.t	2025-05-20 12:19:25.096093892 -0400
++++ b/t/host-update_metadata.t	2025-05-20 12:19:29.046572731 -0400
 @@ -13,6 +13,8 @@
  use FindBin qw($Bin);
  use lib "$Bin/lib";
