@@ -1,7 +1,7 @@
 Index: b/init_scripts/perfsonar-configure_nic_parameters
 ===================================================================
---- a/init_scripts/perfsonar-configure_nic_parameters	2025-05-20 12:19:27.054895306 -0400
-+++ b/init_scripts/perfsonar-configure_nic_parameters	2025-05-20 12:19:27.604324448 -0400
+--- a/init_scripts/perfsonar-configure_nic_parameters	2025-05-28 12:16:39.739117343 -0400
++++ b/init_scripts/perfsonar-configure_nic_parameters	2025-05-28 12:16:40.232459456 -0400
 @@ -9,7 +9,7 @@
  ### END INIT INFO
  
@@ -65,8 +65,8 @@ Index: b/init_scripts/perfsonar-configure_nic_parameters
          ;;
 Index: b/scripts/system_environment/disable_unwanted_services
 ===================================================================
---- a/scripts/system_environment/disable_unwanted_services	2025-05-20 12:19:25.092975047 -0400
-+++ b/scripts/system_environment/disable_unwanted_services	2025-05-20 12:19:27.605738559 -0400
+--- a/scripts/system_environment/disable_unwanted_services	2025-05-28 12:16:37.827186575 -0400
++++ b/scripts/system_environment/disable_unwanted_services	2025-05-28 12:16:40.233498321 -0400
 @@ -6,9 +6,9 @@
  
  function disable_service() {
@@ -81,8 +81,8 @@ Index: b/scripts/system_environment/disable_unwanted_services
  
 Index: b/scripts/system_environment/testpoint/enable_auto_updates
 ===================================================================
---- a/scripts/system_environment/testpoint/enable_auto_updates	2025-05-20 12:19:25.093664499 -0400
-+++ b/scripts/system_environment/testpoint/enable_auto_updates	2025-05-20 12:19:27.606839340 -0400
+--- a/scripts/system_environment/testpoint/enable_auto_updates	2025-05-28 12:16:37.827827235 -0400
++++ b/scripts/system_environment/testpoint/enable_auto_updates	2025-05-28 12:16:40.234348521 -0400
 @@ -11,22 +11,19 @@
  MAJOR=${PREV_VERSION%%\.*}
  REST=${PREV_VERSION/${MAJOR}\.}
