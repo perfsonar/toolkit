@@ -13,7 +13,7 @@
 %define init_script_2 perfsonar-generate_motd
 %define init_script_3 perfsonar-configure_nic_parameters
 
-%define perfsonar_auto_version 5.1.4
+%define perfsonar_auto_version 5.2.0
 %define perfsonar_auto_relnum 1
 
 Name:           perfsonar-toolkit
@@ -548,13 +548,6 @@ if [ -f %{_localstatedir}/lib/rpm-state/previous_version ] ; then
     rm %{_localstatedir}/lib/rpm-state/previous_version
 fi
 
-if [ $1 -eq 1 ] ; then
-    echo "Running: configure_ntpd new"
-    %{install_base}/scripts/configure_ntpd new
-else
-    echo "Running: configure_ntpd upgrade ${PREV_VERSION}"
-    %{install_base}/scripts/configure_ntpd upgrade ${PREV_VERSION}
-fi
 
 %post security
 

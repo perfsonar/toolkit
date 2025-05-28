@@ -27,6 +27,7 @@ require {
 	type twampd_pid_t;
 	type sysctl_net_t;
 	type systemd_unit_file_t;
+	type tmp_t;
 	class dbus { send_msg };
 	class dir { ioctl read write getattr lock search open add_name remove_name };
 	class file { getattr open read unlink ioctl lock execute execute_no_trans create write rename };
@@ -68,6 +69,8 @@ allow httpd_t httpd_log_t:file unlink;
 allow httpd_t lsregistrationdaemon_var_lib_t:file { getattr ioctl open read };
 allow httpd_t lsregistrationdaemon_etc_t:file { getattr ioctl open read };
 allow httpd_t lsregistrationdaemon_pid_t:file { getattr ioctl open read };
+allow lsregistrationdaemon_t tmp_t:dir { getattr search ioctl open read write };
+allow init_t lsregistrationdaemon_etc_t:file { getattr ioctl open read write };
 
 #read owamp and twamp configs
 allow httpd_t owampd_etc_t:file { getattr ioctl open read };
