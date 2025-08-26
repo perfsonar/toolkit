@@ -29,9 +29,9 @@ case "$1" in
             . /usr/share/apache2/apache2-maintscript-helper
 
             apache2_invoke ensite default-ssl
-            apache2_invoke enconf apache-toolkit_web_services
             apache2_invoke enmod cgi reload
             apache2_invoke enmod headers reload
+            apache2_invoke enconf apache-toolkit_web_services
             # Only doing a restart once to avoid triggering limits
             apache2_invoke enmod rewrite restart
         fi
