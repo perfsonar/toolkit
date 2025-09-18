@@ -2,7 +2,7 @@
 
 set -e
 
-adduser --disabled-password --gecos autopkgtest autopkgtest
+adduser --disabled-password --gecos "autopkgtest" autopkgtest
 adduser autopkgtest pssudo
 echo autopkgtest:autopkgpass | chpasswd
 
