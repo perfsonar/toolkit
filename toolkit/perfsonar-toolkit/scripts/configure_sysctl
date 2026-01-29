@@ -1,90 +1,87 @@
-#!/usr/bin/perl
+#!/bin/bash
 
-use FindBin qw($RealBin);
-use lib "$RealBin/../lib";
+# Only run on new installation
+if [[ "$1" != "new" ]]; then
+    exit 0
+fi
 
-use perfSONAR_PS::Utils::Host qw( get_operating_system_info get_ethernet_interfaces get_interface_speed get_interface_mtu);
+# Ensure directory exists and config file is created
+SYSCTL_CONF="/etc/sysctl.d/perfsonar-toolkit-sysctl.conf"
+mkdir -p /etc/sysctl.d
+: > "$SYSCTL_CONF"  # create/truncate the file
 
-#only run this on new installs
-if($ARGV[0] ne "new"){
-    exit 0;
-}
+# Default sysctl settings
+declare -A SYSCTL_SETTINGS=(
+    [net.core.rmem_max]=67108864
+    [net.core.wmem_max]=67108864
+    [net.ipv4.tcp_rmem]="4096 87380 33554432"
+    [net.ipv4.tcp_wmem]="4096 65536 33554432"
+    [net.ipv4.tcp_no_metrics_save]=1
+    [net.ipv4.tcp_congestion_control]=htcp
+    [net.ipv4.conf.all.arp_ignore]=1
+    [net.ipv4.conf.all.arp_announce]=2
+    [net.ipv4.conf.default.arp_filter]=1
+    [net.ipv4.conf.all.arp_filter]=1
+)
 
-#default settings
-my %default_sysctl_settings = (
-    'net.core.rmem_max' => 67108864,
-    'net.core.wmem_max' => 67108864,
-    'net.ipv4.tcp_rmem' => '4096 87380 33554432',
-    'net.ipv4.tcp_wmem' => '4096 65536 33554432',
-    'net.ipv4.tcp_no_metrics_save' => 1,
-    'net.ipv4.tcp_congestion_control' => 'htcp',
-    'net.ipv4.conf.all.arp_ignore' => 1,
-    'net.ipv4.conf.all.arp_announce' => 2,
-    'net.ipv4.conf.default.arp_filter' => 1,
-    'net.ipv4.conf.all.arp_filter' => 1,
-);
+MAX_SPEED=0
+MAX_MTU=0
 
-#set interface speed and mtu specific information
-my @interfaces = get_ethernet_interfaces();
-my $max_speed = 0;
-my $max_mtu = 0;
-foreach my $interface(@interfaces){
-    next if $interface eq 'lo';
-    my $iface_speed = get_interface_speed(interface_name => $interface);
-    if($iface_speed ne 'unknown' && $iface_speed > $max_speed){
-        $max_speed = $iface_speed;
-    }
-    my $iface_mtu = int(get_interface_mtu(interface_name => $interface));
-    if($iface_mtu > $max_mtu){
-        $max_mtu = $iface_mtu;
-    }
-}
-if($max_speed >= 40000000000){
-    #40G and higher
-    $default_sysctl_settings{'net.core.rmem_max'} = 536870912;
-    $default_sysctl_settings{'net.core.wmem_max'} = 536870912;
-    $default_sysctl_settings{'net.ipv4.tcp_rmem'} = '4096 87380 268435456';
-    $default_sysctl_settings{'net.ipv4.tcp_wmem'} = '4096 65536 268435456';
-}elsif($max_speed >= 10000000000){
-    #10G and higher
-    $default_sysctl_settings{'net.core.rmem_max'} = 268435456;
-    $default_sysctl_settings{'net.core.wmem_max'} = 268435456;
-    $default_sysctl_settings{'net.ipv4.tcp_rmem'} = '4096 87380 134217728';
-    $default_sysctl_settings{'net.ipv4.tcp_wmem'} = '4096 65536 134217728';
-}
+# Check interfaces
+for IFACE in /sys/class/net/*; do
+    IFACE_NAME=$(basename "$IFACE")
+    [[ "$IFACE_NAME" == "lo" ]] && continue
 
-if($max_mtu > 8000){
-    #Jumbo frames
-    $default_sysctl_settings{'net.ipv4.tcp_mtu_probing'} = 1;
-}
+    # Speed
+    if [[ -f "$IFACE/speed" ]]; then
+        SPEED=$(cat "$IFACE/speed" 2>/dev/null)
+        [[ "$SPEED" =~ ^[0-9]+$ ]] && SPEED=$((SPEED * 1000000))
+        [[ "$SPEED" =~ ^[0-9]+$ ]] && (( SPEED > MAX_SPEED )) && MAX_SPEED=$SPEED
+    fi
 
-#set OS specific information
-my $os_info = get_operating_system_info();
-if($os_info->{'distribution_name'} && $os_info->{'distribution_version'}){
-    if($os_info->{'distribution_name'} =~ /^CentOS/){
-        #centos
-        if($os_info->{'distribution_version'} =~ /^7/){
-            #centos 7
-            $default_sysctl_settings{'net.core.default_qdisc'} = 'fq';
-        }elsif($os_info->{'distribution_version'} =~ /^6/){
-            #set if centos 6 and 10Gbps or higher
-            $default_sysctl_settings{'net.core.netdev_max_backlog'} = 250000 if($max_speed >= 10000000000);
-        }
-        
-    }elsif($os_info->{'distribution_name'} =~ /^Debian/){
-        #debian
-        if($os_info->{'distribution_version'} =~ /^8/){
-            #debian 8
-            $default_sysctl_settings{'net.core.default_qdisc'} = 'fq';
-        }
-    }
-}
+    # MTU
+    if [[ -f "$IFACE/mtu" ]]; then
+        MTU=$(cat "$IFACE/mtu")
+        (( MTU > MAX_MTU )) && MAX_MTU=$MTU
+    fi
+done
 
-#output params
-open(my $SYSCTL, ">>", "/etc/sysctl.conf") or die "Unable to open /etc/sysctl.conf: $!";
-print $SYSCTL "####################################\n";
-print $SYSCTL "#Default perfSONAR sysctl settings\n";
-print $SYSCTL "####################################\n";
-foreach my $sysctl_param(sort keys %default_sysctl_settings){
-    print $SYSCTL "$sysctl_param = " . $default_sysctl_settings{$sysctl_param} . "\n";
-}
+# Tune based on speed
+if (( MAX_SPEED >= 40000000000 )); then
+    SYSCTL_SETTINGS[net.core.rmem_max]=536870912
+    SYSCTL_SETTINGS[net.core.wmem_max]=536870912
+    SYSCTL_SETTINGS[net.ipv4.tcp_rmem]="4096 87380 268435456"
+    SYSCTL_SETTINGS[net.ipv4.tcp_wmem]="4096 65536 268435456"
+elif (( MAX_SPEED >= 10000000000 )); then
+    SYSCTL_SETTINGS[net.core.rmem_max]=268435459
+    SYSCTL_SETTINGS[net.core.wmem_max]=268435459
+    SYSCTL_SETTINGS[net.ipv4.tcp_rmem]="4096 87380 134217728"
+    SYSCTL_SETTINGS[net.ipv4.tcp_wmem]="4096 65536 134217728"
+fi
+
+# MTU tuning
+(( MAX_MTU > 8000 )) && SYSCTL_SETTINGS[net.ipv4.tcp_mtu_probing]=1
+
+# OS-specific settings
+if [[ -f /etc/os-release ]]; then
+    . /etc/os-release
+    case "$ID" in
+        centos|rhel)
+            [[ "$VERSION_ID" =~ ^7 ]] && SYSCTL_SETTINGS[net.core.default_qdisc]=fq
+            [[ "$VERSION_ID" =~ ^6 && MAX_SPEED -ge 10000000000 ]] && SYSCTL_SETTINGS[net.core.netdev_max_backlog]=250000
+            ;;
+        debian)
+            [[ "$VERSION_ID" =~ ^8 ]] && SYSCTL_SETTINGS[net.core.default_qdisc]=fq
+            ;;
+    esac
+fi
+
+# Write sysctl settings to file
+{
+    echo "####################################"
+    echo "# Default perfSONAR sysctl settings"
+    echo "####################################"
+    for KEY in $(printf "%s\n" "${!SYSCTL_SETTINGS[@]}" | sort); do
+        echo "$KEY = ${SYSCTL_SETTINGS[$KEY]}"
+    done
+} > "$SYSCTL_CONF"
