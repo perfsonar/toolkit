@@ -4,5 +4,4 @@ debian-toolkit.diff
 chkconfig.diff
 debian-install.diff
 debian-systemenv.diff
-debian-sysctl.diff
 debian-unittest.diff
