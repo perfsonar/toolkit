@@ -1,7 +1,7 @@
 Index: b/scripts/nptoolkit-configure.py
 ===================================================================
---- a/scripts/nptoolkit-configure.py	2025-09-18 14:28:10.785740403 -0400
-+++ b/scripts/nptoolkit-configure.py	2025-09-18 14:28:13.422462207 -0400
+--- a/scripts/nptoolkit-configure.py	2026-02-09 16:41:57.554027969 -0500
++++ b/scripts/nptoolkit-configure.py	2026-02-09 16:42:00.175034508 -0500
 @@ -99,7 +99,7 @@
                      },
                      {
