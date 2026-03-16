@@ -191,11 +191,17 @@ addPortRuleFromFile(){
                 if type firewall-cmd &>/dev/null; then
                     portrange=${portrange/:/-}
                     portrange=${portrange// /}
-                    firewall-cmd --quiet --add-port=$portrange/udp
-                    firewall-cmd --quiet --add-port=$portrange/tcp
+                    if [ "$file" = "$BWCTLFILE" ]; then
+                        firewall-cmd --quiet --add-port=$portrange/tcp
+                    and
+                        firewall-cmd --quiet --add-port=$portrange/udp
+                    fi
                 else
-                    $iptables_cmd -A $CHAIN -m udp -p udp --dport $portrange -j ACCEPT
-                    $iptables_cmd -A $CHAIN -m state --state NEW -m tcp -p tcp --dport $portrange -j ACCEPT
+                    if [ "$file" = "$BWCTLFILE" ]; then
+                        $iptables_cmd -A $CHAIN -m state --state NEW -m tcp -p tcp --dport $portrange -j ACCEPT
+                    else
+                        $iptables_cmd -A $CHAIN -m udp -p udp --dport $portrange -j ACCEPT
+                    fi
                 fi
             fi
         done
