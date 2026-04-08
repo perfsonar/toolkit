@@ -1,4 +1,12 @@
 #!/bin/bash
+#######################################################################
+# ps-migrate-backup.sh <backup-tarball>
+# 
+# This script reads important perfSONAR configuration and system files 
+# from their locations and places them in an output tarball file.
+# Should be run as root.
+# In its current form, the script does not backup any archive data.
+#######################################################################
 
 TEMP_BAK_NAME=ps-toolkit-migrate-backup
 TEMP_BAK_DIR="/tmp/$TEMP_BAK_NAME"
@@ -11,10 +19,10 @@ if [ $? != 0 ]; then
     exit 1
 fi
 eval set -- "$TEMP"
-
+    
 while true; do
    case "$1" in
-       -d|--data) DATA=1 ; shift ;;
+       -d|--data) DATA=1 ; echo "This option is currently not available. Exiting..." ; exit 1 ; shift ;;
        --) shift ; break ;;
        *) echo "Internal error!" ; exit 1 ;;
    esac
@@ -28,19 +36,18 @@ if [ -z "$1" ]; then
 elif [ -e "$1" ]; then
     echo "Backup file already exists: $1"
     exit 1
-fi
-
+fi      
+    
 #Create temp directory
 rm -rf $TEMP_BAK_DIR
 mkdir -m 700 $TEMP_BAK_DIR
 if [ "$?" != "0" ]; then
     echo "Unable to create temp directory"
-    exit 1
-fi
-
+    exit 1 
+fi      
+            
 #create directory structure
 mkdir -p $TEMP_BAK_DIR/etc
-mkdir -p $TEMP_BAK_DIR/postgresql_data
 
 #get perfsonar files
 printf "Backing-up perfsonar configuration..."
@@ -62,22 +69,51 @@ fi
 printf "[SUCCESS]"
 echo ""
 
+#get twamp files if exists
+if [ -d "/etc/twamp-server" ]; then
+    printf "Backing-up twamp-server configuration..."
+    cp -a /etc/twamp-server $TEMP_BAK_DIR/etc
+    if [ "$?" != "0" ]; then
+        echo "Unable to copy /etc/twamp-server"
+        exit 1
+    fi
+    printf "[SUCCESS]"
+    echo ""
+fi
+
 #get NTP config
 printf "Backing-up NTP configuration..."
-cp /etc/ntp.conf  $TEMP_BAK_DIR/etc/ntp.conf
-if [ "$?" != "0" ]; then
-    echo "Unable to copy /etc/ntp.conf"
-    exit 1
-fi
-printf "[SUCCESS]"
-echo ""
-
-#get maddash if exists
-if [ -f "/etc/maddash/maddash-server/maddash.yaml" ]; then
-    printf "Backing-up MaDDash configuration..."
-    cp -a /etc/maddash $TEMP_BAK_DIR/etc
+if [ -f "/etc/ntp.conf" ]; then
+    #older systems
+    cp /etc/ntp.conf  $TEMP_BAK_DIR/etc/ntp.conf
     if [ "$?" != "0" ]; then
-        echo "Unable to copy /etc/maddash"
+        echo "Unable to copy /etc/ntp.conf"
+        exit 1
+    fi
+    printf "[SUCCESS]"
+    echo ""    
+else
+    if [ -f "/etc/ntpsec/ntp.conf" ]; then
+        #new systems
+        cp -a /etc/ntpsec  $TEMP_BAK_DIR/etc
+        if [ "$?" != "0" ]; then
+            echo "Unable to copy /etc/ntpsec"
+            exit 1
+        fi
+        printf "[SUCCESS]"
+        echo ""
+    else
+        printf "[Unable to find NTP configuration]"
+        echo ""
+    fi
+fi
+
+#get chrony config if exists
+printf "Backing-up chrony configuration..."
+if which chronyd > /dev/null; then
+    cp -a /etc/chrony  $TEMP_BAK_DIR/etc
+    if [ "$?" != "0" ]; then
+        echo "Unable to copy /etc/chrony"
         exit 1
     fi
     printf "[SUCCESS]"
