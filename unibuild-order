@@ -10,3 +10,6 @@ changecom()dnl
 
 # Build primary packages
 toolkit
+
+# Other packages
+perfsonar-web-front-page
