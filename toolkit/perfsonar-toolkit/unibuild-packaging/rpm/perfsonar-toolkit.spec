@@ -359,11 +359,14 @@ rpm -q --queryformat "%%{RPMTAG_VERSION} %%{RPMTAG_RELEASE} " %{name} > %{_local
 
 %prep
 %setup -q -n perfsonar-toolkit-%{version}
-#remove hosts admin page for non-el7
-%if 0%{?el7}
-%else
+
+#These patches are applied for non-EL7, which we don't build anymore.
+%if 0%{?el8}%{?ol8}
 %patch0 -p3
 %patch1 -p3
+%else
+%patch 0 -p3
+%patch 1 -p3
 %endif
 
 
