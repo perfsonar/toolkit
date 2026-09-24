@@ -1,6 +1,18 @@
 #Enable ssh filtering
 [sshd]
 enabled = true
+port = ssh
+filter = sshd
+mode = aggressive
+logpath = /var/log/auth.log
+backend = systemd
+
+maxretry = 3
+findtime = 5m
+bantime = 1h
+bantime.increment = true
+bantime.factor = 2
+bantime.maxtime = 168h
 
 #disable mail for ssh-iptables
 [ssh-iptables]
