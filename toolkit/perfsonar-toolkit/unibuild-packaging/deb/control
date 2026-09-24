@@ -93,7 +93,7 @@ Description: perfSONAR Toolkit core scripts
 
 Package: perfsonar-toolkit-systemenv
 Architecture: all
-Depends: perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
+Depends: perfsonar-toolkit, perfsonar-toolkit-security, perfsonar-toolkit-sysctl,
  perfsonar-toolkit-ntp, perfsonar-toolkit-library, perfsonar-psconfig-pscheduler,
  perfsonar-toolkit-systemenv-testpoint, perfsonar-toolkit-config-daemon,
  perfsonar-lsregistrationdaemon,
