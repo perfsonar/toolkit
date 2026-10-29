@@ -1,4 +1,11 @@
-/var/log/perfsonar/owamp.log {
+/var/log/perfsonar/owamp.log
+{
+    weekly
+    rotate 4
+    notifempty
+    compress
+    delaycompress
+    missingok
     sharedscripts
     create 664 perfsonar adm
     postrotate
